@@ -60,7 +60,7 @@ public class TextSegment extends Segment {
 		s.restore();
 		if(!fastTextInit) {
 			fastTextInit = true;
-			fastText = ((Gb.readMemory(RomInfo.rom.optionsAddress) & 0x7) <= 1);
+			fastText = ((Gb.readMemory(RomInfo.rom.optionsAddress) & RomInfo.rom.optionsTextSpeedMask) <= 1);
 		}
 		boolean inputBeforeEnd = false;
 		int add = State.step(0,RomInfo.rom.printLetterDelayDoneAddress,RomInfo.rom.readJoypadAddress); // .done, input

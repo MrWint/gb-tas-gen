@@ -3,17 +3,14 @@ import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.movie.BizhawkMovie;
 import mrwint.gbtasgen.segment.TempSegment;
-import mrwint.gbtasgen.segment.gen2.any.GetStarter1Segment;
-import mrwint.gbtasgen.segment.gen2.any.GetStarter2Segment;
-import mrwint.gbtasgen.segment.gen2.any.IntroSegment;
-import mrwint.gbtasgen.segment.gen2.any.MysteryEggSegment;
-import mrwint.gbtasgen.segment.gen2.any.OakSpeechSegment;
+import mrwint.gbtasgen.segment.gen1.IntroSegment;
+import mrwint.gbtasgen.segment.gen1.OakSpeechSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
 
-public class Main {
+public class GenITest {
 	
 	public static void init() {
 		Metric.initMetrics();
@@ -26,9 +23,7 @@ public class Main {
 	public static void main(String[] args) throws Throwable {
 		
 		// select ROM to use
-//		RomInfo.rom = new RomInfo.CrystalRomInfo();
-//		RomInfo.rom = new RomInfo.GoldRomInfo();
-		RomInfo.rom = new RomInfo.SilverRomInfo();
+		RomInfo.rom = new RomInfo.RedRomInfo();
 		
 		init();
 		
@@ -49,20 +44,20 @@ public class Main {
 //		outBuffer = StateBuffer.load("doneIntroOptionsTIDAny");
 
 //		outBuffer = StateBuffer.load("doneIntro_1b");
-		outBuffer = new OakSpeechSegment().execute(outBuffer);
+		outBuffer = new OakSpeechSegment(null, null).execute(outBuffer);
 //		outBuffer.save("doneOakSpeech_50");		
 
 //		outBuffer = StateBuffer.load("doneOakSpeech_50");
-		outBuffer = new GetStarter1Segment().execute(outBuffer);
+//		outBuffer = new GetStarter1Segment().execute(outBuffer);
 //		outBuffer.save("doneGetStarter1_50");		
 
 //		outBuffer = StateBuffer.load("doneGetStarter1_50");
-		outBuffer = new GetStarter2Segment().execute(outBuffer);
+//		outBuffer = new GetStarter2Segment().execute(outBuffer);
 //		outBuffer.save("doneGetStarter2_50");		
 
 //		outBuffer = StateBuffer.load("doneGetStarter2_50");
-		outBuffer = new MysteryEggSegment().execute(outBuffer);
-		outBuffer.save("doneMysteryEgg_1");
+//		outBuffer = new MysteryEggSegment().execute(outBuffer);
+//		outBuffer.save("doneMysteryEgg_1");
 		
 //		outBuffer = StateBuffer.load("doneMysteryEgg_50");
 //		outBuffer = new CherrygroveRivalSegment().execute(outBuffer);
@@ -197,7 +192,7 @@ public class Main {
 		//new Map().printCollisionMap2();
 
 		//// save movie ////
-		BizhawkMovie.saveMovie(outBuffer.getStates().iterator().next(),"test");
+//		BizhawkMovie.saveMovie(outBuffer.getStates().iterator().next(),"test");
 		//VBAMovie.saveMovie(outBuffer.getStates().iterator().next(),"test");
 
 

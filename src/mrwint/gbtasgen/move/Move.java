@@ -2,6 +2,7 @@ package mrwint.gbtasgen.move;
 
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
+import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.state.State;
 
 
@@ -31,4 +32,12 @@ public abstract class Move {
 	public abstract int execute() throws Throwable;
 	
 	public abstract int getInitialKey();
+	
+	public static PressButton press(int move) {
+		return new PressButton(move, Metric.DOWN_JOY);
+	}
+	
+	public static PressButton menu(int move) {
+		return new PressButton(move, Metric.MENU_JOY);
+	}
 }
