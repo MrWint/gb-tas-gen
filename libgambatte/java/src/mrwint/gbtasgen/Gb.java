@@ -13,15 +13,6 @@ public class Gb {
 
 	public static native void startEmulator(String rom);
 
-	public static native void startLogging();
-	public static native void stopLogging();
-
-	public static native int ntick();
-
-	public static boolean tick(){
-		return (1 == ntick());
-	}
-
 	public static native void nstep(int keymask);
 	public static native int nstepUntil(int keymask, int[] addresses);
 
