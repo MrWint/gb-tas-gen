@@ -1,3 +1,18 @@
+
+# output dirs
 libgambatte/java/build/
 libgambatte/java/dist/
 
+# generated files
+libgambatte/include/mrwint_gbtasgen_Gb.h
+
+# binary files
+*.o
+*.os
+*.so
+
+# logs
+*.log
+
+# hidden files
+.*
