@@ -1,0 +1,40 @@
+<project name="gb-bindings" default="dist" basedir="."> 
+
+  <property name="build" value="build"/>
+  <property name="src" value="src"/>
+  <property name="dist" value="dist"/>
+  <property name="headers"  value="../include"/>
+
+
+  <target name="prepare">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/> 
+  </target>
+
+  <target name="compile" depends="prepare" >
+    <javac srcdir="${src}" destdir="${build}"
+	   includeantruntime="false"/>
+  </target>
+
+  <target name="native" depends="prepare, compile" >
+    <javah class="mrwint.gbtasgen.Gb"
+	   destdir="${headers}"
+	   classpath="${build}"/>
+  </target>
+
+  <target name="dist" depends="native">
+    <jar jarfile="${dist}/gb-bindings.jar">
+      <fileset dir="${build}"/>
+      <fileset dir="${src}"/>
+    </jar>
+  </target>
+
+  <target name="all" depends="dist"/>
+
+  <target name="clean" >
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+</project>
+
