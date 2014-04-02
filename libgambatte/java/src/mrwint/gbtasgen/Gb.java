@@ -1,7 +1,6 @@
 package mrwint.gbtasgen;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.nio.ByteOrder;
 
 public class Gb {
@@ -43,7 +42,7 @@ public class Gb {
 
 	public static ByteBuffer saveState(){
 		ByteBuffer buf = createDirectByteBuffer(MAX_SAVE_SIZE);
-		int limit = (int)saveState(buf, buf.capacity());
+		saveState(buf, buf.capacity());
 		buf.rewind();
 		return buf;
 	}
@@ -53,7 +52,7 @@ public class Gb {
 	}
 
 	public static native int getROMSize();
-	public static final int NUM_REGISTERS = 29;
+	public static final int NUM_REGISTERS = 6;
 	public static final int GB_MEMORY = 0x10000;
 
 	public static native void getROM(int[] store);

@@ -5,6 +5,10 @@ libgambatte/java/dist/
 
 # generated files
 libgambatte/include/mrwint_gbtasgen_Gb.h
+bin/
+movies/*
+roms/*
+saves/*
 
 # binary files
 *.o
