@@ -1,29 +1,27 @@
-package mrwint.gbtasgen.segment.gen2.any;
+package mrwint.gbtasgen.segment.gen1;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
+import mrwint.gbtasgen.move.ChangeOptionsMove;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class GetCoincase1Segment extends Segment {
+public class LeaveHouseSegment extends Segment {
 
 	SequenceSegment sequence;
 	
-	public GetCoincase1Segment() {
+	public LeaveHouseSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
+		segments.add(new MoveSegment(ChangeOptionsMove.get(false))); // set options
+//		segments.add(new WalkToSegment(7, 3)); // walk some steps
+		segments.add(new WalkToSegment(7, 1)); // go downstairs
+		segments.add(new WalkToSegment(3, 8, false)); // leave house
+		segments.add(new WalkToSegment(10, 1)); // walk into grass
 
-		segments.add(new WalkToSegment(11, 29, false));			// enter gate
-		segments.add(new WalkToSegment(5, 25, false));			// enter underground
-
-		segments.add(new WalkToSegment(5, 33));					// align
-		segments.add(new WalkToSegment(5, 32));					// face super nerd eric
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// engage super nerd eric
-		
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
 	

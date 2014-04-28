@@ -3,7 +3,7 @@ package mrwint.gbtasgen.segment.gen2.any.trainer;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.move.OverworldInteract;
+import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.fight.EndFightSegment;
@@ -52,7 +52,7 @@ public class VioletBirdkeeperRon extends Segment {
 		segments.add(new WalkToSegment(4, 5));	// align leader
 		segments.add(new WalkToSegment(5, 3));	// align leader
 		segments.add(new WalkToSegment(5, 2));	// engage leader
-		segments.add(new MoveSegment(new OverworldInteract()));	// engage leader
+		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// engage leader
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}

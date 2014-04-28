@@ -41,12 +41,12 @@ public class CheckEncounterMetric extends Metric {
 	@Override
 	public int getMetric() {
 		State s = new State();
-		if(Util.runToAddress2Limit(0, startMove, 500, RomInfo.rom.encounterCheckMainFuncAddress) == 0) {
-			System.out.println("Warning: couldn't find a encounterCheckMainFuncAddress call for 500 steps, assuming no encounter!");
+		if(Util.runToAddress2Limit(0, startMove, 500, RomInfo.rom.encounterPreCheckAddresses) == 0) {
+			System.out.println("Warning: couldn't find encounterPreCheckAddresses call for 500 steps, assuming no encounter!");
 			s.restore();
 			return 0;
 		}
-		int add = Util.runToAddress2(0,0, RomInfo.rom.encounterCheckMainFuncEncounterAddress, RomInfo.rom.encounterCheckMainFuncNoEncounterAddress);
+		int add = Util.runToAddress2(0,0, RomInfo.rom.encounterPostCheckAddresses);
 		int curMon = Gb.readMemory(RomInfo.rom.encounterMonSpeciesAddress);
 		int curLvl = Gb.readMemory(RomInfo.rom.encounterMonLevelAddress);
 		

@@ -3,9 +3,9 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.metric.CheckDVMetric;
+import mrwint.gbtasgen.metric.Gen2CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.OverworldInteract;
+import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.NamingSegment;
 import mrwint.gbtasgen.segment.Segment;
@@ -59,7 +59,7 @@ public class GetStarter1Segment extends Segment {
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face ball
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face ball
 		
-		segments.add(new MoveSegment(new OverworldInteract())); // grab totodile
+		segments.add(new MoveSegment(new Gen2OverworldInteract())); // grab totodile
 		segments.add(new MoveSegment(new PressButton(Move.B))); // cancel totodile screen
 		segments.add(new SkipTextsSegment(2, true)); // yes, I want totodile
 

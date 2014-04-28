@@ -5,7 +5,7 @@ import java.util.List;
 
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.OverworldInteract;
+import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SkipInput;
 import mrwint.gbtasgen.segment.NamingSegment;
@@ -39,7 +39,7 @@ public class ToViolet1Segment extends Segment {
 		segments.add(new WalkToSegment(5, 3));			// go to elm
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face elm
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face elm
-		segments.add(new MoveSegment(new OverworldInteract())); // talk to elm
+		segments.add(new MoveSegment(new Gen2OverworldInteract())); // talk to elm
 		segments.add(new SkipTextsSegment(27));			// elm speech
 		
 		segments.add(new WalkToSegment(4, 7));			// align for cutscene

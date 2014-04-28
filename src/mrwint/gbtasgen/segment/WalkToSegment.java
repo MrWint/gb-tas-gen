@@ -7,12 +7,12 @@ import java.util.Queue;
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.WalkStep;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
-import mrwint.gbtasgen.util.Map;
 import mrwint.gbtasgen.util.Util;
+import mrwint.gbtasgen.util.map.Map;
+import mrwint.gbtasgen.util.map.Map.MapFactory;
 
 public class WalkToSegment extends Segment {
 	
@@ -50,7 +50,20 @@ public class WalkToSegment extends Segment {
 	private int destX, destY;
 	private boolean checkLastStep;
 	private int maxBufferSize;
-		
+	private MapFactory mapFactory;
+	private boolean blockAllWarps;
+	private boolean ignoreTrainers;
+
+	public WalkToSegment setBlockAllWarps(boolean blockAllWarps) {
+		this.blockAllWarps = blockAllWarps;
+		return this;
+	}
+
+	public WalkToSegment setIgnoreTrainers(boolean ignoreTrainers) {
+		this.ignoreTrainers = ignoreTrainers;
+		return this;
+	}
+
 	public WalkToSegment setMaxBufferSize(int maxBufferSize) {
 		this.maxBufferSize = maxBufferSize;
 		return this;
@@ -59,28 +72,37 @@ public class WalkToSegment extends Segment {
 	private static final int[] dx = {0,1,0,-1};
 	private static final int[] dy = {1,0,-1,0};
 	
-	private static final Segment[] walkSegment = {
-		new MoveSegment(new WalkStep(Move.DOWN,true),0,0),
-		new MoveSegment(new WalkStep(Move.RIGHT,true),0,0),
-		new MoveSegment(new WalkStep(Move.UP,true),0,0),
-		new MoveSegment(new WalkStep(Move.LEFT,true),0,0)};
-	
-	private static final Segment[] walkSegmentNoCheck = {
-		new MoveSegment(new WalkStep(Move.DOWN,false),0,0),
-		new MoveSegment(new WalkStep(Move.RIGHT,false),0,0),
-		new MoveSegment(new WalkStep(Move.UP,false),0,0),
-		new MoveSegment(new WalkStep(Move.LEFT,false),0,0)};
-	
+	private Segment[] walkSegment;
+	private Segment[] walkSegmentNoCheck;
 	
 	public WalkToSegment(int destX, int destY) {
 		this(destX,destY,true);
 	}
 
 	public WalkToSegment(int destX, int destY, boolean checkLastStep) {
+		this(destX,destY,checkLastStep,RomInfo.rom.mapFactory);
+	}
+
+	public WalkToSegment(int destX, int destY, boolean checkLastStep, MapFactory mapFactory) {
 		this.destX = destX;
 		this.destY = destY;
 		this.checkLastStep = checkLastStep;
 		this.maxBufferSize = StateBuffer.MAX_BUFFER_SIZE;
+		this.mapFactory = mapFactory;
+		initWalkSteps();
+	}
+
+	private void initWalkSteps() {
+		walkSegment = new Segment[4];
+		walkSegment[0] = new MoveSegment(RomInfo.rom.getWalkStep(Move.DOWN, true, false),0,0);
+		walkSegment[1] = new MoveSegment(RomInfo.rom.getWalkStep(Move.RIGHT,true, false),0,0);
+		walkSegment[2] = new MoveSegment(RomInfo.rom.getWalkStep(Move.UP,true, false),0,0);
+		walkSegment[3] = new MoveSegment(RomInfo.rom.getWalkStep(Move.LEFT,true, false),0,0);
+		walkSegmentNoCheck = new Segment[4];
+		walkSegmentNoCheck[0] = new MoveSegment(RomInfo.rom.getWalkStep(Move.DOWN,false, false),0,0);
+		walkSegmentNoCheck[1] = new MoveSegment(RomInfo.rom.getWalkStep(Move.RIGHT,false, false),0,0);
+		walkSegmentNoCheck[2] = new MoveSegment(RomInfo.rom.getWalkStep(Move.UP,false, false),0,0);
+		walkSegmentNoCheck[3] = new MoveSegment(RomInfo.rom.getWalkStep(Move.LEFT,false, false),0,0);
 	}
 
 	@Override
@@ -95,7 +117,7 @@ public class WalkToSegment extends Segment {
 		for(int i = 0; i < 100; i++)
 			State.step(); // skip until map loading is finished
 		
-		Map map = new Map();
+		Map map = mapFactory.create(blockAllWarps, ignoreTrainers);
 		int width = map.getStepWidth();
 		int height = map.getStepHeight();
 		int[][] d = new int[width][height];
@@ -123,14 +145,14 @@ public class WalkToSegment extends Segment {
 			}
 		}
 		
-		int playerX = (State.getCurrentMemory()[RomInfo.rom.curPositionXAddress]-4)+6;
-		int playerY = (State.getCurrentMemory()[RomInfo.rom.curPositionYAddress]-4)+6;
+		int playerX = (State.getCurrentMemory()[RomInfo.rom.curPositionXAddress]+RomInfo.rom.curPositionOffset)+6;
+		int playerY = (State.getCurrentMemory()[RomInfo.rom.curPositionYAddress]+RomInfo.rom.curPositionOffset)+6;
 		int destX = this.destX + 6;
 		int destY = this.destY + 6;
 		Pos initialPos = new Pos(playerX, playerY);
-		System.out.println("planning path from ("+playerX+","+playerY+") to ("+destX+","+destY+")");
+		System.out.println("planning path from ("+(playerX-6)+","+(playerY-6)+") to ("+(destX-6)+","+(destY-6)+")");
 		System.out.println("map:");
-		map.printCollisionMap2();
+		map.printMap();
 		System.out.println("distances:");
 		Map.printDistMap(d);
 		
@@ -139,7 +161,7 @@ public class WalkToSegment extends Segment {
 		
 		int startDist = d[playerX][playerY];
 		if(startDist == -1) {
-			map.printCollisionMap2();
+			map.printMap();
 			Map.printDistMap(d);
 			throw new RuntimeException("destination unreachable: ("+destX+","+destY+") from ("+playerX+","+playerY+")");
 		}
@@ -157,7 +179,7 @@ public class WalkToSegment extends Segment {
 						for(int dir=0;dir<4;dir++) {
 							int nx = x+dx[dir];
 							int ny = y+dy[dir];
-							if(d[nx][ny] == curDist-1 && (map.isPassable(nx, ny, dir) || curDist == 1)) {
+							if(d[nx][ny] == curDist-1 && (map.isPassable(x, y, nx, ny, dir) || curDist == 1)) {
 								//System.out.println("going dir "+dir);
 								StateBuffer newBuffer;
 								if(checkLastStep || curDist > 1)

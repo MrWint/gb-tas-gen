@@ -1,6 +1,13 @@
 package mrwint.gbtasgen.main;
 
-public class RomInfo {
+import mrwint.gbtasgen.move.Gen1WalkStep;
+import mrwint.gbtasgen.move.Gen2WalkStep;
+import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.util.map.Gen1Map;
+import mrwint.gbtasgen.util.map.Gen2Map;
+import mrwint.gbtasgen.util.map.Map.MapFactory;
+
+public abstract class RomInfo {
 	public static RomInfo rom;
 	
 	public static final int CRYSTAL = 0;
@@ -11,6 +18,7 @@ public class RomInfo {
 	public static final int BLUE = 4;
 
 	public int type;
+	public MapFactory mapFactory;
 	
 	public String fileNameSuffix;
 	public String romFileName;
@@ -37,7 +45,19 @@ public class RomInfo {
 	public int curMapGroupAddress;
 	public int curMapIDAddress;
 	public int eventFlagsAddress;
-	
+	// Gen 1 only
+	public int mapHeaderBanksAddress;
+	public int mapHeaderPointersAddress;
+	public int trainerHeaderPointerAddress;
+	public int blockTilesPointerAddress; // bank:address
+	public int grassTileAddress;
+	public int collisionDataAddress;
+	public int missableObjectListAddress;
+	public int missableObjectFlagsAddress;
+	public int tilePairCollisionsLandAddress;
+	public int tilePairCollisionsWaterAddress;
+	public int curTilesetAddress;
+
 	// options
 	public int optionsAddress;
 	public int optionsTextSpeedMask;
@@ -53,10 +73,18 @@ public class RomInfo {
 	public int playerMovingIndicatorAddress;
 	public int playerDirectionAddress;
 	public int movementAnimationAddress;
+	// Gen 1 only
+	public int doTurnPreEncounterCheckAddress;
+	public int doTurnPostEncounterCheckAddress;
+	public int doWalkPreEncounterCheckAddress;
+	public int doWalkPostEncounterCheckAddress;
+	public int walkSuccessAddress;
+	public int walkFailAddress;
 	
 	public int curPositionXAddress;
 	public int curPositionYAddress;
-	
+	public int curPositionOffset;
+
 	public int encounterCheckMainFuncAddress;
 	public int encounterCheckMainFuncNoEncounterAddress;
 	public int encounterCheckMainFuncEncounterAddress;
@@ -64,11 +92,17 @@ public class RomInfo {
 	public int encounterMonSpeciesAddress;
 	public int catchSuccessAddress;
 	public int catchFailureAddress;
+	public int[] encounterPreCheckAddresses;
+	public int[] encounterPostCheckAddresses;
 	
 	// interaction
 	public int owPlayerInputCheckAAddress;
 	public int owPlayerInputNoActionAddress;
 	public int owPlayerInputActionAddress;
+	// Gen 1
+	public int owInteractionTargetAddress;
+	public int owInteractionSuccessfulAddress;
+	public int owLoopAddress;
 	
 	// battle
 	public int fightBattleMonLevelAddress;
@@ -77,6 +111,8 @@ public class RomInfo {
 	public int fightBattleMonOriginalStatsAddress;
 	public int fightBattleMonTypesAddress;
 	public int fightBattleMonHPAddress;
+	// Gen 1
+	public int fightBattleMonIndex;
 	
 	public int fightEnemyMonSpeciesAddress;
 	public int fightEnemyMonLevelAddress;
@@ -85,6 +121,8 @@ public class RomInfo {
 	public int fightEnemyMonOriginalStatsAddress;
 	public int fightEnemyMonTypesAddress;
 	public int fightEnemyMonHPAddress;
+	// Gen 1
+	public int fightEnemyMonIndex;
 	
 	public int fightCurMoveNumAddress;
 	public int fightCriticalHitAddress;
@@ -98,21 +136,32 @@ public class RomInfo {
 	public int fightDetermineAttackOrderEnemyFirst;
 	public int fightAfterAIChooseMove;
 	public int fightEndTurnResetFlags;
-	public int fightBattleCommand0a;
+	public int[] fightBattleCommand0a;
 	public int fightDamageCalc;
 	public int fightDamageVariation;
+	public int[] fightEndTurnAddresses;
 	
 	// lists
 	public int listMoveNamesAddress;
 	public int listMovesAddress;
+	public int listMovesEntryLength;
 	public int listTypeNamesAddress;
 	public int listTypeMatchupAddress;
 
 	public int rngAddress;
 	
+	public abstract Move getWalkStep(int dir, boolean check, boolean skipStandStillTest);
+	
 	public static class GenIIRomInfo extends RomInfo {
 		public GenIIRomInfo() {
 			optionsTextSpeedMask = 0x7;
+			mapFactory = new Gen2Map.Factory();
+			curPositionOffset = -4;
+			listMovesEntryLength = 7;
+		}
+		@Override
+		public Move getWalkStep(int dir, boolean check, boolean skipStandStillTest) {
+			return new Gen2WalkStep(dir, check, skipStandStillTest);
 		}
 	}
 	
@@ -169,6 +218,8 @@ public class RomInfo {
 			encounterMonSpeciesAddress = 0xd22e;
 			catchSuccessAddress = 0xe99c;
 			catchFailureAddress = 0xe99f;
+			encounterPreCheckAddresses = new int[] {encounterCheckMainFuncAddress};
+			encounterPostCheckAddresses = new int[] {encounterCheckMainFuncNoEncounterAddress, encounterCheckMainFuncEncounterAddress};
 			
 			owPlayerInputCheckAAddress = 0x96983;
 			owPlayerInputNoActionAddress = 0x9698d;
@@ -199,9 +250,10 @@ public class RomInfo {
 			fightDetermineAttackOrderEnemyFirst = 0x3c3f3;
 			fightAfterAIChooseMove = 0x3c174;
 			fightEndTurnResetFlags = 0x3c6ed;
-			fightBattleCommand0a = 0x34eee;
+			fightBattleCommand0a = new int[] {0x34eee};
 			fightDamageCalc = 0x35612;
 			fightDamageVariation = 0x34cfd;
+			fightEndTurnAddresses = new int[] {printLetterDelayJoypadAddress, fightEndTurnResetFlags};
 			
 			listMoveNamesAddress = (0x72 -1) * 0x4000 + 0x5F29;
 			listMovesAddress = 0x41afb;
@@ -262,6 +314,8 @@ public class RomInfo {
 			encounterMonSpeciesAddress = 0xd117;
 			catchSuccessAddress = 0xea20;
 			catchFailureAddress = 0xea23;
+			encounterPreCheckAddresses = new int[] {encounterCheckMainFuncAddress};
+			encounterPostCheckAddresses = new int[] {encounterCheckMainFuncNoEncounterAddress, encounterCheckMainFuncEncounterAddress};
 
 			owPlayerInputCheckAAddress = 0x968b6;
 			owPlayerInputNoActionAddress = 0x968c0;
@@ -292,9 +346,10 @@ public class RomInfo {
 			fightDetermineAttackOrderEnemyFirst = 0x3c3aa;
 			fightAfterAIChooseMove = 0x3c148;
 			fightEndTurnResetFlags = 0x3c695;
-			fightBattleCommand0a = 0x3503e;
+			fightBattleCommand0a = new int[] {0x3503e};
 			fightDamageCalc = 0x35753;
 			fightDamageVariation = 0x34e4d;
+			fightEndTurnAddresses = new int[] {printLetterDelayJoypadAddress, fightEndTurnResetFlags};
 
 			listMoveNamesAddress = 0x1b1574;
 			listMovesAddress = 0x41afe;
@@ -322,7 +377,14 @@ public class RomInfo {
 	
 	public static class GenIRomInfo extends RomInfo {
 		public GenIRomInfo() {
+			mapFactory = new Gen1Map.Factory();
 			optionsTextSpeedMask = 0xF;
+			curPositionOffset = 0;
+			listMovesEntryLength = 6;
+		}
+		@Override
+		public Move getWalkStep(int dir, boolean check, boolean skipStandStillTest) {
+			return new Gen1WalkStep(dir, check, skipStandStillTest);
 		}
 	}
 	
@@ -352,66 +414,91 @@ public class RomInfo {
 //			tileCollisionTableAddress = (0x3e -1) * 0x4000 + 0x74be;
 //			mapGroupPointersAddress = (0x25 -1) * 0x4000 + 0x40ed;
 //			tilesetsAddress = (0x5 -1) * 0x4000 + 0x56be;
-//			curBlockDataAddress = 0xc700;
+			curBlockDataAddress = 0xc6e8;
 //			curMapGroupAddress = 0xda00;
-//			curMapIDAddress = 0xda01;
+			curMapIDAddress = 0xd35e;
 //			eventFlagsAddress = 0xd7b7;
+			mapHeaderBanksAddress = 0xc23d;
+			mapHeaderPointersAddress = 0x1ae;
+			trainerHeaderPointerAddress = 0xda30;
+			blockTilesPointerAddress = 0xd52b;
+			grassTileAddress = 0xd535;
+			collisionDataAddress = 0xd530;
+			missableObjectListAddress = 0xd5ce;
+			missableObjectFlagsAddress = 0xd5a6;
+			tilePairCollisionsLandAddress = 0xc7e;
+			tilePairCollisionsWaterAddress = 0xca0;
+			curTilesetAddress = 0xd367;
 //
 			optionsAddress = 0xd355; // determines text speed
 //
-//			afterDVGenerationAddress = 0xd9bb;
+			afterDVGenerationAddress = 0xf3b3;
 //			afterTrainerIDGenerationAddress = 0x5c6d;
 //			trainerIDAddress = 0xd1a1;
 //
-//			doPlayerMovementFuncAddress = 0x10000;
+			doPlayerMovementFuncAddress = 0x51d; // .handleDirectionButtonPress
 //			doPlayerMovementFuncEndAddress = 0x10016;
-//			playerMovingIndicatorAddress = 0xcf39;
-//			playerDirectionAddress = 0xd205;
+			playerMovingIndicatorAddress = 0xcc4b;
+			playerDirectionAddress = 0xd529;
 //			movementAnimationAddress = 0xcf2d;
+			doTurnPreEncounterCheckAddress = 0x575;
+			doTurnPostEncounterCheckAddress = 0x578;
+			doWalkPreEncounterCheckAddress = 0x62c;
+			doWalkPostEncounterCheckAddress = 0x62f;
+			walkSuccessAddress = 0x5ae; // .noCollision
+			walkFailAddress = 0x593; // failed jump to .noCollision
 //
-//			curPositionXAddress = 0xd20d;
-//			curPositionYAddress = 0xd20e;
+			curPositionXAddress = 0xd362;
+			curPositionYAddress = 0xd361;
 //
 //			encounterCheckMainFuncAddress = 0x97af1;
 //			encounterCheckMainFuncNoEncounterAddress = 0x97b13;
-//			encounterCheckMainFuncEncounterAddress = 0x97b25;
-//			encounterMonLevelAddress = 0xd040;
-//			encounterMonSpeciesAddress = 0xd117;
-//			catchSuccessAddress = 0xea20;
-//			catchFailureAddress = 0xea23;
-//
-//			owPlayerInputCheckAAddress = 0x968b6;
+			encounterCheckMainFuncEncounterAddress = 0x13916;
+			encounterMonLevelAddress = 0xd127;
+			encounterMonSpeciesAddress = 0xcfd8;
+			catchSuccessAddress = 0xd868;
+			catchFailureAddress = 0xd922;
+			encounterPreCheckAddresses = new int[] {doTurnPreEncounterCheckAddress, doWalkPreEncounterCheckAddress};
+			encounterPostCheckAddresses = new int[] {encounterCheckMainFuncEncounterAddress, doTurnPostEncounterCheckAddress, doWalkPostEncounterCheckAddress};
+
+			owPlayerInputCheckAAddress = 0x477;
+			owInteractionTargetAddress = 0xff8c;
+			owInteractionSuccessfulAddress = 0x496;
+			owLoopAddress = 0x3ff;
 //			owPlayerInputNoActionAddress = 0x968c0;
 //			owPlayerInputActionAddress = 0x968c2;
 //
-//			fightBattleMonMovesAddress = 0xcb0e;
-//			fightBattleMonLevelAddress = 0xcb19;
-//			fightBattleMonHPAddress = 0xcb1c;
-//			fightBattleMonStatsAddress = 0xcb20;
-//			fightBattleMonTypesAddress = 0xcb2a;
-//			fightCriticalHitAddress = 0xcb44;
-//			fightAttackMissedAddress = 0xcb45;
+			fightBattleMonIndex = 0xcc2f;
+			fightBattleMonMovesAddress = 0xd01c;
+			fightBattleMonLevelAddress = 0xd022;
+			fightBattleMonHPAddress = 0xd015;
+			fightBattleMonStatsAddress = 0xd025;
+			fightBattleMonTypesAddress = 0xd019;
+			fightCriticalHitAddress = 0xD05E;
+			fightAttackMissedAddress = 0xD05F;
 //			fightEffectMissedAddress = 0xcbeb;
-//			fightBattleMonOriginalStatsAddress = 0xcb94;
-//			fightEnemyMonOriginalStatsAddress = 0xcb9f;
-//			fightCurEnemyMoveAddress = 0xcbc2;
-//			fightCurMoveNumAddress = 0xcfc7;
-//			fightEnemyMonSpeciesAddress = 0xd0cf;
-//			fightEnemyMonMovesAddress = 0xd0f1;
-//			fightEnemyMonLevelAddress = 0xd0fc;
-//			fightEnemyMonHPAddress = 0xd0ff;
-//			fightEnemyMonStatsAddress = 0xd103;
-//			fightEnemyMonTypesAddress = 0xd10d;
-//			fightCurDamageAddress = 0xd141;
+			fightBattleMonOriginalStatsAddress = 0xd18f;
+			fightEnemyMonOriginalStatsAddress = 0xD8C8;
+			fightCurEnemyMoveAddress = 0xccdd;
+			fightCurMoveNumAddress = 0xCC2E;
+			fightEnemyMonSpeciesAddress = 0xcfd8;
+			fightEnemyMonIndex = 0xcfe8;
+			fightEnemyMonMovesAddress = 0xcfed;
+			fightEnemyMonLevelAddress = 0xcff3;
+			fightEnemyMonHPAddress = 0xcfe6;
+			fightEnemyMonStatsAddress = 0xcff6;
+			fightEnemyMonTypesAddress = 0xcfea;
+			fightCurDamageAddress = 0xD0D7;
 //
-//			fightDetermineAttackOrder = 0x3c2cb;
-//			fightDetermineAttackOrderPlayerFirst = 0x3c3a8;
-//			fightDetermineAttackOrderEnemyFirst = 0x3c3aa;
-//			fightAfterAIChooseMove = 0x3c148;
+			fightDetermineAttackOrder = 0x3c2a9;
+			fightDetermineAttackOrderPlayerFirst = 0x3c37d;
+			fightDetermineAttackOrderEnemyFirst = 0x3c33d;
+//			fightAfterAIChooseMove = 0x3c2a9;
 //			fightEndTurnResetFlags = 0x3c695;
-//			fightBattleCommand0a = 0x3503e;
+			fightBattleCommand0a = new int[] {0x3d705, 0x3e782}; // after MoveHitTest (player, enemy)
 //			fightDamageCalc = 0x35753;
 //			fightDamageVariation = 0x34e4d;
+			fightEndTurnAddresses = new int[] {printLetterDelayJoypadAddress, 0x3c364, 0x3c380, 0x3c34e, 0x3c3a4}; // after both calls of ExecutePlayerMove; after both calls of ExecuteEnemyMove
 
 			listMoveNamesAddress = 0xb0000;
 			listMovesAddress = 0x38000;

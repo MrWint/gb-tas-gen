@@ -3,10 +3,10 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.metric.CheckDVMetric;
+import mrwint.gbtasgen.metric.Gen2CheckDVMetric;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.OverworldInteract;
+import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.NamingSegment;
 import mrwint.gbtasgen.segment.Segment;
@@ -49,7 +49,7 @@ public class ToAzalea1Segment extends Segment {
 		
 		segments.add(new WalkToSegment(9, 3));			// align
 		segments.add(new WalkToSegment(9, 2));			// face PC
-		segments.add(new MoveSegment(new OverworldInteract()));
+		segments.add(new MoveSegment(new Gen2OverworldInteract()));
 		segments.add(new SkipTextsSegment(1)); // accessed pc
 		segments.add(new MoveSegment(new PressButton(Move.A)));
 		segments.add(new SkipTextsSegment(2)); // bills pc
@@ -108,7 +108,7 @@ public class ToAzalea1Segment extends Segment {
 
 		{
 			segments.add(new WalkToSegment(5, 3));			// align
-			segments.add(new MoveSegment(new OverworldInteract()));	// talk to assistant
+			segments.add(new MoveSegment(new Gen2OverworldInteract()));	// talk to assistant
 			segments.add(new SkipTextsSegment(3));
 
 			segments.add(new TextSegment(Move.B, true, 0)); // 3rd text
@@ -116,7 +116,7 @@ public class ToAzalea1Segment extends Segment {
 			segments.add(new DelayMoveSegment(new PressButtonFactory(Move.A), new Segment() {
 				@Override
 				public StateBuffer execute(StateBuffer in) throws Throwable {
-					in = new CheckMetricSegment(new CheckDVMetric(0/*Move.B*/, 0, 0, 0, 0,
+					in = new CheckMetricSegment(new Gen2CheckDVMetric(0/*Move.B*/, 0, 0, 0, 0,
 							0x1891, 0x1892, 0x1893, 0x1894, 0x1895, 0x1896, 0x1897, 0x1898, 0x1899, 0x189A, 0x189B, 0x189C, 0x189D, 0x189E, 0x189F,
 							0x18A0, 0x18A1, 0x18A2, 0x18A3, 0x18A4, 0x18A5, 0x18A6, 0x18A7, 0x18A8, 0x18A9, 0x18AA, 0x18BB, 0x18AC, 0x18AD, 0x18AE, 0x18AF,
 							0x18B0, 0x18B1, 0x18B2, 0x18B3, 0x18B4, 0x18B5, 0x18B6, 0x18B7, 0x18B8, 0x18B9, 0x18BA, 0x18BB,
@@ -142,7 +142,7 @@ public class ToAzalea1Segment extends Segment {
 		if(!Util.isCrystal()) {
 			segments.add(new WalkToSegment(15, 23));				// align
 			segments.add(new WalkToSegment(14, 23));				// face youngster albert
-			segments.add(new MoveSegment(new OverworldInteract()));	// engage youngster albert
+			segments.add(new MoveSegment(new Gen2OverworldInteract()));	// engage youngster albert
 		}
 		
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));

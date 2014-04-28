@@ -43,8 +43,11 @@ public class Util {
 	public static String getStringFromPointerList(int startAdd, int skips) {
 		return getString(getPointerAddress(startAdd+2*skips));
 	}
+	public static int getWordAt(int add) {
+		return State.getROM()[add] + (State.getROM()[add+1] << 8);
+	}
 	public static int getPointerAddress(int add) {
-		int ptrLocal = State.getROM()[add] + (State.getROM()[add+1] << 8);
+		int ptrLocal = getWordAt(add);
 		if(ptrLocal < 0x4000)
 			return ptrLocal;
 		if(ptrLocal < 0x8000) {
@@ -56,6 +59,9 @@ public class Util {
 	}
 	public static int getMemoryBigEndian(int add) {
 		return (Gb.readMemory(add) << 8) + Gb.readMemory(add+1);
+	}
+	public static int getMemoryLittleEndian(int add) {
+		return Gb.readMemory(add) + (Gb.readMemory(add+1) << 8);
 	}
 
 	// returns number of steps
@@ -195,5 +201,11 @@ public class Util {
 	}
 	public static boolean isSilver() {
 		return RomInfo.rom.type == RomInfo.SILVER;
+	}
+	public static boolean isGen2() {
+		return RomInfo.rom.type == RomInfo.SILVER || RomInfo.rom.type == RomInfo.GOLD || RomInfo.rom.type == RomInfo.CRYSTAL;
+	}
+	public static boolean isGen1() {
+		return RomInfo.rom.type == RomInfo.RED || RomInfo.rom.type == RomInfo.BLUE;
 	}
 }

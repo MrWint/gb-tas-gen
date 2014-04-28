@@ -1,12 +1,19 @@
-package mrwint.gbtasgen.util;
+package mrwint.gbtasgen.util.map;
 
 import java.util.Arrays;
 
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.util.Util;
 
-public class Map {
+public class Gen2Map extends Map {
+	public static class Factory implements MapFactory {
+		@Override
+		public Map create(boolean blockAllWarps, boolean ignoreTrainers) {
+			return new Gen2Map();
+		}
+	}
 	public boolean isPassable(int x, int y) {
 		if(mapStepCollisionOverride[x][y])
 			return false;
@@ -21,15 +28,17 @@ public class Map {
 			{0xb3,0xb4,0xb5,0xc3,0xc4,0xc5}, // up
 			{0xb0,0xb4,0xb6,0xc0,0xc4,0xc6}, // left
 	};
-	
-	public boolean isPassable(int x, int y, int dir) {
-		return isPassable(x,y) && canGoDir(x,y,dir);
-	}
-	
+
 	public boolean canGoDir(int tox, int toy, int dir) {
 		return !Arrays.asList(forbiddenEntryDir[dir]).contains(mapStepCollision[tox][toy]);
 	}
-	
+
+	@Override
+	public boolean isPassable(int fromx, int fromy, int tox, int toy, int dir) {
+		return isPassable(tox,toy) && canGoDir(tox,toy,dir);
+	}
+
+	@Override
 	public boolean isInversePassable(int fromx, int fromy, int tox, int toy, int dir) {
 		return isPassable(fromx,fromy) && canGoDir(tox,toy,dir);
 	}
@@ -64,19 +73,19 @@ public class Map {
 		return (mapHeight+6)*2;
 	}
 	
-	public Map() {
-		rom = State.getROM();
-		memory = State.getCurrentMemory();
+	public Gen2Map() {
+		this.rom = State.getROM();
+		this.memory = State.getCurrentMemory();
 		
-		curMapGroup = memory[RomInfo.rom.curMapGroupAddress];
-		curMapID = memory[RomInfo.rom.curMapIDAddress];
+		this.curMapGroup = memory[RomInfo.rom.curMapGroupAddress];
+		this.curMapID = memory[RomInfo.rom.curMapIDAddress];
 
 		loadMap();
 	}
 	
-	public Map(int curMapGroup, int curMapID) {
-		rom = State.getROM();
-		memory = State.getCurrentMemory();
+	public Gen2Map(int curMapGroup, int curMapID) {
+		this.rom = State.getROM();
+		this.memory = State.getCurrentMemory();
 		
 		this.curMapGroup = curMapGroup;
 		this.curMapID = curMapID;
@@ -88,8 +97,7 @@ public class Map {
 		System.out.println("Loading map "+Util.toHex(curMapGroup)+":"+Util.toHex(curMapID)+"...");
 
 		mapHeaderBank = RomInfo.rom.mapGroupPointersAddress / 0x4000;
-		curMapHeaderAddress = rom[RomInfo.rom.mapGroupPointersAddress+(2*(curMapGroup-1))] + 
-				(rom[RomInfo.rom.mapGroupPointersAddress+(2*(curMapGroup-1)+1)]<<8) +
+		curMapHeaderAddress = Util.getWordAt(RomInfo.rom.mapGroupPointersAddress+2*(curMapGroup-1)) +
 				(curMapID-1) * 9 + // each header is 9 bytes long; 1-indexed
 				(mapHeaderBank-1)*0x4000; // adjust bank
 
@@ -120,8 +128,7 @@ public class Map {
 		
 		curMapTileset = rom[curMapHeaderAddress+1];
 		
-		tileSetCollisionDataAddress = rom[RomInfo.rom.tilesetsAddress + 0xf*curMapTileset + 7] + 
-				(rom[RomInfo.rom.tilesetsAddress + 0xf*curMapTileset + 8]<<8) +
+		tileSetCollisionDataAddress = Util.getWordAt(RomInfo.rom.tilesetsAddress + 0xf*curMapTileset + 7) +
 				(rom[RomInfo.rom.tilesetsAddress + 0xf*curMapTileset + 6]-1)*0x4000; // adjust bank
 				
 		
@@ -160,8 +167,8 @@ public class Map {
 			int x = rom[curAddress++] - 4 + 6;
 			int facingDirection = rom[curAddress++];
 			int movement = rom[curAddress++];
-			int clockHour = rom[curAddress++];
-			int clockDaytime = rom[curAddress++];
+			curAddress++; // clockHour
+			curAddress++; // clockDaytime
 			int colorFunction = rom[curAddress++];
 			int range = rom[curAddress++];
 			int scriptPointer = rom[curAddress] + (rom[curAddress+1]<<8) + (rom[curMapSecondHeaderAddress+6]-1)*0x4000; // adjust bank
@@ -248,20 +255,16 @@ public class Map {
 		}
 		System.out.println();
 	}
+	
+	@Override
+	public void printMap() {
+		printCollisionMap2();
+	}
 
 	public void printCollisionMap2() {
 		for(int y=0;y<mapStepCollision[0].length;y++) {
 			for(int x=0;x<mapStepCollision.length;x++)
 				System.out.print(isPassable(x,y)?".":"X");
-			System.out.println();
-		}
-		System.out.println();
-	}
-
-	public static void printDistMap(int[][] dist) {
-		for(int y=0;y<dist[0].length;y++) {
-			for(int x=0;x<dist.length;x++)
-				System.out.print("#0123456789ABCDEF".charAt(Math.min(dist[x][y]+1,16)));
 			System.out.println();
 		}
 		System.out.println();

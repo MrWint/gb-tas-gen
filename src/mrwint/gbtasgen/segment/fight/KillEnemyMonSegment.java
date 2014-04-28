@@ -105,7 +105,7 @@ public class KillEnemyMonSegment extends Segment {
 		public int getMetric() {
 			State s = null;
 			if(resetState) s = new State();
-			int add = Util.runToAddress2(0, initialMove, RomInfo.rom.printLetterDelayJoypadAddress, RomInfo.rom.fightEndTurnResetFlags);
+			int add = Util.runToAddress2(0, initialMove, RomInfo.rom.fightEndTurnAddresses);
 			if(add == RomInfo.rom.printLetterDelayJoypadAddress) {
 				System.out.println("CheckAdditionalTexts: found additional PrintText!");
 //				try { Thread.sleep(2000); } catch (InterruptedException e) { }
@@ -151,8 +151,12 @@ public class KillEnemyMonSegment extends Segment {
 			Util.runToAddress(0, 0, RomInfo.rom.fightBattleCommand0a);
 			int crit = Gb.readMemory(RomInfo.rom.fightCriticalHitAddress);
 			int missed = Gb.readMemory(RomInfo.rom.fightAttackMissedAddress);
-			int effectMissed = Gb.readMemory(RomInfo.rom.fightEffectMissedAddress);
-			if(missed != 0 || criticalHit != (crit != 0) || this.effectMiss != (effectMissed != 0)) {
+			boolean failure = missed != 0 || criticalHit != (crit != 0);
+			if (Util.isGen2()) {
+				int effectMissed = Gb.readMemory(RomInfo.rom.fightEffectMissedAddress);
+				failure = failure || this.effectMiss != (effectMissed != 0);
+			}
+			if(failure) {
 				s.restore();
 				return Integer.MIN_VALUE;
 			}
@@ -242,6 +246,9 @@ public class KillEnemyMonSegment extends Segment {
 		}
 		public static EnemyMoveDesc missWith(int... move) {
 			return new EnemyMoveDesc(new MissMetricSegment(false), true, move);
+		}
+		public static EnemyMoveDesc missWith(Metric metric, int... move) {
+			return new EnemyMoveDesc(new MissMetricSegment(false, metric), true, move);
 		}
 		public static EnemyMoveDesc hitWith(int move, boolean isCrit, boolean isEffective) {
 			return new EnemyMoveDesc(new HitMetricSegment(isCrit, false, isEffective, false, 0, false, false), false, new int[]{move});
@@ -340,7 +347,7 @@ public class KillEnemyMonSegment extends Segment {
 				if(attackCount[i][0] + attackCount[i][1] > 0) {
 					if(attackDmg[i][0] == 0) System.err.println("ERROR: used non-damage move "+i);
 					if(rageInitialVal > 0) {
-						if(DamageCalc.getMove(true, i) != 99) System.err.println("Used Rage but no rageInitialVal set!");
+						if(DamageCalc.getMove(true, i) != 99) System.err.println("Not used Rage but rageInitialVal set!");
 						int rageSumCount = 0;
 						for(int j=0;j<attackCount[i][0]; j++) rageSumCount += Math.min(rageInitialVal+j, rageMaxVal > 0 ? rageMaxVal : Integer.MAX_VALUE);
 						sumDamage += rageSumCount * attackDmg[i][0];
@@ -355,7 +362,7 @@ public class KillEnemyMonSegment extends Segment {
 					numAttacks += attackCount[i][0];
 					numAttacks += attackCount[i][1];
 				}
-				attackEffective[i] = DamageCalc.getEffectiveness(true, i) != 10;
+				attackEffective[i] = Util.isGen1() ? DamageCalc.isEffective(true, i) : DamageCalc.getEffectiveness(true, i) != 10;
 				maxAttackDamage = Math.max(maxAttackDamage, attackDmg[i][0]);
 				maxAttackDamage = Math.max(maxAttackDamage, attackDmg[i][1]);
 			}
@@ -569,7 +576,7 @@ public class KillEnemyMonSegment extends Segment {
 					moveFactory = curEnemyMoveSegment.getFinishMove();
 				}
 			}
-		} else { // attacks handles simultaneously
+		} else { // attacks handled simultaneously
 			im.putAll(executeAttack(in, initialMoveFactory, curPlayerMoveSegment, curEnemyMoveSegment, goalPlayerDamage, minPlayerDamage, goalEnemyDamage, minEnemyDamage, false, false, !faster));
 			if(faster)
 				moveFactory = curEnemyMoveSegment.getFinishMove();
@@ -626,9 +633,13 @@ public class KillEnemyMonSegment extends Segment {
 			
 			// handle remaining finishing move, ensuring next enemy move
 			if(moveFactory != null) {
-				DelayableMove move = moveFactory.create();
-				move = new DelayUntil(move, true, CheckEnemyMoveMetric.withKeys(move.getInitialKey(), getEnemyMove(curTurn+1)));
-				imm = new MoveSegment(move).execute(imm);
+				if (Util.isGen1()) {
+					imm = new MoveSegment(moveFactory.create()).execute(imm);
+				} else {
+					DelayableMove move = moveFactory.create();
+					move = new DelayUntil(move, true, CheckEnemyMoveMetric.withKeys(move.getInitialKey(), getEnemyMove(curTurn+1)));
+					imm = new MoveSegment(move).execute(imm);
+				}
 			}
 
 			// save states to buffer
@@ -639,7 +650,10 @@ public class KillEnemyMonSegment extends Segment {
 	}
 	
 	private void setAppendEnemyMoveMetric(AttackActionSegment ems, int curTurn, boolean set) {
-		ems.appendSegment = set ? new CheckMetricSegment(CheckEnemyMoveMetric.noKeys(getEnemyMove(curTurn+1))) : null;
+		if (Util.isGen1())
+			ems.appendSegment = null;
+		else
+			ems.appendSegment = set ? new CheckMetricSegment(CheckEnemyMoveMetric.noKeys(getEnemyMove(curTurn+1))) : null;
 	}
 
 	public void printInfo(StateBuffer in) throws Throwable {

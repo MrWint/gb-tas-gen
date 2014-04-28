@@ -18,10 +18,16 @@ public class DamageCalc {
 	}
 
 	public static int getStat(boolean player, int statNum, boolean crit) {
-		if(!crit)
+		if (Util.isGen1() && statNum == STAT_SPCDEF)
+			statNum = STAT_SPCATK;
+		if (!crit)
 			return Util.getMemoryBigEndian((player ? RomInfo.rom.fightBattleMonStatsAddress : RomInfo.rom.fightEnemyMonStatsAddress) + 2*statNum);
-		else
-			return Util.getMemoryBigEndian((player ? RomInfo.rom.fightBattleMonOriginalStatsAddress : RomInfo.rom.fightEnemyMonOriginalStatsAddress) + 2*statNum);
+		else {
+			int add = player ? RomInfo.rom.fightBattleMonOriginalStatsAddress : RomInfo.rom.fightEnemyMonOriginalStatsAddress;
+			if (Util.isGen1())
+				add += 0x2c * Gb.readMemory(player ? RomInfo.rom.fightBattleMonIndex : RomInfo.rom.fightEnemyMonIndex);
+			return Util.getMemoryBigEndian(add + 2*statNum);
+		}
 	}
 
 	public static void printMoveDebugInfo(boolean player, int moveNum) {
@@ -43,8 +49,8 @@ public class DamageCalc {
 			System.out.println((player?"Own":"Enemy")+" move "+(moveNum+1)+": "+(move == 0 ? "(not present)" : Util.getStringFromList(RomInfo.rom.listMoveNamesAddress, move-1) + "("+move+")"));
 		if(move <= 0)
 			return -1;
-		int baseDmg = State.getROM()[RomInfo.rom.listMovesAddress + (move-1)*7 + 2];
-		int atkType = State.getROM()[RomInfo.rom.listMovesAddress + (move-1)*7 + 3];
+		int baseDmg = State.getROM()[RomInfo.rom.listMovesAddress + (move-1)*RomInfo.rom.listMovesEntryLength + 2];
+		int atkType = State.getROM()[RomInfo.rom.listMovesAddress + (move-1)*RomInfo.rom.listMovesEntryLength + 3];
 		if(debugPrint)
 			System.out.println("  base damage: "+baseDmg+", type: "+Util.getStringFromPointerList(RomInfo.rom.listTypeNamesAddress, atkType));
 		if(baseDmg <= 0)
@@ -64,11 +70,18 @@ public class DamageCalc {
 			defStat = getStat(!player, STAT_DEF, false);
 		}
 		int imDamage = ((((attackerLvl * 2)/5 + 2) * atkStat * baseDmg)/50)/defStat;
-		int imCritDamage = ((((attackerLvl * 2)/5 + 2) * atkStatCrit * baseDmg)/50)/defStat;
 		int maxDamage = adjustTypeEffects(player, imDamage + 2,atkType,debugPrint,false);
 		int minDamage = maxDamage < 2 ? maxDamage : (maxDamage * 217) / 255;
-		int maxCritDamage = adjustTypeEffects(player, imCritDamage*2 + 2,atkType,false,false);
-		int minCritDamage = maxCritDamage < 2 ? maxCritDamage : (maxCritDamage * 217) / 255;
+		int imCritDamage, maxCritDamage, minCritDamage;
+		if (Util.isGen2()) {
+			imCritDamage = ((((attackerLvl * 2)/5 + 2) * atkStatCrit * baseDmg)/50)/defStat;
+			maxCritDamage = adjustTypeEffects(player, imCritDamage*2 + 2,atkType,false,false);
+			minCritDamage = maxCritDamage < 2 ? maxCritDamage : (maxCritDamage * 217) / 255;
+		} else {
+			imCritDamage = ((((attackerLvl * 4)/5 + 2) * atkStatCrit * baseDmg)/50)/defStat;
+			maxCritDamage = adjustTypeEffects(player, imCritDamage + 2,atkType,false,false);
+			minCritDamage = maxCritDamage < 2 ? maxCritDamage : (maxCritDamage * 217) / 255;
+		}
 		
 		if(debugPrint)
 			System.out.println("  "+minDamage+"-"+maxDamage+" damage ("+minCritDamage+"-"+maxCritDamage+" crit)");
@@ -80,8 +93,30 @@ public class DamageCalc {
 		int move = getMove(player,moveNum);
 		if(move <= 0)
 			return -1;
-		int atkType = State.getROM()[RomInfo.rom.listMovesAddress + (move-1)*7 + 3];
+		int atkType = State.getROM()[RomInfo.rom.listMovesAddress + (move-1)*RomInfo.rom.listMovesEntryLength + 3];
 		return adjustTypeEffects(player, 10, atkType, false, true);
+	}
+
+	public static boolean isEffective(boolean player, int moveNum) {
+		int move = getMove(player,moveNum);
+		if(move <= 0)
+			return false;
+		int atkType = State.getROM()[RomInfo.rom.listMovesAddress + (move-1)*RomInfo.rom.listMovesEntryLength + 3];
+
+		int defenderTypeAddress = player ? RomInfo.rom.fightEnemyMonTypesAddress : RomInfo.rom.fightBattleMonTypesAddress;
+		int add = RomInfo.rom.listTypeMatchupAddress;
+		int dt1 = Gb.readMemory(defenderTypeAddress);
+		int dt2 = Gb.readMemory(defenderTypeAddress+1);
+		while(true) {
+			int at = State.getROM()[add++];
+			if(at == 0xFE) continue;
+			if(at == 0xFF) break;
+			int dt = State.getROM()[add++];
+			int eff = State.getROM()[add++];
+			if(at == atkType && (dt == dt1 || dt == dt2))
+				return true;
+		}
+		return false;
 	}
 
 	public static int adjustTypeEffects(boolean player, int inDamage, int atkType, boolean debugPrint, boolean noStab) {

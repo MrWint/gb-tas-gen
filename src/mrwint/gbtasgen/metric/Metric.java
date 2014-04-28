@@ -17,6 +17,12 @@ public abstract class Metric {
 	public static Metric PRESSED_JOY;
 	public static Metric DOWN_JOY;
 	public static Metric MENU_JOY;
+	public static Metric TRUE = new Metric() {
+		@Override
+		public int getMetric() {
+			return 1;
+		}
+	};
 
 	public abstract int getMetric();
 

@@ -5,7 +5,7 @@ import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class OverworldInteract extends DelayableMove {
+public class Gen2OverworldInteract extends DelayableMove {
 
 	@Override
 	public int prepareMoveInternal(int skips, boolean assumeOnSkip)

@@ -12,6 +12,7 @@ import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.util.Util;
 
 public class NewEnemyMonSegment extends Segment {
 
@@ -20,15 +21,18 @@ public class NewEnemyMonSegment extends Segment {
 	private NewEnemyMonSegment(int... enemyInitialMove) {
 		List<Segment> segments = new ArrayList<Segment>();
 		
-		segments.add(new TextSegment()); // trainer sent out ...
-		
-		segments.add(new DelayMoveSegment(new DelayMoveSegment.PressButtonFactory(Move.B), // scroll
-				new SequenceSegment(
-						new TextSegment(Move.A,false,0), // mon!
-						new CheckMetricSegment(KillEnemyMonSegment.CheckEnemyMoveMetric.noKeys(enemyInitialMove)),
-						new MoveSegment(new Wait(1),0,0) // skip last frame of text box
-				
-		)));
+		if (Util.isGen1()) {
+			segments.add(new TextSegment()); // trainer sent out mon
+		} else {
+			segments.add(new TextSegment()); // trainer sent out ...
+			segments.add(new DelayMoveSegment(new DelayMoveSegment.PressButtonFactory(Move.B), // scroll
+					new SequenceSegment(
+							new TextSegment(Move.A,false,0), // mon!
+							new CheckMetricSegment(KillEnemyMonSegment.CheckEnemyMoveMetric.noKeys(enemyInitialMove)),
+							new MoveSegment(new Wait(1),0,0) // skip last frame of text box
+					
+			)));
+		}
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}

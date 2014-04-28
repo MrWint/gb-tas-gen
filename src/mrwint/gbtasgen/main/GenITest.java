@@ -3,8 +3,27 @@ import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.movie.BizhawkMovie;
 import mrwint.gbtasgen.segment.TempSegment;
+import mrwint.gbtasgen.segment.gen1.CatchAbraSegment;
+import mrwint.gbtasgen.segment.gen1.ChooseStarterSegment;
 import mrwint.gbtasgen.segment.gen1.IntroSegment;
+import mrwint.gbtasgen.segment.gen1.LeaveHouseSegment;
+import mrwint.gbtasgen.segment.gen1.MtMoonNoTrainerSegment;
+import mrwint.gbtasgen.segment.gen1.NuggetBridgeSegment_1;
+import mrwint.gbtasgen.segment.gen1.NuggetBridgeSegment_2;
+import mrwint.gbtasgen.segment.gen1.NuggetBridgeSegment_3;
+import mrwint.gbtasgen.segment.gen1.NuggetBridgeSegment_4;
+import mrwint.gbtasgen.segment.gen1.NuggetBridgeSegment_5;
+import mrwint.gbtasgen.segment.gen1.NuggetBridgeSegment_6;
+import mrwint.gbtasgen.segment.gen1.NuggetBridgeSegment_7;
 import mrwint.gbtasgen.segment.gen1.OakSpeechSegment;
+import mrwint.gbtasgen.segment.gen1.OaksParcelSegment;
+import mrwint.gbtasgen.segment.gen1.PewterSegment;
+import mrwint.gbtasgen.segment.gen1.RivalFightSegment;
+import mrwint.gbtasgen.segment.gen1.Route3Segment_1;
+import mrwint.gbtasgen.segment.gen1.Route3Segment_2;
+import mrwint.gbtasgen.segment.gen1.Route3Segment_3;
+import mrwint.gbtasgen.segment.gen1.Route3Segment_4;
+import mrwint.gbtasgen.segment.gen1.ViridianForestSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
@@ -37,39 +56,89 @@ public class GenITest {
 
 		//State ss = BizhawkMovie.loadMovie("test");
 		
-		outBuffer.addState(new State());
-		outBuffer = new IntroSegment().execute(outBuffer);
-//		outBuffer.save("doneIntro_1b");
-////		outBuffer.save("doneIntroOptionsTIDAny4");
-//		outBuffer = StateBuffer.load("doneIntroOptionsTIDAny");
+//		outBuffer.addState(new State());
+//		outBuffer = new IntroSegment().execute(outBuffer);
+//		outBuffer.save("doneIntro_1");
 
-//		outBuffer = StateBuffer.load("doneIntro_1b");
-		outBuffer = new OakSpeechSegment(null, null).execute(outBuffer);
-//		outBuffer.save("doneOakSpeech_50");		
+//		outBuffer = StateBuffer.load("doneIntro_1");
+//		outBuffer = new OakSpeechSegment(null, null).execute(outBuffer);
+//		outBuffer.save("doneOakSpeech_1");	
 
-//		outBuffer = StateBuffer.load("doneOakSpeech_50");
-//		outBuffer = new GetStarter1Segment().execute(outBuffer);
-//		outBuffer.save("doneGetStarter1_50");		
+//		outBuffer = StateBuffer.load("doneOakSpeech_1");
+//		outBuffer = new LeaveHouseSegment().execute(outBuffer);
+//		outBuffer.save("doneLeaveHouse_1");		
 
-//		outBuffer = StateBuffer.load("doneGetStarter1_50");
-//		outBuffer = new GetStarter2Segment().execute(outBuffer);
-//		outBuffer.save("doneGetStarter2_50");		
+//		outBuffer = StateBuffer.load("doneLeaveHouse_1");
+//		outBuffer = new ChooseStarterSegment().execute(outBuffer);
+//		outBuffer.save("doneChooseStarter_10");		
 
-//		outBuffer = StateBuffer.load("doneGetStarter2_50");
-//		outBuffer = new MysteryEggSegment().execute(outBuffer);
-//		outBuffer.save("doneMysteryEgg_1");
+//		outBuffer = StateBuffer.load("doneChooseStarter_10");
+//		outBuffer = new RivalFightSegment().execute(outBuffer);
+//		outBuffer.save("doneRivalFightSegment_1");
+
+//		outBuffer = StateBuffer.load("doneRivalFightSegment_1");
+//		outBuffer = new OaksParcelSegment().execute(outBuffer);
+//		outBuffer.save("doneOaksParcel_1");
 		
-//		outBuffer = StateBuffer.load("doneMysteryEgg_50");
-//		outBuffer = new CherrygroveRivalSegment().execute(outBuffer);
-//		outBuffer.save("doneCherrygroveRival_50");
+//		outBuffer = StateBuffer.load("doneOaksParcel_1");
+//		outBuffer = new ViridianForestSegment().execute(outBuffer);
+//		outBuffer.save("doneViridianForest_1");
 		
-//		outBuffer = StateBuffer.load("doneCherrygroveRival_50");
-//		outBuffer = new ToViolet1Segment().execute(outBuffer);
-//		outBuffer.save("doneToViolet1_50");
+//		outBuffer = StateBuffer.load("doneViridianForest_1");
+//		outBuffer = new PewterSegment().execute(outBuffer);
+//		outBuffer.save("donePewter_1");
 		
-//		outBuffer = StateBuffer.load("doneToViolet1_50");
-//		outBuffer = new Route30YoungsterSegment().execute(outBuffer);
-//		outBuffer.save("doneRoute30YoungsterSegment_50");
+//		outBuffer = StateBuffer.load("donePewter_1");
+//		outBuffer = new Route3Segment_1().execute(outBuffer);
+//		outBuffer.save("doneRoute3_1_1");
+		
+//		outBuffer = StateBuffer.load("doneRoute3_1_1");
+//		outBuffer = new Route3Segment_2().execute(outBuffer);
+//		outBuffer.save("doneRoute3_2_1");
+		
+//		outBuffer = StateBuffer.load("doneRoute3_2_1");
+//		outBuffer = new Route3Segment_3().execute(outBuffer);
+//		outBuffer.save("doneRoute3_3_1");
+		
+//		outBuffer = StateBuffer.load("doneRoute3_3_1");
+//		outBuffer = new Route3Segment_4().execute(outBuffer);
+//		outBuffer.save("doneRoute3_4_1");
+		
+//		outBuffer = StateBuffer.load("doneRoute3_4_1");
+//		outBuffer = new MtMoonNoTrainerSegment().execute(outBuffer);
+//		outBuffer.save("doneMtMoonNoTrainer_1");
+		
+//		outBuffer = StateBuffer.load("doneMtMoonNoTrainer_1");
+//		outBuffer = new NuggetBridgeSegment_1().execute(outBuffer);
+//		outBuffer.save("doneNuggetBridge_1_1");
+		
+//		outBuffer = StateBuffer.load("doneNuggetBridge_1_1");
+//		outBuffer = new NuggetBridgeSegment_2().execute(outBuffer);
+//		outBuffer.save("doneNuggetBridge_2_1");
+		
+//		outBuffer = StateBuffer.load("doneNuggetBridge_2_1");
+//		outBuffer = new NuggetBridgeSegment_3().execute(outBuffer);
+//		outBuffer.save("doneNuggetBridge_3_1");
+		
+//		outBuffer = StateBuffer.load("doneNuggetBridge_3_1");
+//		outBuffer = new NuggetBridgeSegment_4().execute(outBuffer);
+//		outBuffer.save("doneNuggetBridge_4_1");
+		
+//		outBuffer = StateBuffer.load("doneNuggetBridge_4_1");
+//		outBuffer = new NuggetBridgeSegment_5().execute(outBuffer);
+//		outBuffer.save("doneNuggetBridge_5_1");
+		
+//		outBuffer = StateBuffer.load("doneNuggetBridge_5_1");
+//		outBuffer = new NuggetBridgeSegment_6().execute(outBuffer);
+//		outBuffer.save("doneNuggetBridge_6_1");
+		
+//		outBuffer = StateBuffer.load("doneNuggetBridge_6_1");
+//		outBuffer = new NuggetBridgeSegment_7().execute(outBuffer);
+//		outBuffer.save("doneNuggetBridge_7_1");
+		
+		outBuffer = StateBuffer.load("doneNuggetBridge_7_1");
+		outBuffer = new CatchAbraSegment().execute(outBuffer);
+		outBuffer.save("doneCatchAbra_1");
 		
 //		outBuffer = StateBuffer.load("doneRoute30YoungsterSegment_50");
 //		outBuffer = new ToViolet15Segment().execute(outBuffer);
@@ -192,7 +261,7 @@ public class GenITest {
 		//new Map().printCollisionMap2();
 
 		//// save movie ////
-//		BizhawkMovie.saveMovie(outBuffer.getStates().iterator().next(),"test");
+		BizhawkMovie.saveMovie(outBuffer.getStates().iterator().next(),"test");
 		//VBAMovie.saveMovie(outBuffer.getStates().iterator().next(),"test");
 
 

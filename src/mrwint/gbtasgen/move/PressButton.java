@@ -11,7 +11,7 @@ public class PressButton extends DelayableMove {
 	private Metric metric;
 	
 	public PressButton(int moves) {
-		this(moves,Metric.DOWN_JOY,0);
+		this(moves,null,0);
 	}
 	
 	public PressButton(int moves, Metric metric) {
@@ -39,11 +39,17 @@ public class PressButton extends DelayableMove {
 	public int prepareMoveInternal(int skips, boolean assumeOnSkip) throws Throwable {
 		int steps = 0;
 		if(!assumeOnSkip)
-			steps += Util.runToFirstDifference(waitKeys, moves, metric);
+			if (metric != null)
+				steps += Util.runToFirstDifference(waitKeys, moves, metric);
+			else
+				steps += Util.runToNextInputFrame(waitKeys);
 		while(skips-- > 0) {
 			State.step(waitKeys);
 			steps++;
-			steps += Util.runToFirstDifference(waitKeys, moves, metric);
+			if (metric != null)
+				steps += Util.runToFirstDifference(waitKeys, moves, metric);
+			else
+				steps += Util.runToNextInputFrame(waitKeys);
 		}
 		return steps;
 	}

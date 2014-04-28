@@ -3,9 +3,9 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.metric.CheckDVMetric;
+import mrwint.gbtasgen.metric.Gen2CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.OverworldInteract;
+import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.NamingSegment;
 import mrwint.gbtasgen.segment.Segment;
@@ -35,7 +35,7 @@ public class GetStarter2Segment extends Segment {
 			public StateBuffer execute(StateBuffer in) throws Throwable {
 //				in = new TextSegment(Move.A,true,0).execute(in);
 //				in = new MoveSegment(new PressButton(Move.B), 2, 0).execute(in);
-				in = new CheckMetricSegment(new CheckDVMetric(0/*Move.B*/, 14, 6, 8, 15)).execute(in);
+				in = new CheckMetricSegment(new Gen2CheckDVMetric(0/*Move.B*/, 14, 6, 8, 15)).execute(in);
 //						0xded8, 0xdfd8, 0xe0d8, 0xe1d8, 0xe2d8, 0xe3d8,
 //						0xdef8, 0xdff8, 0xe0f8, 0xe1f8, 0xe2f8, 0xe3f8)).execute(in);
 				return in;

@@ -6,18 +6,18 @@ import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class WalkStep extends Move {
+public class Gen2WalkStep extends Move {
 
 	private int dir;
 	private boolean check;
 	private boolean skipStandStillTest;
 	private boolean avoidEncounters;
 	
-	public WalkStep(int dir, boolean check) {
+	public Gen2WalkStep(int dir, boolean check) {
 		this(dir,check,false);
 	}
 	
-	public WalkStep(int dir, boolean check, boolean skipStandStillTest) {
+	public Gen2WalkStep(int dir, boolean check, boolean skipStandStillTest) {
 		this.dir = dir;
 		this.check = check;
 		this.skipStandStillTest = skipStandStillTest;
@@ -45,7 +45,7 @@ public class WalkStep extends Move {
 				throw new CapturedByRotatoException();
 			s.restore();
 			
-			int add = State.step(dir, RomInfo.rom.doPlayerMovementFuncAddress); // .handleDirectionButtonPress
+			int add = State.step(dir, RomInfo.rom.doPlayerMovementFuncAddress);
 			s.restore();
 			if(add != 0) {
 				//System.out.println("found walk input frame ("+steps+")");

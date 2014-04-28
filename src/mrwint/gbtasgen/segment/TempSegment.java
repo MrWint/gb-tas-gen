@@ -8,7 +8,7 @@ import javax.naming.NameAlreadyBoundException;
 import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.OverworldInteract;
+import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SkipInput;
 import mrwint.gbtasgen.segment.fight.EndFightSegment;
