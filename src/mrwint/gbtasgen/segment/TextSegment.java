@@ -30,8 +30,8 @@ public class TextSegment extends Segment {
 		this.bufferSize = bufferSize;
 	}
 	
-	private boolean fastText;
-	private boolean fastTextInit = false;
+	private int textSpeed;
+	private boolean textSpeedInit = false;
 	private int bufferSize;
 	
 	@Override
@@ -58,9 +58,21 @@ public class TextSegment extends Segment {
 	
 	private void progress(State s, StateBuffer nextBuffer, StateBuffer goalBuffer, boolean first) {
 		s.restore();
-		if(!fastTextInit) {
-			fastTextInit = true;
-			fastText = ((Gb.readMemory(RomInfo.rom.optionsAddress) & RomInfo.rom.optionsTextSpeedMask) <= 1);
+		if(!textSpeedInit) {
+			textSpeedInit = true;
+			textSpeed = Gb.readMemory(RomInfo.rom.optionsAddress) & RomInfo.rom.optionsTextSpeedMask;
+		}
+		if (textSpeed == 0) {
+			State os = s;
+			while (goToNextInput()) {
+				State.step(); // finish step
+				s = os;
+				os = new State();
+			}
+			if(!finishLastFrame)
+				s.restore();
+			goalBuffer.addState(State.createState(true)); // frame finished (no inputs)
+			return;
 		}
 		boolean inputBeforeEnd = false;
 		int add = State.step(0,RomInfo.rom.printLetterDelayDoneAddress,RomInfo.rom.readJoypadAddress); // .done, input
@@ -88,7 +100,7 @@ public class TextSegment extends Segment {
 			}
 			return;
 		}
-		if(fastText) {
+		if(textSpeed <= 1) {
 			if(!first) // frame already finished for first frame by last step
 				State.step(); // finish frame (no input) (prepared by goToNextInput)
 			nextBuffer.addState(State.createState(true));

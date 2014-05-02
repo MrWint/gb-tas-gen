@@ -12,7 +12,6 @@ import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
-import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class CatchAbraSegment extends Segment {
@@ -25,16 +24,7 @@ public class CatchAbraSegment extends Segment {
 		segments.add(new WalkToSegment(4,17));
 
 		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.DOWN), new CheckMetricSegment(new CheckEncounterMetric(148, 0, null,0))));
-
-		segments.add(new SkipTextsSegment(2)); // wild abra, go mon
-		segments.add(Segment.press(Move.DOWN)); // items
-		segments.add(Segment.press(Move.A)); // select items
-		segments.add(new CatchMonSegment());
-
-		segments.add(new SkipTextsSegment(4)); // cought, new dex data
-		segments.add(Segment.press(Move.A)); // skip dex
-		segments.add(Segment.press(Move.B)); // skip dex
-		segments.add(new SkipTextsSegment(2)); // no nickname
+		segments.add(new CatchMonSegment(0)); // ball in 1st slot
 		
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}

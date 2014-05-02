@@ -3,6 +3,7 @@ import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.movie.BizhawkMovie;
 import mrwint.gbtasgen.segment.TempSegment;
+import mrwint.gbtasgen.segment.TestSegment;
 import mrwint.gbtasgen.segment.gen1.CatchAbraSegment;
 import mrwint.gbtasgen.segment.gen1.ChooseStarterSegment;
 import mrwint.gbtasgen.segment.gen1.IntroSegment;
@@ -136,9 +137,14 @@ public class GenITest {
 //		outBuffer = new NuggetBridgeSegment_7().execute(outBuffer);
 //		outBuffer.save("doneNuggetBridge_7_1");
 		
-		outBuffer = StateBuffer.load("doneNuggetBridge_7_1");
-		outBuffer = new CatchAbraSegment().execute(outBuffer);
-		outBuffer.save("doneCatchAbra_1");
+//		outBuffer = StateBuffer.load("doneNuggetBridge_7_1");
+//		outBuffer = new CatchAbraSegment().execute(outBuffer);
+//		outBuffer.save("doneCatchAbra_1");
+		
+//		outBuffer = StateBuffer.load("doneCatchAbra_1");
+		outBuffer = StateBuffer.load("test_1");
+		outBuffer = new TestSegment().execute(outBuffer);
+		outBuffer.save("test_2");
 		
 //		outBuffer = StateBuffer.load("doneRoute30YoungsterSegment_50");
 //		outBuffer = new ToViolet15Segment().execute(outBuffer);

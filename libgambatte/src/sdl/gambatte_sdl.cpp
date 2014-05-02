@@ -387,8 +387,19 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_getMemory
  */
 JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_readMemory
   (JNIEnv *env, jclass clazz, jint address){
-	UNUSED(env);UNUSED(clazz);UNUSED(address);
+	UNUSED(env);UNUSED(clazz);
 	return gambatteSdl.gambatte.p_->cpu.memory.read(address,gambatteSdl.gambatte.p_->cpu.cycleCounter_);
+}
+
+/*
+ * Class:     mrwint_gbtasgen_Gb
+ * Method:    writeMemory
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_writeMemory
+  (JNIEnv *env, jclass clazz, jint address, jint value){
+	UNUSED(env);UNUSED(clazz);
+	gambatteSdl.gambatte.p_->cpu.memory.write(address,value,gambatteSdl.gambatte.p_->cpu.cycleCounter_);
 }
 
 /*

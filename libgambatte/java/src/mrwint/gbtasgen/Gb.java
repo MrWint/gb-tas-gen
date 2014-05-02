@@ -59,6 +59,7 @@ public class Gb {
 	public static native void getRegisters(int[] store);
 	public static native void getMemory(int[] store);
 	public static native int readMemory(int address);
+	public static native void writeMemory(int address, int value);
 
 	public static native int getRNGState(int rngAddress);
 }

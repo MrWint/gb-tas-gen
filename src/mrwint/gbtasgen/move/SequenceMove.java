@@ -11,6 +11,8 @@ public class SequenceMove extends DelayableMove {
 	@Override
 	public int prepareMoveInternal(int skips, boolean assumeOnSkip)
 			throws Throwable {
+		if(moves.length == 0)
+			return 0;
 		if(!assumeOnSkip) {
 			for(int i=0;i<moves.length-1;i++)
 				moves[i].execute();
@@ -21,11 +23,15 @@ public class SequenceMove extends DelayableMove {
 
 	@Override
 	public int doMove() throws Throwable {
+		if(moves.length == 0)
+			return 0;
 		return ((DelayableMove)moves[moves.length-1]).doMove();
 	}
 
 	@Override
 	public int getInitialKey() {
+		if(moves.length == 0)
+			return 0;
 		return moves[0].getInitialKey();
 	}
 }
