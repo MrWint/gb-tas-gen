@@ -117,6 +117,7 @@ public class State {
 			int len = bb.limit();
 			byte[] buf = new byte[len];
 			bb.get(buf);
+			bb.rewind();
 			oos.writeInt(stepCount);
 			oos.writeInt(delayStepCount);
 			oos.writeInt(rngState);

@@ -3,20 +3,18 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SkipInput;
-import mrwint.gbtasgen.segment.NamingSegment;
+import mrwint.gbtasgen.move.gen2.OverworldInteract;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
+import mrwint.gbtasgen.segment.gen2.common.NamingSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
-import mrwint.gbtasgen.util.Util;
 
 public class ToViolet1Segment extends Segment {
 
@@ -39,7 +37,7 @@ public class ToViolet1Segment extends Segment {
 		segments.add(new WalkToSegment(5, 3));			// go to elm
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face elm
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face elm
-		segments.add(new MoveSegment(new Gen2OverworldInteract())); // talk to elm
+		segments.add(new MoveSegment(new OverworldInteract())); // talk to elm
 		segments.add(new SkipTextsSegment(27));			// elm speech
 		
 		segments.add(new WalkToSegment(4, 7));			// align for cutscene
@@ -63,7 +61,7 @@ public class ToViolet1Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

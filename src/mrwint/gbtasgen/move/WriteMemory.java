@@ -13,9 +13,9 @@ public class WriteMemory extends Move {
 	}
 
 	@Override
-	public int execute() throws Throwable {
+	public boolean doMove() {
 		Gb.writeMemory(address, value);
-		return 0;
+		return true;
 	}
 	
 	@Override

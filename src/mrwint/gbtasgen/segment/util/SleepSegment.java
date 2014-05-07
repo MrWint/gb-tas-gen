@@ -12,8 +12,12 @@ public class SleepSegment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
-		Thread.sleep(millis);
+	public StateBuffer execute(StateBuffer in) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return in;
 	}
 }

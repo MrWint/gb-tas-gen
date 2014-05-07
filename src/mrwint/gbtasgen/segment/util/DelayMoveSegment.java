@@ -2,8 +2,9 @@ package mrwint.gbtasgen.segment.util;
 
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.DelayUntil;
-import mrwint.gbtasgen.move.DelayableMove;
+import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
+import mrwint.gbtasgen.move.WithMetric;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -11,7 +12,7 @@ import mrwint.gbtasgen.state.StateBuffer;
 public class DelayMoveSegment extends Segment {
 	
 	public static interface DelayableMoveFactory {
-		DelayableMove create();
+		Move create();
 	}
 	
 	public static class PressButtonFactory implements DelayableMoveFactory{
@@ -25,7 +26,7 @@ public class DelayMoveSegment extends Segment {
 			this.metric = metric;
 		}
 		@Override
-		public DelayableMove create() {
+		public Move create() {
 			return new PressButton(move, metric);
 		}
 	}
@@ -39,8 +40,8 @@ public class DelayMoveSegment extends Segment {
 			this.metric = metric;
 		}
 		@Override
-		public DelayableMove create() {
-			return new DelayUntil(moveFactory.create(), true, metric);
+		public Move create() {
+			return new DelayUntil(new WithMetric(moveFactory.create(), true, metric));
 		}
 	}
 	
@@ -51,6 +52,12 @@ public class DelayMoveSegment extends Segment {
 	int nonemptyCutoffDelay = 60;
 	
 	boolean metricBeforeExecution = false;
+	
+	public DelayMoveSegment(Segment verificationSegment) {
+		this.factory = new PressButtonFactory(0, null);
+		this.verificationSegment = verificationSegment;
+		this.metricBeforeExecution = true;
+	}
 	
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment) {
 		this.factory = factory;
@@ -73,7 +80,7 @@ public class DelayMoveSegment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		System.out.println("DelayMoveSegment starts");
 		StateBuffer ret = new StateBuffer();
 		int fullFrame = Integer.MAX_VALUE;
@@ -81,7 +88,7 @@ public class DelayMoveSegment extends Segment {
 
 		boolean[] active = new boolean[in.size()];
 		int numActive = in.size();
-		DelayableMove[] dus = new DelayableMove[in.size()];
+		Move[] dus = new Move[in.size()];
 		int cs = -1;
 		for(cs=0;cs<in.size();cs++) {
 			active[cs] = true;
@@ -99,7 +106,7 @@ public class DelayMoveSegment extends Segment {
 				if(!active[cs])
 					continue;
 				s.restore();
-				dus[cs].prepareMove(skips,true);
+				dus[cs].prepare(skips,true);
 				
 				if(!metricBeforeExecution)
 					dus[cs].doMove();

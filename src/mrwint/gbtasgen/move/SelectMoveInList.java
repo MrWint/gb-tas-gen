@@ -26,24 +26,23 @@ public class SelectMoveInList extends Move {
 	}
 
 	@Override
-	public int execute() throws Throwable {
+	public boolean doMove() {
 		int curIndex = Gb.readMemory(RomInfo.rom.fightCurMoveNumAddress);
 		//System.out.println("current move index "+curIndex+", goal position is "+goalIndex);
-		int steps = 0;
 
 		int stepsDown = (goalIndex + numOwnMoves - curIndex) % numOwnMoves;
 		int stepsUp = (curIndex + numOwnMoves - goalIndex) % numOwnMoves;
 		if(stepsDown < stepsUp) {
 			//System.out.println("taking "+stepsDown+" steps down");
 			while(stepsDown-->0)
-				steps += new PressButton(Move.DOWN, Metric.PRESSED_JOY).execute();
+				new PressButton(Move.DOWN, Metric.PRESSED_JOY).execute();
 		} else if(stepsUp > 0) {
 			//System.out.println("taking "+stepsUp+" steps up");
 			while(stepsUp-->0)
-				steps += new PressButton(Move.UP, Metric.PRESSED_JOY).execute();
+				new PressButton(Move.UP, Metric.PRESSED_JOY).execute();
 		}
 		//Thread.sleep(1000);
-		return steps;
+		return true;
 	}
 
 }

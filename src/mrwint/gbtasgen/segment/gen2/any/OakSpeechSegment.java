@@ -5,9 +5,9 @@ import java.util.List;
 
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.segment.NamingSegment;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
+import mrwint.gbtasgen.segment.gen2.common.NamingSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
@@ -36,7 +36,7 @@ public class OakSpeechSegment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

@@ -1,72 +1,80 @@
 package mrwint.gbtasgen.move;
 
-import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.metric.comparator.Equal;
+import mrwint.gbtasgen.state.State;
 
-public class DelayUntil extends DelayableMove {
+public class DelayUntil extends Move {
 
-	private DelayableMove move;
-	private Metric metric;
-	private Comparator comp;
-	private int value;
-	private boolean checkMetricBeforeMove = false;
+	private Move move;
 	
-	public DelayUntil(DelayableMove move, boolean checkMetricBeforeMove, Metric metric) {
-		this(move,checkMetricBeforeMove,metric,new Equal(),1);
+	public DelayUntil(Move move) {
+		this.move = move;
+		if (!move.isDelayable())
+			throw new RuntimeException("move not delayable");
 	}
 	
 	@Override
 	public int getInitialKey() {
 		return move.getInitialKey();
 	}
-	
-	public DelayUntil(DelayableMove move, boolean checkMetricBeforeMove, Metric metric, Comparator comp, int value) {
-		this.move = move;
-		this.metric = metric;
-		this.comp = comp;
-		this.value = value;
-		this.checkMetricBeforeMove = checkMetricBeforeMove;
+	@Override
+	public boolean isDelayable() {
+		return true;
+	}
+	@Override
+	public boolean isCachable() {
+		return move.isCachable();
 	}
 	
 	@Override
 	public void clearCache() {
-		super.clearCache();
 		move.clearCache();
 	}
 	
 	@Override
-	public int prepareMoveInternal(int skips, boolean assumeOnSkip) throws Throwable {
+	public void prepareInternal(int skips, boolean assumeOnSkip) {
 		//System.out.println("DelayUntil "+skips);
-		//State init = new State();
-		int delay = -1;
-		int skipsToGo = skips;
-		do {
-			int val;
-			do {
-				++delay;
-				//System.out.println("DelayUntil: delay = "+delay);
-				//init.restore();
-				move.prepareMove(delay,true);
-				//System.out.println("DelayUntil: delay = "+delay+" prepared");
-				if(checkMetricBeforeMove)
-					val = metric.getMetric();
-				else {
-					move.doMove();
-					val = metric.getMetric();
-					//init.restore();
-					move.prepareMove(delay,true);
+
+		if(isCachable()) {
+			if (!assumeOnSkip) {
+				move.prepareInternal(0, false);
+				while(true) {
+					State s = new State();
+					boolean ret = move.doMove();
+					s.restore();
+					if(ret)
+						break;
+					move.prepareInternal(1, true);
 				}
-				//System.out.println("DelayUntil: delay = "+delay+" value = "+val);
-			} while(!comp.compare(val, value));
+			}
+			while(skips-- > 0) {
+				boolean ret;
+				do {
+					move.prepareInternal(1, true);
+					State s = new State();
+					ret = move.doMove();
+					s.restore();
+				} while(!ret);
+			}
+		} else {
+			State init = new State();
+			int delay = -1;
+			do {
+				boolean ret;
+				do {
+					++delay;
+					move.prepareInternal(delay, false);
+					ret = move.doMove();
+					init.restore();
+				} while(!ret);
+			}
+			while(skips-- > 0);
+			move.prepareInternal(delay, false);
 		}
-		while(skipsToGo-- > 0);
 		//System.out.println("delayed "+delay+" steps until condition met ("+skips+" skips)");
-		return delay;
 	}
 
 	@Override
-	public int doMove() throws Throwable {
+	public boolean doMove() {
 		return move.doMove();
 	}
 }

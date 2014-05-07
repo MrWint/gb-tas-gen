@@ -4,7 +4,7 @@ import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class PressButton extends DelayableMove {
+public class PressButton extends DelayableCachableMove {
 
 	private int moves;
 	private int waitKeys;
@@ -30,27 +30,24 @@ public class PressButton extends DelayableMove {
 	}
 
 	@Override
-	public int doMove() throws Throwable {
+	public boolean doMove() {
 		State.step(moves);
-		return 1;
+		return true;
 	}
 
 	@Override
-	public int prepareMoveInternal(int skips, boolean assumeOnSkip) throws Throwable {
-		int steps = 0;
+	public void prepareInternal(int skips, boolean assumeOnSkip) {
 		if(!assumeOnSkip)
 			if (metric != null)
-				steps += Util.runToFirstDifference(waitKeys, moves, metric);
+				Util.runToFirstDifference(waitKeys, moves, metric);
 			else
-				steps += Util.runToNextInputFrame(waitKeys);
+				Util.runToNextInputFrame(waitKeys);
 		while(skips-- > 0) {
 			State.step(waitKeys);
-			steps++;
 			if (metric != null)
-				steps += Util.runToFirstDifference(waitKeys, moves, metric);
+				Util.runToFirstDifference(waitKeys, moves, metric);
 			else
-				steps += Util.runToNextInputFrame(waitKeys);
+				Util.runToNextInputFrame(waitKeys);
 		}
-		return steps;
 	}
 }

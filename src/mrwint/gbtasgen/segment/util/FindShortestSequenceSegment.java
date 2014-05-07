@@ -1,53 +1,70 @@
 package mrwint.gbtasgen.segment.util;
 
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.move.DelayableMove;
+import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class FindShortestSequenceSegment extends Segment {
 	
-	private DelayableMove[] moves;
+	private Move[] moves;
 	private Metric metric;
 	private boolean onlyOneStateNeeded;
+	private int lastDelayableMove;
 
-	public FindShortestSequenceSegment(DelayableMove[] moves, Metric metric) {
+	public FindShortestSequenceSegment(Move[] moves, Metric metric) {
 		this.moves = moves;
 		this.metric = metric;
 		this.onlyOneStateNeeded = false;
+		this.lastDelayableMove = -1;
+		for(int i=moves.length-1; i>=0; i--)
+			if(moves[i].isDelayable()) {
+				lastDelayableMove = i;
+				break;
+			}
+		if(lastDelayableMove == -1)
+			throw new RuntimeException("no delayable move found");
 	}
 	
-	public FindShortestSequenceSegment(DelayableMove[] moves, Metric metric, boolean onlyOneStateNeeded) {
+	public FindShortestSequenceSegment(Move[] moves, Metric metric, boolean onlyOneStateNeeded) {
 		this.moves = moves;
 		this.metric = metric;
 		this.onlyOneStateNeeded = onlyOneStateNeeded;
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		StateBuffer out = new StateBuffer();
 		int sumDelay = -1;
 		while(!out.isFull() && (!onlyOneStateNeeded || out.isEmpty())) {
 			sumDelay++;
 			System.out.println("FindShortestSequenceSegment: testing delay "+sumDelay+" size="+out.size());
-			for(State s : in.getStates())
+			for(State s : in.getStates()) {
+				s.restore();
 				rec(s,0,sumDelay,out);
+			}
 		}
 		return out;
 	}
 
-	private void rec(State s, int i, int remDelay, StateBuffer out) throws Throwable {
-		if(i >= moves.length-1) {
-			s.restore();
+	// Assumption: s is currently loaded
+	private void rec(State s, int i, int remDelay, StateBuffer out) {
+		moves[i].clearCache();
+		if(i == moves.length-1) {
 			moves[i].execute(remDelay);
 			if(metric.getMetric() != 0)
 				out.addState(State.createState(true));
+		} else if (!moves[i].isDelayable()) {
+			moves[i].execute(0);
+			rec(new State(),i+1,remDelay,out);
+		} else if (i == lastDelayableMove) {
+			moves[i].execute(remDelay);
+			rec(new State(),i+1,0,out);
 		} else {
-			moves[i].clearCache();
 			for(int stepDelay=0;stepDelay<=remDelay;stepDelay++) {
 				s.restore();
-				moves[i].prepareMove(stepDelay, true);
+				moves[i].prepare(stepDelay, true);
 				moves[i].doMove();
 				rec(new State(),i+1,remDelay-stepDelay,out);
 			}

@@ -8,11 +8,11 @@ public abstract class AttackActionSegment {
 	
 	public Segment appendSegment;
 
-	public abstract StateBuffer executeInternal(StateBuffer sb, int minValue) throws Throwable;
+	public abstract StateBuffer executeInternal(StateBuffer sb, int minValue);
 
 	public abstract DelayableMoveFactory getFinishMove();
 
-	public StateBuffer execute(StateBuffer in, int minValue) throws Throwable {
+	public StateBuffer execute(StateBuffer in, int minValue) {
 		StateBuffer ret = executeInternal(in, minValue);
 		if(appendSegment != null)
 			ret = appendSegment.execute(ret);

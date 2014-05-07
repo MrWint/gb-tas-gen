@@ -14,7 +14,7 @@ public class BallSuccessSegment extends DelayMoveSegment {
 	public BallSuccessSegment() {
 		super(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new Segment() {
 			@Override
-			public StateBuffer execute(StateBuffer sb) throws Throwable {
+			public StateBuffer execute(StateBuffer sb) {
 				sb = new TextSegment(Move.A,false,0).execute(sb); // generate some entropy (infinite size)
 				sb = new CheckMetricSegment(new CheckCatchMonMetric()).execute(sb);
 				sb = new MoveSegment(new Wait(1),0,0).execute(sb); // skip last frame of text box

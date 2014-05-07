@@ -5,18 +5,15 @@ import java.util.List;
 
 import mrwint.gbtasgen.metric.Gen2CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
-import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.segment.NamingSegment;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
+import mrwint.gbtasgen.segment.gen2.common.NamingSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
 
@@ -32,7 +29,7 @@ public class GetStarter2Segment extends Segment {
 		//segments.add(new MoveSegment(new SkipInput(0))); // move to next input frame
 		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.B), new Segment() {
 			@Override
-			public StateBuffer execute(StateBuffer in) throws Throwable {
+			public StateBuffer execute(StateBuffer in) {
 //				in = new TextSegment(Move.A,true,0).execute(in);
 //				in = new MoveSegment(new PressButton(Move.B), 2, 0).execute(in);
 				in = new CheckMetricSegment(new Gen2CheckDVMetric(0/*Move.B*/, 14, 6, 8, 15)).execute(in);
@@ -59,7 +56,7 @@ public class GetStarter2Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

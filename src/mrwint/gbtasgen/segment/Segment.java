@@ -10,7 +10,7 @@ import mrwint.gbtasgen.state.StateBuffer;
 
 public abstract class Segment {
 
-	public abstract StateBuffer execute(StateBuffer in) throws Throwable;
+	public abstract StateBuffer execute(StateBuffer in);
 
 	
 	public static MoveSegment press(int move) {

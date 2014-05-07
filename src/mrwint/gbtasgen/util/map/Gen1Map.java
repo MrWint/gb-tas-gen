@@ -106,7 +106,7 @@ public class Gen1Map extends Map {
 		mapHeaderBank = rom[RomInfo.rom.mapHeaderBanksAddress+curMapID];
 		curMapHeaderAddress = Util.getWordAt(RomInfo.rom.mapHeaderPointersAddress+2*curMapID) + (mapHeaderBank-1)*0x4000;
 
-		System.out.println("Map ID "+Integer.toHexString(curMapID)+" header at "+Util.toHex(curMapHeaderAddress));
+//		System.out.println("Map ID "+Integer.toHexString(curMapID)+" header at "+Util.toHex(curMapHeaderAddress));
 
 //		trainerHeaderPointers = Util.getMemoryBigEndian(RomInfo.rom.trainerHeaderPointerAddress);
 
@@ -115,7 +115,7 @@ public class Gen1Map extends Map {
 		mapHeight = rom[curMapHeaderAddress+1];
 		mapWidth = rom[curMapHeaderAddress+2];
 
-		System.out.println("Map dimensions "+mapWidth+"x"+mapHeight);
+//		System.out.println("Map dimensions "+mapWidth+"x"+mapHeight);
 
 		blockTilesAddress = Util.getMemoryLittleEndian(RomInfo.rom.blockTilesPointerAddress+1) + (memory[RomInfo.rom.blockTilesPointerAddress]-1)*0x4000;
 		grassTile = memory[RomInfo.rom.grassTileAddress];
@@ -151,15 +151,15 @@ public class Gen1Map extends Map {
 		curAdd += 4; // skip script pointer
 		
 		int cons = rom[curAdd++];
-		System.out.println("map connections: "+Integer.toHexString(cons));
+//		System.out.println("map connections: "+Integer.toHexString(cons));
 		while(cons > 0) {
 			if((cons & 1) != 0)
 				curAdd += 11;
 			cons/=2;
 		}
 		int objectDataPointer = Util.getWordAt(curAdd) + (mapHeaderBank-1)*0x4000;
-		System.out.println("map object data pointer: "+Integer.toHexString(objectDataPointer));
-		System.out.println("map text pointer: "+Integer.toHexString(textDataPointer));
+//		System.out.println("map object data pointer: "+Integer.toHexString(objectDataPointer));
+//		System.out.println("map text pointer: "+Integer.toHexString(textDataPointer));
 		objectDataPointer++; // skip border tile
 		int numWarps = rom[objectDataPointer++];
 		for(int i=0;i<numWarps;i++) {
@@ -173,7 +173,7 @@ public class Gen1Map extends Map {
 		int numSigns = rom[objectDataPointer++];
 		objectDataPointer += 3*numSigns;
 		int numSprites = rom[objectDataPointer++];
-		System.out.println("map contains "+numWarps+" warps, "+numSigns+" signs and "+numSprites+" sprites");
+//		System.out.println("map contains "+numWarps+" warps, "+numSigns+" signs and "+numSprites+" sprites");
 		int numMovingSprites = 0;
 		for(int i=0;i<numSprites;i++) {
 			objectDataPointer++; // skip sprite ID
@@ -187,8 +187,8 @@ public class Gen1Map extends Map {
 			if(mov1 == 0xFF) {
 				if(!isSpriteHidden(i+1))
 					collisionMap[x][y] = true; // stationary sprite blocks step
-				else
-					System.out.println("sprite "+(i+1)+" is hidden");
+//				else
+//					System.out.println("sprite "+(i+1)+" is hidden");
 			} else
 				numMovingSprites++;
 			
@@ -200,7 +200,7 @@ public class Gen1Map extends Map {
 				
 				textID &= 0x3f;
 				int textAdd = rom[textDataPointer+2*(textID-1)] + (rom[textDataPointer+2*(textID-1)+1] << 8) + (mapHeaderBank-1)*0x4000;
-				System.out.println("trainer text pointer: "+Integer.toHexString(textAdd));
+//				System.out.println("trainer text pointer: "+Integer.toHexString(textAdd));
 				if(rom[textAdd] != 0x08
 						|| rom[textAdd+1] != 0x21
 						|| rom[textAdd+4] != 0xCD
@@ -212,7 +212,7 @@ public class Gen1Map extends Map {
 					System.out.println("ignoring irregular trainer text!");
 				} else {
 					int headerPtr = Util.getWordAt(textAdd+2) + (mapHeaderBank-1)*0x4000;
-					System.out.println("trainer header pointer: "+Integer.toHexString(headerPtr));
+//					System.out.println("trainer header pointer: "+Integer.toHexString(headerPtr));
 					int flagBit = rom[headerPtr];
 					int engageDist = rom[headerPtr+1];
 					int flagByte = Util.getWordAt(headerPtr+2);
@@ -254,8 +254,8 @@ public class Gen1Map extends Map {
 				objectDataPointer+=1;
 			}
 		}
-		if(numMovingSprites > 0)
-			System.out.println("map contains "+numMovingSprites+" moving sprites");
+//		if(numMovingSprites > 0)
+//			System.out.println("map contains "+numMovingSprites+" moving sprites");
 	}
 	
 	private static boolean isSpriteHidden(int spriteIndex) {

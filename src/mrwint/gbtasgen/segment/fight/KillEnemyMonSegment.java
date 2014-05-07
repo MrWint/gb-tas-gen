@@ -9,19 +9,19 @@ import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.DelayUntil;
-import mrwint.gbtasgen.move.DelayableMove;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SelectMoveInList;
+import mrwint.gbtasgen.move.WithMetric;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
-import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayUntilFactory;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayableMoveFactory;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
+import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
@@ -129,10 +129,12 @@ public class KillEnemyMonSegment extends Segment {
 		final CheckAdditionalTexts cat;
 		final boolean negateDamage;
 		final boolean ignoreDamage;
-		public CheckMoveDamage(boolean criticalHit, boolean effectMiss, boolean checkForAdditionalTexts, boolean negateDamage, boolean ignoreDamage) {
+		final boolean expectAdditionalTexts;
+		public CheckMoveDamage(boolean criticalHit, boolean effectMiss, boolean checkForAdditionalTexts, boolean expectAdditionalTexts, boolean negateDamage, boolean ignoreDamage) {
 			this.criticalHit = criticalHit;
 			this.effectMiss = effectMiss;
 			this.cat = checkForAdditionalTexts ? new CheckAdditionalTexts(0,false) : null;
+			this.expectAdditionalTexts = expectAdditionalTexts;
 			this.negateDamage = negateDamage;
 			this.ignoreDamage = ignoreDamage;
 		}
@@ -162,7 +164,7 @@ public class KillEnemyMonSegment extends Segment {
 			}
 			int dmg = Util.getMemoryBigEndian(RomInfo.rom.fightCurDamageAddress);
 			if(dmg > 0 && cat != null)
-				if(cat.getMetric() == 0) { // found additional texts
+				if(cat.getMetric() == (expectAdditionalTexts ? 1 : 0)) { // found additional texts
 					s.restore();
 					return Integer.MIN_VALUE;
 				}
@@ -299,7 +301,7 @@ public class KillEnemyMonSegment extends Segment {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		printInfo(in);
 
 		int enemySpeed = DamageCalc.getStat(false, DamageCalc.STAT_SPD, false);
@@ -485,7 +487,7 @@ public class KillEnemyMonSegment extends Segment {
 		return curTurn < numEndOfAttackTexts.length ? numEndOfAttackTexts[curTurn] : 0;
 	}
 	
-	private void executeTurn(FightState fs, StateBuffer in, int n, int ai, int ac) throws Throwable {
+	private void executeTurn(FightState fs, StateBuffer in, int n, int ai, int ac) {
 		final int curTurn = numTurns - 1 - n;
 
 		System.out.println("executeTurn "+curTurn+" using attack "+ai+":"+ac+" in FightState "+fs+" frame "+in.getStates().iterator().next().stepCount);
@@ -636,8 +638,8 @@ public class KillEnemyMonSegment extends Segment {
 				if (Util.isGen1()) {
 					imm = new MoveSegment(moveFactory.create()).execute(imm);
 				} else {
-					DelayableMove move = moveFactory.create();
-					move = new DelayUntil(move, true, CheckEnemyMoveMetric.withKeys(move.getInitialKey(), getEnemyMove(curTurn+1)));
+					Move move = moveFactory.create();
+					move = new DelayUntil(new WithMetric(move, true, CheckEnemyMoveMetric.withKeys(move.getInitialKey(), getEnemyMove(curTurn+1))));
 					imm = new MoveSegment(move).execute(imm);
 				}
 			}
@@ -656,7 +658,7 @@ public class KillEnemyMonSegment extends Segment {
 			ems.appendSegment = set ? new CheckMetricSegment(CheckEnemyMoveMetric.noKeys(getEnemyMove(curTurn+1))) : null;
 	}
 
-	public void printInfo(StateBuffer in) throws Throwable {
+	public void printInfo(StateBuffer in) {
 		if(in.size() == 0) {
 			System.out.println("StateBuffer EMPTY!");
 			return;
@@ -697,7 +699,7 @@ public class KillEnemyMonSegment extends Segment {
 	}
 	
 	
-	public Map<PII,StateBuffer> executeSingleAttack(StateBuffer in, DelayableMoveFactory moveFactory, AttackActionSegment actionSegment, int goalValue, int minValue, boolean noBins, boolean isB) throws Throwable {
+	public Map<PII,StateBuffer> executeSingleAttack(StateBuffer in, DelayableMoveFactory moveFactory, AttackActionSegment actionSegment, int goalValue, int minValue, boolean noBins, boolean isB) {
 		AttackActionSegment dummyActionSegment = null;
 		AttackActionSegment aActionSegment = isB ? dummyActionSegment : actionSegment;
 		AttackActionSegment bActionSegment = isB ? actionSegment : dummyActionSegment;
@@ -714,14 +716,14 @@ public class KillEnemyMonSegment extends Segment {
 	public static final String PLAYER_ATTRIBUTE = "playerDamage";
 	public static final String ENEMY_ATTRIBUTE = "enemyDamage";
 	
-	public Map<PII,StateBuffer> executeAttack(StateBuffer in, DelayableMoveFactory moveFactory, AttackActionSegment aActionSegment, AttackActionSegment bActionSegment, int goalAValue, int minAValue, int goalBValue, int minBValue, boolean noABins, boolean noBBins, boolean bFirst) throws Throwable {
+	public Map<PII,StateBuffer> executeAttack(StateBuffer in, DelayableMoveFactory moveFactory, AttackActionSegment aActionSegment, AttackActionSegment bActionSegment, int goalAValue, int minAValue, int goalBValue, int minBValue, boolean noABins, boolean noBBins, boolean bFirst) {
 		Map<PII,StateBuffer> im = new HashMap<PII,StateBuffer>();
 		Map<PII,Integer> imActiveFrame = new HashMap<PII,Integer>();
 		
 		System.out.println("executeAttack goal "+new PII(goalAValue,goalBValue)+" min "+new PII(minAValue, minBValue));
 
 		boolean[] active = new boolean[in.size()];
-		DelayableMove[] dus = new DelayableMove[in.size()];
+		Move[] dus = new Move[in.size()];
 		int numActive = in.size();
 		for(int cs = 0; cs < in.size(); cs++) {
 			active[cs] = true;
@@ -745,7 +747,7 @@ public class KillEnemyMonSegment extends Segment {
 				}
 				
 				s.restore();
-				dus[cs].prepareMove(skips,true);
+				dus[cs].prepare(skips,true);
 				dus[cs].doMove();
 								
 				int curActiveFrame = State.currentStepCount;
@@ -806,7 +808,7 @@ public class KillEnemyMonSegment extends Segment {
 		return im;
 	}
 
-	private StateBuffer executeAttackInternal(StateBuffer sb, int curActiveFrame, int minAValue, int minBValue, Map<PII,Integer> imActiveFrame, AttackActionSegment actionSegment, int goalValue, boolean isA) throws Throwable {
+	private StateBuffer executeAttackInternal(StateBuffer sb, int curActiveFrame, int minAValue, int minBValue, Map<PII,Integer> imActiveFrame, AttackActionSegment actionSegment, int goalValue, boolean isA) {
 		if(actionSegment == null) // dummy, don't execute
 			return sb;
 		

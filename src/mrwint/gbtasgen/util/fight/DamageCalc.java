@@ -112,7 +112,7 @@ public class DamageCalc {
 			if(at == 0xFE) continue;
 			if(at == 0xFF) break;
 			int dt = State.getROM()[add++];
-			int eff = State.getROM()[add++];
+			/*int eff = State.getROM()[add++];*/add++;
 			if(at == atkType && (dt == dt1 || dt == dt2))
 				return true;
 		}

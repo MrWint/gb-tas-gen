@@ -69,7 +69,7 @@ public class AzaleaLeader extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

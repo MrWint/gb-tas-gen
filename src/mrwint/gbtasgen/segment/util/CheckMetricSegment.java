@@ -26,7 +26,7 @@ public class CheckMetricSegment extends Segment {
 	}
 
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		StateBuffer out = new StateBuffer(0); // output buffer is unbounded
 		for(State s : in.getStates()) {
 			s.restore();

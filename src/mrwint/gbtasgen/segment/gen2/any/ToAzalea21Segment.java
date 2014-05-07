@@ -10,18 +10,16 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SkipInput;
 import mrwint.gbtasgen.move.Wait;
-import mrwint.gbtasgen.segment.NamingSegment;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
+import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.state.StateBuffer;
-import mrwint.gbtasgen.util.Util;
 
 
 public class ToAzalea21Segment extends Segment {
@@ -47,7 +45,7 @@ public class ToAzalea21Segment extends Segment {
 		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new Segment() {
 			
 			@Override
-			public StateBuffer execute(StateBuffer in) throws Throwable {
+			public StateBuffer execute(StateBuffer in) {
 				in = new TextSegment(Move.A, false, 0).execute(in);
 				in = new CheckMetricSegment(new CheckCatchMonMetric()).execute(in);
 				in = new MoveSegment(new Wait(1), 0, 0).execute(in);
@@ -63,7 +61,7 @@ public class ToAzalea21Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

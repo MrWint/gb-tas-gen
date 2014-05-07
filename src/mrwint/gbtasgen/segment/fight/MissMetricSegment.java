@@ -27,7 +27,7 @@ public class MissMetricSegment extends AttackActionSegment {
 	}
 	
 	@Override
-	public StateBuffer executeInternal(StateBuffer sb, int minValue) throws Throwable {
+	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
 		sb = new TextSegment(Move.A,false,0).execute(sb); // enemy uses attack (unbounded buffer)
 		sb = new CheckMetricSegment(moveMetric).execute(sb);
 		sb = new MoveSegment(new Wait(1)).execute(sb); // skip last frame of text box

@@ -44,9 +44,9 @@ public class HitMetricSegment extends AttackActionSegment {
 	}
 	
 	@Override
-	public StateBuffer executeInternal(StateBuffer sb, int minValue) throws Throwable {
+	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
 		sb = new TextSegment(Move.A,false,0).execute(sb); // player mon uses attack
-		sb = new CheckMetricSegment(new CheckMoveDamage(isCrit, effectMiss, numEndTexts == 0, !player, ignoreDamage),new GreaterEqual(),ignoreDamage ? 0 : minValue,player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE).execute(sb);
+		sb = new CheckMetricSegment(new CheckMoveDamage(isCrit, effectMiss, numEndTexts == 0, false, !player, ignoreDamage),new GreaterEqual(),ignoreDamage ? 0 : minValue,player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE).execute(sb);
 		sb = new MoveSegment(new Wait(1), 0, 0).execute(sb); // skip last frame of text box
 		
 		for(int i=0;i<numEndTexts-1;i++) { // skip messages

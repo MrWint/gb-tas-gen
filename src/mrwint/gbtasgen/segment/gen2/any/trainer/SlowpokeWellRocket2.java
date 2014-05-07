@@ -7,8 +7,9 @@ import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.comparator.Equal;
 import mrwint.gbtasgen.move.DelayUntil;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
+import mrwint.gbtasgen.move.WithMetric;
+import mrwint.gbtasgen.move.gen2.OverworldInteract;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.fight.EndFightSegment;
@@ -36,8 +37,8 @@ public class SlowpokeWellRocket2 extends Segment {
 //			segments.add(new WalkToSegment(13, 3, false));					// align
 			segments.add(new WalkToSegment(14, 2));					// align
 			segments.add(new MoveSegment(new PressButton(Move.LEFT)));	// face rocket
-			segments.add(new MoveSegment(new DelayUntil(new PressButton(Move.LEFT), true, new CheckEncounterMetric(Move.LEFT), new Equal(), 0)));	// face rocket
-			segments.add(new MoveSegment(new Gen2OverworldInteract()));	// engage rocket
+			segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.LEFT), true, new CheckEncounterMetric(Move.LEFT), new Equal(), 0))));	// face rocket
+			segments.add(new MoveSegment(new OverworldInteract()));	// engage rocket
 		}
 
 		segments.add(new InitFightSegment(2));
@@ -70,7 +71,7 @@ public class SlowpokeWellRocket2 extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

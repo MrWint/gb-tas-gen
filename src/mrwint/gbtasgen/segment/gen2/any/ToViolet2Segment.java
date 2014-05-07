@@ -3,11 +3,9 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -42,7 +40,7 @@ public class ToViolet2Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

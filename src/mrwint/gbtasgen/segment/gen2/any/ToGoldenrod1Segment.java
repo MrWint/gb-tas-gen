@@ -8,9 +8,10 @@ import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Equal;
 import mrwint.gbtasgen.move.DelayUntil;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SkipInput;
+import mrwint.gbtasgen.move.WithMetric;
+import mrwint.gbtasgen.move.gen2.OverworldInteract;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
@@ -30,26 +31,26 @@ public class ToGoldenrod1Segment extends Segment {
 		segments.add(new WalkToSegment(-1, 5, false));	// gate -> ilex forest
 
 		segments.add(new WalkToSegment(14, 32));		// face farfetch'd
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// scare farfetch'd
+		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
 		segments.add(new SkipTextsSegment(2));	// scare farfetch'd
 	
 		segments.add(new WalkToSegment(15, 24));		// face farfetch'd
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// scare farfetch'd
+		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
 		segments.add(new SkipTextsSegment(1));	// scare farfetch'd
 		
 		segments.add(new WalkToSegment(15, 28));		// face farfetch'd
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// scare farfetch'd
+		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
 		segments.add(new SkipTextsSegment(1));	// scare farfetch'd
 		
 		segments.add(new WalkToSegment(12, 35));		// align
 		segments.add(new WalkToSegment(11, 35));		// face farfetch'd
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// scare farfetch'd
+		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
 		segments.add(new SkipTextsSegment(1));	// scare farfetch'd
 
 		segments.add(new WalkToSegment(5, 29));			// align
 		segments.add(new MoveSegment(new PressButton(Move.UP)));	// face
-		segments.add(new MoveSegment(new DelayUntil(new PressButton(Move.UP), true, new CheckEncounterMetric(Move.UP), new Equal(), 0)));	// face
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// talk
+		segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.UP), true, new CheckEncounterMetric(Move.UP), new Equal(), 0))));	// face
+		segments.add(new MoveSegment(new OverworldInteract()));	// talk
 		segments.add(new SkipTextsSegment(14));			// talk
 
 		segments.add(new WalkToSegment(8, 29));			// align
@@ -119,7 +120,7 @@ public class ToGoldenrod1Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

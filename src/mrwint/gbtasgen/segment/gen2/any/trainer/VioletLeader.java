@@ -8,8 +8,8 @@ import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.fight.EndFightSegment;
 import mrwint.gbtasgen.segment.fight.InitFightSegment;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment;
-import mrwint.gbtasgen.segment.fight.NewEnemyMonSegment;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.EnemyMoveDesc;
+import mrwint.gbtasgen.segment.fight.NewEnemyMonSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -58,7 +58,7 @@ public class VioletLeader extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

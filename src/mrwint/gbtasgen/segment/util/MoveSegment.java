@@ -1,6 +1,5 @@
 package mrwint.gbtasgen.segment.util;
 
-import mrwint.gbtasgen.move.DelayableMove;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
@@ -11,7 +10,6 @@ public class MoveSegment extends Segment {
 	public static final int MAX_DELAY = 4;
 
 	private Move move;
-	private DelayableMove delayableMove;
 	private int maxDelay;
 	private int bufferSize;
 	private boolean useCache;
@@ -32,30 +30,20 @@ public class MoveSegment extends Segment {
 		this.move = move;
 		this.bufferSize = bufferSize;
 		this.useCache = useCache;
-		if(move instanceof DelayableMove)
-			delayableMove = (DelayableMove)move;
-		else
-			delayableMove = null;
-		this.maxDelay = maxDelay;
+		this.maxDelay = move.isDelayable() ? maxDelay : 0;
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		StateBuffer out = new StateBuffer(bufferSize);
 		for(State s : in.getStates()) {
-			if(delayableMove != null) {
-				delayableMove.clearCache();
-				for(int delay = 0; delay <= maxDelay; delay++) {
-					s.restore();
-					delayableMove.prepareMove(delay,useCache);
-					delayableMove.doMove();
-					State.currentDelayStepCount += delay;
-					out.addState(State.createState(true));
-				}
-			} else {
+			if (move.isCachable())
 				s.restore();
-				int res = move.execute();
-				if(res != -1)
+			for(int delay = 0; delay <= maxDelay; delay++) {
+				if (!move.isCachable())
+					s.restore();
+				move.prepare(delay,useCache);
+				if (move.doMove())
 					out.addState(State.createState(true));
 			}
 		}

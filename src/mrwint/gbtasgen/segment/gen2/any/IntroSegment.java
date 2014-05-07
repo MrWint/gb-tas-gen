@@ -3,23 +3,11 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.TrainerIDMetric;
-import mrwint.gbtasgen.move.ChangeOptionsMove;
-import mrwint.gbtasgen.move.DelayableMove;
-import mrwint.gbtasgen.move.IntroOptionsMove;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.move.SequenceMove;
-import mrwint.gbtasgen.move.SkipInput;
-import mrwint.gbtasgen.segment.ChangeOptionsSegment;
 import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.util.CheckMetricSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment;
-import mrwint.gbtasgen.segment.util.FindShortestSequenceSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class IntroSegment extends Segment {
@@ -97,7 +85,7 @@ public class IntroSegment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

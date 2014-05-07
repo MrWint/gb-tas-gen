@@ -1,7 +1,5 @@
 package mrwint.gbtasgen.main;
 
-import mrwint.gbtasgen.move.Gen1WalkStep;
-import mrwint.gbtasgen.move.Gen2WalkStep;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.util.map.Gen1Map;
 import mrwint.gbtasgen.util.map.Gen2Map;
@@ -161,7 +159,7 @@ public abstract class RomInfo {
 		}
 		@Override
 		public Move getWalkStep(int dir, boolean check, boolean skipStandStillTest) {
-			return new Gen2WalkStep(dir, check, skipStandStillTest);
+			return new mrwint.gbtasgen.move.gen2.WalkStep(dir, check, skipStandStillTest);
 		}
 	}
 	
@@ -384,7 +382,7 @@ public abstract class RomInfo {
 		}
 		@Override
 		public Move getWalkStep(int dir, boolean check, boolean skipStandStillTest) {
-			return new Gen1WalkStep(dir, check, skipStandStillTest);
+			return new mrwint.gbtasgen.move.gen1.WalkStep(dir, check, skipStandStillTest);
 		}
 	}
 	
@@ -433,8 +431,8 @@ public abstract class RomInfo {
 			optionsAddress = 0xd355; // determines text speed
 //
 			afterDVGenerationAddress = 0xf3b3;
-//			afterTrainerIDGenerationAddress = 0x5c6d;
-//			trainerIDAddress = 0xd1a1;
+			afterTrainerIDGenerationAddress = 0xf860;
+			trainerIDAddress = 0xd359;
 //
 			doPlayerMovementFuncAddress = 0x51d; // .handleDirectionButtonPress
 //			doPlayerMovementFuncEndAddress = 0x10016;

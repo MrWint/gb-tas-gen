@@ -6,7 +6,6 @@ import java.util.List;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.move.SkipInput;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -49,7 +48,7 @@ public class ChangeOptionsSegment extends Segment{
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

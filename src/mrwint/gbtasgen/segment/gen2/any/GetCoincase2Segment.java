@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.move.CoinCaseMove;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SkipInput;
+import mrwint.gbtasgen.move.gen2.CoinCaseMove;
+import mrwint.gbtasgen.move.gen2.OverworldInteract;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
@@ -40,7 +40,7 @@ public class GetCoincase2Segment extends Segment {
 //		}
 //		
 		segments.add(new WalkToSegment(6, 25));	// face coin case
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// grab coin case
+		segments.add(new MoveSegment(new OverworldInteract()));	// grab coin case
 		segments.add(new TextSegment());		// found coin case
 		segments.add(new SkipTextsSegment(2));	// put in key items pocket
 
@@ -95,7 +95,7 @@ public class GetCoincase2Segment extends Segment {
 		segments.add(new MoveSegment(new PressButton(Move.LEFT)));						// teleport
 		segments.add(new WalkToSegment(9, 12));	// align
 		segments.add(new WalkToSegment(9, 11));	// face red
-		segments.add(new MoveSegment(new Gen2OverworldInteract()));	// engage red
+		segments.add(new MoveSegment(new OverworldInteract()));	// engage red
 		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY)));		// talk
 		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY), 0, 1));		// talk
 
@@ -103,7 +103,7 @@ public class GetCoincase2Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

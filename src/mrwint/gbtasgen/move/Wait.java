@@ -15,11 +15,11 @@ public class Wait extends Move {
 	}
 
 	@Override
-	public int execute() throws Throwable {
+	public boolean doMove() {
 		State.steps(numSkip);
-		return numSkip;
+		return true;
 	}
-	
+
 	@Override
 	public int getInitialKey() {
 		return 0;

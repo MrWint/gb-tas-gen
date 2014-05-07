@@ -3,20 +3,15 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.metric.Gen2CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.Gen2OverworldInteract;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.segment.NamingSegment;
+import mrwint.gbtasgen.move.gen2.OverworldInteract;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
-import mrwint.gbtasgen.segment.util.CheckMetricSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
 
@@ -59,7 +54,7 @@ public class GetStarter1Segment extends Segment {
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face ball
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face ball
 		
-		segments.add(new MoveSegment(new Gen2OverworldInteract())); // grab totodile
+		segments.add(new MoveSegment(new OverworldInteract())); // grab totodile
 		segments.add(new MoveSegment(new PressButton(Move.B))); // cancel totodile screen
 		segments.add(new SkipTextsSegment(2, true)); // yes, I want totodile
 
@@ -95,7 +90,7 @@ public class GetStarter1Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

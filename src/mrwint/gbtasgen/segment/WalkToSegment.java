@@ -106,7 +106,7 @@ public class WalkToSegment extends Segment {
 	}
 
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		if(in.isEmpty())
 			return new StateBuffer(maxBufferSize);
 		
@@ -151,10 +151,10 @@ public class WalkToSegment extends Segment {
 		int destY = this.destY + 6;
 		Pos initialPos = new Pos(playerX, playerY);
 		System.out.println("planning path from ("+(playerX-6)+","+(playerY-6)+") to ("+(destX-6)+","+(destY-6)+")");
-		System.out.println("map:");
-		map.printMap();
-		System.out.println("distances:");
-		Map.printDistMap(d);
+//		System.out.println("map:");
+//		map.printMap();
+//		System.out.println("distances:");
+//		Map.printDistMap(d);
 		
 		HashMap<Pos, StateBuffer> posBuffers = new HashMap<Pos, StateBuffer>();
 		posBuffers.put(initialPos, in);

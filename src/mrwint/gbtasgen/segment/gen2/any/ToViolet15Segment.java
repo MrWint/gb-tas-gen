@@ -3,17 +3,9 @@ package mrwint.gbtasgen.segment.gen2.any;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.metric.CheckEncounterMetric;
-import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.WalkToSegment;
-import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment;
-import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.EnemyMoveDesc;
-import mrwint.gbtasgen.segment.util.CheckMetricSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
-import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class ToViolet15Segment extends Segment {
@@ -45,7 +37,7 @@ public class ToViolet15Segment extends Segment {
 	}
 	
 	@Override
-	public StateBuffer execute(StateBuffer in) throws Throwable {
+	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);
 	}
 }

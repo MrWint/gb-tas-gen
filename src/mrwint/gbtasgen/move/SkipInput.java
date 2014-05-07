@@ -16,15 +16,16 @@ public class SkipInput extends Move {
 	}
 
 	@Override
-	public int execute() throws Throwable {
-		if(numSkip <= 0) return Util.runToNextInputFrame();
-		int steps=0;
-		for(int i=0;i<numSkip;i++) {
-			steps += Util.runToNextInputFrame();
-			State.step();
-			steps++;
+	public boolean doMove() {
+		if(numSkip <= 0) {
+			Util.runToNextInputFrame();
+			return true;
 		}
-		return steps;
+		for(int i=0;i<numSkip;i++) {
+			Util.runToNextInputFrame();
+			State.step();
+		}
+		return true;
 	}
 	
 	@Override
