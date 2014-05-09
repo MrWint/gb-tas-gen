@@ -111,6 +111,8 @@ public abstract class RomInfo {
 	public int fightBattleMonHPAddress;
 	// Gen 1
 	public int fightBattleMonIndex;
+	public int thrashNumTurnsAddress;
+	public int numPartyMonAddress;
 	
 	public int fightEnemyMonSpeciesAddress;
 	public int fightEnemyMonLevelAddress;
@@ -119,6 +121,7 @@ public abstract class RomInfo {
 	public int fightEnemyMonOriginalStatsAddress;
 	public int fightEnemyMonTypesAddress;
 	public int fightEnemyMonHPAddress;
+	public int fightEnemyDVsAddress;
 	// Gen 1
 	public int fightEnemyMonIndex;
 	
@@ -486,12 +489,15 @@ public abstract class RomInfo {
 			fightEnemyMonHPAddress = 0xcfe6;
 			fightEnemyMonStatsAddress = 0xcff6;
 			fightEnemyMonTypesAddress = 0xcfea;
+			fightEnemyDVsAddress = 0xcff1;
 			fightCurDamageAddress = 0xD0D7;
+			thrashNumTurnsAddress = 0xd06a;
+			numPartyMonAddress = 0xd163;
 //
 			fightDetermineAttackOrder = 0x3c2a9;
 			fightDetermineAttackOrderPlayerFirst = 0x3c37d;
 			fightDetermineAttackOrderEnemyFirst = 0x3c33d;
-//			fightAfterAIChooseMove = 0x3c2a9;
+			fightAfterAIChooseMove = 0x3c2a9;
 //			fightEndTurnResetFlags = 0x3c695;
 			fightBattleCommand0a = new int[] {0x3d705, 0x3e782}; // after MoveHitTest (player, enemy)
 //			fightDamageCalc = 0x35753;

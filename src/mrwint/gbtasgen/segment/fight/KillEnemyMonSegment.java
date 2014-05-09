@@ -130,13 +130,15 @@ public class KillEnemyMonSegment extends Segment {
 		final boolean negateDamage;
 		final boolean ignoreDamage;
 		final boolean expectAdditionalTexts;
-		public CheckMoveDamage(boolean criticalHit, boolean effectMiss, boolean checkForAdditionalTexts, boolean expectAdditionalTexts, boolean negateDamage, boolean ignoreDamage) {
+		final int thrashAdditionalTurns;
+		public CheckMoveDamage(boolean criticalHit, boolean effectMiss, boolean checkForAdditionalTexts, boolean expectAdditionalTexts, boolean negateDamage, boolean ignoreDamage, int thrashAdditionalTurns) {
 			this.criticalHit = criticalHit;
 			this.effectMiss = effectMiss;
 			this.cat = checkForAdditionalTexts ? new CheckAdditionalTexts(0,false) : null;
 			this.expectAdditionalTexts = expectAdditionalTexts;
 			this.negateDamage = negateDamage;
 			this.ignoreDamage = ignoreDamage;
+			this.thrashAdditionalTurns = thrashAdditionalTurns;
 		}
 		@Override
 		public int getMetric() {
@@ -154,6 +156,10 @@ public class KillEnemyMonSegment extends Segment {
 			int crit = Gb.readMemory(RomInfo.rom.fightCriticalHitAddress);
 			int missed = Gb.readMemory(RomInfo.rom.fightAttackMissedAddress);
 			boolean failure = missed != 0 || criticalHit != (crit != 0);
+			if (thrashAdditionalTurns > 0 && Gb.readMemory(RomInfo.rom.thrashNumTurnsAddress) < thrashAdditionalTurns) {
+				failure = true;
+				System.out.println("caught bad thrash "+ Gb.readMemory(RomInfo.rom.thrashNumTurnsAddress));
+			}
 			if (Util.isGen2()) {
 				int effectMissed = Gb.readMemory(RomInfo.rom.fightEffectMissedAddress);
 				failure = failure || this.effectMiss != (effectMissed != 0);
@@ -279,6 +285,7 @@ public class KillEnemyMonSegment extends Segment {
 	public boolean onlyPrintInfo = false;		// only print own and enemy fighting stats
 	public int maxOwnDamage = 0;
 	public boolean skipFirstMainBattleMenu = false;
+	public int thrashNumAdditionalTurns = 0;
 	public boolean nonCritsFirst = false;
 
 	public int rageInitialVal = 0;
@@ -510,7 +517,7 @@ public class KillEnemyMonSegment extends Segment {
 		final int[] curEnemyMove = getEnemyMove(curTurn);
 		final int curEnemyMoveMinDamage = (curEnemyMove.length  == 0) ? 0 : enemyDmg[getEnemyMoveIndex(curEnemyMove[0])][0];
 		
-		final AttackActionSegment curPlayerMoveSegment = new HitMetricSegment(playerCrit, false, playerEffective, true, getNumEndOfAttackTexts(curTurn), getNumEndOfAttackTexts(curTurn) > 0, false);
+		final AttackActionSegment curPlayerMoveSegment = new HitMetricSegment(playerCrit, false, playerEffective, true, getNumEndOfAttackTexts(curTurn), getNumEndOfAttackTexts(curTurn) > 0, false, thrashNumAdditionalTurns);
 		setAppendEnemyMoveMetric(curPlayerMoveSegment, curTurn, !faster && !pauseAfterPlayerAttack && !lastTurn && getNumEndOfTurnTexts(curTurn) == 0);
 		
 		// init damage values
@@ -593,23 +600,25 @@ public class KillEnemyMonSegment extends Segment {
 				sb = new MoveSegment(moveFactory.create()).execute(sb);
 			sb = new SkipTextsSegment(numExpGainers).execute(sb); // enemy mon fainted + mon gained xp (-1)
 			sb = new TextSegment(Move.A).execute(sb);
-			sb = new DelayMoveSegment(new PressButtonFactory(Move.B), new CheckMetricSegment(new Metric() {
-				@Override
-				public int getMetric() { // check for next mon
-					if(nextMonSpecies > 0 || nextMonLevel > 0) {
-						State s = new State();
-						Util.runToAddress(0, 0, RomInfo.rom.printLetterDelayJoypadAddress);
-						int mon = Gb.readMemory(RomInfo.rom.fightEnemyMonSpeciesAddress);
-						int level = Gb.readMemory(RomInfo.rom.fightEnemyMonLevelAddress);
-						s.restore();
-						if(nextMonSpecies > 0 && nextMonSpecies != mon)
-							return 0;
-						if(nextMonLevel > 0 && nextMonLevel != level)
-							return 0;
+			if (thrashNumAdditionalTurns == 0) {
+				sb = new DelayMoveSegment(new PressButtonFactory(Move.B), new CheckMetricSegment(new Metric() {
+					@Override
+					public int getMetric() { // check for next mon
+						if(nextMonSpecies > 0 || nextMonLevel > 0) {
+							State s = new State();
+							Util.runToAddress(0, 0, RomInfo.rom.printLetterDelayJoypadAddress);
+							int mon = Gb.readMemory(RomInfo.rom.fightEnemyMonSpeciesAddress);
+							int level = Gb.readMemory(RomInfo.rom.fightEnemyMonLevelAddress);
+							s.restore();
+							if(nextMonSpecies > 0 && nextMonSpecies != mon)
+								return 0;
+							if(nextMonLevel > 0 && nextMonLevel != level)
+								return 0;
+						}
+						return 1;
 					}
-					return 1;
-				}
-			})).execute(sb);
+				})).execute(sb);
+			}
 			goalBuf.addAll(sb);
 			return;
 		}

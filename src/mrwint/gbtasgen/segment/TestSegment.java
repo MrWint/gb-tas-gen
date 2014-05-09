@@ -110,7 +110,7 @@ public class TestSegment extends SeqSegment {
 		seq(new WalkToSegment(50, 10));
 		seq(new WriteMemory(0xd173, 0x00)); // delete first move
 		seq(new WalkToSegment(7, 2, false));
-		seq(new DelayMoveSegment(new PressButtonFactory(Move.RIGHT), new CheckMetricSegment(new CheckEncounterMetric(0, 0, null,0))));
+		seq(new DelayMoveSegment(new PressButtonFactory(Move.RIGHT), new CheckMetricSegment(new CheckEncounterMetric(0, 0))));
 //		seq(new SkipTextsSegment(2)); // wild mon, go mon
 //		seq(Segment.skip(1));
 //		seq(new MoveSegment(new PressButton(Move.A), 0, 1));

@@ -6,9 +6,19 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.gen1.catchemall.ChooseStarter;
 import mrwint.gbtasgen.segment.gen1.catchemall.Intro;
+import mrwint.gbtasgen.segment.gen1.catchemall.MtMoonNidoking;
+import mrwint.gbtasgen.segment.gen1.catchemall.MtMoonNoTrainer;
+import mrwint.gbtasgen.segment.gen1.catchemall.MtMoonNormal;
+import mrwint.gbtasgen.segment.gen1.catchemall.NuggetBridgeNidoking;
+import mrwint.gbtasgen.segment.gen1.catchemall.NuggetBridgeNoTrainer;
+import mrwint.gbtasgen.segment.gen1.catchemall.NuggetBridgeNormal;
 import mrwint.gbtasgen.segment.gen1.catchemall.OakSpeech;
 import mrwint.gbtasgen.segment.gen1.catchemall.OaksParcel;
+import mrwint.gbtasgen.segment.gen1.catchemall.PewterNormal;
 import mrwint.gbtasgen.segment.gen1.catchemall.RivalFight;
+import mrwint.gbtasgen.segment.gen1.catchemall.Route3Nidoking;
+import mrwint.gbtasgen.segment.gen1.catchemall.Route3Normal;
+import mrwint.gbtasgen.segment.gen1.catchemall.Underflow;
 import mrwint.gbtasgen.segment.gen1.catchemall.ViridianForestNidoking;
 import mrwint.gbtasgen.segment.gen1.catchemall.ViridianForestNormal;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -35,15 +45,30 @@ public class CatchEmAll extends SeqSegment {
 //		load("rivalFight");
 //		seq(new OaksParcel());
 //		save("oaksParcel");
-		
+
 //		load("oaksParcel");
 //		seq(new ViridianForestNormal());
 //		save("viridianForestNormal");
+
+//		load("viridianForestNormal");
+//		seq(new PewterNormal());
+//		save("pewterNormal");
+
+//		load("pewterNormal");
+//		seq(new Route3Normal());
+//		save("route3Normal");
 		
-		load("oaksParcel");
-		seq(new ViridianForestNidoking());
-		save("viridianForestNidoking");
-//		seq(Segment.press(Move.START));
+//		load("route3Normal");
+//		seq(new MtMoonNormal());
+//		save("mtMoonNormal");
+		
+//		load("mtMoonNormal");
+//		seq(new NuggetBridgeNormal());
+//		save("nuggetBridgeNormal");
+		
+		load("nuggetBridgeNormal");
+		seq(new Underflow());
+		save("underflow");
 	}
 	
 	public static void main(String[] args) {

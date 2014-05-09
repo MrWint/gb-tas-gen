@@ -49,7 +49,7 @@ public class ToGoldenrod1Segment extends Segment {
 
 		segments.add(new WalkToSegment(5, 29));			// align
 		segments.add(new MoveSegment(new PressButton(Move.UP)));	// face
-		segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.UP), true, new CheckEncounterMetric(Move.UP), new Equal(), 0))));	// face
+		segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.UP), true, new CheckEncounterMetric().withStartMove(Move.UP), new Equal(), 0))));	// face
 		segments.add(new MoveSegment(new OverworldInteract()));	// talk
 		segments.add(new SkipTextsSegment(14));			// talk
 

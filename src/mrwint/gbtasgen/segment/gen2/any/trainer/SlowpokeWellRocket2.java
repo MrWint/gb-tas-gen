@@ -37,7 +37,7 @@ public class SlowpokeWellRocket2 extends Segment {
 //			segments.add(new WalkToSegment(13, 3, false));					// align
 			segments.add(new WalkToSegment(14, 2));					// align
 			segments.add(new MoveSegment(new PressButton(Move.LEFT)));	// face rocket
-			segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.LEFT), true, new CheckEncounterMetric(Move.LEFT), new Equal(), 0))));	// face rocket
+			segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.LEFT), true, new CheckEncounterMetric().withStartMove(Move.LEFT), new Equal(), 0))));	// face rocket
 			segments.add(new MoveSegment(new OverworldInteract()));	// engage rocket
 		}
 

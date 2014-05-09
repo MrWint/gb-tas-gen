@@ -23,14 +23,19 @@ public class HitMetricSegment extends AttackActionSegment {
 	final private boolean noCheckAdditionalTexts;
 	final private int numEndTexts;
 	final private boolean ignoreDamage;
-	
+	final private int thrashAdditionalTurns;
+
 	public HitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts, boolean ignoreDamage) {
+		this(isCrit, effectMiss, isEffective, player, numEndTexts, noCheckAdditionalTexts, ignoreDamage, 0);
+	}
+	public HitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts, boolean ignoreDamage, int thrashAdditionalTurns) {
 		this.isCrit = isCrit;
 		this.effectMiss = effectMiss;
 		this.numEndTexts = numEndTexts + (isCrit ? 1 : 0) + (isEffective ? 1 : 0);
 		this.player = player;
 		this.noCheckAdditionalTexts = noCheckAdditionalTexts;
 		this.ignoreDamage = ignoreDamage;
+		this.thrashAdditionalTurns = thrashAdditionalTurns;
 	}
 	
 	@Override
@@ -46,7 +51,7 @@ public class HitMetricSegment extends AttackActionSegment {
 	@Override
 	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
 		sb = new TextSegment(Move.A,false,0).execute(sb); // player mon uses attack
-		sb = new CheckMetricSegment(new CheckMoveDamage(isCrit, effectMiss, numEndTexts == 0, false, !player, ignoreDamage),new GreaterEqual(),ignoreDamage ? 0 : minValue,player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE).execute(sb);
+		sb = new CheckMetricSegment(new CheckMoveDamage(isCrit, effectMiss, numEndTexts == 0, false, !player, ignoreDamage, thrashAdditionalTurns),new GreaterEqual(),ignoreDamage ? 0 : minValue,player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE).execute(sb);
 		sb = new MoveSegment(new Wait(1), 0, 0).execute(sb); // skip last frame of text box
 		
 		for(int i=0;i<numEndTexts-1;i++) { // skip messages

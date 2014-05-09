@@ -30,7 +30,7 @@ public class ToAzalea22Segment extends Segment {
 		segments.add(new WalkToSegment(3, 32));	// step into grass
 		segments.add(new DelayMoveSegment(
 				new PressButtonFactory(Move.DOWN),
-				new CheckMetricSegment(new CheckEncounterMetric(69 /*bellsprout*/, 0, null, Move.DOWN))));
+				new CheckMetricSegment(new CheckEncounterMetric(69 /*bellsprout*/, 0).withStartMove(Move.DOWN))));
 		
 		segments.add(new SkipTextsSegment(2));
 		segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // run

@@ -3,8 +3,10 @@ package mrwint.gbtasgen.segment.util;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.move.PrepMove;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayableMoveFactory;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public abstract class SeqSegment extends Segment {
@@ -24,25 +26,31 @@ public abstract class SeqSegment extends Segment {
 	public void seq(Segment s) {
 		in = s.execute(in);
 	}
-	
 	public void seq(int move) {
 		seq(new PressButton(move));
 	}
-	
 	public void seq(Move m) {
 		seq(new MoveSegment(m));
 	}
-	
 	public void seq(Move m, int maxDelay) {
 		seq(new MoveSegment(m, maxDelay));
 	}
-
 	public void seq(Metric m) {
 		seq(new CheckMetricSegment(m));
 	}
-
 	public void seq(Metric m, Comparator c, int val) {
 		seq(new CheckMetricSegment(m, c, val, null));
+	}
+	
+	public void prep(Move m) {
+		seq(new PrepMove(m));
+	}
+	
+	public void delay(Segment s) {
+		seq(new DelayMoveSegment(s));
+	}
+	public void delay(DelayableMoveFactory m, Segment s) {
+		seq(new DelayMoveSegment(m, s, true));
 	}
 	
 	public void load(StateBuffer sb) {

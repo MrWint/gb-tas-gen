@@ -86,7 +86,7 @@ public class TextSegment extends Segment {
 			System.out.println("ERROR: first frame exited prematurely!!!");
 		if(!inputBeforeEnd && first)
 			System.out.println("ERROR: first frame has no input!!!");
-		if(!first && !goToNextInput()) { // that was last call
+		if((!first || add != 0) && !goToNextInput()) { // that was last call
 			if(!finishLastFrame || !inputBeforeEnd) {
 				goalBuffer.addState(s);
 			} else {
@@ -101,7 +101,7 @@ public class TextSegment extends Segment {
 			return;
 		}
 		if(textSpeed <= 1) {
-			if(!first) // frame already finished for first frame by last step
+			if((!first || add != 0)) // frame already finished for first frame by last step
 				State.step(); // finish frame (no input) (prepared by goToNextInput)
 			nextBuffer.addState(State.createState(true));
 		}

@@ -23,7 +23,7 @@ public class CatchAbraSegment extends Segment {
 
 		segments.add(new WalkToSegment(4,17));
 
-		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.DOWN), new CheckMetricSegment(new CheckEncounterMetric(148, 0, null,0))));
+		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.DOWN), new CheckMetricSegment(new CheckEncounterMetric(148, 0))));
 		segments.add(new CatchMonSegment(0)); // ball in 1st slot
 		
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));

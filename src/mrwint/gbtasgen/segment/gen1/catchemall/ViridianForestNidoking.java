@@ -1,13 +1,31 @@
 package mrwint.gbtasgen.segment.gen1.catchemall;
 
+import mrwint.gbtasgen.metric.CheckEncounterMetric;
+import mrwint.gbtasgen.metric.Metric;
+import mrwint.gbtasgen.metric.comparator.GreaterEqual;
+import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
+import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.move.SelectMoveInList;
+import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.move.gen1.OverworldInteract;
+import mrwint.gbtasgen.segment.BallSuccessSegment;
+import mrwint.gbtasgen.segment.CatchMonSegment;
+import mrwint.gbtasgen.segment.PokecenterSegment;
+import mrwint.gbtasgen.segment.ResetAndContinueSegment;
+import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.fight.EndFightSegment;
 import mrwint.gbtasgen.segment.fight.InitFightSegment;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment;
+import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.CheckMoveDamage;
+import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.CheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.EnemyMoveDesc;
+import mrwint.gbtasgen.segment.util.DelayMoveSegment;
+import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
+import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
 public class ViridianForestNidoking extends SeqSegment {
 	
@@ -45,7 +63,7 @@ public class ViridianForestNidoking extends SeqSegment {
 //
 //		save("tmp");
 //		load("tmp");
-//
+
 //		seq(new WalkToSegment(23, 9)); // walk up to encounter
 //		seq(new DelayMoveSegment(new SeqSegment() {
 //			@Override
@@ -59,9 +77,10 @@ public class ViridianForestNidoking extends SeqSegment {
 //		load("tmp2");
 //
 //		seq(new SkipTextsSegment(1));
-//		seq(new TextSegment());
-//		seq(Segment.press(Move.A));
+//		seq(new TextSegment(Move.B));
+//		seq(Segment.repress(Move.A));
 //		seq(new SelectMoveInList(1, 2)); // select growl
+//
 //		seq(new DelayMoveSegment(new SeqSegment() {
 //			@Override
 //			protected void execute() {
@@ -76,7 +95,7 @@ public class ViridianForestNidoking extends SeqSegment {
 //			protected void execute() {
 //				seq(Move.B);
 //				seq(new TextSegment(Move.A, false));
-//				seq(new CheckMoveDamage(false, false, true, true, false, false), new GreaterEqual(), 3);
+//				seq(new CheckMoveDamage(false, false, true, true, false, false, 0), new GreaterEqual(), 3);
 //				seq(new Wait(1));
 //			}
 //		}));
@@ -87,7 +106,7 @@ public class ViridianForestNidoking extends SeqSegment {
 //		seq(new SkipTextsSegment(1)); // got away safely
 //
 //		save("tmp3");
-//		load("tmp3");
+////		load("tmp3");
 //
 //		seq(new WalkToSegment(1, 20)); // walk up to trainer
 //		seq(new WalkToSegment(1, 19)); // walk up to trainer
@@ -99,7 +118,7 @@ public class ViridianForestNidoking extends SeqSegment {
 //			}
 //		}));
 //		seq(new SkipTextsSegment(1));
-//		seq(new TextSegment());
+//		seq(new TextSegment(Move.B));
 //		seq(Segment.press(Move.A));
 //		seq(new SelectMoveInList(1, 2)); // select growl
 //		seq(new DelayMoveSegment(new SeqSegment() {
@@ -148,112 +167,124 @@ public class ViridianForestNidoking extends SeqSegment {
 //			@Override
 //			protected void execute() {
 //				seq(Move.UP);
-//				seq(new CheckEncounterMetric(0, 0, new Integer[]{7}, 0));
+//				seq(new CheckEncounterMetric(165, 0).withSpcDefStat(7)); // rattata
 //			}
 //		}));
 //
 //		save("tmp5");
-//		load("tmp5");
-//
-//		seq(new SkipTextsSegment(1));
-//		seq(new TextSegment());
-//
-//		for(int i=0;i<6;i++) {
-//			seq(Segment.press(Move.A));
-//			seq(new SelectMoveInList(1, 2)); // select growl
-//			seq(new DelayMoveSegment(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new SeqSegment() {
-//				@Override
-//				protected void execute() {
-//					seq(new CheckMoveOrderMetric(true, new int[]{33}, Move.A));
-//					seq(Move.A);
-//				}
-//			}, 60, 2, true));
-//			seq(new TextSegment(Move.A)); // used
-//			seq(new TextSegment(Move.A)); // fell
-//			seq(new DelayMoveSegment(new SeqSegment() {
-//				@Override
-//				protected void execute() {
-//					seq(Move.B);
-//					seq(new TextSegment(Move.A, false));
+		load("tmp5");
+
+		seq(new SkipTextsSegment(1));
+		seq(new TextSegment(Move.B));
+
+		for(int i=0;i<6;i++) {
+			seq(Segment.press(Move.A));
+			seq(new SelectMoveInList(1, 2)); // select growl
+			seq(new DelayMoveSegment(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new SeqSegment() {
+				@Override
+				protected void execute() {
+					seq(new CheckMoveOrderMetric(true, new int[]{39}, Move.A));
+					seq(Move.A);
+				}
+			}, 60, 2, true));
+			seq(new TextSegment(Move.A)); // used
+			seq(new TextSegment(Move.A)); // fell
+			seq(new DelayMoveSegment(new SeqSegment() {
+				@Override
+				protected void execute() {
+					seq(Move.B);
+					seq(new TextSegment(Move.A, false));
 //					seq(new CheckAttackMisses());
-//					seq(new Wait(1));
-//				}
-//			}));
-//			seq(new SkipTextsSegment(1));
-//		}
-//
-//		seq(Move.DOWN); // item
-//		seq(Move.RIGHT); // run
-//		seq(Move.A); // run
-//		seq(new SkipTextsSegment(1)); // got away safely
-//
-//		
-//		seq(new WalkToSegment(3, 43)); // enter viridian forest house
-//		seq(new WalkToSegment(5, 0)); // enter viridian forest
-//
-//		save("tmp6");
-//		load("tmp6");
-//
-//		seq(Move.START);
-//		seq(new CatchMonSegment(0));
-//
-//		save("tmp7");
-//		load("tmp7");
-//
-//		seq(Move.START);
-//		seq(Segment.scroll(1));
-//		seq(Move.A);
-//		seq(Segment.repress(Move.A));
-//		seq(Move.DOWN);
-//		seq(Move.A);
-//		seq(Move.DOWN);
-//		seq(Move.A);
-//		seq(Move.B);
-//		seq(Move.START);
-//
-//		seq(new WalkToSegment(23, 9)); // walk up to encounter
-//		seq(new DelayMoveSegment(new SeqSegment() {
-//			@Override
-//			protected void execute() {
-//				seq(Move.LEFT);
-//				seq(new CheckEncounterMetric(112 /*Weedle*/, 3));
-//			}
-//		}));
-//		
-//		save("tmp8");
-//		load("tmp8");
-//
-//		seq(new SkipTextsSegment(1));
-//		seq(new TextSegment());
-//		seq(Move.RIGHT);
-//		seq(Move.A);
-//		seq(Move.DOWN);
-//		seq(Move.A);
-//		seq(new DelayMoveSegment(new SeqSegment() {
-//			@Override
-//			protected void execute() {
-//				seq(Segment.repress(Move.A));
-//				seq(new CheckMoveOrderMetric(true, new int[]{81}, Move.A));
-//				seq(new TextSegment()); // come back
-//				seq(new TextSegment()); // go
-//				seq(new TextSegment(Move.A, false)); // used
-//				seq(new CheckLowerStatEffectMisses());
-//				seq(new Wait(1));
-//				seq(new SkipTextsSegment(1));
-//			}
-//		}));
+					seq(new CheckLowerStatEffectMisses());
+					seq(new Wait(1));
+				}
+			}));
+			seq(new SkipTextsSegment(1));
+		}
+
+		seq(Move.DOWN); // item
 //		{
-//			KillEnemyMonSegment kems = new KillEnemyMonSegment();
-//			kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 81)}; // string shot
-//			kems.attackCount[0][0] = 1; // 1x scratch
-//			kems.attackCount[0][1] = 1; // 1x scratch crit
-//			kems.numExpGainers = 3; // no level up, level up to 100
-//			kems.onlyPrintInfo = false;
-//			seq(kems); // Weedle
-//		}
+//			seq(Move.A); // item
+//			seq(new BallSuccessSegment());
 //
-//		save("tmp9");
-		load("tmp9");
+//			seq(new SkipTextsSegment(4)); // cought, new dex data
+//			seq(Segment.press(Move.A)); // skip dex
+//			seq(Segment.press(Move.B)); // skip dex
+//			seq(new SkipTextsSegment(2)); // no nickname
+//		}
+		{
+			seq(Move.RIGHT); // run
+			seq(Move.A); // run
+			seq(new SkipTextsSegment(1)); // got away safely
+		}
+
+		
+		seq(new WalkToSegment(3, 43)); // enter viridian forest house
+		seq(new WalkToSegment(5, 0)); // enter viridian forest
+
+		save("tmp6");
+//		load("tmp6");
+
+		seq(Move.START);
+		seq(new CatchMonSegment(0, "A"));
+
+		save("tmp7");
+//		load("tmp7");
+
+		seq(Segment.repress(Move.START));
+		seq(Segment.scroll(1));
+		seq(Move.A);
+		seq(Segment.repress(Move.A));
+		seq(Move.DOWN);
+		seq(Move.A);
+		seq(Move.DOWN);
+		seq(Move.A);
+		seq(Move.B);
+		seq(Move.START);
+
+		seq(new WalkToSegment(23, 9)); // walk up to encounter
+		seq(new DelayMoveSegment(new SeqSegment() {
+			@Override
+			protected void execute() {
+				seq(Move.LEFT);
+				seq(new CheckEncounterMetric(112 /*Weedle*/, 3));
+			}
+		}));
+		
+		save("tmp8");
+//		load("tmp8");
+
+		seq(new SkipTextsSegment(1));
+		seq(new TextSegment());
+		seq(Move.RIGHT);
+		seq(Move.A);
+		seq(Move.DOWN);
+		seq(Move.A);
+		seq(new DelayMoveSegment(new SeqSegment() {
+			@Override
+			protected void execute() {
+				seq(Segment.repress(Move.A));
+				seq(new CheckMoveOrderMetric(true, new int[]{81}, Move.A));
+				seq(new TextSegment()); // come back
+				seq(new TextSegment()); // go
+				seq(new TextSegment(Move.A, false)); // used
+				seq(new CheckLowerStatEffectMisses());
+				seq(new Wait(1));
+				seq(new SkipTextsSegment(1));
+			}
+		}));
+		{
+			KillEnemyMonSegment kems = new KillEnemyMonSegment();
+			kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 81)}; // string shot
+			kems.attackCount[0][0] = 1; // 1x scratch
+			kems.attackCount[0][1] = 1; // 1x scratch crit
+			kems.numExpGainers = 3; // no level up, level up to 100
+			kems.onlyPrintInfo = false;
+			seq(kems); // Weedle
+		}
+
+		save("tmp9");
+//		load("tmp9");
 
 		seq(new WalkToSegment(2, 19)); // walk up to trainer
 		seq(new MoveSegment(new OverworldInteract(4))); // talk to trainer
@@ -267,16 +298,16 @@ public class ViridianForestNidoking extends SeqSegment {
 			seq(kems); // Weedle
 		}
 		seq(new EndFightSegment(2)); // player defeated enemy
-//		
-//		/*{ // collect hidden potion
-//			seq(new WalkToSegment(1, 19)); // walk up to hidden item
-//			seq(new MoveSegment(new WaitUntilNextInputFrame()));
-//			seq(new MoveSegment(new Wait(1)));
-//			seq(new MoveSegment(new PressButton(Move.UP)));
-//			seq(new MoveSegment(new CollectHiddenItem()));
-//			seq(new TextSegment());
-//		}*/
-//		
+		
+		/*{ // collect hidden potion
+			seq(new WalkToSegment(1, 19)); // walk up to hidden item
+			seq(new MoveSegment(new WaitUntilNextInputFrame()));
+			seq(new MoveSegment(new Wait(1)));
+			seq(new MoveSegment(new PressButton(Move.UP)));
+			seq(new MoveSegment(new CollectHiddenItem()));
+			seq(new TextSegment());
+		}*/
+		
 		seq(new WalkToSegment(1, -1, false)); // leave forest
 		seq(new WalkToSegment(5, 0)); // leave forest house
 		seq(new WalkToSegment(8, -1)); // enter pewter city

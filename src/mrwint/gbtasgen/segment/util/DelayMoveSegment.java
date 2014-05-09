@@ -64,6 +64,12 @@ public class DelayMoveSegment extends Segment {
 		this.verificationSegment = verificationSegment;
 	}
 	
+	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, boolean metricBeforeExecution) {
+		this.factory = factory;
+		this.verificationSegment = verificationSegment;
+		this.metricBeforeExecution = metricBeforeExecution;
+	}
+	
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, int fullCutoffDelay, int nonemptyCutoffDelay) {
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;

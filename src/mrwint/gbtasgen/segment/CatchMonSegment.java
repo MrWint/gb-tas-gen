@@ -1,36 +1,44 @@
 package mrwint.gbtasgen.segment;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import mrwint.gbtasgen.Gb;
+import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.segment.util.SequenceSegment;
+import mrwint.gbtasgen.segment.gen1.common.NamingSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.state.StateBuffer;
 
-public class CatchMonSegment extends Segment {
+public class CatchMonSegment extends SeqSegment {
 
-	SequenceSegment sequence;
+	int numScrolls;
+	String name;
 	
 	public CatchMonSegment(int numScrolls) {
-		List<Segment> segments = new ArrayList<Segment>();
-
-		segments.add(new SkipTextsSegment(2)); // wild mon, go mon
-		segments.add(Segment.press(Move.DOWN)); // items
-		segments.add(Segment.press(Move.A)); // select items
-		segments.add(Segment.scrollFast(numScrolls)); // select ball
-		segments.add(new BallSuccessSegment());
-
-		segments.add(new SkipTextsSegment(4)); // cought, new dex data
-		segments.add(Segment.press(Move.A)); // skip dex
-		segments.add(Segment.press(Move.B)); // skip dex
-		segments.add(new SkipTextsSegment(2)); // no nickname
-		
-		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
+		this.numScrolls = numScrolls;
+	}
+	public CatchMonSegment(int numScrolls, String name) {
+		this.numScrolls = numScrolls;
+		this.name = name;
 	}
 	
-	@Override
-	public StateBuffer execute(StateBuffer in) {
-		return sequence.execute(in);
+	public void execute() {
+		boolean partyFull = Gb.readMemory(RomInfo.rom.numPartyMonAddress) == 6;
+		seq(new SkipTextsSegment(2)); // wild mon, go mon
+		seq(Segment.press(Move.DOWN)); // items
+		seq(Segment.press(Move.A)); // select items
+		seq(Segment.scrollFast(numScrolls)); // select ball
+		seq(new BallSuccessSegment());
+
+		seq(new SkipTextsSegment(4)); // cought, new dex data
+		seq(Segment.press(Move.A)); // skip dex
+		seq(Segment.press(Move.B)); // skip dex
+		seq(new SkipTextsSegment(1)); // nickname
+		seq(new SkipTextsSegment(1, name != null)); // nickname?
+		if (name != null) {
+			seq(new NamingSegment("A"));
+			seq(Move.START);
+		}
+		if (partyFull) {
+			seq(new SkipTextsSegment(2)); // transferred to PC
+		}
 	}
 }

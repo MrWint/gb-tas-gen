@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.gen1.catchemall;
 
+import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.gen1.OverworldInteract;
 import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.fight.EndFightSegment;
@@ -22,7 +23,7 @@ public class ViridianForestNormal extends SeqSegment {
 		seq(new InitFightSegment(1)); // start fight
 		{
 			KillEnemyMonSegment kems = new KillEnemyMonSegment();
-			kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(40)}; // poison sting
+			kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 81)}; // string shot
 			kems.attackCount[0][1] = 4; // 4x scratch crit
 			kems.numExpGainers = 2; // level up to 7
 			kems.onlyPrintInfo = false;
