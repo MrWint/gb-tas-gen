@@ -22,8 +22,8 @@ public class Test4 {
 	public static final int MIN_LOC = 0;
 	public static final int MAX_LOC = 12;//0x3f;
 	public static final int MAX_RADIUS = 5;
-	public static final boolean USE_JACK = true;
-	public static final boolean GOOD_TILESET = false;
+	public static final boolean USE_JACK = false;
+	public static final boolean GOOD_TILESET = true;
 	public static final List<Integer> goodTilesets = Arrays.asList(0x00,0x03,0x0f,0x10,0x11,0x16,0x17);
 	
 	/**
@@ -107,7 +107,7 @@ public class Test4 {
 //							if (lvl < 50) continue;
 //							printMap(tiles);
 							String desc = "" + Util.toHex(map,2)+":"+Util.toHex(loc,2)+" L"+lvl+(goodSpriteLoad?"G":"B")+" at ("+ox+","+oy+") ["+cx+","+cy+","+cWay+"] pointer "+Util.toHex(blockAdd, 4)+" ["+Util.toHex(cAdd, 4)+"]";
-							if (mon == 105)
+							if (mon == 170)
 //								if (lvl > 30)
 									if(knownHit.add(new DfsItem(cx,cy, 0, "")))
 										add(mon, desc, m);

@@ -29,7 +29,7 @@ public class WalkStep extends Move {
 		this.skipStandStillTest = skipStandStillTest;
 	}
 	
-	public int runToNextWalkFrame() {
+	public static int runToNextWalkFrame(int dir) {
 		int steps = 0;
 		// forward to first possible input frame
 		while(true) {
@@ -55,7 +55,7 @@ public class WalkStep extends Move {
 	
 	public int prepareMovement() {
 		int steps = 0;
-		steps += runToNextWalkFrame();
+		steps += runToNextWalkFrame(dir);
 		if(!skipStandStillTest) {
 			int standStill = Gb.readMemory(RomInfo.rom.playerMovingIndicatorAddress);
 			if(standStill != 0) {
@@ -91,10 +91,10 @@ public class WalkStep extends Move {
 							s.restore();
 							System.out.println("prepareMovement: avoiding encounter ("+steps+")");
 							State.step(); // wait one more frame
-							steps += runToNextWalkFrame(); // find next walk frame
+							steps += runToNextWalkFrame(dir); // find next walk frame
 						}
 					}
-					steps += runToNextWalkFrame(); // find next walk frame
+					steps += runToNextWalkFrame(dir); // find next walk frame
 					if(Gb.readMemory(RomInfo.rom.playerMovingIndicatorAddress) != 0)
 						throw new RuntimeException("standStill not fixed: "+Gb.readMemory(RomInfo.rom.playerMovingIndicatorAddress));
 				}

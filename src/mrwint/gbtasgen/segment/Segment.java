@@ -1,11 +1,13 @@
 package mrwint.gbtasgen.segment;
 
 import mrwint.gbtasgen.metric.Metric;
+import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.Scroll;
 import mrwint.gbtasgen.move.SkipInput;
 import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public abstract class Segment {
@@ -36,5 +38,29 @@ public abstract class Segment {
 	}
 	public static MoveSegment scrollFast(int num) {
 		return new MoveSegment(Scroll.fast(num));
+	}
+	public static SeqSegment scroll(final int num, final int move) {
+		return new SeqSegment() {
+			@Override
+			protected void execute() {
+				seq(scroll(num));
+				seq(move);
+			}
+		};
+	}
+	public static SeqSegment scrollA(final int num) {
+		return scroll(num, Move.A);
+	}
+	public static SeqSegment scrollFast(final int num, final int move) {
+		return new SeqSegment() {
+			@Override
+			protected void execute() {
+				seq(scrollFast(num));
+				seq(move);
+			}
+		};
+	}
+	public static SeqSegment scrollFastA(final int num) {
+		return scrollFast(num, Move.A);
 	}
 }

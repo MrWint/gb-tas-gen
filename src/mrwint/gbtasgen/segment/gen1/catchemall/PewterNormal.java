@@ -31,18 +31,14 @@ public class PewterNormal extends SeqSegment {
 			seq(new TextSegment());
 			{
 				seq(Segment.press(Move.A)); // pokeball
-				seq(Segment.scroll(-6)); // x7
-				seq(Segment.press(Move.A)); // buy
+				seq(Segment.scrollA(-6-1)); // buy x7 + 1
 				seq(new SkipTextsSegment(1)); // confirmation text
 				seq(new SkipTextsSegment(1, true)); // "yes"
 				seq(new SkipTextsSegment(1)); // thank you text
 			}
 			{
-				seq(Segment.press(Move.DOWN));
-				seq(Segment.press(Move.DOWN | Move.LEFT)); // escape rope
-				seq(Segment.press(Move.A)); // escape rope
-				seq(Segment.scroll(-1)); // x2
-				seq(Segment.repress(Move.A)); // buy
+				seq(Segment.scrollFastA(2)); // escape rope
+				seq(Segment.scrollA(-1)); // buy x2
 				seq(new SkipTextsSegment(1)); // confirmation text
 				seq(new SkipTextsSegment(1, true)); // "yes"
 				seq(new SkipTextsSegment(1)); // thank you text

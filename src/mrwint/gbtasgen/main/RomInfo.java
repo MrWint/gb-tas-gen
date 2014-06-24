@@ -22,6 +22,7 @@ public abstract class RomInfo {
 	public String romFileName;
 	public String romName;
 	public String romSHA1;
+	public String platform;
 	
 	// input
 	public int readJoypadAddress;
@@ -159,6 +160,8 @@ public abstract class RomInfo {
 			mapFactory = new Gen2Map.Factory();
 			curPositionOffset = -4;
 			listMovesEntryLength = 7;
+			
+			platform = "GBC";
 		}
 		@Override
 		public Move getWalkStep(int dir, boolean check, boolean skipStandStillTest) {
@@ -382,6 +385,8 @@ public abstract class RomInfo {
 			optionsTextSpeedMask = 0xF;
 			curPositionOffset = 0;
 			listMovesEntryLength = 6;
+
+			platform = "GB";
 		}
 		@Override
 		public Move getWalkStep(int dir, boolean check, boolean skipStandStillTest) {

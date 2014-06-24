@@ -52,6 +52,9 @@ public abstract class SeqSegment extends Segment {
 	public void delay(DelayableMoveFactory m, Segment s) {
 		seq(new DelayMoveSegment(m, s, true));
 	}
+	public void delay(Metric m) {
+		seq(new DelayMoveSegment(new CheckMetricSegment(m)));
+	}
 	
 	public void load(StateBuffer sb) {
 		in = sb;

@@ -8,7 +8,7 @@ import mrwint.gbtasgen.util.fight.DamageCalc;
 public class CheckEncounterMetric extends StateResettingMetric {
 	
 	int mon;
-	int lvl;
+	int[] lvl;
 	int startMove;
 	int[] specialDefStat;
 	int[] specialDV;
@@ -16,9 +16,12 @@ public class CheckEncounterMetric extends StateResettingMetric {
 	int[] hpStat;
 	
 	public CheckEncounterMetric() {
-		this(0, 0);
+		this(0);
 	}
-	public CheckEncounterMetric(int mon, int lvl) {
+	public CheckEncounterMetric(int mon) {
+		this.mon = mon;
+	}
+	public CheckEncounterMetric(int mon, int... lvl) {
 		this.mon = mon;
 		this.lvl = lvl;
 	}
@@ -53,7 +56,7 @@ public class CheckEncounterMetric extends StateResettingMetric {
 		int curMon = Gb.readMemory(RomInfo.rom.encounterMonSpeciesAddress);
 		int curLvl = Gb.readMemory(RomInfo.rom.encounterMonLevelAddress);
 		
-		if(add != RomInfo.rom.encounterCheckMainFuncEncounterAddress || (lvl > 0 && lvl != curLvl) || (mon > 0 && mon != curMon))
+		if(add != RomInfo.rom.encounterCheckMainFuncEncounterAddress || (lvl != null && !Util.arrayContains(lvl, curLvl)) || (mon > 0 && mon != curMon))
 			return 0;
 		if(specialDefStat != null) {
 			Util.runToAddress(0, 0, RomInfo.rom.printLetterDelayJoypadAddress);

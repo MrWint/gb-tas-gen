@@ -50,8 +50,8 @@ public class Test6 extends SeqSegment {
 			int[] memory = State.getCurrentMemory();
 			for (int i=20;i<0x80;i++) {
 				int add = 0xd31e+2*i;
-				if (memory[add] == 0x48 || memory[add] == 0x49 || memory[add] == 0x4e || memory[add] == 0x29 || memory[add] == 0xc5) {
-					String desc = ""+Util.toHex(map,2)+":"+i+"("+Util.toHex(add,4)+")";
+				if (/*memory[add] == 0x48 || memory[add] == 0x49 || memory[add] == 0x4e || memory[add] == 0x29 ||memory[add] == 0xc5 || */memory[add] == 0x1f) {
+					String desc = ""+Util.toHex(map,2)+"("+map+"):"+i+"("+Util.toHex(add,4)+")";
 					add(memory[add], desc, m);
 				}
 			}

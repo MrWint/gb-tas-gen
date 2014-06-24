@@ -62,7 +62,7 @@ public class BizhawkMovie {
 	private static void writeHeader(State s, PrintWriter out) throws IOException {
 		out.println("emuVersion Version 1.5.3");
 		out.println("MovieVersion BizHawk v0.0.1");
-		out.println("Platform GBC");
+		out.println("Platform "+RomInfo.rom.platform);
 		out.println("GameName "+RomInfo.rom.romName);
 		out.println("Author MrWint");
 		out.println("rerecordCount "+State.rerecordCount);
