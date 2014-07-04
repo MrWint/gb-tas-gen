@@ -23,6 +23,7 @@ public class OaksParcel extends SeqSegment {
 		seq(new WalkToSegment(11, 36)); // enter pallet town
 		seq(new WalkToSegment(12, 11)); // enter oaks lab
 		seq(new WalkToSegment(4, 2)); // stand left of oak
+//		seq(new WalkToSegment(5, 1)); // stand behind oak
 		seq(new WalkToSegment(5, 2, false)); // face towards oak
 		//seq(new WalkToSegment(5, 3)); // stand in front of oak
 		seq(new MoveSegment(new OverworldInteract(5))); // talk to oak

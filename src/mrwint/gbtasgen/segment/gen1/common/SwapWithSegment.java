@@ -3,7 +3,6 @@ package mrwint.gbtasgen.segment.gen1.common;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
 public class SwapWithSegment extends SeqSegment {
 	
@@ -15,7 +14,7 @@ public class SwapWithSegment extends SeqSegment {
 	@Override
 	public void execute() {
 		seq(Segment.repress(Move.SELECT)); // select
-		seq(Segment.scroll(scroll));
+		seq(Segment.scrollFast(scroll));
 		seq(Segment.repress(Move.SELECT)); // swap
 	}
 }

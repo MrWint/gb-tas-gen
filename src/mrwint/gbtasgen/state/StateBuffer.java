@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import mrwint.gbtasgen.main.RomInfo;
 
@@ -20,8 +21,8 @@ public class StateBuffer {
 	public static Decider DECIDER = Decider.SUM;
 	public static SecondaryDecider SECONDARY_DECIDER = SecondaryDecider.OCD;
 	
-	public static final int MAX_BUFFER_SIZE = 1;//128;
-	public static final int MAX_BUFFER_SIZE_HARDLIMIT = 32;//64;//256;//512;//1024;
+	public static final int MAX_BUFFER_SIZE = 100;//128;
+	public static final int MAX_BUFFER_SIZE_HARDLIMIT = 128;
 	public static final boolean BOUNDED_USE_MAPS = true;
 	public static final boolean UNBOUNDED_USE_MAPS = true;
 	
@@ -193,7 +194,7 @@ public class StateBuffer {
 	}
 	
 	public StateBuffer(int maxBufferSize) {
-		this.stateMap = new HashMap<Integer,SubMap>();
+		this.stateMap = new TreeMap<Integer,SubMap>();
 		this.maxBufferSize = maxBufferSize;
 		this.useList = !((this.maxBufferSize <= 0 && UNBOUNDED_USE_MAPS) || (this.maxBufferSize > 0 && BOUNDED_USE_MAPS));
 	}
@@ -226,7 +227,7 @@ public class StateBuffer {
 			for(Integer e : stateMap.keySet())
 				if(e > maxStepCount)
 					maxStepCount = e;
-			stateMap.get(maxStepCount).removeAny(false /* stateMap.size() <= 1 */);
+			stateMap.get(maxStepCount).removeAny(stateMap.size() <= 1);
 			if(stateMap.get(maxStepCount).size() == 0)
 				stateMap.remove(maxStepCount);
 		}

@@ -15,6 +15,7 @@ public class CatchMonSegment extends SeqSegment {
 	String name;
 	int withCooltrainerMon;
 	int extraBPresses, extraBPresses2;
+	int extraSkips = 0;
 	
 	public CatchMonSegment(int numScrolls) {
 		this(numScrolls, null, 0, 0, 0);
@@ -33,8 +34,13 @@ public class CatchMonSegment extends SeqSegment {
 		this.extraBPresses2 = extraBPresses2;
 	}
 	
+	public CatchMonSegment withExtraSkips(int extraSkips) {
+		this.extraSkips = extraSkips;
+		return this;
+	}
+	
 	public void execute() {
-		boolean partyFull = Gb.readMemory(RomInfo.rom.numPartyMonAddress) == 6;
+		boolean partyFull = Gb.readMemory(RomInfo.rom.numPartyMonAddress) >= 6;
 		seq(new SkipTextsSegment(2)); // wild mon, go mon
 		if (withCooltrainerMon > 0) {
 			delay(new SeqSegment() {
@@ -48,8 +54,8 @@ public class CatchMonSegment extends SeqSegment {
 		}
 		for(int i=0;i<extraBPresses;i++)
 			seq(Segment.repress(Move.B));
-		seq(Segment.press(Move.DOWN)); // items
-		seq(Segment.press(Move.A)); // select items
+		seq(Segment.press(Move.DOWN | Move.A)); // items
+//		seq(Segment.press(Move.A)); // select items
 		for(int i=0;i<extraBPresses2;i++)
 			seq(Segment.repress(Move.B));
 		seq(Segment.scrollFast(numScrolls)); // select ball
@@ -58,7 +64,11 @@ public class CatchMonSegment extends SeqSegment {
 		seq(new SkipTextsSegment(4)); // cought, new dex data
 		seq(Segment.press(Move.A)); // skip dex
 		seq(Segment.press(Move.B)); // skip dex
-		seq(new SkipTextsSegment(1)); // nickname
+//		seq(new SkipTextsSegment(1)); // nickname
+		seq(new TextSegment());
+		if (extraSkips > 0)
+			seq(Segment.skip(extraSkips));
+		seq(Move.B);
 		seq(new SkipTextsSegment(1, name != null)); // nickname?
 		if (name != null) {
 			seq(new NamingSegment(name));

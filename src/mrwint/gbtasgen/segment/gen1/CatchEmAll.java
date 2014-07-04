@@ -34,55 +34,55 @@ public class CatchEmAll extends SeqSegment {
 	@Override
 	protected void execute() {
 //		seq(new Intro());
-//		save("intro");
+//		save("intro10");
 
-//		load("intro");
+//		load("intro10");
 //		seq(new OakSpeech());
-//		save("oakSpeech");
+//		save("oakSpeech50");
 		
-//		load("oakSpeech");
+//		load("oakSpeech50");
 //		seq(new ChooseStarter());
-//		save("chooseStarter");
+//		save("chooseStarter50");
 		
-//		load("chooseStarter");
+//		load("chooseStarter50");
 //		seq(new RivalFight());
-//		save("rivalFight");
+//		save("rivalFight20");
 		
-//		load("rivalFight");
+//		load("rivalFight15");
 //		seq(new OaksParcel());
-//		save("oaksParcel");
+//		save("oaksParcel20");
 
-//		load("oaksParcel");
+//		load("oaksParcel20");
 //		seq(new ViridianForestNormal());
-//		save("viridianForestNormal");
+//		save("viridianForestNormal30");
 
-//		load("viridianForestNormal");
+//		load("viridianForestNormal10");
 //		seq(new PewterNormal());
-//		save("pewterNormal");
+//		save("pewterNormal20");
 
-//		load("pewterNormal");
+//		load("pewterNormal20");
 //		seq(new Route3Normal());
-//		save("route3Normal");
+//		save("route3Normal20");
 		
-//		load("route3Normal");
+//		load("route3Normal20");
 //		seq(new MtMoonNormal());
-//		save("mtMoonNormal");
+//		save("mtMoonNormal50");
 		
-//		load("mtMoonNormal");
+//		load("mtMoonNormal50");
 //		seq(new NuggetBridgeNormal());
-//		save("nuggetBridgeNormal");
+//		save("nuggetBridgeNormal20");
 
-//		load("nuggetBridgeNormal");
+//		load("nuggetBridgeNormal20");
 //		seq(new Underflow());
-//		save("underflow");
+//		save("underflow20");
 
-//		load("underflow");
+//		load("underflow20");
 //		seq(new VictoryRoad());
-//		save("victoryRoad");
+//		save("victoryRoad100a");
 
-//		load("victoryRoad");
-//		seq(new Mansion());
-//		save("mansion");
+		load("victoryRoad100a");
+		seq(new Mansion());
+		save("mansion1");
 
 //		load("mansion");
 //		seq(new CeruleanCave());
@@ -96,9 +96,9 @@ public class CatchEmAll extends SeqSegment {
 //		seq(new SeafoamIslands());
 //		save("seafoamIslands");
 
-		load("seafoamIslands");
-		seq(new SafariZone());
-		save("safariZone");
+//		load("seafoamIslands");
+//		seq(new SafariZone());
+//		save("safariZone");
 	}
 	
 	public static void main(String[] args) {

@@ -20,8 +20,8 @@ public class ChooseStarter extends SeqSegment {
 	@Override
 	public void execute() {
 		seq(new MoveSegment(ChangeOptionsMove.get(false))); // set options
-//		seq(new WalkToSegment(7, 3)); // walk some steps
 		seq(new WalkToSegment(7, 1)); // go downstairs
+		seq(new WalkToSegment(4, 7)); // leave house
 		seq(new WalkToSegment(3, 8, false)); // leave house
 		seq(new WalkToSegment(10, 1)); // walk into grass
 

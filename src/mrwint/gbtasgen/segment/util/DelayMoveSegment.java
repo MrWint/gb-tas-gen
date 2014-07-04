@@ -48,8 +48,8 @@ public class DelayMoveSegment extends Segment {
 	DelayableMoveFactory factory;
 	Segment verificationSegment;
 	
-	int fullCutoffDelay = 2;
-	int nonemptyCutoffDelay = 60;
+	int fullCutoffDelay = 0;
+	int nonemptyCutoffDelay = 2;
 	
 	boolean metricBeforeExecution = false;
 	

@@ -56,6 +56,12 @@ public class CheckEncounterMetric extends StateResettingMetric {
 		int curMon = Gb.readMemory(RomInfo.rom.encounterMonSpeciesAddress);
 		int curLvl = Gb.readMemory(RomInfo.rom.encounterMonLevelAddress);
 		
+		int dsum = (Gb.readMemory(RomInfo.rom.rngAddress) + Gb.readMemory(RomInfo.rom.rngAddress + 1)) & 0xff;
+		
+		if (add == RomInfo.rom.encounterCheckMainFuncEncounterAddress) {
+			System.out.println("encounter with dsum "+Util.toHex(dsum, 2)+ " ["+curMon+":"+curLvl+"]");
+		}
+		
 		if(add != RomInfo.rom.encounterCheckMainFuncEncounterAddress || (lvl != null && !Util.arrayContains(lvl, curLvl)) || (mon > 0 && mon != curMon))
 			return 0;
 		if(specialDefStat != null) {

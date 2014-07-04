@@ -118,7 +118,7 @@ public class WalkStep extends Move {
 				int add = Util.runToAddress2(0, dir, RomInfo.rom.walkSuccessAddress, RomInfo.rom.walkFailAddress);
 				if(add != RomInfo.rom.walkSuccessAddress) { // test if we are in the walk animation
 					System.err.println("moving failed ("+steps+")");
-					if(steps > 1000) {
+					if(steps > 20) {
 						System.out.println("moving failed too often, giving up!");
 						return false;
 					}

@@ -1,26 +1,11 @@
 package mrwint.gbtasgen.segment.gen1.catchemall;
 
-import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.gen1.OverworldInteract;
-import mrwint.gbtasgen.move.gen1.WalkStep;
-import mrwint.gbtasgen.segment.CatchMonSegment;
-import mrwint.gbtasgen.segment.CatchSafariMonSegment;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.WalkToSegment;
-import mrwint.gbtasgen.segment.gen1.common.CancelMoveLearnSegment;
-import mrwint.gbtasgen.segment.gen1.common.DepositMonSegment;
-import mrwint.gbtasgen.segment.gen1.common.EncounterAndCatchSafariSegment;
-import mrwint.gbtasgen.segment.gen1.common.EncounterAndCatchSegment;
-import mrwint.gbtasgen.segment.gen1.common.FishAndCatchSegment;
-import mrwint.gbtasgen.segment.gen1.common.ReleaseMonSegment;
 import mrwint.gbtasgen.segment.gen1.common.SwapWithSegment;
 import mrwint.gbtasgen.segment.gen1.common.TossItemSegment;
-import mrwint.gbtasgen.segment.gen1.common.UseEvoStoneSegment;
-import mrwint.gbtasgen.segment.gen1.common.UseRareCandySegment;
-import mrwint.gbtasgen.segment.gen1.common.WithdrawMonSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
@@ -79,7 +64,7 @@ public class SafariZone extends SeqSegment {
 //		seq(new WalkToSegment(10, 4, false)); // ledge
 //		seq(new EncounterAndCatchSegment(new CheckEncounterMetric(185, 22), Move.DOWN)); // Oddish
 //		seq(new WalkToSegment(12, 10, false)); // gate
-		
+//		
 //		save("sz1");
 //		load("sz1");
 //
@@ -276,7 +261,8 @@ public class SafariZone extends SeqSegment {
 //		seq(new WalkToSegment(7, 7));
 //		seq(new WalkToSegment(10, 8, false));
 //		seq(new WalkToSegment(18, 36));
-//		seq(new WalkToSegment(8, 2));
+//		seq(new WalkToSegment(8, 7));
+////		seq(Segment.wait(500));
 //		seq(new EncounterAndCatchSegment(72, Move.LEFT, true)); // Jynx
 //		seq(new WalkToSegment(8, -1));
 //		seq(new WalkToSegment(31, 2));
@@ -366,5 +352,8 @@ public class SafariZone extends SeqSegment {
 		seq(Move.START);
 		seq(new WalkToSegment(4, 8, false));
 		seq(new SkipTextsSegment(15)); // Oak HoF speech
+		seq(new TextSegment());
+		seq(new TextSegment());
+		seq(new SkipTextsSegment(1));
 	}
 }

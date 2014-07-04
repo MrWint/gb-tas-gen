@@ -13,6 +13,7 @@ public class EncounterAndCatchSegment extends SeqSegment {
 	String nick;
 	int withCoolTrainerMon;
 	int extraBPresses, extraBPresses2;
+	int extraSkips = 0;
 	
 	CheckEncounterMetric metric;
 	
@@ -50,6 +51,11 @@ public class EncounterAndCatchSegment extends SeqSegment {
 		this.withCoolTrainerMon = withCoolTrainer ? mon : 0;
 	}
 	
+	public EncounterAndCatchSegment withExtraSkips(int extraSkips) {
+		this.extraSkips = extraSkips;
+		return this;
+	}
+	
 	@Override
 	public void execute() {
 		delay(new SeqSegment() {
@@ -60,6 +66,6 @@ public class EncounterAndCatchSegment extends SeqSegment {
 				seq(metric);
 			}
 		});
-		seq(new CatchMonSegment(ballIndex, withCoolTrainerMon, extraBPresses, extraBPresses2));
+		seq(new CatchMonSegment(ballIndex, withCoolTrainerMon, extraBPresses, extraBPresses2).withExtraSkips(extraSkips));
 	}
 }

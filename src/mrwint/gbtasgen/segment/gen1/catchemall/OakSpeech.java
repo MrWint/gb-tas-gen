@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.segment.gen1.catchemall;
 
 import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.gen1.common.NamingSegment;
@@ -16,7 +17,8 @@ public class OakSpeech extends SeqSegment {
 	public void execute() {
 		seq(new SkipTextsSegment(13));
 		
-		seq(Segment.press(Move.A)); // name select
+		seq(new PressButton(Move.A)); // name select
+		
 		seq(new NamingSegment("BCVXZQr"));
 		seq(Segment.press(Move.START));
 

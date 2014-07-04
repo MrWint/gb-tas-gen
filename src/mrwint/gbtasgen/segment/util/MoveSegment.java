@@ -37,6 +37,7 @@ public class MoveSegment extends Segment {
 	public StateBuffer execute(StateBuffer in) {
 		StateBuffer out = new StateBuffer(bufferSize);
 		for(State s : in.getStates()) {
+			move.clearCache();
 			if (move.isCachable())
 				s.restore();
 			for(int delay = 0; delay <= maxDelay; delay++) {

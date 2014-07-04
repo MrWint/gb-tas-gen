@@ -34,10 +34,10 @@ public abstract class Segment {
 		return new MoveSegment(new SkipInput(num));
 	}
 	public static MoveSegment scroll(int num) {
-		return new MoveSegment(Scroll.slow(num));
+		return new MoveSegment(Scroll.slow(num, 0));
 	}
 	public static MoveSegment scrollFast(int num) {
-		return new MoveSegment(Scroll.fast(num));
+		return new MoveSegment(Scroll.fast(num, 0));
 	}
 	public static SeqSegment scroll(final int num, final int move) {
 		return new SeqSegment() {
@@ -51,6 +51,9 @@ public abstract class Segment {
 	public static SeqSegment scrollA(final int num) {
 		return scroll(num, Move.A);
 	}
+	public static MoveSegment scrollAF(final int num) {
+		return new MoveSegment(Scroll.slow(num, Move.A));
+	}
 	public static SeqSegment scrollFast(final int num, final int move) {
 		return new SeqSegment() {
 			@Override
@@ -62,5 +65,8 @@ public abstract class Segment {
 	}
 	public static SeqSegment scrollFastA(final int num) {
 		return scrollFast(num, Move.A);
+	}
+	public static MoveSegment scrollFastAF(final int num) {
+		return new MoveSegment(Scroll.fast(num, Move.A));
 	}
 }
