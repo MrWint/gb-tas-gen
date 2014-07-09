@@ -11,7 +11,8 @@ public class EncounterAndCatchSafariSegment extends SeqSegment {
 
 	int move;	
 	CheckEncounterMetric metric;
-	
+	int extraSkips = 0;
+
 	public EncounterAndCatchSafariSegment(CheckEncounterMetric metric, int move) {
 		this.metric = metric;
 		this.move = move;
@@ -21,6 +22,11 @@ public class EncounterAndCatchSafariSegment extends SeqSegment {
 		this.move = move;
 	}
 	
+	public EncounterAndCatchSafariSegment withExtraSkips(int extraSkips) {
+		this.extraSkips = extraSkips;
+		return this;
+	}
+
 	@Override
 	public void execute() {
 		delay(new SeqSegment() {
@@ -31,6 +37,6 @@ public class EncounterAndCatchSafariSegment extends SeqSegment {
 				seq(metric);
 			}
 		});
-		seq(new CatchSafariMonSegment());
+		seq(new CatchSafariMonSegment().withExtraSkips(extraSkips));
 	}
 }

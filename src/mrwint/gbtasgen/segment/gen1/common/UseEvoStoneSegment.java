@@ -16,7 +16,13 @@ public class UseEvoStoneSegment extends SeqSegment {
 	public void execute() {
 		seq(Segment.repress(Move.A)); // select
 		seq(Segment.repress(Move.A)); // use
-		seq(monscroll == 0 ? Segment.repress(Move.A) : Segment.scrollA(monscroll)); // mon
+		if (monscroll == 0)
+			seq(Segment.repress(Move.A)); // mon
+		else {
+			if (monscroll == 1 || monscroll == -1)
+				seq(Segment.skip(1));
+			seq(Segment.scrollAF(monscroll));
+		}
 		seq(new TextSegment());
 		seq(new TextSegment()); // evolution
 	}

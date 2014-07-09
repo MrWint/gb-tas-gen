@@ -14,6 +14,8 @@ public class CheckEncounterMetric extends StateResettingMetric {
 	int[] specialDV;
 	int[] defStat;
 	int[] hpStat;
+	int minDSum = 0x00;
+	int maxDSum = 0xff;
 	
 	public CheckEncounterMetric() {
 		this(0);
@@ -45,6 +47,14 @@ public class CheckEncounterMetric extends StateResettingMetric {
 		this.specialDV = specialDV;
 		return this;
 	}
+	public CheckEncounterMetric withMinDSum(int minDSum) {
+		this.minDSum = minDSum;
+		return this;
+	}
+	public CheckEncounterMetric withMaxDSum(int maxDSum) {
+		this.maxDSum = maxDSum;
+		return this;
+	}
 	
 	@Override
 	public int getMetricInternal() {
@@ -62,7 +72,7 @@ public class CheckEncounterMetric extends StateResettingMetric {
 			System.out.println("encounter with dsum "+Util.toHex(dsum, 2)+ " ["+curMon+":"+curLvl+"]");
 		}
 		
-		if(add != RomInfo.rom.encounterCheckMainFuncEncounterAddress || (lvl != null && !Util.arrayContains(lvl, curLvl)) || (mon > 0 && mon != curMon))
+		if(add != RomInfo.rom.encounterCheckMainFuncEncounterAddress || (lvl != null && !Util.arrayContains(lvl, curLvl)) || (mon > 0 && mon != curMon) || minDSum > dsum || maxDSum < dsum)
 			return 0;
 		if(specialDefStat != null) {
 			Util.runToAddress(0, 0, RomInfo.rom.printLetterDelayJoypadAddress);

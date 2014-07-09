@@ -21,7 +21,10 @@ public class UseBikeSegment extends SeqSegment {
 	public void execute() {
 		seq(Segment.repress(Move.START));
 		seq(Segment.scrollA(menuscroll));
-		seq(Segment.scrollFastA(itemscroll));
+		if (itemscroll == 0)
+			seq(Segment.repress(Move.A));
+		else
+			seq(Segment.scrollFastA(itemscroll));
 		seq(new SkipTextsSegment(1)); // got on bike
 	}
 }

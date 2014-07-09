@@ -49,7 +49,7 @@ public class DelayMoveSegment extends Segment {
 	Segment verificationSegment;
 	
 	int fullCutoffDelay = 0;
-	int nonemptyCutoffDelay = 2;
+	int nonemptyCutoffDelay = 4;
 	
 	boolean metricBeforeExecution = false;
 	

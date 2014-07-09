@@ -15,8 +15,10 @@ public class WithdrawMonSegment extends SeqSegment {
 	@Override
 	public void execute() {
 		seq(Segment.menu(Move.A)); // deposit
-		seq(Segment.scrollFast(monscroll));
-		seq(Segment.repress(Move.A)); // select
+		if (monscroll == 0)
+			seq(Segment.repress(Move.A)); // select
+		else
+			seq(Segment.scrollFastA(monscroll));
 		seq(Segment.repress(Move.A)); // deposit
 		seq(new SkipTextsSegment(2)); // taken out, got
 	}

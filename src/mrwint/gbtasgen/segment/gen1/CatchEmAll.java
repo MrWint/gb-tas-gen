@@ -80,25 +80,25 @@ public class CatchEmAll extends SeqSegment {
 //		seq(new VictoryRoad());
 //		save("victoryRoad100a");
 
-		load("victoryRoad100a");
-		seq(new Mansion());
-		save("mansion1");
+//		load("victoryRoad100a");
+//		seq(new Mansion());
+//		save("mansion100");
 
-//		load("mansion");
+//		load("mansion100");
 //		seq(new CeruleanCave());
-//		save("ceruleanCave");
+//		save("ceruleanCave100");
 
-//		load("ceruleanCave");
+//		load("ceruleanCave100");
 //		seq(new OldMan());
-//		save("oldMan");
+//		save("oldMan100");
 
-//		load("oldMan");
+//		load("oldMan100");
 //		seq(new SeafoamIslands());
-//		save("seafoamIslands");
+//		save("seafoamIslands100");
 
-//		load("seafoamIslands");
-//		seq(new SafariZone());
-//		save("safariZone");
+//		load("seafoamIslands100");
+		seq(new SafariZone());
+//		save("safariZone100");
 	}
 	
 	public static void main(String[] args) {

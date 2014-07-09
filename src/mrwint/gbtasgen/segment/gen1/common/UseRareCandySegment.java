@@ -18,8 +18,13 @@ public class UseRareCandySegment extends SeqSegment {
 		for (int i=0;i<num;i++) {
 			seq(Segment.repress(Move.A));
 			seq(Segment.repress(Move.A)); // use rare candy
-			seq(Segment.scroll(monscroll));
-			seq(Segment.repress(Move.A)); // mon
+			if (monscroll == 0)
+				seq(Segment.repress(Move.A)); // mon
+			else {
+				if (monscroll == 1 || monscroll == -1)
+					seq(Segment.skip(1));
+				seq(Segment.scrollAF(monscroll));
+			}
 			seq(Move.B); // rose to lvl
 			seq(Move.A); // clear stats
 			

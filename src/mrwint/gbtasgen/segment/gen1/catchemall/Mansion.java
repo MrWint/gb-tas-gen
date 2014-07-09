@@ -6,6 +6,7 @@ import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.gen1.OverworldInteract;
+import mrwint.gbtasgen.move.gen1.PrepWalkStep;
 import mrwint.gbtasgen.move.gen1.WalkStep;
 import mrwint.gbtasgen.segment.BallSuccessSegment;
 import mrwint.gbtasgen.segment.CatchMonSegment;
@@ -126,30 +127,30 @@ public class Mansion extends SeqSegment {
 //		seq(new WalkToSegment(12, 8));
 //		seq(new EncounterAndCatchSegment(136, Move.UP)); // Muk
 //		save("ma6");
-		load("ma6");
-		seq(new WalkToSegment(12, 3));
-		seq(new EncounterAndCatchSegment(143, Move.RIGHT)); // Weezing
+//		load("ma6");
 //		seq(new WalkToSegment(12, 3));
-//		seq(new WalkToSegment(13, 3)); // go to escape rope
-
-		seq(Segment.repress(Move.START));
-		seq(Segment.scrollA(2)); // items
-		seq(Segment.scrollFast(7)); // rare candy
-		seq(new SwapWithSegment(32)); // swap with text pointer
-		seq(new TossItemSegment(-0x4a)); // 284a text pointer
-		seq(Segment.repress(Move.B));
-		seq(Move.START);
-		seq(new OverworldInteract(2));
-		seq(new SkipTextsSegment(2)); // speech
-		seq(new CatchMonSegment(0));
-		seq(Segment.repress(Move.START));
-		seq(Segment.scrollA(1)); // mons
-		seq(Segment.skip(1));
-		seq(Segment.scrollAF(-1)); // mew
-		seq(Segment.repress(Move.A)); // dig
-		seq(Segment.skip(1));
-		
-		save("ma2");
+//		seq(new EncounterAndCatchSegment(143, Move.RIGHT)); // Weezing
+////		seq(new WalkToSegment(12, 3));
+////		seq(new WalkToSegment(13, 3)); // go to escape rope
+//
+//		seq(Segment.repress(Move.START));
+//		seq(Segment.scrollA(2)); // items
+//		seq(Segment.scrollFast(7)); // rare candy
+//		seq(new SwapWithSegment(32)); // swap with text pointer
+//		seq(new TossItemSegment(-0x4a)); // 284a text pointer
+//		seq(Segment.repress(Move.B));
+//		seq(Move.START);
+//		seq(new OverworldInteract(2));
+//		seq(new SkipTextsSegment(2)); // speech
+//		seq(new CatchMonSegment(0));
+//		seq(Segment.repress(Move.START));
+//		seq(Segment.scrollA(1)); // mons
+//		seq(Segment.skip(1));
+//		seq(Segment.scrollAF(-1)); // mew
+//		seq(Segment.repress(Move.A)); // dig
+//		seq(Segment.skip(1));
+//		
+//		save("ma2");
 //		load("ma2");
 //		
 //		seq(new WalkToSegment(11, 3)); // enter center
@@ -177,8 +178,8 @@ public class Mansion extends SeqSegment {
 //		seq(new WalkToSegment(36, 31));
 //		seq(new EncounterAndCatchSegment(170, Move.LEFT, true)); // porygon
 //
-//		save("ma4");
-//		load("ma4");
+//		save("ma3");
+//		load("ma3");
 //		
 //		seq(Segment.repress(Move.START));
 //		seq(Move.B);
@@ -194,7 +195,8 @@ public class Mansion extends SeqSegment {
 //			seq(Segment.repress(Move.A)); // use
 //			seq(new SkipTextsSegment(2)); // booted up HM, contains xyz
 //			seq(new SkipTextsSegment(1, true)); // learn
-//			seq(Segment.scrollA(-1)); // mew
+//			seq(Segment.skip(1));
+//			seq(Segment.scrollAF(-1)); // mew
 //			seq(new SkipTextsSegment(1)); // learned HM
 //		}
 //		seq(Segment.scrollFastA(-15)); // HM03
@@ -254,20 +256,25 @@ public class Mansion extends SeqSegment {
 //		seq(new WalkToSegment(36, 31));
 //		seq(new EncounterAndCatchSegment(105, Move.LEFT, true)); // Vaporeon
 //		
-//		save("ma5");
-//		load("ma5");
-//		
-//		seq(Segment.repress(Move.START));
-//		seq(Move.B);
+//		save("ma4a");
+//		load("ma4");
+//		seq(new UseBikeSegment());
+////		seq(Segment.repress(Move.START));
+////		seq(Move.B);
 //		seq(new WalkToSegment(37, 31)); // go up
 //		seq(new WalkToSegment(3, 8, false)); // go up
-//		seq(new WalkToSegment(12, 6));
-//		seq(new EncounterAndCatchSegment(48, Move.RIGHT)); // Drowzee
+////		seq(new WalkToSegment(13, 6));
 //		seq(new WalkToSegment(13, 8));
+//		seq(new EncounterAndCatchSegment(48, Move.DOWN)); // Drowzee
+//		save("ma5");
+//		load("ma5");
+//		seq(new WalkToSegment(13, 14));
 //		seq(new EncounterAndCatchSegment(108, Move.DOWN)); // Ekans
-//		seq(new WalkToSegment(13, 15));
+//		save("ma6");
+//		load("ma6");
+////		seq(new WalkToSegment(13, 15));
 //		seq(Segment.repress(Move.START));
-//		seq(Segment.scrollA(2)); // mons
+//		seq(Segment.scrollA(2)); // items
 //		seq(Segment.scrollFastA(16)); // Full heal
 //		seq(Segment.repress(Move.A));
 //		seq(Segment.repress(Move.A)); // Ditto
@@ -286,8 +293,8 @@ public class Mansion extends SeqSegment {
 //		seq(new WalkToSegment(49, 9));
 //		seq(new WalkToSegment(50, 9, false));
 //		
-//		save("ma6");
-//		load("ma6");
+//		save("ma5");
+//		load("ma5");
 //		
 //		seq(new WalkToSegment(7, 5));
 //		seq(Segment.skip(1));
@@ -310,7 +317,8 @@ public class Mansion extends SeqSegment {
 //		seq(new WalkToSegment(5, 7)); // three frame save
 //		seq(Segment.repress(Move.START));
 //		seq(Segment.scrollA(-1)); // mons
-//		seq(Segment.scrollA(-1)); // mew
+//		seq(Segment.skip(1));
+//		seq(Segment.scrollAF(-1)); // mew
 //		seq(Segment.repress(Move.A)); // dig
 //
 //		seq(new WalkToSegment(11, 3));
@@ -323,98 +331,121 @@ public class Mansion extends SeqSegment {
 //		seq(Segment.repress(Move.B));
 //		seq(Move.START);
 //		seq(new WalkToSegment(3,8, false)); // wrong warp
+//		
+//		save("ma6");
+//		load("ma6");
 //
 //		seq(new WalkToSegment(10, 16));
 //		seq(new EncounterAndCatchSegment(25, Move.RIGHT)); // Gastly
-//		
 //		save("ma7");
 //		load("ma7");
-//
 //		seq(Segment.repress(Move.START));
 //		seq(Segment.scrollA(2)); // items
 //		seq(Segment.scrollFast(17)); // Masterball x5
 //		seq(new SwapWithSegment(53)); // swap with Super Rod
 //		seq(Segment.repress(Move.B));
 //		seq(Move.START);
-//
 //		seq(new WalkToSegment(11, 14));
-//		seq(new EncounterAndCatchSegment(147, Move.UP)); // Haunter
+//		seq(new WalkToSegment(11, 15));
+//		seq(new EncounterAndCatchSegment(147, Move.DOWN)); // Haunter
+//		save("ma8a");
+//		load("ma8");
+//		{
+//			seq(Segment.skip(1));
+//			seq(new PrepWalkStep(Move.LEFT));
+//			seq(Segment.skip(1));
+//			seq(new PrepWalkStep(Move.DOWN));
+//			seq(Segment.skip(1));
+//			seq(new PrepWalkStep(Move.RIGHT));
+//			seq(Segment.skip(1));
+//			seq(new PrepWalkStep(Move.UP));
+//			seq(Segment.skip(1));
+//			seq(new PrepWalkStep(Move.LEFT));
+//			seq(Segment.skip(1));
+//			seq(new PrepWalkStep(Move.DOWN));
+//			seq(Segment.skip(1));
+//		}
 //		seq(new WalkToSegment(11, 15));
 //		seq(new EncounterAndCatchSegment(17, Move.DOWN)); // Cubone
-//
-//		seq(Segment.repress(Move.START));
-//		seq(Segment.scrollA(1)); // mons
-//		seq(Segment.scrollA(-1)); // mew
-//		seq(Segment.repress(Move.A)); // dig
-//		seq(Segment.skip(1));
-//
+//		save("ma9a");
+		load("ma9a");
+
+		seq(Segment.repress(Move.START));
+		seq(Segment.scrollA(1)); // mons
+		seq(Segment.skip(1));
+		seq(Segment.scrollAF(-1)); // mew
+		seq(Segment.repress(Move.A)); // dig
+		seq(Segment.skip(1));
+
 //		seq(new WalkToSegment(12, 4));
-//		seq(Segment.repress(Move.START));
-//		seq(Segment.scrollA(1)); // items
-//		seq(Segment.scrollA(6)); // JACK
-//		seq(Segment.repress(Move.A)); // use
-//		seq(Move.B);
+		seq(Segment.repress(Move.START));
+		seq(Segment.scrollA(1)); // items
+		seq(Segment.scrollFastA(6)); // JACK
+		seq(Segment.repress(Move.A)); // use
+		seq(Move.B);
+		seq(Segment.scrollFastA(-5)); // Bike
+		seq(new SkipTextsSegment(1)); // got on bike
 //		seq(Segment.repress(Move.B));
 //		seq(Move.START);
-//		seq(new WalkToSegment(18, -1));
-//		seq(new WalkToSegment(8, 31).setIgnoreTrainers(true));
-//		seq(new WalkToSegment(10, 31).setIgnoreTrainers(true));
-//		seq(Move.START);
-//		seq(Segment.scrollA(-1)); // mons
-//		seq(Segment.repress(Move.A)); // mew
-//		seq(Segment.scrollA(1)); // fly
-//		seq(Segment.scrollA(3)); // vermilion
-//
-//		seq(new WalkToSegment(11, 3));
-//		seq(new WalkToSegment(13,4));
-//		seq(new WalkToSegment(13,3, false)); // correct facing direction
-//		seq(Segment.press(Move.A)); // use PC
-//		seq(new SkipTextsSegment(1)); // booted PC
-//		seq(Segment.press(Move.A)); // someones PC
-//		seq(new SkipTextsSegment(2)); // someones PC, mon storage system
-//		seq(Segment.scroll(1)); // deposit
-//		seq(new DepositMonSegment(1)); // Butterfree
-//		seq(new DepositMonSegment(1)); // Dux
-//		seq(new DepositMonSegment(1)); // Fearow
-//		seq(Segment.menu(Move.UP)); // withdraw
-//		seq(new WithdrawMonSegment(4)); // Vulpix
-//		seq(new WithdrawMonSegment(10)); // Growlithe
-//		seq(new WithdrawMonSegment(10)); // Ponyta
-//		seq(Segment.menu(Move.DOWN)); // deposit
-//		seq(new DepositMonSegment(1)); // Abra
-//		seq(Segment.menu(Move.DOWN));
-//		seq(Segment.menu(Move.DOWN)); // change box
-//		seq(Segment.menu(Move.A)); // change box
-//		seq(new SkipTextsSegment(2)); // data saved
-//		seq(new SkipTextsSegment(1, true)); // ok
-//		seq(Segment.menu(Move.DOWN)); // switch to box 3
-//		seq(Segment.menu(Move.A)); // switch to box 3
-//		seq(new ResetAndContinueSegment()); // quit and continue
-//
-//		seq(new WalkToSegment(4,8,false)); // leave center
-//		seq(new WalkToSegment(7, 3)); // enter house
-//		seq(new WalkToSegment(3, 7)); // move
-//		seq(Segment.repress(Move.START));
-//		seq(Segment.scrollA(2)); // items
-//		seq(Segment.scrollFast(2));
-//		seq(new UseRareCandySegment(1, -1)); // ponyta L35
-//		seq(new SkipTextsSegment(1)); // Growl
-//		seq(new UseRareCandySegment(4, 0)); // ponyta L39
-//		seq(new CancelMoveLearnSegment()); // Fire spin
-//		seq(new UseRareCandySegment(1, 0)); // ponyta L40
-//		seq(new TextSegment());
-//		seq(new TextSegment()); // evolution
-//		seq(Segment.scrollFast(9)); // Fire Stone
-//		seq(new UseEvoStoneSegment(-1)); // Growlite
-//		seq(new UseEvoStoneSegment(-1)); // Vulpix
-//		seq(Segment.scrollFast(6)); // super rod
-//		seq(new SwapWithSegment(-12)); // swap with silph scope
-//		seq(Segment.scrollFast(16)); // money 0x0
-//		seq(new SwapWithSegment(14));
-//		seq(new TossItemSegment(256-228)); // warp 228:8
-//		seq(Segment.repress(Move.B));
-//		seq(Move.START);
-//		seq(new WalkToSegment(3, 8, false));
+		seq(new WalkToSegment(18, -1));
+		seq(new WalkToSegment(8, 31).setIgnoreTrainers(true));
+		seq(new WalkToSegment(10, 31).setIgnoreTrainers(true));
+		seq(Move.START);
+		seq(Segment.scrollA(-1)); // mons
+		seq(Segment.repress(Move.A)); // mew
+		seq(Segment.scrollA(1)); // fly
+		seq(Segment.scrollA(3)); // vermilion
+
+		seq(new WalkToSegment(11, 3));
+		seq(new WalkToSegment(13,4));
+		seq(new WalkToSegment(13,3, false)); // correct facing direction
+		seq(Segment.press(Move.A)); // use PC
+		seq(new SkipTextsSegment(1)); // booted PC
+		seq(Segment.press(Move.A)); // someones PC
+		seq(new SkipTextsSegment(2)); // someones PC, mon storage system
+		seq(Segment.scroll(1)); // deposit
+		seq(new DepositMonSegment(1)); // Butterfree
+		seq(new DepositMonSegment(1)); // Dux
+		seq(new DepositMonSegment(1)); // Abra
+		seq(Segment.menu(Move.UP)); // withdraw
+		seq(new WithdrawMonSegment(4)); // Vulpix
+		seq(new WithdrawMonSegment(14)); // Ponyta
+		seq(new WithdrawMonSegment(14)); // Growlithe
+		seq(Segment.menu(Move.DOWN)); // deposit
+		seq(new DepositMonSegment(1)); // Fearow
+		seq(Segment.menu(Move.DOWN));
+		seq(Segment.menu(Move.DOWN)); // change box
+		seq(Segment.menu(Move.A)); // change box
+		seq(new SkipTextsSegment(2)); // data saved
+		seq(new SkipTextsSegment(1, true)); // ok
+		seq(Segment.menu(Move.DOWN)); // switch to box 3
+		seq(Segment.menu(Move.A)); // switch to box 3
+		seq(new ResetAndContinueSegment()); // quit and continue
+
+		seq(new WalkToSegment(4,8,false)); // leave center
+		seq(new WalkToSegment(7, 3)); // enter house
+		seq(new WalkToSegment(3, 7)); // move
+		seq(Segment.repress(Move.START));
+		seq(Segment.scrollA(2)); // items
+		seq(Segment.scrollFast(2));
+		seq(new UseRareCandySegment(1, -2)); // ponyta L35
+		seq(new SkipTextsSegment(1)); // Growl
+		seq(new UseRareCandySegment(4, 0)); // ponyta L39
+		seq(new CancelMoveLearnSegment()); // Fire spin
+		seq(new UseRareCandySegment(1, 0)); // ponyta L40
+		seq(new TextSegment());
+		seq(new TextSegment()); // evolution
+		seq(Segment.scrollFast(9)); // Fire Stone
+		seq(new UseEvoStoneSegment(1)); // Growlite
+		seq(new UseEvoStoneSegment(-2)); // Vulpix
+		seq(Segment.scrollFast(6)); // super rod
+		seq(new SwapWithSegment(-12)); // swap with silph scope
+		seq(Segment.scrollFast(16)); // money 0x0
+		seq(new SwapWithSegment(14));
+		seq(new TossItemSegment(256-228)); // warp 228:8
+		seq(Segment.repress(Move.B));
+		seq(Move.START);
+		seq(new WalkToSegment(3, 8, false));
 //
 //		save("ma8");
 	}
