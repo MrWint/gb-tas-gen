@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.Metric;
+import mrwint.gbtasgen.metric.StateResettingMetric;
+import mrwint.gbtasgen.metric.gen1.CheckNoAIMove;
 import mrwint.gbtasgen.move.DelayUntil;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
@@ -63,7 +65,7 @@ public class KillEnemyMonSegment extends Segment {
 		}
 	}
 	
-	public static class CheckMoveOrderMetric extends Metric {
+	public static class CheckMoveOrderMetric extends StateResettingMetric {
 		final int[] move;
 		final int keys;
 		final boolean faster;
@@ -73,21 +75,24 @@ public class KillEnemyMonSegment extends Segment {
 			this.keys = keys;
 		}
 		@Override
-		public int getMetric() {
-			State s = new State();
+		public int getMetricInternal() {
 			//System.out.println("runToAddress");
 			//try {Thread.sleep(2000);} catch (InterruptedException e) {}
 			Util.runToAddress(0, keys, RomInfo.rom.fightDetermineAttackOrder);
 			//System.out.println("ranToAddress");
 			//try {Thread.sleep(2000);} catch (InterruptedException e) {}
 			int enemyMove = Gb.readMemory(RomInfo.rom.fightCurEnemyMoveAddress); // selected enemy move
-			if(move.length > 0 && !Util.arrayContains(move, enemyMove)) {
-				s.restore();
+			if(move.length > 0 && !Util.arrayContains(move, enemyMove))
 				return 0;
-			}
 			int add = Util.runToAddress2(0,0,RomInfo.rom.fightDetermineAttackOrderPlayerFirst,RomInfo.rom.fightDetermineAttackOrderEnemyFirst);
-			s.restore();
-			return (add == RomInfo.rom.fightDetermineAttackOrderPlayerFirst) == faster ? 1 : 0;
+			if ((add == RomInfo.rom.fightDetermineAttackOrderPlayerFirst) != faster)
+				return 0;
+//			System.out.println("move "+enemyMove);
+			if (!faster)
+				add = Util.runToAddress2(0,0,RomInfo.rom.fightAIMoveCheck); // Check for AI moves (item uses etc.)
+			else
+				return 1;
+			return (add == RomInfo.rom.fightAIExecuteMove) ? 1 : 0;
 		}
 	}
 	
@@ -293,6 +298,8 @@ public class KillEnemyMonSegment extends Segment {
 	
 	public int nextMonSpecies = -1;
 	public int nextMonLevel = -1;
+	
+	public int lastAttack = -1;
 
 
 	private int[][] attackDmg = new int[4][2];	// max damage a noncrit/crit can do
@@ -435,6 +442,14 @@ public class KillEnemyMonSegment extends Segment {
 							System.out.println("SKIP CRIT FOR NONCRITS!");
 							continue;
 						}
+						if (ai == lastAttack) {
+							boolean found = false;
+							for (int ii = 0; ii < 4; ii++)
+								if (ii != ai && fs.atkCnt[ii][0]+fs.atkCnt[ii][1] > 0)
+									found = true;
+							if (found)
+								continue;
+						}
 						if(fs.atkCnt[ai][ac] > 0) { // for every attack yet to go
 							if(rageInitialVal > 0 && ac == 1) {
 								fs.spareDamage -= (attackDmg[ai][1] - attackDmg[ai][0])*fs.atkCnt[ai][0];
@@ -517,8 +532,9 @@ public class KillEnemyMonSegment extends Segment {
 		final int[] curEnemyMove = getEnemyMove(curTurn);
 		final int curEnemyMoveMinDamage = (curEnemyMove.length  == 0) ? 0 : enemyDmg[getEnemyMoveIndex(curEnemyMove[0])][0];
 		
-		final AttackActionSegment curPlayerMoveSegment = new HitMetricSegment(playerCrit, false, playerEffective, true, getNumEndOfAttackTexts(curTurn), getNumEndOfAttackTexts(curTurn) > 0, false, thrashNumAdditionalTurns);
+		final AttackActionSegment curPlayerMoveSegment = new HitMetricSegment(playerCrit, false, playerEffective, true, getNumEndOfAttackTexts(curTurn), getNumEndOfAttackTexts(curTurn) > 0, false, n == 0 ? thrashNumAdditionalTurns : 0);
 		setAppendEnemyMoveMetric(curPlayerMoveSegment, curTurn, !faster && !pauseAfterPlayerAttack && !lastTurn && getNumEndOfTurnTexts(curTurn) == 0);
+		setAppendNoAIMoveMetric(curPlayerMoveSegment, faster && !pauseAfterPlayerAttack && !lastTurn);
 		
 		// init damage values
 		int goalEnemyDamage = -curEnemyMoveMinDamage;
@@ -580,6 +596,7 @@ public class KillEnemyMonSegment extends Segment {
 				if(!faster || lastTurn) {
 					im.putAll(playerIm);
 				} else {
+					moveFactory = new DelayUntilFactory(moveFactory, new CheckNoAIMove(Move.B));
 					for(Entry<PII,StateBuffer> e2 : playerIm.entrySet())
 						im.putAll(executeSingleAttack(e2.getValue(), moveFactory, curEnemyMoveSegment, goalEnemyDamage, minEnemyDamage, false, true));
 					moveFactory = curEnemyMoveSegment.getFinishMove();
@@ -665,6 +682,13 @@ public class KillEnemyMonSegment extends Segment {
 			ems.appendSegment = null;
 		else
 			ems.appendSegment = set ? new CheckMetricSegment(CheckEnemyMoveMetric.noKeys(getEnemyMove(curTurn+1))) : null;
+	}
+	
+	private void setAppendNoAIMoveMetric(AttackActionSegment ems, boolean set) {
+		if (Util.isGen1())
+			ems.appendSegment = set ? new CheckMetricSegment(new CheckNoAIMove(0)) : null;
+		else
+			ems.appendSegment = null;
 	}
 
 	public void printInfo(StateBuffer in) {

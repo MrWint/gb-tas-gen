@@ -2,14 +2,26 @@ package mrwint.gbtasgen.segment.fight;
 
 import mrwint.gbtasgen.metric.comparator.GreaterEqual;
 import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.CheckMoveDamage;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.CheckMoveOrderMetric;
+import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
 public class ThrashEnemyMonSegment extends SeqSegment {
+	
+	int minDmg;
+	boolean crit;
+	public ThrashEnemyMonSegment() {
+		this(1, false);
+	}
+	public ThrashEnemyMonSegment(int minDmg, boolean crit) {
+		this.minDmg = minDmg;
+		this.crit = crit;
+	}
 	
 	@Override
 	public void execute() {
@@ -17,14 +29,16 @@ public class ThrashEnemyMonSegment extends SeqSegment {
 			@Override
 			protected void execute() {
 				seq(Move.B); // continue text
-				seq(new TextSegment(Move.A, false)); // sent out new mon
+				seq(new TextSegment(Move.A, false, 0)); // sent out new mon
 				seq(new CheckMoveOrderMetric(true, new int[0], 0));
-				seq(Segment.wait(1)); // finish text frame
-				seq(new TextSegment(Move.A, false)); // thrashing about
-				seq(new CheckMoveDamage(false, false, true, false, false, false, 0), new GreaterEqual(), 1);
+				seq(new MoveSegment(new Wait(1), 0, 0)); // finish text frame
+				seq(new TextSegment(Move.A, false, 0)); // thrashing about
+				seq(new CheckMoveDamage(crit, false, !crit, false, false, false, 0), new GreaterEqual(), minDmg);
 				seq(Segment.wait(1)); // finish text frame
 			}
 		});
+		if (crit)
+			seq(new SkipTextsSegment(1)); // critical hit
 		seq(new SkipTextsSegment(1)); // mon fainted
 		seq(new TextSegment()); // gained exp
 	}

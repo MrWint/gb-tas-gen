@@ -50,6 +50,12 @@ public class DelayMoveSegment extends Segment {
 	
 	int fullCutoffDelay = 0;
 	int nonemptyCutoffDelay = 4;
+	int maxDelay = 100;
+	
+	public DelayMoveSegment withMaxDelay(int maxDelay) {
+		this.maxDelay = maxDelay;
+		return this;
+	}
 	
 	boolean metricBeforeExecution = false;
 	
@@ -119,6 +125,12 @@ public class DelayMoveSegment extends Segment {
 				
 				int curActiveFrame = State.currentStepCount;
 				
+				if(skips > maxDelay) {
+					System.out.println("DelayMoveSegment interrupting search (maxDelay)!");
+					active[cs] = false;
+					numActive--;
+					continue;
+				}
 				if(fullFrame < curActiveFrame-fullCutoffDelay) {
 					System.out.println("DelayMoveSegment interrupting search (fullFrame)!");
 					active[cs] = false;

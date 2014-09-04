@@ -142,6 +142,10 @@ public abstract class RomInfo {
 	public int fightDamageCalc;
 	public int fightDamageVariation;
 	public int[] fightEndTurnAddresses;
+	// Gen 1
+	public int[] fightAIMoveCheck;
+	public int fightAIExecuteMove;
+	
 	
 	// lists
 	public int listMoveNamesAddress;
@@ -508,6 +512,9 @@ public abstract class RomInfo {
 //			fightDamageCalc = 0x35753;
 //			fightDamageVariation = 0x34e4d;
 			fightEndTurnAddresses = new int[] {printLetterDelayJoypadAddress, 0x3c364, 0x3c380, 0x3c34e, 0x3c3a4}; // after both calls of ExecutePlayerMove; after both calls of ExecuteEnemyMove
+//			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress, 0x3c349, 0x3c39f};
+			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress/*, 0x3e6bc*/, 0x3a808};
+			fightAIExecuteMove = 0x3e6bc;
 
 			listMoveNamesAddress = 0xb0000;
 			listMovesAddress = 0x38000;
