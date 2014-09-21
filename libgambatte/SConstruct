@@ -5,7 +5,7 @@ vars = Variables()
 vars.Add('CC')
 vars.Add('CXX')
 
-env = Environment(CPPPATH = ['src', 'include', 'common','/usr/lib/jvm/java-7-oracle/include','/usr/lib/jvm/java-7-oracle/include/linux'],
+env = Environment(CPPPATH = ['src', 'include', 'common','/usr/lib/jvm/java-8-oracle/include','/usr/lib/jvm/java-8-oracle/include/linux'],
                   CFLAGS = global_cflags + global_defines,
                   CXXFLAGS = global_cxxflags + global_defines,
                   variables = vars)

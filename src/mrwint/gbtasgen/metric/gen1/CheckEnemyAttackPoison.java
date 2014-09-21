@@ -5,7 +5,7 @@ import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.util.Util;
 
-public class CheckEnemyAttackPoison extends StateResettingMetric {
+public class CheckEnemyAttackPoison implements StateResettingMetric {
 	
 	private boolean criticalHit;
 	

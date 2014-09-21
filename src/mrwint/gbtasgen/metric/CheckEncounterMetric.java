@@ -5,7 +5,7 @@ import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.util.Util;
 import mrwint.gbtasgen.util.fight.DamageCalc;
 
-public class CheckEncounterMetric extends StateResettingMetric {
+public class CheckEncounterMetric implements StateResettingMetric {
 	
 	int mon;
 	int[] lvl;

@@ -1,10 +1,11 @@
 package mrwint.gbtasgen.segment.gen2.any.trainer;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import mrwint.gbtasgen.metric.CheckEncounterMetric;
-import mrwint.gbtasgen.metric.comparator.Equal;
 import mrwint.gbtasgen.move.DelayUntil;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
@@ -15,8 +16,8 @@ import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.fight.EndFightSegment;
 import mrwint.gbtasgen.segment.fight.InitFightSegment;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment;
-import mrwint.gbtasgen.segment.fight.NewEnemyMonSegment;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.EnemyMoveDesc;
+import mrwint.gbtasgen.segment.fight.NewEnemyMonSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -26,10 +27,10 @@ import mrwint.gbtasgen.util.Util;
 public class SlowpokeWellRocket2 extends Segment {
 
 	SequenceSegment sequence;
-	
+
 	public SlowpokeWellRocket2() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		if(Util.isCrystal())
 			segments.add(new WalkToSegment(14, 4, false));	// engage rocket 2
 		else {
@@ -37,7 +38,7 @@ public class SlowpokeWellRocket2 extends Segment {
 //			segments.add(new WalkToSegment(13, 3, false));					// align
 			segments.add(new WalkToSegment(14, 2));					// align
 			segments.add(new MoveSegment(new PressButton(Move.LEFT)));	// face rocket
-			segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.LEFT), true, new CheckEncounterMetric().withStartMove(Move.LEFT), new Equal(), 0))));	// face rocket
+			segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.LEFT), true, new CheckEncounterMetric().withStartMove(Move.LEFT), EQUAL, 0))));	// face rocket
 			segments.add(new MoveSegment(new OverworldInteract()));	// engage rocket
 		}
 
@@ -66,10 +67,10 @@ public class SlowpokeWellRocket2 extends Segment {
 		segments.add(new WalkToSegment(14, 3));			// align
 		segments.add(new WalkToSegment(12, 3));			// align
 		segments.add(new WalkToSegment(7, 6, false));	// engage rocket 3
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

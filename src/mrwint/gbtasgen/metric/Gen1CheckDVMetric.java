@@ -7,7 +7,7 @@ import mrwint.gbtasgen.state.Register;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class Gen1CheckDVMetric extends Metric {
+public class Gen1CheckDVMetric implements StateResettingMetric {
 	private int initialMove;
 	private int minAtkDV;
 	private int minDefDV;
@@ -27,8 +27,7 @@ public class Gen1CheckDVMetric extends Metric {
 	}
 	
 	@Override
-	public int getMetric() {
-		State s = new State();
+	public int getMetricInternal() {
 		if(initialMove != 0)
 			Util.runToNextInputFrame();
 		Util.runToAddress(0, initialMove, RomInfo.rom.afterDVGenerationAddress);
@@ -44,7 +43,6 @@ public class Gen1CheckDVMetric extends Metric {
 		
 //		System.out.println("DVs: atk "+atk+", def "+def+", spd "+spd+", spc "+spc);
 		
-		s.restore();
 		if(atk < minAtkDV) return 0;
 		if(def < minDefDV) return 0;
 		if(spd < minSpdDV) return 0;

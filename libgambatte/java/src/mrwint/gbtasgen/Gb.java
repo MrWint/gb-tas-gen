@@ -14,8 +14,11 @@ public class Gb {
 
 	public static native void nstep(int keymask);
 	public static native int nstepUntil(int keymask, int[] addresses);
+	public static native void nreset();
 
 	public static int step(int keymask, int... addresses){
+		if ((keymask & 0x800) > 0)
+			nreset();
 		if(addresses.length == 0) {
 			nstep(keymask);
 			return 0;
@@ -26,11 +29,11 @@ public class Gb {
 	public static native long saveState(ByteBuffer buffer, int size);
 	public static native void loadState(ByteBuffer buffer, int size);
 
-	public static final int MAX_SAVE_SIZE = 210682;
+	public static final int MAX_SAVE_SIZE = 211243;
 
 	public static ByteBuffer createDirectByteBuffer(int capacity){
 		byte[] zeros = new byte[capacity];
-		ByteBuffer buf = 
+		ByteBuffer buf =
 			ByteBuffer.allocateDirect(capacity)
 			          .order(ByteOrder.nativeOrder());
 		buf.put(zeros);

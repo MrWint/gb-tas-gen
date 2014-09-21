@@ -1,27 +1,21 @@
 package mrwint.gbtasgen.main;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.WriteMemory;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.WalkToSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.segment.util.SleepSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
-import mrwint.gbtasgen.util.map.Gen1Map;
 
 public class Test5 extends SeqSegment {
 
@@ -34,7 +28,7 @@ public class Test5 extends SeqSegment {
 	@Override
 	protected void execute() {
 		Map<Integer, Set<String>> m = new TreeMap<Integer, Set<String>>();
-		
+
 		seq(new WalkToSegment(19, 17));
 		seq(Segment.skip(1));
 		seq(new WriteMemory(0xd3b1, 0x00)); // set index to 0
@@ -65,7 +59,7 @@ public class Test5 extends SeqSegment {
 				System.out.println("Map dimensions "+mapWidth+"x"+mapHeight);
 
 				int blockTilesAddress = Util.getMemoryLittleEndian(RomInfo.rom.blockTilesPointerAddress+1) + (memory[RomInfo.rom.blockTilesPointerAddress]-1)*0x4000;
-				
+
 				// build tile map
 				mapTiles = new int[(mapWidth+6)*4][(mapHeight+6)*4];
 				for(int blockX=0;blockX<mapWidth+6;blockX++) {
@@ -106,7 +100,7 @@ public class Test5 extends SeqSegment {
 				}
 			}
 		}
-		
+
 		for (Entry<Integer, Set<String>> e : m.entrySet()) {
 			System.out.print(e.getKey()+":");
 			for (String pos : e.getValue())
@@ -124,8 +118,6 @@ public class Test5 extends SeqSegment {
 
 		Gb.loadGambatte();
 		State.init(RomInfo.rom.romFileName);
-
-		Metric.initMetrics();
 
 		StateBuffer in = StateBuffer.load("test_1");
 		new Test5().execute(in);

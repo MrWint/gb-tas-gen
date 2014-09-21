@@ -1,11 +1,9 @@
 package mrwint.gbtasgen.metric.gen1;
 
-import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class CheckPoisonEffectMisses extends StateResettingMetric {
+public class CheckPoisonEffectMisses implements StateResettingMetric {
 	@Override
 	public int getMetricInternal() {
 		if(Util.runToAddress2Limit(0, 0, 100, 0x3f24f) == 0) // start of sleep effect handler

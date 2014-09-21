@@ -1,8 +1,8 @@
 package mrwint.gbtasgen.segment.util;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.metric.comparator.Equal;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -15,10 +15,10 @@ public class CheckMetricSegment extends Segment {
 	private String attributeName;
 
 	public CheckMetricSegment(Metric metric) {
-		this(metric,new Equal(),1,null);
+		this(metric, EQUAL, 1, null);
 	}
-	
-	public CheckMetricSegment(Metric metric, Comparator comp, int value,String attributeName) {
+
+	public CheckMetricSegment(Metric metric, Comparator comp, int value, String attributeName) {
 		this.metric = metric;
 		this.comp = comp;
 		this.value = value;

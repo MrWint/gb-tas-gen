@@ -3,8 +3,6 @@ package mrwint.gbtasgen.segment.gen1.noww;
 import mrwint.gbtasgen.metric.CheckAttackMisses;
 import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.comparator.Equal;
-import mrwint.gbtasgen.metric.comparator.GreaterEqual;
 import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.metric.gen1.CheckNoAIMove;
 import mrwint.gbtasgen.metric.gen1.CheckNoAIMove2;
@@ -68,7 +66,7 @@ public class EliteFour extends SeqSegment {
 //		seq(Move.B);
 //		seq(new EndFightSegment(5)); // player defeated enemy
 //		seq(new WalkToSegment(4, -1, false));
-//		
+//
 //		save("ef1");
 //		load("ef1");
 //
@@ -174,7 +172,7 @@ public class EliteFour extends SeqSegment {
 ////		}
 //		seq(new EndFightSegment(3)); // player defeated enemy
 //		seq(new WalkToSegment(4, -1, false));
-//		
+//
 //		save("ef2");
 //		load("ef2");
 //
@@ -237,7 +235,7 @@ public class EliteFour extends SeqSegment {
 //		load("tmp7");
 //		seq(new EndFightSegment(6)); // player defeated enemy
 //		seq(new WalkToSegment(4, -1, false));
-//		
+//
 //		save("ef3");
 //		load("ef3");
 //

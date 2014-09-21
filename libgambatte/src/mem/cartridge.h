@@ -59,6 +59,8 @@ public:
 	std::string defaultSaveBasePath;
 	std::string saveDir;
 	std::vector<AddrData> ggUndoList;
+
+	char *savestateBuf = NULL;
 	
 	void applyGameGenie(const std::string &code);
 	

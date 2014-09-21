@@ -1,14 +1,14 @@
 package mrwint.gbtasgen.util;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.UNEQUAL;
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.metric.comparator.Unequal;
 import mrwint.gbtasgen.state.State;
 
 public class Util {
-	public static String charConversionTable = 
+	public static String charConversionTable =
 			"................" +
 			"................" +
 			"................" +
@@ -25,7 +25,7 @@ public class Util {
 			"................" +
 			"'..-rm?!........" +
 			"......0123456789";
-	
+
 	public static String getString(int startAdd) {
 		String ret = "";
 		while(true) {
@@ -96,7 +96,7 @@ public class Util {
 		}
 		return numFrames;
 	}
-	
+
 	public static int runToFrameBeforeAddress(int baseKeys, int startKeys, int... addresses) {
 		State cur = new State();
 		int steps = runToAddress(baseKeys,baseKeys,addresses);
@@ -112,9 +112,9 @@ public class Util {
 	}
 
 	public static int runToFirstDifference(int baseKeys, int altKeys, Metric m) {
-		return runToFirstDifference(baseKeys,altKeys,m,new Unequal());
+		return runToFirstDifference(baseKeys,altKeys,m,UNEQUAL);
 	}
-	
+
 	public static int runToFirstDifference(int baseKeys, int altKeys, Metric m, Comparator comp) {
 		//State initial = new State();
 		int steps = runToNextInputFrame();
@@ -129,9 +129,9 @@ public class Util {
 			cur = new State();
 		}
 	}
-	
-	
-	
+
+
+
 	public static boolean isDifferencePoint(int baseKeys, int altKeys, Metric m, Comparator comp, State cur, State restoreOnTrue, State restoreOnFalse) {
 		State.step(altKeys);
 		int altMetric = m.getMetric();
@@ -149,11 +149,11 @@ public class Util {
 			restoreOnFalse.restore();
 		return false;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public static boolean arrayContains(int[] a, int b) {
 		for(int i=0;i<a.length; i++)
 			if(a[i] == b)
@@ -192,7 +192,7 @@ public class Util {
 			ret = "0" + ret;
 		return ret;
 	}
-	
+
 	public static boolean isCrystal() {
 		return RomInfo.rom.type == RomInfo.CRYSTAL;
 	}

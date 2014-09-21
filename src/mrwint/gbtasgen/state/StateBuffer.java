@@ -15,17 +15,17 @@ import java.util.TreeMap;
 import mrwint.gbtasgen.main.RomInfo;
 
 public class StateBuffer {
-	
+
 	public static StateMetric STATE_METRIC = StateMetric.DSum;
 	public static boolean SQUAREROOT_GROWTH = true;
 	public static Decider DECIDER = Decider.SUM;
 	public static SecondaryDecider SECONDARY_DECIDER = SecondaryDecider.OCD;
-	
+
 	public static final int MAX_BUFFER_SIZE = 1;//128;
 	public static final int MAX_BUFFER_SIZE_HARDLIMIT = 128;
 	public static final boolean BOUNDED_USE_MAPS = true;
 	public static final boolean UNBOUNDED_USE_MAPS = true;
-	
+
 	public enum StateMetric {
 		DSum,
 		RNG1,
@@ -34,19 +34,19 @@ public class StateBuffer {
 		DIV,
 		RANDOM
 	}
-	
+
 	public enum Decider {
 		SUM,
 		MAXDIFF,
 		MIN,
 		MAX,
 	}
-	
+
 	public enum SecondaryDecider {
 		OCD,
 		RANDOM,
 	}
-		
+
 	public static int getStateMetric(State s) {
 		switch(STATE_METRIC) {
 		case DIV:
@@ -64,7 +64,7 @@ public class StateBuffer {
 			return (int)(Math.random()*0x100);
 		}
 	}
-	
+
 	public static int getStateMetricMaxVal() {
 		switch(STATE_METRIC) {
 		case DIV:
@@ -82,14 +82,14 @@ public class StateBuffer {
 			return 0x100;
 		}
 	}
-	
+
 	public static abstract class SubMap {
 		public abstract boolean add(State s);
 		public abstract int size();
 		public abstract Collection<? extends State> getStates();
-		
+
 		public abstract void remove(State state);
-		
+
 		public void removeAny(boolean debugOut) {
 			int minMetric=getStateMetricMaxVal();
 			int maxMetric=-1;
@@ -129,7 +129,7 @@ public class StateBuffer {
 				System.out.println("D-Sums: "+Integer.toHexString(minMetric)+" - "+Integer.toHexString(maxMetric));
 		}
 	}
-	
+
 	public static class SubMapList extends SubMap {
 
 		ArrayList<State> list;
@@ -137,21 +137,25 @@ public class StateBuffer {
 		public SubMapList() {
 			list = new ArrayList<State>();
 		}
+		@Override
 		public boolean add(State s) {
 			list.add(s);
 			return true;
 		}
+		@Override
 		public int size() {
 			return list.size();
 		}
+		@Override
 		public Collection<? extends State> getStates() {
 			return list;
 		}
+		@Override
 		public void remove(State state) {
 			list.remove(state);
 		}
 	}
-	
+
 	public static class SubMapMap extends SubMap {
 
 		Map<Integer, State> map;
@@ -159,6 +163,7 @@ public class StateBuffer {
 		public SubMapMap() {
 			map = new HashMap<Integer, State>();
 		}
+		@Override
 		public boolean add(State s) {
 			Integer rngState = Integer.valueOf(s.rngState);
 			if(map.containsKey(rngState)) {
@@ -171,56 +176,59 @@ public class StateBuffer {
 			map.put(rngState, s);
 			return true;
 		}
+		@Override
 		public int size() {
 			return map.size();
 		}
+		@Override
 		public Collection<? extends State> getStates() {
 			return map.values();
 		}
+		@Override
 		public void remove(State state) {
 			map.remove(state.rngState);
 		}
 	}
-	
-	
-	
+
+
+
 	public Map<Integer,SubMap> stateMap;
 	public int maxBufferSize;
 
 	private boolean useList;
-	
+
 	public StateBuffer() {
 		this(MAX_BUFFER_SIZE);
 	}
-	
+
 	public StateBuffer(int maxBufferSize) {
 		this.stateMap = new TreeMap<Integer,SubMap>();
 		this.maxBufferSize = maxBufferSize;
 		this.useList = !((this.maxBufferSize <= 0 && UNBOUNDED_USE_MAPS) || (this.maxBufferSize > 0 && BOUNDED_USE_MAPS));
 	}
-	
+
 	@Override
 	public String toString() {
 		return "("+super.toString()+", "+size()+" States)";
 	}
-	
+
 	public boolean addState(State s) {
-		
+
 		if(!stateMap.containsKey(s.stepCount))
 			stateMap.put(s.stepCount, useList ? new SubMapList() : new SubMapMap());
 		SubMap subMap = stateMap.get(s.stepCount);
-		
+
 		if(!subMap.add(s))
 			return false;
 		prune();
 		return true;
 	}
-	
+
 	public void addAll(StateBuffer buf) {
 		for(State s : buf.getStates())
 			addState(s);
 	}
-	
+
 	public void prune() {
 		while(size() > (maxBufferSize <= 0 ? MAX_BUFFER_SIZE_HARDLIMIT : maxBufferSize)) {
 			int maxStepCount = Integer.MIN_VALUE;
@@ -232,7 +240,7 @@ public class StateBuffer {
 				stateMap.remove(maxStepCount);
 		}
 	}
-	
+
 	public Collection<State> getStates() {
 		List<State> ret = new ArrayList<State>();
 		for(SubMap subMap : stateMap.values())
@@ -255,7 +263,7 @@ public class StateBuffer {
 		return size() >= (maxBufferSize <= 0 ? MAX_BUFFER_SIZE_HARDLIMIT : maxBufferSize);
 	}
 
-	
+
 	public void save(String filename) {
 		try {
 			String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
@@ -266,7 +274,7 @@ public class StateBuffer {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void save(ObjectOutputStream oos) {
 		try {
 			int len = size();
@@ -279,12 +287,12 @@ public class StateBuffer {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	public static StateBuffer load(String filename) {
 		try {
 			String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
-			
+
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
 			StateBuffer ret = load(ois);
 			ois.close();
@@ -294,7 +302,7 @@ public class StateBuffer {
 			return null;
 		}
 	}
-	
+
 	public static StateBuffer load(ObjectInputStream ois) {
 		try {
 			int maxBufferSize = ois.readInt();

@@ -15,8 +15,8 @@ public class OverworldInteract extends DelayUntil {
 	public OverworldInteract() {
 		super(new WithMetric(new PressButton(Move.A, Metric.DOWN_JOY), true, new OverworldInteractMetric()));
 	}
-	
-	public static class OverworldInteractMetric extends StateResettingMetric {
+
+	public static class OverworldInteractMetric implements StateResettingMetric {
 		@Override
 		public int getMetricInternal() {
 			int add = State.step(Move.A,RomInfo.rom.owPlayerInputCheckAAddress);

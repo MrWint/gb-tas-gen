@@ -2,11 +2,9 @@ package mrwint.gbtasgen.metric.gen1;
 
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.state.Register;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class CheckNoAIMove extends StateResettingMetric {
+public class CheckNoAIMove implements StateResettingMetric {
 	
 	int initialMove;
 	

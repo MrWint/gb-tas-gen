@@ -16,8 +16,8 @@ public class OverworldInteract extends DelayUntil {
 	public OverworldInteract(int textID) {
 		super(new WithMetric(new PressButton(Move.A, Metric.PRESSED_JOY), true, new OverworldInteractMetric(textID)));
 	}
-	
-	public static class OverworldInteractMetric extends StateResettingMetric {
+
+	public static class OverworldInteractMetric implements StateResettingMetric {
 		private int textID;
 		public OverworldInteractMetric(int textID) {
 			this.textID = textID;

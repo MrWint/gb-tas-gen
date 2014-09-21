@@ -1,9 +1,9 @@
 package mrwint.gbtasgen.segment;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.MemoryAddress;
-import mrwint.gbtasgen.metric.comparator.Equal;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.gen1.common.NamingSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -16,7 +16,7 @@ public class CatchMonSegment extends SeqSegment {
 	int withCooltrainerMon;
 	int extraBPresses, extraBPresses2;
 	int extraSkips = 0;
-	
+
 	public CatchMonSegment(int numScrolls) {
 		this(numScrolls, null, 0, 0, 0);
 	}
@@ -33,12 +33,13 @@ public class CatchMonSegment extends SeqSegment {
 		this.extraBPresses = extraBPresses;
 		this.extraBPresses2 = extraBPresses2;
 	}
-	
+
 	public CatchMonSegment withExtraSkips(int extraSkips) {
 		this.extraSkips = extraSkips;
 		return this;
 	}
-	
+
+	@Override
 	public void execute() {
 		boolean partyFull = Gb.readMemory(RomInfo.rom.numPartyMonAddress) >= 6;
 		seq(new SkipTextsSegment(2)); // wild mon, go mon
@@ -48,7 +49,7 @@ public class CatchMonSegment extends SeqSegment {
 				protected void execute() {
 					seq(Move.A); // select fight
 					seq(Move.B); // back
-					seq(new MemoryAddress(RomInfo.rom.encounterMonSpeciesAddress), new Equal(), withCooltrainerMon);
+					seq(new MemoryAddress(RomInfo.rom.encounterMonSpeciesAddress), EQUAL, withCooltrainerMon);
 				}
 			});
 		}

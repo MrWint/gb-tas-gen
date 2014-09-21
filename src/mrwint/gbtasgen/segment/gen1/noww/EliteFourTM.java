@@ -2,8 +2,6 @@ package mrwint.gbtasgen.segment.gen1.noww;
 
 import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.comparator.Equal;
-import mrwint.gbtasgen.metric.comparator.GreaterEqual;
 import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.metric.gen1.CheckPoisonEffectMisses;
 import mrwint.gbtasgen.metric.gen1.CheckSleepEffectMisses;
@@ -64,7 +62,7 @@ public class EliteFourTM extends SeqSegment {
 //		seq(Move.B);
 //		seq(new EndFightSegment(5)); // player defeated enemy
 //		seq(new WalkToSegment(4, -1, false));
-//		
+//
 //		save("tmp");
 //		load("tmp");
 //
@@ -123,12 +121,12 @@ public class EliteFourTM extends SeqSegment {
 //		}
 //		seq(new EndFightSegment(3)); // player defeated enemy
 //		seq(new WalkToSegment(4, -1, false));
-//		
+//
 //		save("tmp2");
 //		load("tmp2");
 //
 //		seq(new WriteMemory(0xd196, 186));
-//		
+//
 //		seq(new WalkToSegment(4, 2)); // walk up to trainer
 //		seq(new WalkToSegment(5, 2, false)); // walk up to trainer
 //		seq(new MoveSegment(new OverworldInteract(1))); // talk to trainer
@@ -189,7 +187,7 @@ public class EliteFourTM extends SeqSegment {
 //		load("tmp7");
 //		seq(new EndFightSegment(6)); // player defeated enemy
 //		seq(new WalkToSegment(4, -1, false));
-//		
+//
 //		save("tmp3");
 //		load("tmp3");
 //

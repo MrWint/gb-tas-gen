@@ -4,7 +4,7 @@ import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.util.Util;
 
-public class CheckEscapeSuccess extends StateResettingMetric {
+public class CheckEscapeSuccess implements StateResettingMetric {
 	
 	int startMove;
 	public CheckEscapeSuccess(int startMove) {

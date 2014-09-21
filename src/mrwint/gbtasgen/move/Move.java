@@ -14,19 +14,19 @@ public abstract class Move {
 	public static final int LEFT   = 0x20;
 	public static final int UP     = 0x40;
 	public static final int DOWN   = 0x80;
-	
+
 	public static final int RESET  = 0x800;
 
 	public static PressButton press(int move) {
 		return new PressButton(move, Metric.DOWN_JOY);
 	}
-	
+
 	public static PressButton menu(int move) {
 		return new PressButton(move, Metric.MENU_JOY);
 	}
 
 
-	
+
 	State cachedState = null;
 	int cachedSkips = -1;
 	public void clearCache() {
@@ -56,7 +56,7 @@ public abstract class Move {
 	public void prepare(int skips, boolean useCache) {
 		int skipsLeft = skips;
 		boolean useCached = false;
-		if(!isCachable() || !useCache || cachedSkips > skips) 
+		if(!isCachable() || !useCache || cachedSkips > skips)
 			clearCache();
 		else if(cachedState != null) {
 			cachedState.restore();

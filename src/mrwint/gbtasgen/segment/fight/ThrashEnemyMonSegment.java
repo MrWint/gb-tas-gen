@@ -1,6 +1,6 @@
 package mrwint.gbtasgen.segment.fight;
 
-import mrwint.gbtasgen.metric.comparator.GreaterEqual;
+import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.segment.Segment;
@@ -12,7 +12,7 @@ import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
 public class ThrashEnemyMonSegment extends SeqSegment {
-	
+
 	int minDmg;
 	boolean crit;
 	public ThrashEnemyMonSegment() {
@@ -22,7 +22,7 @@ public class ThrashEnemyMonSegment extends SeqSegment {
 		this.minDmg = minDmg;
 		this.crit = crit;
 	}
-	
+
 	@Override
 	public void execute() {
 		delay(new SeqSegment() {
@@ -33,7 +33,7 @@ public class ThrashEnemyMonSegment extends SeqSegment {
 				seq(new CheckMoveOrderMetric(true, new int[0], 0));
 				seq(new MoveSegment(new Wait(1), 0, 0)); // finish text frame
 				seq(new TextSegment(Move.A, false, 0)); // thrashing about
-				seq(new CheckMoveDamage(crit, false, !crit, false, false, false, 0), new GreaterEqual(), minDmg);
+				seq(new CheckMoveDamage(crit, false, !crit, false, false, false, 0), GREATER_EQUAL, minDmg);
 				seq(Segment.wait(1)); // finish text frame
 			}
 		});

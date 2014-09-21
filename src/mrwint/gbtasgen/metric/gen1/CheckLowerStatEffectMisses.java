@@ -4,7 +4,7 @@ import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class CheckLowerStatEffectMisses extends StateResettingMetric {
+public class CheckLowerStatEffectMisses implements StateResettingMetric {
 	@Override
 	public int getMetricInternal() {
 		Util.runToAddress(0, 0, 0x3f54c); // start of LowerStatEffectHandler

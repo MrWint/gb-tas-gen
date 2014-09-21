@@ -1,35 +1,23 @@
 package mrwint.gbtasgen.metric;
 
+import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
-import mrwint.gbtasgen.state.Register;
 import mrwint.gbtasgen.state.State;
 
-public abstract class Metric {
-	
-	static Metric AF = new Metric() {
-		@Override
-		public int getMetric() {
-			return State.getRegister(Register.AF);
-		}
-	};
-	
-	public static Metric RESEASED_JOY;
-	public static Metric PRESSED_JOY;
-	public static Metric DOWN_JOY;
-	public static Metric MENU_JOY;
-	public static Metric TRUE = new Metric() {
-		@Override
-		public int getMetric() {
-			return 1;
-		}
-	};
+public interface Metric {
 
-	public abstract int getMetric();
+	int getMetric();
 
-	public static void initMetrics() {
-		RESEASED_JOY = new MemoryAddress(RomInfo.rom.hJoypadReleasedAddress);
-		PRESSED_JOY = new MemoryAddress(RomInfo.rom.hJoypadPressedAddress);
-		DOWN_JOY = new MemoryAddress(RomInfo.rom.hJoypadDownAddress);
-		MENU_JOY = new MemoryAddress(RomInfo.rom.hJoypadMenuAddress);
+	static Metric RESEASED_JOY = () -> {return Gb.readMemory(RomInfo.rom.hJoypadReleasedAddress);};
+	static Metric PRESSED_JOY = () -> {return Gb.readMemory(RomInfo.rom.hJoypadPressedAddress);};
+	static Metric DOWN_JOY = () -> {return Gb.readMemory(RomInfo.rom.hJoypadDownAddress);};
+	static Metric MENU_JOY = () -> {return Gb.readMemory(RomInfo.rom.hJoypadMenuAddress);};
+	static Metric TRUE = () -> {return 1;};
+
+	static Metric forAddress(int address) {
+		return () -> {return Gb.readMemory(address);};
+	}
+	static Metric forRegister(int register) {
+		return () -> {return State.getRegister(register);};
 	}
 }

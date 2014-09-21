@@ -1,27 +1,24 @@
 package mrwint.gbtasgen.segment.gen1.noww;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.comparator.Equal;
-import mrwint.gbtasgen.metric.comparator.GreaterEqual;
 import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.SelectMoveInList;
 import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.TextSegment;
-import mrwint.gbtasgen.segment.fight.EndFightSegment;
 import mrwint.gbtasgen.segment.fight.InitFightSegment;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.CheckMoveDamage;
 import mrwint.gbtasgen.segment.fight.KillEnemyMonSegment.CheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
 public class RivalFight extends SeqSegment {
 
+	@Override
 	public void execute() {
 		seq(new InitFightSegment(0));
 //		{
@@ -65,7 +62,7 @@ public class RivalFight extends SeqSegment {
 				protected void execute() {
 					seq(Move.B);
 					seq(new TextSegment(Move.A, false, 0));
-					seq(new CheckMoveDamage(false, false, true, false, false, false, 0), new GreaterEqual(), last ? 4 : 5);
+					seq(new CheckMoveDamage(false, false, true, false, false, false, 0), GREATER_EQUAL, last ? 4 : 5);
 					seq(new Wait(1));
 				}
 			}));

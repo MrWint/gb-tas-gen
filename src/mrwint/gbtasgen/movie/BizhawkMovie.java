@@ -21,12 +21,12 @@ public class BizhawkMovie {
 	public static void saveMovie(State s, String filename) {
 		try {
 			String path = "movies/" + filename + RomInfo.rom.fileNameSuffix + ".bkm";
-			
+
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path)));
-			
+
 			writeHeader(s,out);
 			writeInputs(s,out);
-			
+
 			out.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -45,9 +45,11 @@ public class BizhawkMovie {
 		for(int i = inputs.size()-1; i >= 0 ; i--)
 			writeInput(inputs.get(i).intValue(),out);
 	}
-	
+
 	private static void writeInput(int input, PrintWriter out) throws IOException {
-		out.print("|.|");
+		out.print("|");
+		out.print((input & Move.RESET) != 0 ? "P" : ".");
+		out.print("|");
 		out.print((input & Move.UP) != 0 ? "U" : ".");
 		out.print((input & Move.DOWN) != 0 ? "D" : ".");
 		out.print((input & Move.LEFT) != 0 ? "L" : ".");
@@ -71,18 +73,18 @@ public class BizhawkMovie {
 		out.println("Force_DMG_Mode False");
 		out.println("GBA_In_CGB False");
 	}
-	
+
 	public static State loadMovie(String filename) {
 		try {
 			String path = "movies/" + filename;
 			DataInputStream dis = new DataInputStream(new FileInputStream(path));
-			
+
 			dis.skip(0x3C); // skip to input offset
 			int inputAddress = Integer.reverseBytes(dis.readInt());
 			dis.skip(inputAddress - 0x40);
-			
+
 			State.root.restore();
-			
+
 			try{
 				while(true) {
 					int input = Short.reverseBytes(dis.readShort()) & 0xFF;

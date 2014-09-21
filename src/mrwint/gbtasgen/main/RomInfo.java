@@ -7,23 +7,26 @@ import mrwint.gbtasgen.util.map.Map.MapFactory;
 
 public abstract class RomInfo {
 	public static RomInfo rom;
-	
+
 	public static final int CRYSTAL = 0;
 	public static final int GOLD = 1;
 	public static final int SILVER = 2;
 
 	public static final int RED = 3;
 	public static final int BLUE = 4;
+	public static final int YELLOW = 5;
+
+	public static final int BLUE_J = 6;
 
 	public int type;
 	public MapFactory mapFactory;
-	
+
 	public String fileNameSuffix;
 	public String romFileName;
 	public String romName;
 	public String romSHA1;
 	public String platform;
-	
+
 	// input
 	public int readJoypadAddress;
 	public int hJoypadReleasedAddress;
@@ -60,12 +63,12 @@ public abstract class RomInfo {
 	// options
 	public int optionsAddress;
 	public int optionsTextSpeedMask;
-	
+
 	// stats
 	public int afterDVGenerationAddress;
 	public int afterTrainerIDGenerationAddress;
 	public int trainerIDAddress;
-	
+
 	//walking
 	public int doPlayerMovementFuncAddress;
 	public int doPlayerMovementFuncEndAddress;
@@ -79,7 +82,7 @@ public abstract class RomInfo {
 	public int doWalkPostEncounterCheckAddress;
 	public int walkSuccessAddress;
 	public int walkFailAddress;
-	
+
 	public int curPositionXAddress;
 	public int curPositionYAddress;
 	public int curPositionOffset;
@@ -93,7 +96,7 @@ public abstract class RomInfo {
 	public int catchFailureAddress;
 	public int[] encounterPreCheckAddresses;
 	public int[] encounterPostCheckAddresses;
-	
+
 	// interaction
 	public int owPlayerInputCheckAAddress;
 	public int owPlayerInputNoActionAddress;
@@ -102,7 +105,7 @@ public abstract class RomInfo {
 	public int owInteractionTargetAddress;
 	public int owInteractionSuccessfulAddress;
 	public int owLoopAddress;
-	
+
 	// battle
 	public int fightBattleMonLevelAddress;
 	public int fightBattleMonMovesAddress;
@@ -114,7 +117,7 @@ public abstract class RomInfo {
 	public int fightBattleMonIndex;
 	public int thrashNumTurnsAddress;
 	public int numPartyMonAddress;
-	
+
 	public int fightEnemyMonSpeciesAddress;
 	public int fightEnemyMonLevelAddress;
 	public int fightEnemyMonMovesAddress;
@@ -125,7 +128,7 @@ public abstract class RomInfo {
 	public int fightEnemyDVsAddress;
 	// Gen 1
 	public int fightEnemyMonIndex;
-	
+
 	public int fightCurMoveNumAddress;
 	public int fightCriticalHitAddress;
 	public int fightAttackMissedAddress;
@@ -145,8 +148,8 @@ public abstract class RomInfo {
 	// Gen 1
 	public int[] fightAIMoveCheck;
 	public int fightAIExecuteMove;
-	
-	
+
+
 	// lists
 	public int listMoveNamesAddress;
 	public int listMovesAddress;
@@ -155,16 +158,16 @@ public abstract class RomInfo {
 	public int listTypeMatchupAddress;
 
 	public int rngAddress;
-	
+
 	public abstract Move getWalkStep(int dir, boolean check, boolean skipStandStillTest);
-	
+
 	public static class GenIIRomInfo extends RomInfo {
 		public GenIIRomInfo() {
 			optionsTextSpeedMask = 0x7;
 			mapFactory = new Gen2Map.Factory();
 			curPositionOffset = -4;
 			listMovesEntryLength = 7;
-			
+
 			platform = "GBC";
 		}
 		@Override
@@ -172,21 +175,21 @@ public abstract class RomInfo {
 			return new mrwint.gbtasgen.move.gen2.WalkStep(dir, check, skipStandStillTest);
 		}
 	}
-	
+
 	public static class CrystalRomInfo extends GenIIRomInfo {
 		public CrystalRomInfo() {
 			super();
-			
+
 			type = CRYSTAL;
-			
+
 			fileNameSuffix = "Crystal";
-			
+
 			romFileName = "roms/crystal.gbc";
 			romName = "Pokemon - Crystal Version (USA, Europe)";
 			romSHA1 = "F4CD194BDEE0D04CA4EAC29E09B8E4E9D818C133";
-			
+
 			rngAddress = 0xFFE1;
-			
+
 			readJoypadAddress = 0x98f; // line that reads hJoypadDown
 			hJoypadReleasedAddress = 0xffa6;
 			hJoypadPressedAddress = 0xffa7;
@@ -195,7 +198,7 @@ public abstract class RomInfo {
 			printLetterDelayJoypadAddress = 0x3165;
 			printLetterDelayDelayFrameAddress = 0x317a;
 			printLetterDelayDoneAddress = 0x3185;
-			
+
 			tileCollisionTableAddress = 0x4ce1f;
 			mapGroupPointersAddress = 0x94000;
 			tilesetsAddress = 0x4d596;
@@ -203,22 +206,22 @@ public abstract class RomInfo {
 			curMapGroupAddress = 0xdcb5;
 			curMapIDAddress = 0xdcb6;
 			eventFlagsAddress = 0xda72;
-			
+
 			optionsAddress = 0xcfcc; // determines text speed
-			
+
 			afterDVGenerationAddress = 0xd9b5;
 			afterTrainerIDGenerationAddress = 0x5be4;
 			trainerIDAddress = 0xd47b;
-			
+
 			doPlayerMovementFuncAddress = 0x80000;
 			doPlayerMovementFuncEndAddress = 0x80016;
 			playerMovingIndicatorAddress = 0xd04e;
 			playerDirectionAddress = 0xd4de;
 			movementAnimationAddress = 0xd042;
-			
+
 			curPositionXAddress = 0xd4e6;
 			curPositionYAddress = 0xd4e7;
-			
+
 			encounterCheckMainFuncAddress = 0x97cc0;
 			encounterCheckMainFuncNoEncounterAddress = 0x97ce2;
 			encounterCheckMainFuncEncounterAddress = 0x97cf4;
@@ -228,11 +231,11 @@ public abstract class RomInfo {
 			catchFailureAddress = 0xe99f;
 			encounterPreCheckAddresses = new int[] {encounterCheckMainFuncAddress};
 			encounterPostCheckAddresses = new int[] {encounterCheckMainFuncNoEncounterAddress, encounterCheckMainFuncEncounterAddress};
-			
+
 			owPlayerInputCheckAAddress = 0x96983;
 			owPlayerInputNoActionAddress = 0x9698d;
 			owPlayerInputActionAddress = 0x9698f;
-			
+
 			fightBattleMonLevelAddress = 0xc639;
 			fightBattleMonMovesAddress = 0xc62e;
 			fightBattleMonStatsAddress = 0xc640;
@@ -252,7 +255,7 @@ public abstract class RomInfo {
 			fightAttackMissedAddress = 0xc667;
 			fightEffectMissedAddress = 0xc70d;
 			fightCurDamageAddress = 0xd256;
-			
+
 			fightDetermineAttackOrder = 0x3c314;
 			fightDetermineAttackOrderPlayerFirst = 0x3c3f1;
 			fightDetermineAttackOrderEnemyFirst = 0x3c3f3;
@@ -262,7 +265,7 @@ public abstract class RomInfo {
 			fightDamageCalc = 0x35612;
 			fightDamageVariation = 0x34cfd;
 			fightEndTurnAddresses = new int[] {printLetterDelayJoypadAddress, fightEndTurnResetFlags};
-			
+
 			listMoveNamesAddress = (0x72 -1) * 0x4000 + 0x5F29;
 			listMovesAddress = 0x41afb;
 			listTypeNamesAddress = 0x5097b;
@@ -272,15 +275,15 @@ public abstract class RomInfo {
 	public static class GoldRomInfo extends GenIIRomInfo {
 		public GoldRomInfo() {
 			super();
-			
+
 			type = GOLD;
-			
+
 			fileNameSuffix = "Gold";
-			
+
 			romFileName = "roms/gold.gbc";
 			romName = "Pokemon - Gold Version (USA, Europe)";
 			romSHA1 = "D8B8A3600A465308C9953DFA04F0081C05BDCB94";
-			
+
 			rngAddress = 0xFFE3;
 
 			readJoypadAddress = 0x940; // line that reads hJoypadDown
@@ -365,24 +368,24 @@ public abstract class RomInfo {
 			listTypeMatchupAddress = 0x34d01;
 		}
 	}
-	
+
 	public static class SilverRomInfo extends GoldRomInfo {
 		public SilverRomInfo() {
 			super();
-			
+
 			type = SILVER;
-			
+
 			fileNameSuffix = "Silver";
-			
+
 			romFileName = "roms/silver.gbc";
 			romName = "Pokemon - Silver Version (USA, Europe)";
 			romSHA1 = "49B163F7E57702BC939D642A18F591DE55D92DAE";
-			
+
 			catchSuccessAddress = 0xea1e;
 			catchFailureAddress = 0xea21;
 		}
 	}
-	
+
 	public static class GenIRomInfo extends RomInfo {
 		public GenIRomInfo() {
 			mapFactory = new Gen1Map.Factory();
@@ -397,19 +400,19 @@ public abstract class RomInfo {
 			return new mrwint.gbtasgen.move.gen1.WalkStep(dir, check, skipStandStillTest);
 		}
 	}
-	
+
 	public static class RedRomInfo extends GenIRomInfo {
 		public RedRomInfo() {
 			super();
-			
+
 			type = RED;
-			
+
 			fileNameSuffix = "Red";
-			
+
 			romFileName = "roms/red.gb";
 			romName = "Pokemon - Red Version (USA, Europe)";
 			romSHA1 = "EA9BCAE617FDF159B045185467AE58B2E4A48B9A";
-			
+
 			rngAddress = 0xFFD3;
 
 			readJoypadAddress = 0xc000; // line that reads hJoypadDown
@@ -534,6 +537,59 @@ public abstract class RomInfo {
 			romFileName = "roms/blue.gb";
 			romName = "Pokemon - Blue Version (USA, Europe)";
 			romSHA1 = "D7037C83E1AE5B39BDE3C30787637BA1D4C48CE2";
+		}
+	}
+
+	public static class YellowRomInfo extends RedRomInfo {
+		public YellowRomInfo() {
+			super();
+
+			type = YELLOW;
+
+			fileNameSuffix = "Yellow";
+
+			romFileName = "roms/yellow.gbc";
+			romName = "Pokemon - Yellow Version (USA, Europe)";
+//			romSHA1 = "D7037C83E1AE5B39BDE3C30787637BA1D4C48CE2";
+
+			readJoypadAddress = 0xc02d; // line that reads hJoypadDown
+			printLetterDelayJoypadAddress = 0x38eb;
+			printLetterDelayDelayFrameAddress = 0x38fa;
+			printLetterDelayDoneAddress = 0x3904;
+
+			optionsAddress = 0xd354; // determines text speed
+
+			afterTrainerIDGenerationAddress = 0xf6e6;
+			trainerIDAddress = 0xd358;
+		}
+	}
+
+	public static class BlueJRomInfo extends RedRomInfo {
+		public BlueJRomInfo() {
+			super();
+
+			readJoypadAddress = 0xc000; // line that reads hJoypadDown
+			printLetterDelayJoypadAddress = 0x38f6;
+			printLetterDelayDelayFrameAddress = 0x3905;
+			printLetterDelayDoneAddress = 0x390f;
+
+			type = BLUE_J;
+
+			fileNameSuffix = "BlueJ";
+
+			romFileName = "roms/bluej.gb";
+//			romName = "Pokemon - Yellow Version (USA, Europe)";
+//			romSHA1 = "D7037C83E1AE5B39BDE3C30787637BA1D4C48CE2";
+
+			readJoypadAddress = 0xc03a; // line that assembles joypad data
+			printLetterDelayJoypadAddress = 0x3954;
+			printLetterDelayDelayFrameAddress = 0x3963;
+			printLetterDelayDoneAddress = 0x396d;
+
+			optionsAddress = 0xd2d4; // determines text speed
+
+			afterTrainerIDGenerationAddress = 0xfbb4;
+			trainerIDAddress = 0xd2d8;
 		}
 	}
 }

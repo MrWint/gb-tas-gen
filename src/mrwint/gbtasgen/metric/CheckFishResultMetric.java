@@ -1,11 +1,10 @@
 package mrwint.gbtasgen.metric;
 
-import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.state.Register;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
-public class CheckFishResultMetric extends StateResettingMetric {
+public class CheckFishResultMetric implements StateResettingMetric {
 	
 	int mon;
 	int lvl;

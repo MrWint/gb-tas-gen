@@ -3,7 +3,7 @@ package mrwint.gbtasgen.metric.gen1;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.util.Util;
 
-public class CheckConfusionEffectMisses extends StateResettingMetric {
+public class CheckConfusionEffectMisses implements StateResettingMetric {
 	@Override
 	public int getMetricInternal() {
 		int add = Util.runToAddress2(0, 0, 0x3f96f, 0x3f9a6); // hit, miss

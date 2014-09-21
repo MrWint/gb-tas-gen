@@ -36,12 +36,12 @@ import mrwint.gbtasgen.util.fight.PII;
 public class KillEnemyMonSegment extends Segment {
 
 	public static final int MAX_SKIPS = -1;
-	
+
 	public static final int FULL_BUFFER_CUTOFF_DELAY = 0;
 	public static final int NONEMPTY_BUFFER_CUTOFF_DELAY = 0;
 
-	
-	public static class CheckEnemyMoveMetric extends Metric {
+
+	public static class CheckEnemyMoveMetric implements StateResettingMetric {
 		final int[] move;
 		final int keys;
 		public static CheckEnemyMoveMetric noKeys(int...move) {
@@ -55,17 +55,15 @@ public class KillEnemyMonSegment extends Segment {
 			this.keys = keys;
 		}
 		@Override
-		public int getMetric() {
-			State s = new State();
+		public int getMetricInternal() {
 			Util.runToAddress(0, keys, RomInfo.rom.fightAfterAIChooseMove);
 			int enemyMove = Gb.readMemory(RomInfo.rom.fightCurEnemyMoveAddress); // selected enemy move
-			s.restore();
 			System.out.println("found enemy move "+enemyMove);
 			return (((move.length == 0 && enemyMove != 98/*Quick Attack*/) || Util.arrayContains(move,enemyMove)) ? 1 : 0);
 		}
 	}
-	
-	public static class CheckMoveOrderMetric extends StateResettingMetric {
+
+	public static class CheckMoveOrderMetric implements StateResettingMetric {
 		final int[] move;
 		final int keys;
 		final boolean faster;
@@ -95,17 +93,17 @@ public class KillEnemyMonSegment extends Segment {
 			return (add == RomInfo.rom.fightAIExecuteMove) ? 1 : 0;
 		}
 	}
-	
-	public static class CheckAdditionalTexts extends Metric {
-		
+
+	public static class CheckAdditionalTexts implements Metric {
+
 		final int initialMove;
 		final boolean resetState;
-		
+
 		public CheckAdditionalTexts(int initialMove, boolean resetState) {
 			this.initialMove = initialMove;
 			this.resetState = resetState;
 		}
-		
+
 		@Override
 		public int getMetric() {
 			State s = null;
@@ -126,9 +124,9 @@ public class KillEnemyMonSegment extends Segment {
 			return 1;
 		}
 	}
-	
+
 	// returns damage dealt, or Integer.MIN_VALUE if attack missed crit status doesn't match
-	public static class CheckMoveDamage extends Metric {
+	public static class CheckMoveDamage implements StateResettingMetric {
 		final boolean criticalHit;
 		final boolean effectMiss;
 		final CheckAdditionalTexts cat;
@@ -146,17 +144,16 @@ public class KillEnemyMonSegment extends Segment {
 			this.thrashAdditionalTurns = thrashAdditionalTurns;
 		}
 		@Override
-		public int getMetric() {
-			State s = new State();
+		public int getMetricInternal() {
 			//Util.runToAddress(0, 0, RomInfo.rom.fightDamageCalc);
 			//int atk = State.getRegister(Register.BC) >> 8;
 			//int def = State.getRegister(Register.BC) % 256;
 			//int pow = State.getRegister(Register.DE) >> 8;
 			//int lvl = State.getRegister(Register.DE) % 256;
-			
+
 			//Util.runToAddress(0, 0, RomInfo.rom.fightDamageVariation);
 			//int maxdmg = Util.getMemoryBigEndian(RomInfo.rom.fightCurDamageAddress);
-			
+
 			Util.runToAddress(0, 0, RomInfo.rom.fightBattleCommand0a);
 			int crit = Gb.readMemory(RomInfo.rom.fightCriticalHitAddress);
 			int missed = Gb.readMemory(RomInfo.rom.fightAttackMissedAddress);
@@ -169,17 +166,12 @@ public class KillEnemyMonSegment extends Segment {
 				int effectMissed = Gb.readMemory(RomInfo.rom.fightEffectMissedAddress);
 				failure = failure || this.effectMiss != (effectMissed != 0);
 			}
-			if(failure) {
-				s.restore();
+			if(failure)
 				return Integer.MIN_VALUE;
-			}
 			int dmg = Util.getMemoryBigEndian(RomInfo.rom.fightCurDamageAddress);
 			if(dmg > 0 && cat != null)
-				if(cat.getMetric() == (expectAdditionalTexts ? 1 : 0)) { // found additional texts
-					s.restore();
+				if(cat.getMetric() == (expectAdditionalTexts ? 1 : 0)) // found additional texts
 					return Integer.MIN_VALUE;
-				}
-			s.restore();
 //			System.out.println(crit+" "+missed+" "+effectMissed+" "+dmg);
 			//System.out.println("atk: "+atk+", def: "+def+", pow: "+pow+", lvl: "+lvl);
 			//System.out.println("max damage: "+maxdmg+", dmg: "+dmg);
@@ -191,13 +183,13 @@ public class KillEnemyMonSegment extends Segment {
 		int[][] atkCnt = new int[4][2];
 		int spareDamage;
 		int spareEnemyDamage;
-		
+
 		public FightState(int[][] atkCnt, int spareDamage, int spareEnemyDamage) {
 			this.atkCnt = atkCnt;
 			this.spareDamage = spareDamage;
 			this.spareEnemyDamage = spareEnemyDamage;
 		}
-		
+
 		public FightState(int[][] atkCnt, int spareDamage, int spareEnemyDamage, int usedAtkIdx, int usedAtkCrit) {
 			this.atkCnt = new int[4][2];
 			for (int i = 0; i < 4; i++)
@@ -208,7 +200,7 @@ public class KillEnemyMonSegment extends Segment {
 			this.spareDamage = spareDamage;
 			this.spareEnemyDamage = spareEnemyDamage;
 		}
-		
+
 		@Override
 		public String toString() {
 			String ret = "(";
@@ -245,7 +237,7 @@ public class KillEnemyMonSegment extends Segment {
 			return true;
 		}
 	}
-	
+
 	public int[][] attackCount = new int[4][2];
 
 	public static class EnemyMoveDesc {
@@ -295,10 +287,10 @@ public class KillEnemyMonSegment extends Segment {
 
 	public int rageInitialVal = 0;
 	public int rageMaxVal = 0;
-	
+
 	public int nextMonSpecies = -1;
 	public int nextMonLevel = -1;
-	
+
 	public int lastAttack = -1;
 
 
@@ -320,7 +312,7 @@ public class KillEnemyMonSegment extends Segment {
 
 		int enemySpeed = DamageCalc.getStat(false, DamageCalc.STAT_SPD, false);
 		int playerSpeed = DamageCalc.getStat(true, DamageCalc.STAT_SPD, false);
-		
+
 		if(enemySpeed > playerSpeed) {
 			System.out.println("enemy is faster ("+playerSpeed+" to "+enemySpeed+")");
 			faster = false;
@@ -328,13 +320,13 @@ public class KillEnemyMonSegment extends Segment {
 			System.out.println("player is faster ("+playerSpeed+" to "+enemySpeed+")");
 			faster = true;
 		}
-		
+
 		if(onlyPrintInfo)
 			return in;
 
 		int enemyHP = Util.getMemoryBigEndian(RomInfo.rom.fightEnemyMonHPAddress);
 		int ownHP = Util.getMemoryBigEndian(RomInfo.rom.fightBattleMonHPAddress);
-		
+
 		if(maxOwnDamage < 0)
 			maxOwnDamage = ownHP -1;
 
@@ -347,7 +339,7 @@ public class KillEnemyMonSegment extends Segment {
 		int numAttacks = 0;
 		int maxAttackDamage = -1;
 		int numOwnMoves = 0;
-		
+
 		// calc number of attacks/sum of damage/max damage
 		for(int i=0;i<4;i++) { // moves
 			attackDmg[i][0] = DamageCalc.getDamage(true, i, false);
@@ -383,9 +375,9 @@ public class KillEnemyMonSegment extends Segment {
 				maxAttackDamage = Math.max(maxAttackDamage, attackDmg[i][1]);
 			}
 		}
-		
+
 		numTurns = numAttacks;
-		
+
 		// fix enemyMoveDesc array length
 		int numEnemyAttacks = faster ? numAttacks - 1 : numAttacks;
 		if(numEnemyAttacks > 0 && enemyMoveDesc.length > numEnemyAttacks)
@@ -395,7 +387,7 @@ public class KillEnemyMonSegment extends Segment {
 		for(int i=0;i<numEnemyAttacks;i++)
 			tmp[i] = enemyMoveDesc[Math.min(i, enemyMoveDesc.length-1)];
 		enemyMoveDesc = tmp;
-		
+
 		// calc min enemy damage
 		int sumEnemyDamage = 0;
 		for(int i=0; i<numEnemyAttacks; i++) {
@@ -425,9 +417,9 @@ public class KillEnemyMonSegment extends Segment {
 		for(int i=0;i<numAttacks;i++)
 			bufs[i] = new HashMap<FightState, StateBuffer>();
 		goalBuf = new StateBuffer();
-		
+
 		getBuffer(new FightState(attackCount, spareDamage, spareEnemyDamage),bufs[numAttacks-1]).addAll(in); // add initial states
-		
+
 		// simulate turns
 		for(int n=numAttacks-1;n>=0;n--) {
 			System.out.println("with "+(n+1)+" remaining turns, there are "+bufs[n].size()+" different FightStates:");
@@ -470,7 +462,7 @@ public class KillEnemyMonSegment extends Segment {
 				e.setValue(null); // free memory
 			}
 		}
-		
+
 		StateBuffer ret = goalBuf;
 		goalBuf = null; // free memory
 		bufs = null;
@@ -492,7 +484,7 @@ public class KillEnemyMonSegment extends Segment {
 			posBuffers.put(p, new StateBuffer());
 		return posBuffers.get(p);
 	}
-	
+
 	private AttackActionSegment getEnemyMoveSegment(int curTurn) {
 		return curTurn < enemyMoveDesc.length ? enemyMoveDesc[curTurn].segment : new MissMetricSegment(false);
 	}
@@ -508,7 +500,7 @@ public class KillEnemyMonSegment extends Segment {
 	private int getNumEndOfAttackTexts(int curTurn) {
 		return curTurn < numEndOfAttackTexts.length ? numEndOfAttackTexts[curTurn] : 0;
 	}
-	
+
 	private void executeTurn(FightState fs, StateBuffer in, int n, int ai, int ac) {
 		final int curTurn = numTurns - 1 - n;
 
@@ -521,21 +513,21 @@ public class KillEnemyMonSegment extends Segment {
 		final boolean pauseAfterPlayerAttack = playerEffective || playerCrit;
 		final boolean pauseAfterEnemyAttack = getEnemyMoveSegment(curTurn).getFinishMove() != null;
 		final boolean separateAttacks = (faster && pauseAfterPlayerAttack) || (faster && lastTurn) || (!faster && pauseAfterEnemyAttack);
-		
+
 		int sumCrits = 0;
 		for(int i=0;i<4;i++)
 			sumCrits += fs.atkCnt[i][1];
 		final boolean playerForgoMaxCrit = (MAX_SKIPS < 0) && (sumCrits <= fs.spareDamage);
-		
+
 		final AttackActionSegment curEnemyMoveSegment = getEnemyMoveSegment(curTurn);
 		setAppendEnemyMoveMetric(curEnemyMoveSegment, curTurn, faster && !pauseAfterEnemyAttack && getNumEndOfTurnTexts(curTurn) == 0);
 		final int[] curEnemyMove = getEnemyMove(curTurn);
 		final int curEnemyMoveMinDamage = (curEnemyMove.length  == 0) ? 0 : enemyDmg[getEnemyMoveIndex(curEnemyMove[0])][0];
-		
+
 		final AttackActionSegment curPlayerMoveSegment = new HitMetricSegment(playerCrit, false, playerEffective, true, getNumEndOfAttackTexts(curTurn), getNumEndOfAttackTexts(curTurn) > 0, false, n == 0 ? thrashNumAdditionalTurns : 0);
 		setAppendEnemyMoveMetric(curPlayerMoveSegment, curTurn, !faster && !pauseAfterPlayerAttack && !lastTurn && getNumEndOfTurnTexts(curTurn) == 0);
 		setAppendNoAIMoveMetric(curPlayerMoveSegment, faster && !pauseAfterPlayerAttack && !lastTurn);
-		
+
 		// init damage values
 		int goalEnemyDamage = -curEnemyMoveMinDamage;
 		int minEnemyDamage = goalEnemyDamage - fs.spareEnemyDamage;
@@ -559,7 +551,7 @@ public class KillEnemyMonSegment extends Segment {
 			}
 		}
 
-		
+
 		System.out.println("executeTurn goal "+new PII(goalPlayerDamage,goalEnemyDamage)+" min "+new PII(minPlayerDamage, minEnemyDamage));
 
 		// clear damage attributes
@@ -567,7 +559,7 @@ public class KillEnemyMonSegment extends Segment {
 			s.setAttributeInt(PLAYER_ATTRIBUTE, Integer.MIN_VALUE);
 			s.setAttributeInt(ENEMY_ATTRIBUTE, Integer.MIN_VALUE);
 		}
-		
+
 		final Map<PII,StateBuffer> im = new HashMap<PII, StateBuffer>();
 		DelayableMoveFactory initialMoveFactory = new DelayUntilFactory(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new CheckMoveOrderMetric(faster,curEnemyMove,Move.A));
 
@@ -645,7 +637,7 @@ public class KillEnemyMonSegment extends Segment {
 			int playerDamage = e.getKey().a;
 			int enemyDamage = e.getKey().b;
 			StateBuffer imm = e.getValue();
-			
+
 			// handle end of turn texts
 			if(getNumEndOfTurnTexts(curTurn) > 0) {
 				System.out.println("executing "+getNumEndOfTurnTexts(curTurn)+" end of turn texts!");
@@ -658,7 +650,7 @@ public class KillEnemyMonSegment extends Segment {
 				}
 				moveFactory = new PressButtonFactory(Move.B);
 			}
-			
+
 			// handle remaining finishing move, ensuring next enemy move
 			if(moveFactory != null) {
 				if (Util.isGen1()) {
@@ -676,14 +668,14 @@ public class KillEnemyMonSegment extends Segment {
 			getBuffer(new FightState(fs.atkCnt, newSpareDamage, newSpareEnemyDamage, ai, ac), bufs[n-1]).addAll(imm);
 		}
 	}
-	
+
 	private void setAppendEnemyMoveMetric(AttackActionSegment ems, int curTurn, boolean set) {
 		if (Util.isGen1())
 			ems.appendSegment = null;
 		else
 			ems.appendSegment = set ? new CheckMetricSegment(CheckEnemyMoveMetric.noKeys(getEnemyMove(curTurn+1))) : null;
 	}
-	
+
 	private void setAppendNoAIMoveMetric(AttackActionSegment ems, boolean set) {
 		if (Util.isGen1())
 			ems.appendSegment = set ? new CheckMetricSegment(new CheckNoAIMove(0)) : null;
@@ -698,7 +690,7 @@ public class KillEnemyMonSegment extends Segment {
 		}
 		in.getStates().iterator().next().restore(); // restore some state
 		Util.runToNextInputFrame(); // skip to menu, ensuring mons are loaded
-		
+
 		int enemyHP = Util.getMemoryBigEndian(RomInfo.rom.fightEnemyMonHPAddress);
 		int playerHP = Util.getMemoryBigEndian(RomInfo.rom.fightBattleMonHPAddress);
 
@@ -730,8 +722,8 @@ public class KillEnemyMonSegment extends Segment {
 		for(int i=0;i<4;i++)
 			DamageCalc.printMoveDebugInfo(true, i);
 	}
-	
-	
+
+
 	public Map<PII,StateBuffer> executeSingleAttack(StateBuffer in, DelayableMoveFactory moveFactory, AttackActionSegment actionSegment, int goalValue, int minValue, boolean noBins, boolean isB) {
 		AttackActionSegment dummyActionSegment = null;
 		AttackActionSegment aActionSegment = isB ? dummyActionSegment : actionSegment;
@@ -744,15 +736,15 @@ public class KillEnemyMonSegment extends Segment {
 		boolean noBBins = isB ? noBins : false;
 		return executeAttack(in, moveFactory, aActionSegment, bActionSegment, goalAValue, minAValue, goalBValue, minBValue, noABins, noBBins, isB);
 	}
-	
-	
+
+
 	public static final String PLAYER_ATTRIBUTE = "playerDamage";
 	public static final String ENEMY_ATTRIBUTE = "enemyDamage";
-	
+
 	public Map<PII,StateBuffer> executeAttack(StateBuffer in, DelayableMoveFactory moveFactory, AttackActionSegment aActionSegment, AttackActionSegment bActionSegment, int goalAValue, int minAValue, int goalBValue, int minBValue, boolean noABins, boolean noBBins, boolean bFirst) {
 		Map<PII,StateBuffer> im = new HashMap<PII,StateBuffer>();
 		Map<PII,Integer> imActiveFrame = new HashMap<PII,Integer>();
-		
+
 		System.out.println("executeAttack goal "+new PII(goalAValue,goalBValue)+" min "+new PII(minAValue, minBValue));
 
 		boolean[] active = new boolean[in.size()];
@@ -762,7 +754,7 @@ public class KillEnemyMonSegment extends Segment {
 			active[cs] = true;
 			dus[cs] = moveFactory.create();
 		}
-		
+
 		int skips = -1;
 		while(numActive > 0) {
 			skips++;
@@ -778,16 +770,16 @@ public class KillEnemyMonSegment extends Segment {
 					numActive--;
 					continue;
 				}
-				
+
 				s.restore();
 				dus[cs].prepare(skips,true);
 				dus[cs].doMove();
-								
+
 				int curActiveFrame = State.currentStepCount;
 
 				StateBuffer sb = new StateBuffer();
 				sb.addState(new State());
-				sb = bFirst ? 
+				sb = bFirst ?
 						executeAttackInternal(sb, curActiveFrame, goalAValue, minBValue, imActiveFrame, bActionSegment, goalBValue, false):
 						executeAttackInternal(sb, curActiveFrame, minAValue, goalBValue, imActiveFrame, aActionSegment, goalAValue, true);
 				if(sb == null) {
@@ -797,7 +789,7 @@ public class KillEnemyMonSegment extends Segment {
 				}
 
 				Map<Integer,StateBuffer> imFirst = split(sb, bFirst ? ENEMY_ATTRIBUTE : PLAYER_ATTRIBUTE);
-				
+
 				for(Entry<Integer,StateBuffer> eFirst : imFirst.entrySet()) {
 					int firstValue = eFirst.getKey();
 					sb = bFirst ?
@@ -816,7 +808,7 @@ public class KillEnemyMonSegment extends Segment {
 						int aBin = noABins ? 0 : aValue;
 						int bBin = noBBins ? 0 : bValue;
 						PII bin = new PII(aBin,bBin);
-						
+
 						if(!im.containsKey(bin))
 							im.put(bin, new StateBuffer());
 						im.get(bin).addAll(eSecond.getValue()); // add states to im buffer
@@ -844,19 +836,19 @@ public class KillEnemyMonSegment extends Segment {
 	private StateBuffer executeAttackInternal(StateBuffer sb, int curActiveFrame, int minAValue, int minBValue, Map<PII,Integer> imActiveFrame, AttackActionSegment actionSegment, int goalValue, boolean isA) {
 		if(actionSegment == null) // dummy, don't execute
 			return sb;
-		
+
 		int curMinValueNeeded = calcMinValueNeeded(curActiveFrame,minAValue,minBValue,imActiveFrame,isA);
-		
+
 //		System.out.println("executeAttackInternal curMinValueNeeded "+curMinValueNeeded+", goalValue "+goalValue);
 
 		if(curMinValueNeeded > goalValue) {
 			System.out.println("executeAttack: interrupting search: "+(isA?"A":"B")+" value "+curMinValueNeeded+" over limit "+goalValue);
 			return null;
 		}
-		
+
 		return actionSegment.execute(sb, curMinValueNeeded);
 	}
-	
+
 	private Map<Integer,StateBuffer> split(StateBuffer in, String splitAttribute) {
 		Map<Integer,StateBuffer> ret = new HashMap<Integer, StateBuffer>();
 		for(State s : in.getStates()) {
@@ -867,7 +859,7 @@ public class KillEnemyMonSegment extends Segment {
 		}
 		return ret;
 	}
-	
+
 	private static int calcMinValueNeeded(int curActiveFrame,int minAValueNeeded,int minBValueNeeded, Map<PII, Integer> imActiveFrame, boolean optimizeA) {
 		int minValueNeeded = (optimizeA ? minAValueNeeded : minBValueNeeded);
 		for(Entry<PII, Integer> e : imActiveFrame.entrySet())

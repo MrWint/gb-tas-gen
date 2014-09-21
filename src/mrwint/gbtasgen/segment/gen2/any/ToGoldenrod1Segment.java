@@ -1,11 +1,12 @@
 package mrwint.gbtasgen.segment.gen2.any;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.comparator.Equal;
 import mrwint.gbtasgen.move.DelayUntil;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
@@ -23,7 +24,7 @@ import mrwint.gbtasgen.state.StateBuffer;
 public class ToGoldenrod1Segment extends Segment {
 
 	SequenceSegment sequence;
-	
+
 	public ToGoldenrod1Segment() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -33,15 +34,15 @@ public class ToGoldenrod1Segment extends Segment {
 		segments.add(new WalkToSegment(14, 32));		// face farfetch'd
 		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
 		segments.add(new SkipTextsSegment(2));	// scare farfetch'd
-	
+
 		segments.add(new WalkToSegment(15, 24));		// face farfetch'd
 		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
 		segments.add(new SkipTextsSegment(1));	// scare farfetch'd
-		
+
 		segments.add(new WalkToSegment(15, 28));		// face farfetch'd
 		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
 		segments.add(new SkipTextsSegment(1));	// scare farfetch'd
-		
+
 		segments.add(new WalkToSegment(12, 35));		// align
 		segments.add(new WalkToSegment(11, 35));		// face farfetch'd
 		segments.add(new MoveSegment(new OverworldInteract()));	// scare farfetch'd
@@ -49,7 +50,7 @@ public class ToGoldenrod1Segment extends Segment {
 
 		segments.add(new WalkToSegment(5, 29));			// align
 		segments.add(new MoveSegment(new PressButton(Move.UP)));	// face
-		segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.UP), true, new CheckEncounterMetric().withStartMove(Move.UP), new Equal(), 0))));	// face
+		segments.add(new MoveSegment(new DelayUntil(new WithMetric(new PressButton(Move.UP), true, new CheckEncounterMetric().withStartMove(Move.UP), EQUAL, 0))));	// face
 		segments.add(new MoveSegment(new OverworldInteract()));	// talk
 		segments.add(new SkipTextsSegment(14));			// talk
 
@@ -115,10 +116,10 @@ public class ToGoldenrod1Segment extends Segment {
 		segments.add(new WalkToSegment(1, 5, false));	// ilex -> gate
 		segments.add(new WalkToSegment(4, 0, false));	// gate -> route34
 		segments.add(new WalkToSegment(8, -1));	// route34 -> goldenrod
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

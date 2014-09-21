@@ -5,8 +5,6 @@ import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.metric.comparator.Equal;
-import mrwint.gbtasgen.metric.comparator.GreaterEqual;
 import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.SelectMoveInList;

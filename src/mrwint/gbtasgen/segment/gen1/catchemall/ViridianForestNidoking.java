@@ -2,7 +2,6 @@ package mrwint.gbtasgen.segment.gen1.catchemall;
 
 import mrwint.gbtasgen.metric.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.comparator.GreaterEqual;
 import mrwint.gbtasgen.metric.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.SelectMoveInList;
@@ -28,13 +27,13 @@ import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
 public class ViridianForestNidoking extends SeqSegment {
-	
+
 	@Override
 	public void execute() {
-		
+
 //		seq(new WalkToSegment(23, 25)); // enter center
 //		seq(new PokecenterSegment(true));
-//		
+//
 //		seq(new WalkToSegment(29, 19)); // enter pewter mart
 //
 //		seq(new WalkToSegment(3, 5));
@@ -133,7 +132,7 @@ public class ViridianForestNidoking extends SeqSegment {
 //
 //		save("tmp4");
 //		load("tmp4");
-//		
+//
 //		{
 //			seq(new WalkToSegment(23,25)); // into pokecenter
 //			seq(new WalkToSegment(13,4));
@@ -160,7 +159,7 @@ public class ViridianForestNidoking extends SeqSegment {
 //
 //			seq(new WalkToSegment(4,8,false));
 //		}
-//		
+//
 //		seq(new WalkToSegment(18, -1)); // leave viridian
 //		seq(new WalkToSegment(4, 52)); // align
 //		seq(new DelayMoveSegment(new SeqSegment() { // get an encounter
@@ -218,7 +217,7 @@ public class ViridianForestNidoking extends SeqSegment {
 			seq(new SkipTextsSegment(1)); // got away safely
 		}
 
-		
+
 		seq(new WalkToSegment(3, 43)); // enter viridian forest house
 		seq(new WalkToSegment(5, 0)); // enter viridian forest
 
@@ -250,7 +249,7 @@ public class ViridianForestNidoking extends SeqSegment {
 				seq(new CheckEncounterMetric(112 /*Weedle*/, 3));
 			}
 		}));
-		
+
 		save("tmp8");
 //		load("tmp8");
 
@@ -298,7 +297,7 @@ public class ViridianForestNidoking extends SeqSegment {
 			seq(kems); // Weedle
 		}
 		seq(new EndFightSegment(2)); // player defeated enemy
-		
+
 		/*{ // collect hidden potion
 			seq(new WalkToSegment(1, 19)); // walk up to hidden item
 			seq(new MoveSegment(new WaitUntilNextInputFrame()));
@@ -307,7 +306,7 @@ public class ViridianForestNidoking extends SeqSegment {
 			seq(new MoveSegment(new CollectHiddenItem()));
 			seq(new TextSegment());
 		}*/
-		
+
 		seq(new WalkToSegment(1, -1, false)); // leave forest
 		seq(new WalkToSegment(5, 0)); // leave forest house
 		seq(new WalkToSegment(8, -1)); // enter pewter city

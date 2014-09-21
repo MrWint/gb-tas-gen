@@ -283,6 +283,17 @@ JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_nstepUntil
 
 /*
  * Class:     mrwint_gbtasgen_Gb
+ * Method:    nreset
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nreset
+  (JNIEnv *env, jclass clazz){
+  UNUSED(env);UNUSED(clazz);
+  gambatteSdl.gambatte.reset(0);
+}
+
+/*
+ * Class:     mrwint_gbtasgen_Gb
  * Method:    saveState
  * Signature: (Ljava/nio/ByteBuffer;I)J
  */
