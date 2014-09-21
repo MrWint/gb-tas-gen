@@ -6,7 +6,7 @@ import mrwint.gbtasgen.tools.deasm.specialCallHandler.SpecialCallHandler;
 
 
 public class CPUState {
-	
+
 	public static final int B = 0;
 	public static final int C = 1;
 	public static final int D = 2;
@@ -14,26 +14,27 @@ public class CPUState {
 	public static final int H = 4;
 	public static final int L = 5;
 	public static final int F = 6; // also (HL)
+	public static final int HL = 6; // also F
 	public static final int A = 7;
-	public static String[] registerNames = {"B","C","D","E","H","L","F","A"};
+	public static final String[] registerNames = {"B","C","D","E","H","L","F","A"};
 	public static final int NUM_REGISTERS = 8;
-	
+
 	public static final int CARRYMASK = 0x10;
 	public static final int HALFCARRYMASK = 0x20;
 	public static final int NEGATIVEMASK = 0x40;
 	public static final int ZEROMASK = 0x80;
 
-	
+
 	public int r[];
 	public int rMask[];
 	public int rLoadedFromAddress[];
 	//public Stack<Integer> stack;
 	public int loadedBank;
-	
+
 	public CPUState() {
 		invalidateAll();
 	}
-	
+
 	public CPUState(CPUState o) {
 		this();
 		for(int i=0;i<NUM_REGISTERS;i++) {
@@ -44,11 +45,11 @@ public class CPUState {
 		//stack = (Stack<Integer>)o.stack.clone();
 		loadedBank = o.loadedBank;
 	}
-	
+
 	public static final int UNKNOWN     = -1;
 	public static final int KNOWN_FALSE = 0;
 	public static final int KNOWN_TRUE  = 1;
-	
+
 	public int getCarry() {
 		if((rMask[F] & CARRYMASK) == 0)
 			return -1;
@@ -56,7 +57,7 @@ public class CPUState {
 			return 0;
 		return 1;
 	}
-	
+
 	public int getZero() {
 		if((rMask[F] & ZEROMASK) == 0)
 			return -1;
@@ -72,11 +73,11 @@ public class CPUState {
 		else
 			r[F] &= (~CARRYMASK);
 	}
-	
+
 	public void invalidateCarry() {
 		rMask[F] &= (~CARRYMASK);
 	}
-	
+
 	public void setZero(boolean value) {
 		rMask[F] |= ZEROMASK;
 		if(value)
@@ -88,7 +89,7 @@ public class CPUState {
 	public void invalidateZero() {
 		rMask[F] &= (~ZEROMASK);
 	}
-	
+
 	public void prepareJump(int opCodeValue, int opData) {
 		// invalidate data if conditional jump is not fulfilled in the current state
 		if(Arrays.asList(new Integer[]{0x20,0xC0,0xC2,0xC4}).contains(opCodeValue)) // jr ret jp call: nz
@@ -118,7 +119,7 @@ public class CPUState {
 			rLoadedFromAddress[i] = -1;
 		//stack = new Stack<Integer>();
 	}
-	
+
 	// true -> veto continue
 	public boolean prepareForgoJump(int opCodeValue, int currentAddress, int jumpAddress, SpecialCallHandler sch) {
 		// jumps, calls, ret, rst
@@ -144,12 +145,12 @@ public class CPUState {
 										0xCD}).contains(opCodeValue)) // call
 			if(!sch.handleAfterCall(currentAddress, jumpAddress, this))
 				invalidateAll();
-		
+
 		return sch.vetoContinueAfterCall(currentAddress, jumpAddress);
 	}
 
 	public void prepareContinue(int opCodeValue, int opData, int opAddress) {
-		
+
 		// 0x40 - 0x7f range
 		if(opCodeValue >= 0x40 && opCodeValue < 0x80) {
 			int rTo = (opCodeValue-0x40)/8;
@@ -170,7 +171,7 @@ public class CPUState {
 			}
 			return;
 		}
-		
+
 		// 0x80 - 0xbf range
 		if(opCodeValue >= 0x80 && opCodeValue < 0xbf) {
 			int op = (opCodeValue-0x80)/8;
@@ -189,7 +190,7 @@ public class CPUState {
 				doAccumulatorCalculation(op, val, mask);
 			return;
 		}
-		
+
 		// range 0x00 to 0x3f
 		if(opCodeValue >= 0x0 && opCodeValue < 0x40) {
 			if((opCodeValue & 7) == 4) { // inc
@@ -350,7 +351,7 @@ public class CPUState {
 			System.err.println("00-3f");
 			return;
 		}
-		
+
 		// range 0xc0 - 0xff
 		if(opCodeValue >= 0xc0 && opCodeValue < 0x100) {
 			if((opCodeValue & 7) == 6) // calculations with d8
@@ -523,7 +524,7 @@ public class CPUState {
 			return;
 		}
 	}
-	
+
 	private void updateZero(int rTo) {
 		if(rMask[rTo] != 0xFF && (r[rTo] & rMask[rTo]) == 0) // no full information
 			invalidateZero();
@@ -624,11 +625,11 @@ public class CPUState {
 			return;
 		}
 	}
-	
+
 	private int rotateRight(int val) {
 		return shiftRight(val,val&1);
 	}
-	
+
 	private int shiftRight(int val, int i) {
 		return (((i&1)<<7) | (val >> 1)) & 0xFF;
 	}
@@ -636,7 +637,7 @@ public class CPUState {
 	private int rotateLeft(int val) {
 		return shiftLeft(val,(val>>7)&1);
 	}
-	
+
 	private int shiftLeft(int val, int i) {
 		return ((i&1) | (val << 1)) & 0xFF;
 	}
@@ -660,7 +661,7 @@ public class CPUState {
 			rMask[rTo] = rMask[rTo+1] = 0;
 		}
 	}
-	
+
 	public String getCPUStateInfo() {
 		String ret = "";
 		for(int i=0;i<8;i++)

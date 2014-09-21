@@ -1,14 +1,14 @@
 package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
-import deasm.CPUState;
-import deasm.DFS;
+import mrwint.gbtasgen.tools.deasm.CPUState;
+import mrwint.gbtasgen.tools.deasm.DFS;
 
 public class SpecialCallHandler {
 	public DFS dfs;
 	public void init(DFS dfs) {
 		this.dfs = dfs;
 	}
-	
+
 	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s) {
 		return false;
 	}

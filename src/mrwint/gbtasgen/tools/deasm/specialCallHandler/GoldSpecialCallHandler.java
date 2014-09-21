@@ -1,7 +1,7 @@
 package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
-import deasm.CPUState;
-import deasm.DFS;
+import mrwint.gbtasgen.tools.deasm.CPUState;
+import mrwint.gbtasgen.tools.deasm.DFS;
 
 public class GoldSpecialCallHandler extends SpecialCallHandler {
 
@@ -17,7 +17,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 			return true;
 		return false;
 	}
-	
+
 	@Override
 	public void handleDFSInit() {
 		// jmp [hl]
@@ -45,7 +45,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 		//dfs.addJumpTable(0xe538b, 10); dbw
 		dfs.addJumpTable(0xe8136, 8);
 		dfs.addJumpTable(0xe8720, 48);
-		
+
 		// rst $28
 		dfs.addJumpTable(0x4b1e, 25);
 		dfs.addJumpTable(0x47c2, 28);
@@ -90,7 +90,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0x4e5d, 4);
 		dfs.addJumpTable(0x4f0d, 2);
 		dfs.addJumpTable(0x4f54, 3);
-		
+
 		//dfs.addJumpTable(0xf0f9, 10);
 		//dfs.addJumpTable(0xf0f9, 10);
 		//dfs.addJumpTable(0xf0f9, 10);
@@ -101,7 +101,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 		dfs.dfsStack.add(new DFS.DFSStackElem(0x9164d, new CPUState()));
 		dfs.rom.labelType[0x9164d] = 1;
 	}
-	
+
 	@Override
 	public void handleBeforeOp(int currentAddress, CPUState s) {
 		if(currentAddress == 0x68b)
@@ -116,7 +116,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 			s.loadedBank = 0x1;
 		return;
 	}
-	
+
 	@SuppressWarnings("static-access")
 	@Override
 	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s) {
@@ -131,14 +131,14 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 					System.err.println("ERROR: invalid FarCall to "+Integer.toHexString((s.r[s.H]*0x100) | s.r[s.L]));
 					return false;
 				}
-				
+
 				// set up indirect labels
 				if(s.r[s.H] >= 0x40)
 					if(s.rLoadedFromAddress[s.A] != -1)
 						dfs.rom.payloadAsBank[s.rLoadedFromAddress[s.A]] = jumpAddress;
 				if(s.rLoadedFromAddress[s.H] == s.rLoadedFromAddress[s.L] && s.rLoadedFromAddress[s.H] != -1)
 					dfs.rom.payloadAsAddress[s.rLoadedFromAddress[s.H]] = jumpAddress;
-				
+
 				dfs.addIndirectJump(currentAddress, jumpAddress, new CPUState(), 3);
 			}
 			return false;
@@ -150,7 +150,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 				s.loadedBank = -1;
 			return true;
 		}
-			
+
 		return false;
 	}
 }

@@ -9,19 +9,26 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 public class AssemblyWriter {
-	
+
 	public ROM rom;
-	
+
 	public AssemblyWriter(ROM rom) {
 		this.rom = rom;
 	}
-	
+
 	public void writeAssembly(String fileName) {
 		try {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
-			
+
 			int curAddress = 0;
 			boolean wroteNoCodeLast = false;
+
+			if (rom.includeFiles.size() > 0) {
+				for (String include : rom.includeFiles) {
+					bw.write("INCLUDE \""+include+"\"\n");
+				}
+				bw.write("\n");
+			}
 
 			while(curAddress < rom.len) {
 				int curBank = curAddress / 0x4000;
@@ -33,13 +40,13 @@ public class AssemblyWriter {
 				curAddress = writeAssembly(bw,curAddress,bankEndAddress,wroteNoCodeLast);
 				curAddress = bankEndAddress;
 			}
-			
+
 			bw.close();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public int writeAssembly(BufferedWriter bw, int start, int end, boolean wroteNoCodeLast) throws Throwable {
 		int curAddress = start;
 		while(curAddress < end) {
@@ -64,11 +71,11 @@ public class AssemblyWriter {
 		}
 		return curAddress;
 	}
-	
+
 	public void addAssembly(String fileName, String baseFileName) throws Throwable {
 		Scanner sc = new Scanner(new File(baseFileName));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
-		
+
 		while(sc.hasNextLine()) {
 			String line = sc.nextLine();
 			// example line: INCBIN "baserom.gbc",$13074,$13095 - $13074
@@ -95,17 +102,20 @@ public class AssemblyWriter {
 		sc.close();
 		bw.close();
 	}
-	
+
 	private int writeJumpPointer(BufferedWriter bw, int curAddress) throws Throwable {
-		
+
 		for(;rom.type[curAddress] == ROM.DATA_JUMPPOINTER;curAddress+=2) {
 			addLabel(bw, curAddress);
-			
+
 			String dataString = "$"+Integer.toHexString(((rom.data[curAddress]&0xFF) | ((rom.data[curAddress+1]&0xFF) << 8)) & 0xFFFF);
 
 			if(rom.payloadAsAddress[curAddress] >= 0)
 				dataString = rom.getLabel(rom.payloadAsAddress[curAddress]);
-			
+
+			if(rom.comment[curAddress] != null && !rom.comment[curAddress].isEmpty())
+				dataString += " ; "+rom.comment[curAddress];
+
 			bw.write("\tdw "+dataString+"\n");
 		}
 		bw.write("\n");
@@ -115,7 +125,7 @@ public class AssemblyWriter {
 	public static String prettyPrintAddress(int add) {
 		return addToHex(add)+" ("+Integer.toHexString(add/0x4000)+":"+addToHex(add<0x4000 ? add : add%0x4000 + 0x4000)+")";
 	}
-	
+
 	public static String addToHex(int add) {
 		String ret = Integer.toHexString(add);
 		while(ret.length() < 4)
@@ -124,14 +134,14 @@ public class AssemblyWriter {
 	}
 
 	private int writeCode(BufferedWriter bw, int address, boolean addNewLine) throws Throwable {
-		
+
 		addLabel(bw, address);
-		
+
 		int curAddress = address;
 		int opCodeValue = rom.data[curAddress++] & 0xFF;
 		int opData = 0;
 		OpCode opCode;
-		
+
 		// fetch OpCode
 		if(opCodeValue == 0xCB) {
 			opCodeValue = rom.data[curAddress++] & 0xFF;
@@ -139,15 +149,15 @@ public class AssemblyWriter {
 		}
 		else
 			opCode = OpCode.opCodes[opCodeValue];
-		
+
 		// fetch optional payload data
 		for(int i=0;i<opCode.extraBytes; i++)
-			opData += (rom.data[curAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian) 
+			opData += (rom.data[curAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian)
 
 		String name = opCode.name;
 
 		String comment = "";
-		
+
 		if(name.contains("?")) {
 			String tmp = name.substring(0,name.indexOf("?")).toLowerCase();
 			if(rom.payloadAsAddress[address] >= 0) {
@@ -212,7 +222,7 @@ public class AssemblyWriter {
 			bw.write(label + "\n");
 		}
 	}
-	
+
 	private String generateRamLabelComment(String addressString, int ramAddress) {
 		String comment = addressString.toLowerCase();
 		if(rom.ramLabel[ramAddress].size() > 1) {
@@ -223,7 +233,7 @@ public class AssemblyWriter {
 		}
 		return comment;
 	}
-	
+
 	private void writeIncBin(BufferedWriter bw, int start, int end) throws Throwable {
 		bw.write("INCBIN \""+rom.filename+"\",$");
 		bw.write(Integer.toHexString(start));
@@ -233,7 +243,7 @@ public class AssemblyWriter {
 		bw.write(Integer.toHexString(start));
 		bw.write("\n");
 	}
-	
+
 
 	public static int evalNumber(String s) {
 		if(s.indexOf(";") != -1)

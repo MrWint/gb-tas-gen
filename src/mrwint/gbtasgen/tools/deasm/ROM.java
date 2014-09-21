@@ -10,12 +10,19 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import mrwint.gbtasgen.util.Util;
+
 public class ROM {
-	
+
 	public static final byte UNKNOWN = -1;
 	public static final byte CODE = 0;
 	public static final byte DATA_JUMPPOINTER = 1;
-	
+
+	public static final int LABEL_NONE = 0;
+	public static final int LABEL_RELATIVE = 1;
+	public static final int LABEL_ABSOLUTE = 2;
+	public static final int LABEL_FUNCTION = 3;
+
 	public int len;
 	public String filename;
 	public byte[] data;
@@ -28,7 +35,9 @@ public class ROM {
 	public int[] payloadAsBank;
 	public int[] indirectJumpTo;
 
-	public ArrayList<String> ramLabel[];
+	public ArrayList<String> includeFiles;
+
+	public ArrayList<String>[] ramLabel;
 
 	@SuppressWarnings("unchecked")
 	public ROM(String filename) {
@@ -45,7 +54,9 @@ public class ROM {
 		payloadAsBank = new int[len];
 		indirectJumpTo = new int[len];
 		ramLabel = new ArrayList[0x4000];
-		
+
+		includeFiles = new ArrayList<>();
+
 		for(int i=0;i<len;i++) {
 			payloadAsAddress[i] = -1;
 			payloadAsBank[i] = -1;
@@ -65,17 +76,12 @@ public class ROM {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void addAccess(int fromAddress, int toAddress) {
 		if(accesses[toAddress] == null)
 			accesses[toAddress] = new TreeSet<Integer>();
 		accesses[toAddress].add(fromAddress);
 	}
-	
-	public static int LABEL_NONE = 0;
-	public static int LABEL_RELATIVE = 1;
-	public static int LABEL_ABSOLUTE = 2;
-	public static int LABEL_FUNCTION = 3;
 
 	public String getLabel(int i) {
 		if(label[i] != null)
@@ -83,33 +89,33 @@ public class ROM {
 
 		if(type[i] == CODE) {
 			if(labelType[i] == LABEL_RELATIVE)
-				return ".asm_"+Integer.toHexString(i);
+				return ".asm_"+Util.toHex(i, 4);
 			if(labelType[i] == LABEL_ABSOLUTE)
-				return "asm_"+Integer.toHexString(i);
+				return "asm_"+Util.toHex(i, 4);
 			if(labelType[i] == LABEL_FUNCTION)
-				return "Function"+Integer.toHexString(i);
+				return "Func"+Util.toHex(i, 4);
 		} else if(type[i] == DATA_JUMPPOINTER) {
 			if(labelType[i] == LABEL_RELATIVE)
-				return ".jumptable_"+Integer.toHexString(i);
+				return ".jumptable_"+Util.toHex(i, 4);
 			if(labelType[i] >= LABEL_ABSOLUTE)
-				return "Jumptable_"+Integer.toHexString(i);
+				return "Jumptable_"+Util.toHex(i, 4);
 		} else {
 			if(labelType[i] == LABEL_RELATIVE)
-				return ".unknown_"+Integer.toHexString(i);
+				return ".unknown_"+Util.toHex(i, 4);
 			if(labelType[i] >= LABEL_ABSOLUTE)
-				return "Unknown_"+Integer.toHexString(i);
+				return "Unknown_"+Util.toHex(i, 4);
 		}
 		System.err.println("writing label of invalid type "+labelType[i]+" at "+Integer.toHexString(i));
 		return "#ERROR#";
 	}
-	
+
 	// make relative labels absolute if there are any absolute labels between them
 	public void fixLabelTypes() {
-		
+
 		for(int i=0;i<len;i++) // set all external labels as explicit
 			if(label[i] != null)
-				labelType[i] = Math.max(labelType[i], label[i].startsWith(".") ? 1 : 3);
-		
+				labelType[i] = Math.max(labelType[i], label[i].startsWith(".") ? LABEL_RELATIVE : LABEL_FUNCTION);
+
 		boolean changed;
 		int numChanged = 0;
 		do {
@@ -118,7 +124,7 @@ public class ROM {
 				if(payloadAsAddress[i] != -1) {
 					int payloadAddress = payloadAsAddress[i];
 					if(labelType[payloadAddress] == LABEL_RELATIVE) {
-						for(int j=Math.min(payloadAddress,i);j<=Math.max(payloadAddress,i);j++) {
+						for(int j=Math.min(payloadAddress,i); j<=Math.max(payloadAddress,i); j++) {
 							if(labelType[j] > LABEL_RELATIVE) {
 								labelType[payloadAddress] = LABEL_ABSOLUTE;
 								changed = true;
@@ -129,11 +135,11 @@ public class ROM {
 					}
 				}
 			}
-		}while(changed);
+		} while(changed);
 		System.out.println("changed "+numChanged+" labels");
 	}
-	
-	
+
+
 	public void addSymFile(String fileName) throws Throwable {
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "ASCII"));
 		int numRead = 0;
@@ -170,9 +176,11 @@ public class ROM {
 		br.close();
 		System.out.println("inserted "+numInserted+" of "+numRead+" labels");
 	}
-	
-	
+
+
 	public void addEquFile(String fileName) throws Throwable {
+		includeFiles.add(fileName);
+
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "ASCII"));
 		int numRead = 0;
 		int numInserted = 0;
@@ -198,6 +206,8 @@ public class ROM {
 			int address;
 			if(ss[2].charAt(0) == '$')
 				address = Integer.valueOf(ss[2].substring(1),16);
+			else if(ss[2].charAt(0) == '%')
+				address = Integer.valueOf(ss[2].substring(1),2);
 			else
 				address = Integer.valueOf(ss[2],10);
 			if(address >= 0xc000) {

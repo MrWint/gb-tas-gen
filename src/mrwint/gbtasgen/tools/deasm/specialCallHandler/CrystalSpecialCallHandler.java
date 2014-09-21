@@ -1,14 +1,16 @@
 package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
-import deasm.CPUState;
-import deasm.DFS;
+import mrwint.gbtasgen.tools.deasm.CPUState;
+import mrwint.gbtasgen.tools.deasm.DFS;
 
 public class CrystalSpecialCallHandler extends SpecialCallHandler {
 	public DFS dfs;
+	@Override
 	public void init(DFS dfs) {
 		this.dfs = dfs;
 	}
-	
+
+	@Override
 	@SuppressWarnings("static-access")
 	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s) {
 		if(callAddress == 0x8) { // rst $8: FarCall a:hl
@@ -22,14 +24,14 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 					System.err.println("ERROR: invalid FarCall to "+Integer.toHexString((s.r[s.H]*0x100) | s.r[s.L]));
 					return false;
 				}
-				
+
 				// set up indirect labels
 				if(s.r[s.H] >= 0x40)
 					if(s.rLoadedFromAddress[s.A] != -1)
 						dfs.rom.payloadAsBank[s.rLoadedFromAddress[s.A]] = jumpAddress;
 				if(s.rLoadedFromAddress[s.H] == s.rLoadedFromAddress[s.L] && s.rLoadedFromAddress[s.H] != -1)
 					dfs.rom.payloadAsAddress[s.rLoadedFromAddress[s.H]] = jumpAddress;
-				
+
 				dfs.addIndirectJump(currentAddress, jumpAddress, new CPUState(), 3);
 			}
 			return false;
@@ -41,10 +43,11 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 				s.loadedBank = -1;
 			return true;
 		}
-			
+
 		return false;
 	}
 
+	@Override
 	public void handleBeforeOp(int currentAddress, CPUState s) {
 		if(currentAddress == 0x242)
 			s.loadedBank = 0x1;
@@ -60,6 +63,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 			s.loadedBank = 0x3a;
 	}
 
+	@Override
 	public void handleDFSInit() {
 		// jmp [hl]
 		dfs.addJumpTable(0x2a1, 8);
@@ -77,7 +81,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0xe8720, 48);
 		dfs.addJumpTable(0x11d0c7, 11);
 		dfs.addJumpTable(0x17f061, 16);
-		
+
 		dfs.addJumpTable(0x10030, 11);
 		dfs.addJumpTable(0x104c3, 11);
 		dfs.addJumpTable(0x106d1, 4);
@@ -113,14 +117,14 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0x11c2bb, 23);
 		dfs.addJumpTable(0x170696, 32);
 		dfs.addJumpTable(0x171a45, 12);
-		
+
 		dfs.addJumpTable(0xb8fb8, 4);
-		
+
 		dfs.addJumpTable(0x118704, 32);
 		dfs.addJumpTable(0x92853, 19);
 		//dfs.addJumpTable(0x117af8, 10);
 		//dfs.addJumpTable(0x117af8, 10);
-		
+
 		// rst $28
 		dfs.addJumpTable(0x4b45, 26);
 		dfs.addJumpTable(0x47e9, 28);
@@ -137,7 +141,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0x26f5f, 5);
 		dfs.addJumpTable(0x50089, 9);
 		dfs.addJumpTable(0x8b354, 3);
-		
+
 		dfs.addJumpTable(0x10637, 7);
 		dfs.addJumpTable(0x12377, 6);
 		dfs.addJumpTable(0x4e00d, 3);
@@ -165,11 +169,11 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0x96c6e, 4);
 		dfs.addJumpTable(0x96cb1, 170);
 		dfs.addJumpTable(0x17a7b6, 6);
-		
+
 		dfs.addJumpTable(0xc796, 3);
 		dfs.addJumpTable(0xc91a, 4);
 		dfs.addJumpTable(0xca4c, 3);
-		
+
 		dfs.addJumpTable(0xe4ba, 3);
 		dfs.addJumpTable(0xe73c, 179);
 		dfs.addJumpTable(0xf0a3, 3);
@@ -178,7 +182,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0x133d1, 7);
 		dfs.addJumpTable(0x4dd2a, 8);
 		//dfs.addJumpTable(0xe46f, 10);
-		
+
 		// Func_47a8
 		dfs.addJumpTable(0x48af, 2);
 		dfs.addJumpTable(0x4987, 3);
@@ -198,7 +202,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0x4f36, 2);
 		dfs.addJumpTable(0x4f7d, 3);
 		dfs.addJumpTable(0x4f86, 2);
-		
+
 		// Func_ce71e
 		dfs.addJumpTable(0xcd071, 2);
 		dfs.addJumpTable(0xcd15f, 12);
@@ -252,7 +256,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0xce596, 2);
 		dfs.addJumpTable(0xce5f1, 4);
 		dfs.addJumpTable(0xce632, 4);
-		
+
 		// Func_c80d7
 		dfs.addJumpTable(0xc81b6, 5);
 		dfs.addJumpTable(0xc8217, 6);
@@ -281,7 +285,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0xc8b08, 3);
 		dfs.addJumpTable(0xc8c64, 2);
 		dfs.addJumpTable(0xc8ca5, 3);
-		
+
 		// jp [hl] continuations
 		dfs.dfsStack.add(new DFS.DFSStackElem(0x4932f, new CPUState()));
 		dfs.dfsStack.add(new DFS.DFSStackElem(0x9168e, new CPUState()));
@@ -308,6 +312,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.dfsStack.add(new DFS.DFSStackElem(0x114243, new CPUState()));
 	}
 
+	@Override
 	public boolean vetoContinueAfterCall(int currentAddress, int jumpAddress) {
 		if(jumpAddress == 0x4793) // messes with stack, reads return address as jump table
 			return true;

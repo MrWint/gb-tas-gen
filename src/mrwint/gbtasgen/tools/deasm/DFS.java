@@ -8,24 +8,25 @@ import java.util.Set;
 import java.util.Stack;
 
 import mrwint.gbtasgen.tools.deasm.specialCallHandler.SpecialCallHandler;
+import mrwint.gbtasgen.util.Util;
 
 
 public class DFS {
-	
+
 	public static class DFSStackElem {
 		public int address;
 		public CPUState s;
-		
+
 		public DFSStackElem(int address, CPUState s) {
 			this.address = address;
 			this.s = s;
 		}
 	}
-	
+
 	public ROM rom;
 	public Stack<DFSStackElem> dfsStack;
 	public SpecialCallHandler sch;
-	
+
 	public DFS(ROM rom, SpecialCallHandler sch) {
 		this.rom = rom;
 		this.sch = sch;
@@ -34,33 +35,33 @@ public class DFS {
 	}
 
 	public void dfs(int... entries) {
-		
+
 		sch.handleDFSInit();
-		
+
 		for(int entry : entries)
 			dfsStack.push(new DFSStackElem(entry, new CPUState()));
-		
+
 		while(!dfsStack.isEmpty()) {
 			DFSStackElem e = dfsStack.pop();
 			visit(e.address,e.s);
 		}
 	}
-	
+
 	public void visit(int address, CPUState s) {
-		
+
 		//System.out.println("visit "+Integer.toHexString(address));
-		
+
 		if(rom.type[address] != ROM.UNKNOWN)
 			return;
 		rom.type[address] = ROM.CODE;
 		sch.handleBeforeOp(address,s);
 		//rom.comment[address] = s.getCPUStateInfo();
-		
+
 		int nextAddress = address;
 		int opCodeValue = rom.data[nextAddress++] & 0xFF;
 		int opData = 0;
 		OpCode opCode;
-		
+
 		// fetch OpCode
 		if(opCodeValue == 0xCB) {
 			opData = rom.data[nextAddress++] & 0xFF;
@@ -68,7 +69,7 @@ public class DFS {
 		}
 		else {
 			opCode = OpCode.opCodes[opCodeValue];
-			
+
 			// fetch optional payload data
 			for(int i=0;i<opCode.extraBytes; i++)
 				opData += (rom.data[nextAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian)
@@ -77,7 +78,7 @@ public class DFS {
 		//System.out.println("visit "+opCode.name);
 
 		boolean vetoContinue = false;
-		
+
 		CPUState ns = new CPUState(s);
 		if(OpCode.explicitAbsoluteJump.contains(opCodeValue)) { // 16 bit absolute
 			ns.prepareJump(opCodeValue,opData);
@@ -98,7 +99,7 @@ public class DFS {
 		}
 		if(!OpCode.noContinue.contains(opCodeValue)) {
 			if(vetoContinue) {
-				rom.comment[address] = " ; call does not return";
+				rom.comment[address] = "call does not return";
 			} else {
 				ns.prepareContinue(opCodeValue,opData,address);
 				dfsStack.push(new DFSStackElem(nextAddress, ns));
@@ -142,23 +143,25 @@ public class DFS {
 			rom.labelType[jumpAddress] = Math.max(rom.labelType[jumpAddress], jumpType);
 		dfsStack.push(new DFSStackElem(jumpAddress, s));
 	}
-	
-	public void addJumpTable(int address, int length) {
-		
+
+	public DFS addJumpTable(int address, int length) {
+
 		if(rom.label[address] == null)
 			rom.labelType[address] = 3;
-		
+
 		for(int i=0; i<length; i++) {
 			int ca = address + 2*i;
 			rom.type[ca] = ROM.DATA_JUMPPOINTER;
-			
+			if (i % 8 == 0)
+				rom.comment[ca] = "$" + Util.toHex(i);
+
 			int goalAddress = ((rom.data[ca]&0xFF) | ((rom.data[ca+1]&0xFF) << 8)) & 0xFFFF;
 			int bank = -1;
 			if(address >= 0x4000)
 				bank = address/0x4000;
 			if(goalAddress < 0x4000)
 				bank = 1; // it's 0, but 1 makes calculation easier
-			
+
 			if(goalAddress >= 0x8000)
 				System.out.println("jump tabel entry to non-RAM location "+Integer.toHexString(goalAddress)+" at "+Integer.toHexString(address)+" element "+i);
 			else if(bank == -1)
@@ -172,9 +175,11 @@ public class DFS {
 				dfsStack.push(new DFSStackElem(fullAddress, new CPUState()));
 			}
 		}
+
+		return this;
 	}
-	
-	public void addTraceFile(String fileName) throws Throwable {
+
+	public DFS addTraceFile(String fileName) throws Throwable {
 		Set<Integer> s = new HashSet<Integer>();
 		InputStream is = new BufferedInputStream(new FileInputStream(fileName));
 		byte[] buf = new byte[14];
@@ -198,9 +203,11 @@ public class DFS {
 		}
 		is.close();
 		System.out.println("inserted "+numInserted+" of "+numRead+" traces");
+
+		return this;
 	}
-	
-	public void addAddressFiles(String... fileNames) throws Throwable {
+
+	public DFS addAddressFiles(String... fileNames) throws Throwable {
 		Set<Integer> s = new HashSet<Integer>();
 		byte[] buf = new byte[4];
 		int numRead = 0;
@@ -221,5 +228,30 @@ public class DFS {
 			is.close();
 		}
 		System.out.println("inserted "+numInserted+" of "+numRead+" traces");
+
+		return this;
+	}
+
+	public DFS addInterrupts() {
+		addFunction(0x40, "VBlankInterrupt");
+		addFunction(0x48, "LCDInterrupt");
+		addFunction(0x50, "TimerInterrupt");
+		addFunction(0x58, "SerialInterrupt");
+		addFunction(0x60, "JoypadInterrupt");
+
+		return this;
+	}
+
+	public DFS addInit() {
+		addFunction(0x100, "Init");
+
+		return this;
+	}
+
+	public DFS addFunction(int address, String name) {
+		dfsStack.push(new DFSStackElem(address, new CPUState()));
+		rom.label[address] = name;
+
+		return this;
 	}
 }
