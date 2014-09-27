@@ -1,9 +1,14 @@
 package mrwint.gbtasgen.tools.deasm;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
 
@@ -145,7 +150,12 @@ public class DFS {
 	}
 
 	public DFS addJumpTable(int address, int length) {
+		return addJumpTable(address, length, null);
+	}
+	public DFS addJumpTable(int address, int length, String label) {
 
+		if (label != null)
+			rom.label[address] = label;
 		if(rom.label[address] == null)
 			rom.labelType[address] = 3;
 
@@ -179,6 +189,48 @@ public class DFS {
 		return this;
 	}
 
+	public DFS addRawBytes(int address, int length) {
+
+		for(int i = 0; i < length; i++) {
+			int ca = address + i;
+			rom.type[ca] = ROM.DATA_BYTEARRAY;
+			rom.format[ca] = ROM.FORMAT_HEX;
+			rom.width[ca] = Math.min(length-i, 8);
+		}
+
+		return this;
+	}
+
+	public DFS addIgnore(int address, int length) {
+		for(int i = 0; i < length; i++)
+			rom.type[address + i] = ROM.IGNORE;
+		return this;
+	}
+
+	public DFS addSection(int address, String name) {
+		rom.section[address] = name;
+		return this;
+	}
+
+	public DFS addByteArray(int address, int length, String label, int... format) {
+
+		if (label != null)
+			rom.label[address] = label;
+
+		for(int i = 0; i < length; i++) {
+			for (int f = 0; f < format.length; f++) {
+				int ca = address + format.length * i + f;
+				rom.type[ca] = ROM.DATA_BYTEARRAY;
+				rom.format[ca] = format[f];
+				rom.width[ca] = format.length;
+				if (i % 8 == 0 && f == 0)
+					rom.comment[ca] = "$" + Util.toHex(i);
+			}
+		}
+
+		return this;
+	}
+
 	public DFS addTraceFile(String fileName) throws Throwable {
 		Set<Integer> s = new HashSet<Integer>();
 		InputStream is = new BufferedInputStream(new FileInputStream(fileName));
@@ -203,6 +255,27 @@ public class DFS {
 		}
 		is.close();
 		System.out.println("inserted "+numInserted+" of "+numRead+" traces");
+
+		return this;
+	}
+
+	public DFS addExeLog(String fileName) throws FileNotFoundException {
+		Scanner sc = new Scanner(new File(fileName));
+		while(true) {
+			if(!sc.hasNextInt(16))
+				break;
+			int b = sc.nextInt(16);
+			int hl = sc.nextInt(16);
+			if(hl >= 0x8000) {
+				System.out.println("skipping non-ROM address "+Integer.toHexString(hl));
+				continue;
+			}
+			if(hl >= 0x4000)
+				hl += (b-1)*0x4000;
+			dfsStack.push(new DFSStackElem(hl, new CPUState()));
+			//System.out.println("added "+Integer.toHexString(hl));
+		}
+		sc.close();
 
 		return this;
 	}

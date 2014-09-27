@@ -14,22 +14,32 @@ import mrwint.gbtasgen.util.Util;
 
 public class ROM {
 
+	public static final byte IGNORE = -2;
 	public static final byte UNKNOWN = -1;
 	public static final byte CODE = 0;
 	public static final byte DATA_JUMPPOINTER = 1;
+	public static final byte DATA_BYTEARRAY = 2;
 
 	public static final int LABEL_NONE = 0;
 	public static final int LABEL_RELATIVE = 1;
 	public static final int LABEL_ABSOLUTE = 2;
 	public static final int LABEL_FUNCTION = 3;
 
+	public static final int FORMAT_HEX = 0;
+	public static final int FORMAT_DEC = 1;
+	public static final int FORMAT_BIN = 2;
+	public static final int FORMAT_BUTTONS = 3;
+
 	public int len;
 	public String filename;
 	public byte[] data;
+	public String[] section;
 	public byte[] type;
 	public Set<Integer>[] accesses;
 	public String[] label;
 	public int[] labelType;
+	public int[] format;
+	public int[] width;
 	public String[] comment;
 	public int[] payloadAsAddress;
 	public int[] payloadAsBank;
@@ -45,10 +55,13 @@ public class ROM {
 		File f = new File(filename);
 		len = (int)f.length();
 		data = new byte[len];
+		section = new String[len];
 		type = new byte[len];
 		accesses = new Set[len];
 		label = new String[len];
 		labelType = new int[len];
+		format = new int[len];
+		width = new int[len];
 		comment = new String[len];
 		payloadAsAddress = new int[len];
 		payloadAsBank = new int[len];
@@ -63,6 +76,8 @@ public class ROM {
 			indirectJumpTo[i] = -1;
 			labelType[i] = LABEL_NONE;
 			type[i] = UNKNOWN;
+			format[i] = FORMAT_HEX;
+			width[i] = 1;
 		}
 		for(int i=0;i<0x4000;i++)
 			ramLabel[i] = new ArrayList<String>();
@@ -189,8 +204,14 @@ public class ROM {
 			line = br.readLine();
 			if(line == null)
 				break;
-			if(line.contains(";"))
+			int additionalEqus = 0;
+			if(line.contains(";")) {
+				String comment = line.substring(line.indexOf(";")+1).trim();
 				line = line.substring(0,line.indexOf(";")); // cut off comments
+				if (comment.startsWith("+"))
+					additionalEqus = Integer.valueOf(comment.substring(1));
+			}
+			line = line.replace('\t', ' ');
 			while(!line.equals(line.replace("  ", " ")))
 				line = line.replace("  ", " ");
 			line = line.trim();
@@ -213,6 +234,10 @@ public class ROM {
 			if(address >= 0xc000) {
 				ramLabel[address-0xc000].add(name);
 				numInserted++;
+				for (int i = 1; i <= additionalEqus ; i++) {
+					ramLabel[address-0xc000+i].add(name + "+" + i);
+					numInserted++;
+				}
 			}
 		}
 		br.close();

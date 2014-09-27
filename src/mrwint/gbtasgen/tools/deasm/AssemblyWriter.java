@@ -21,7 +21,6 @@ public class AssemblyWriter {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8"));
 
 			int curAddress = 0;
-			boolean wroteNoCodeLast = false;
 
 			if (rom.includeFiles.size() > 0) {
 				for (String include : rom.includeFiles) {
@@ -32,13 +31,20 @@ public class AssemblyWriter {
 
 			while(curAddress < rom.len) {
 				int curBank = curAddress / 0x4000;
-				if(curBank == 0)
-					bw.write("SECTION \"bank0\",ROM0\n");
-				else
-					bw.write("SECTION \"bank"+Integer.toHexString(curBank)+"\",ROMX,BANK[$"+Integer.toHexString(curBank)+"]\n");
+				int curBankOffset = curAddress % 0x4000;
+				String name = "bank"+Integer.toHexString(curBank);
+				if (rom.section[curAddress] != null)
+					name = rom.section[curAddress];
+				if(curBank == 0) {
+					bw.write("SECTION \""+name+"\",ROM0[$"+Integer.toHexString(curBankOffset)+"]\n");
+				} else
+					bw.write("SECTION \""+name+"\",ROMX,BANK[$"+Integer.toHexString(curBank)+"]\n");
 				int bankEndAddress = Math.min((curBank+1)*0x4000, rom.len);
-				curAddress = writeAssembly(bw,curAddress,bankEndAddress,wroteNoCodeLast);
-				curAddress = bankEndAddress;
+				for (int i = curAddress+1; i < bankEndAddress; i++)
+					if (rom.section[i] != null)
+						bankEndAddress = i;
+				curAddress = writeAssembly(bw,curAddress,bankEndAddress);
+//				curAddress = bankEndAddress;
 			}
 
 			bw.close();
@@ -47,25 +53,30 @@ public class AssemblyWriter {
 		}
 	}
 
-	public int writeAssembly(BufferedWriter bw, int start, int end, boolean wroteNoCodeLast) throws Throwable {
+	public int writeAssembly(BufferedWriter bw, int start, int end) throws Throwable {
 		int curAddress = start;
 		while(curAddress < end) {
 			int startAddress = curAddress;
-			while(curAddress < end && rom.type[curAddress] == ROM.UNKNOWN)
+			boolean all0s = true;
+			while(curAddress < end && rom.type[curAddress] <= ROM.UNKNOWN) {
+				all0s &= (rom.data[curAddress] == 0 || rom.type[curAddress] == ROM.IGNORE);
 				curAddress++;
+			}
 			if(curAddress > startAddress) {
-				if(wroteNoCodeLast == false)
-					bw.write("; "+prettyPrintAddress(startAddress)+"\n\n");
+				if (curAddress >= end && all0s)
+					break;
 				writeIncBin(bw,startAddress,curAddress);
-				wroteNoCodeLast = true;
 			}
 			if(curAddress >= end)
 				break;
 			if(rom.type[curAddress] == ROM.CODE) {
-				curAddress = writeCode(bw,curAddress,wroteNoCodeLast);
-				wroteNoCodeLast = false;
+				curAddress = writeCode(bw, curAddress);
+				if (rom.type[curAddress] != ROM.CODE)
+					bw.write("; "+prettyPrintAddress(curAddress)+"\n\n");
 			} else if(rom.type[curAddress] == ROM.DATA_JUMPPOINTER) {
 				curAddress = writeJumpPointer(bw,curAddress);
+			} else if(rom.type[curAddress] == ROM.DATA_BYTEARRAY) {
+				curAddress = writeByteArray(bw,curAddress);
 			} else
 				System.err.println("writing unknown section type "+rom.type[curAddress]+" at "+(curAddress++));
 		}
@@ -97,7 +108,7 @@ public class AssemblyWriter {
 				bw.write(line + "\n");
 				continue;
 			}
-			writeAssembly(bw,start,start+len, true);
+			writeAssembly(bw,start,start+len);
 		}
 		sc.close();
 		bw.close();
@@ -122,6 +133,26 @@ public class AssemblyWriter {
 		return curAddress;
 	}
 
+	private int writeByteArray(BufferedWriter bw, int curAddress) throws Throwable {
+		for(; rom.type[curAddress] == ROM.DATA_BYTEARRAY; curAddress += rom.width[curAddress]) {
+			addLabel(bw, curAddress);
+
+			String dataString = "";
+			for (int i = 0; i < rom.width[curAddress]; i++) {
+				if (i > 0)
+					dataString += ", ";
+				dataString += Util.format(rom.data[curAddress+i]&0xFF, rom.format[curAddress+i]);
+			}
+
+			if(rom.comment[curAddress] != null && !rom.comment[curAddress].isEmpty())
+				dataString += " ; "+rom.comment[curAddress];
+
+			bw.write("\tdb "+dataString+"\n");
+		}
+		bw.write("\n");
+		return curAddress;
+	}
+
 	public static String prettyPrintAddress(int add) {
 		return addToHex(add)+" ("+Integer.toHexString(add/0x4000)+":"+addToHex(add<0x4000 ? add : add%0x4000 + 0x4000)+")";
 	}
@@ -133,7 +164,7 @@ public class AssemblyWriter {
 		return ret;
 	}
 
-	private int writeCode(BufferedWriter bw, int address, boolean addNewLine) throws Throwable {
+	private int writeCode(BufferedWriter bw, int address) throws Throwable {
 
 		addLabel(bw, address);
 
@@ -154,6 +185,8 @@ public class AssemblyWriter {
 		for(int i=0;i<opCode.extraBytes; i++)
 			opData += (rom.data[curAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian)
 
+		int opDataAsAddress = Util.toFull(opData, Util.getBank(address));
+
 		String name = opCode.name;
 
 		String comment = "";
@@ -165,6 +198,9 @@ public class AssemblyWriter {
 			} else if(opData >= 0xc000 && !rom.ramLabel[opData-0xc000].isEmpty()) { // add ram labels here
 				tmp += rom.ramLabel[opData-0xc000].get(0);
 				comment = generateRamLabelComment("$" + Integer.toHexString(opData),opData-0xc000);
+			} else if(opDataAsAddress > 0x100 && opDataAsAddress < rom.len && (rom.label[opDataAsAddress] != null || rom.labelType[opDataAsAddress] != ROM.LABEL_NONE)) { // add rom labels here
+				tmp += rom.getLabel(opDataAsAddress);
+				comment = "$" + Integer.toHexString(opData).toLowerCase();
 			} else
 				tmp += "$" + Integer.toHexString(opData).toLowerCase();
 			tmp += name.substring(name.indexOf("?")+1).toLowerCase();

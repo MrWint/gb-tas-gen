@@ -1,0 +1,108 @@
+0:0150 Start
+0:0166 AddToScore
+
+0:017e VBlank
+
+0:020c StartUp
+0:0214 .wipeRamLoop
+0:021b Reset
+0:0233 .waitForVBlankLoop
+0:0260 .wipeRamLoop
+0:026b .wipeStackLoop
+0:027a .wipeVRamLoop
+0:0286 .wipeOamLoop
+0:028f .wipeHRamLoop
+0:029a .copyDmaRoutineLoop
+0:0369 GS24Func
+0:0393 GS25Func
+0:03a0 GS35Func
+0:03ae GS06Func
+0:0479 GS07Func
+0:05c7 GS2aFunc
+0:05f7 GS2bFunc
+0:0677 GS16Func
+0:0725 CopyDEToHL
+0:072c GS17Func
+0:0825 GS18Func
+0:08e4 GS19Func
+0:0ad2 GS1cFunc
+0:0b31 GS1aFunc
+0:0ceb GS1bFunc
+0:0d32 GS1dFunc
+0:0d99 GS20Func
+0:0e23 GS1eFunc
+0:0e8a GS21Func
+0:1112 GS1fFunc
+0:1167 GS26Func
+0:11e6 GS27Func
+0:11fc GS28Func
+0:121c GS29Func
+0:1244 GS02Func
+0:127b GS03Func
+0:12b3 GS2cFunc
+0:1305 GS2dFunc
+0:131b GS34Func
+0:1324 GS2eFunc
+0:1351 GS2fFunc
+0:1367 GS30Func
+0:137e GS31Func
+0:13b5 GS32Func
+0:13e5 GS33Func
+
+0:1437 PrintVerticalStrip
+0:1444 GS08Func
+0:148c GS09Func
+0:14b0 GS0fFunc
+0:1525 GS0eFunc
+0:157b GS10Func
+0:15bf GS11Func
+0:1629 GS12Func
+0:167a GS13Func
+0:16eb GS14Func
+0:1913 GS15Func
+0:19fe WriteAToHLOnHBlank
+0:19ff WriteBToHLOnHBlank
+
+0:1a07 GS0aFunc
+0:1ae8 GetLevelFrameDelay
+0:1b1b InitDemoFillHighLines
+0:1bce GS00Func
+0:1ccb WritePauseText
+0:1ce2 GS01Func
+0:1d06 GS04Func
+0:1d26 GS05Func
+0:1dc0 GS0bFunc
+0:1dce GS22Func
+0:1e41 GS23Func
+
+0:1f16 GS0cFunc
+0:1f1f GC0dFunc
+0:1f7d Draw8WideBoardOverlay
+
+0:02c4 MainLoop
+0:02db .counterLoop
+0:02ed .waitForVBlankLoop
+
+0:2007 GetNextPiece
+0:2024 .demo
+0:2041 .noDemo
+0:2043 .reroll
+0:2046 .wrapToZero
+0:2047 .loop
+0:2054 .checkForReroll
+0:2062 .storeNextPiece
+
+0:243b PrintIngameScore
+
+0:26b6 CopyDEToHLUntilFF
+0:26be UnusedInterrupt
+0:2795 FillTileMap0
+0:2798 FillTileMap
+0:279b .fillLoop
+0:27ea GS36Func
+0:2804 Draw10WideBoardOverlay
+
+0:29a6 ReadJoypad
+
+0:2a36 PrintNumberCheck
+0:2a3c PrintNumber
