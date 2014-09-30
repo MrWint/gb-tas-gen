@@ -18,6 +18,10 @@
 0:03a0 GS35Func
 0:03ae GS06Func
 0:0479 GS07Func
+0:050c DemoHandleSerial
+0:0542 DemoSimulateJoypad
+0:0583 Unused_DemoRecording
+0:05b3 DemoRestoreJoypad
 0:05c7 GS2aFunc
 0:05f7 GS2bFunc
 0:0677 GS16Func
@@ -92,17 +96,101 @@
 0:2054 .checkForReroll
 0:2062 .storeNextPiece
 
+0:2071 HandleDrop_downPressed
+0:209c handleDrop
+0:20b1 handleDrop_done
+0:20b5 handleDrop_timed
+0:20c2 handleDrop_drop
+0:2103 .checkLost
+0:213e HandleFinishedRows
+0:2153 .rowLoop
+0:2156 .rowCheckLoop
+0:216b .rowDone
+0:219b .typeB
+0:21aa .updateCount
+0:21cf .done
+0:21d8 .unfinishedRow
+0:21db .typeBDone
+0:21e0 HandleRowBlink
+0:21f6 .blink1Loop
+0:2208 .fillRowLoop
+0:2211 .nextBlinkStage
+0:221f .blinkDone
+0:222a .done
+0:222e .blink2Loop
+0:2238 .restoreRowLoop
+0:2248 .noClearedLines
+0:224d MoveUpFinishedRows
+0:225a .finishedRowLoop
+0:2265 .rowLoop
+0:2268 .rowBlocksLoop
+0:2287 .clearTopRowLoop
+0:2293 ClearFinishedRowPtrs
+0:229e UpdateBoardStage2
+0:22ad UpdateBoardStage3
+0:22bc UpdateBoardStage4
+0:22cb UpdateBoardStage5
+0:22da UpdateBoardStage6
+0:22e9 UpdateBoardStage7
+0:22f8 UpdateBoardStage8
+0:2323 UpdateBoardStage9
+0:2332 UpdateBoardStage10
+0:2341 UpdateBoardStage11
+0:2350 UpdateBoardStage12
+0:235f UpdateBoardStage13
+0:236e UpdateBoardStage14
+0:237d UpdateBoardStage15
+0:238c UpdateBoardStage16
+0:239e UpdateBoardStage17
+0:23b7 UpdateBoardStage18
+0:23cc UpdateBoardStage19
+
 0:243b PrintIngameScore
+0:244b UpdateLevel
+0:249d GetLevelBCD
+0:24ac UpdateBoardRow
+0:24ae .blockLoop 
+0:24bb HandleRotationAndShift
+0:24da .rotateACarry
+0:24e0 .rotateB
+0:24ea .rotateBCarry
+0:24ee .applyRotation
+0:2509 .noRotate
+0:2527 .rightPressed
+0:253a .undoShift
+0:2549 .done
+0:254c .checkLeft
+0:255e .leftPressed
+
+0:2573 CheckSpriteCollision
+
+0:25a1 LockCurPiece
+0:25ab .spriteLoop
+0:25bd .waitForHBlankLoop
+0:25cf .done
+
+0:2683 UpdateCurPieceSprite
+0:2696 UpdatePreviewPieceSprite
 
 0:26b6 CopyDEToHLUntilFF
 0:26be UnusedInterrupt
 0:2795 FillTileMap0
 0:2798 FillTileMap
 0:279b .fillLoop
+0:27a4 CopyHLToDE
+0:27c3 Copy1ppAlphabet
+0:27e4 CopyHLTo8000
 0:27ea GS36Func
+0:27eb CopyScreenTilesTo9800
+0:27ee CopyScreenTiles
+0:27f0 CopyScreenLines
 0:2804 Draw10WideBoardOverlay
 
 0:29a6 ReadJoypad
-
+0:29e3 SpritePosToBoardPos
 0:2a36 PrintNumberCheck
 0:2a3c PrintNumber
+
+1:64d3 HandleSound_
+1:7ff0 HandleSound
+

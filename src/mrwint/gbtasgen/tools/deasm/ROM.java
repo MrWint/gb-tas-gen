@@ -129,7 +129,9 @@ public class ROM {
 
 		for(int i=0;i<len;i++) // set all external labels as explicit
 			if(label[i] != null)
-				labelType[i] = Math.max(labelType[i], label[i].startsWith(".") ? LABEL_RELATIVE : LABEL_FUNCTION);
+				labelType[i] = Math.max(labelType[i], label[i].startsWith(".")
+						? LABEL_RELATIVE
+						: Character.isLowerCase(label[i].charAt(0)) ? LABEL_ABSOLUTE : LABEL_FUNCTION);
 
 		boolean changed;
 		int numChanged = 0;

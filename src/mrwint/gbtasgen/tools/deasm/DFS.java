@@ -150,19 +150,29 @@ public class DFS {
 	}
 
 	public DFS addJumpTable(int address, int length) {
-		return addJumpTable(address, length, null);
+		return addPointerTable(address, length, null, true);
 	}
 	public DFS addJumpTable(int address, int length, String label) {
+		return addPointerTable(address, length, label, true);
+	}
+
+	public DFS addPointerTable(int address, int length) {
+		return addPointerTable(address, length, null, false);
+	}
+	public DFS addPointerTable(int address, int length, String label) {
+		return addPointerTable(address, length, label, false);
+	}
+	public DFS addPointerTable(int address, int length, String label, boolean addDfsRoots) {
 
 		if (label != null)
 			rom.label[address] = label;
-		if(rom.label[address] == null)
+		if(rom.label[address] == null && addDfsRoots)
 			rom.labelType[address] = 3;
 
 		for(int i=0; i<length; i++) {
 			int ca = address + 2*i;
 			rom.type[ca] = ROM.DATA_JUMPPOINTER;
-			if (i % 8 == 0)
+			if (i > 0 && i % 8 == 0)
 				rom.comment[ca] = "$" + Util.toHex(i);
 
 			int goalAddress = ((rom.data[ca]&0xFF) | ((rom.data[ca+1]&0xFF) << 8)) & 0xFFFF;
@@ -182,7 +192,8 @@ public class DFS {
 				rom.payloadAsAddress[ca] = fullAddress;
 				if(rom.label[fullAddress] == null)
 					rom.labelType[fullAddress] = Math.max(rom.labelType[fullAddress], 3);
-				dfsStack.push(new DFSStackElem(fullAddress, new CPUState()));
+				if (addDfsRoots)
+					dfsStack.push(new DFSStackElem(fullAddress, new CPUState()));
 			}
 		}
 
@@ -190,6 +201,12 @@ public class DFS {
 	}
 
 	public DFS addRawBytes(int address, int length) {
+		return addRawBytes(address, length, null);
+	}
+	public DFS addRawBytes(int address, int length, String label) {
+
+		if (label != null)
+			rom.label[address] = label;
 
 		for(int i = 0; i < length; i++) {
 			int ca = address + i;
@@ -223,7 +240,7 @@ public class DFS {
 				rom.type[ca] = ROM.DATA_BYTEARRAY;
 				rom.format[ca] = format[f];
 				rom.width[ca] = format.length;
-				if (i % 8 == 0 && f == 0)
+				if (i > 0 && i % 8 == 0 && f == 0)
 					rom.comment[ca] = "$" + Util.toHex(i);
 			}
 		}

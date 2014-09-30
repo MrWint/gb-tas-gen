@@ -74,9 +74,9 @@ public class AssemblyWriter {
 				if (rom.type[curAddress] != ROM.CODE)
 					bw.write("; "+prettyPrintAddress(curAddress)+"\n\n");
 			} else if(rom.type[curAddress] == ROM.DATA_JUMPPOINTER) {
-				curAddress = writeJumpPointer(bw,curAddress);
+				curAddress = writeJumpPointer(bw, curAddress, end);
 			} else if(rom.type[curAddress] == ROM.DATA_BYTEARRAY) {
-				curAddress = writeByteArray(bw,curAddress);
+				curAddress = writeByteArray(bw, curAddress, end);
 			} else
 				System.err.println("writing unknown section type "+rom.type[curAddress]+" at "+(curAddress++));
 		}
@@ -114,9 +114,9 @@ public class AssemblyWriter {
 		bw.close();
 	}
 
-	private int writeJumpPointer(BufferedWriter bw, int curAddress) throws Throwable {
+	private int writeJumpPointer(BufferedWriter bw, int curAddress, int end) throws Throwable {
 
-		for(;rom.type[curAddress] == ROM.DATA_JUMPPOINTER;curAddress+=2) {
+		for(;rom.type[curAddress] == ROM.DATA_JUMPPOINTER && curAddress < end;curAddress+=2) {
 			addLabel(bw, curAddress);
 
 			String dataString = "$"+Integer.toHexString(((rom.data[curAddress]&0xFF) | ((rom.data[curAddress+1]&0xFF) << 8)) & 0xFFFF);
@@ -129,12 +129,13 @@ public class AssemblyWriter {
 
 			bw.write("\tdw "+dataString+"\n");
 		}
-		bw.write("\n");
+		if (rom.type[curAddress] != ROM.DATA_BYTEARRAY)
+			bw.write("\n");
 		return curAddress;
 	}
 
-	private int writeByteArray(BufferedWriter bw, int curAddress) throws Throwable {
-		for(; rom.type[curAddress] == ROM.DATA_BYTEARRAY; curAddress += rom.width[curAddress]) {
+	private int writeByteArray(BufferedWriter bw, int curAddress, int end) throws Throwable {
+		for(; rom.type[curAddress] == ROM.DATA_BYTEARRAY && curAddress < end; curAddress += rom.width[curAddress]) {
 			addLabel(bw, curAddress);
 
 			String dataString = "";
@@ -149,7 +150,8 @@ public class AssemblyWriter {
 
 			bw.write("\tdb "+dataString+"\n");
 		}
-		bw.write("\n");
+		if (rom.type[curAddress] != ROM.DATA_JUMPPOINTER)
+			bw.write("\n");
 		return curAddress;
 	}
 

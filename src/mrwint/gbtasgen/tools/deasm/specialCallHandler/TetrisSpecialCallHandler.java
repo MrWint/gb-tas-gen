@@ -111,14 +111,256 @@ public class TetrisSpecialCallHandler extends SpecialCallHandler {
 
 		dfs.addFunction(0x2a10, ".unused_2a10");
 		dfs.addFunction(0x2a18, ".unused_2a18");
+		dfs.addPointerTable(0x2b64, 94, "PieceDataTable");
+		String[] knownPieces = {
+				"LRot0", "LRot1", "LRot2", "LRot3",
+				"JRot0", "JRot1", "JRot2", "JRot3",
+				"IRot0", "IRot1", "IRot2", "IRot3",
+				"ORot0", "ORot1", "ORot2", "ORot3",
+				"ZRot0", "ZRot1", "ZRot2", "ZRot3",
+				"SRot0", "SRot1", "SRot2", "SRot3",
+				"TRot0", "TRot1", "TRot2", "TRot3",
+				"AType", "BType", "CType", "OffType",
+				"Num0", "Num1", "Num2", "Num3", "Num4", "Num5", "Num6", "Num7", "Num8", "Num9",
+		};
+		for (int i=0;i<94; i++) {
+			String name = i<knownPieces.length ? knownPieces[i] : "Unknown";
+			int add = dfs.rom.payloadAsAddress[0x2b64+2*i];
+			dfs.addPointerTable(add, 1, name+"D1_"+Integer.toHexString(add));
+			dfs.addRawBytes(add+2, 2);
+			int addadd = dfs.rom.payloadAsAddress[add];
+			dfs.addPointerTable(addadd, 1, name+"D2_"+Integer.toHexString(addadd));
+			int cadd = addadd+2;
+			while ((cadd - addadd < 0x100) && dfs.rom.data[cadd] != (byte)0xff) cadd++;
+			dfs.addRawBytes(addadd + 2, cadd - addadd - 1);
+			int addaddadd = dfs.rom.payloadAsAddress[addadd];
+			dfs.addByteArray(addaddadd, 1, null,
+					ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+					ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+					ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+					ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		}
+		dfs.addRawBytes(0x31a9, 0x20, "Shape4x4");
+		dfs.addRawBytes(0x31c9, 0x10, "Shape8x1");
+		dfs.addRawBytes(0x31d9, 0x1c, "Shape2x7");
+		dfs.addRawBytes(0x31f5, 0x38, "ShapeRocket4x8");
+		dfs.addRawBytes(0x322d, 0x12, "Shape3x3");
 
+		dfs.addRawBytes(0x323f, 0xc50, "UnknownTileset2bpp_323f");
+
+		dfs.addByteArray(0x3e8f, 0x12, "IngameTypeAScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x3ff7, 1, "IngameTypeBScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX);
+		dfs.addByteArray(0x4000, 1, null,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x400b, 0x11, null,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+
+		dfs.addByteArray(0x415f, 0x138, "AlphabetTileset1bpp", ROM.FORMAT_BIN);
+		dfs.addRawBytes(0x4297, 0xa0, "UnknownTileset2bpp_4297");
+		dfs.addRawBytes(0x4337, 0x6d0, "UnknownTileset2bpp_4337");
+		dfs.addByteArray(0x4a07, 0x12, "LegalScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x4b6f, 0x12, "TitleScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x4cd7, 0x12, "TypeSelectScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x4e3f, 0x12, "TypeALevelSelectScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x4fa7, 0x12, "TypeBLevelSelectScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
 		dfs.addByteArray(0x510f, 18, "WonDancingScreen",
 				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
 				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
 		dfs.addByteArray(0x51c3, 1, null, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x51c4, 4, "RocketPlatformScreenLines",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x5214, 0x12, "HighSelect2PScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x537c, 0x12, "Unknown_2P_537c_ScreenTiles",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x54e4, 4, "WinsLosses2PHeaderScreenLines",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addByteArray(0x5534, 6, "WinsLosses2PFooterScreenLines",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+
+		dfs.addRawBytes(0x55ac, 0xd04, "MarioLuigiRocketTileset2bpp");
 
 		dfs.addByteArray(0x62b0, 0x80, "Demo1Controls", ROM.FORMAT_BUTTONS, ROM.FORMAT_DEC);
 		dfs.addByteArray(0x63b0, 0x50, "Demo2Controls", ROM.FORMAT_BUTTONS, ROM.FORMAT_DEC);
+		dfs.addRawBytes(0x6450, 0x30, "Unknown_24_6450");
+
+		dfs.addPointerTable(0x64b0, 0x11, "Unknown_Sound_64b0");
+		for (int i=0;i<0x11; i++) {
+			int add = dfs.rom.payloadAsAddress[0x64b0+2*i];
+			dfs.addRawBytes(add, 1, "UnknownD1_Sound_"+Integer.toHexString(add));
+			dfs.addPointerTable(add+1, 5);
+			for (int j=0;j<5;j++)
+				if (dfs.rom.payloadAsAddress[add+1+2*j] == 0)
+					dfs.rom.payloadAsAddress[add+1+2*j] = -1;
+
+			dfs.addRawBytes(0x6ef9, 0xc, "UnknownD2_Sound_6ef9");
+			dfs.addRawBytes(0x6f05, 0x9, "UnknownD2_Sound_6f05");
+			dfs.addRawBytes(0x6f0e, 0x1d, "UnknownD2_Sound_6f0e");
+			dfs.addRawBytes(0x6f2b, 0x14, "UnknownD2_Sound_6f2b");
+			dfs.addRawBytes(0x6ffa, 0xe, "UnknownD2_Sound_6ffa");
+			dfs.addRawBytes(0x7008, 0x13a, "UnknownD2_Sound_7008");
+			dfs.addRawBytes(0x7142, 0xa, "UnknownD2_Sound_7142");
+			dfs.addRawBytes(0x714c, 0xa, "UnknownD2_Sound_714c");
+			dfs.addRawBytes(0x7156, 0xc, "UnknownD2_Sound_7156");
+			dfs.addRawBytes(0x7162, 0x156, "UnknownD2_Sound_7162");
+			dfs.addRawBytes(0x72b8, 0xe, "UnknownD2_Sound_72b8");
+			dfs.addRawBytes(0x72c6, 0xe, "UnknownD2_Sound_72c6");
+			dfs.addRawBytes(0x72d4, 0x2e, "UnknownD2_Sound_72d4");
+			dfs.addRawBytes(0x7302, 0x241, "UnknownD2_Sound_7302");
+			dfs.addRawBytes(0x7543, 0x8, "UnknownD2_Sound_7543");
+			dfs.addRawBytes(0x754b, 0x6, "UnknownD2_Sound_754b");
+			dfs.addRawBytes(0x7551, 0x3c, "UnknownD2_Sound_7551");
+			dfs.addRawBytes(0x758d, 0x8, "UnknownD2_Sound_758d");
+			dfs.addRawBytes(0x7595, 0x6, "UnknownD2_Sound_7595");
+			dfs.addRawBytes(0x759b, 0x61, "UnknownD2_Sound_759b");
+			dfs.addRawBytes(0x75fc, 0x4, "UnknownD2_Sound_75fc");
+			dfs.addRawBytes(0x7600, 0x2, "UnknownD2_Sound_7600");
+			dfs.addRawBytes(0x7602, 0x31, "UnknownD2_Sound_7602");
+			dfs.addRawBytes(0x7633, 0x8, "UnknownD2_Sound_7633");
+			dfs.addRawBytes(0x763b, 0x6, "UnknownD2_Sound_763b");
+			dfs.addRawBytes(0x7641, 0x22, "UnknownD2_Sound_7641");
+			dfs.addRawBytes(0x7663, 0x209, "UnknownD2_Sound_7663");
+			dfs.addRawBytes(0x786c, 0xa, "UnknownD2_Sound_786c");
+			dfs.addRawBytes(0x7876, 0x8, "UnknownD2_Sound_7876");
+			dfs.addRawBytes(0x787e, 0x8, "UnknownD2_Sound_787e");
+			dfs.addRawBytes(0x7886, 0x17a, "UnknownD2_Sound_7886");
+			dfs.addRawBytes(0x7a00, 0x26, "UnknownD2_Sound_7a00");
+			dfs.addRawBytes(0x7a26, 0x4, "UnknownD2_Sound_7a26");
+			dfs.addRawBytes(0x7a2a, 0x45, "UnknownD2_Sound_7a2a");
+			dfs.addRawBytes(0x7a6f, 0x4, "UnknownD2_Sound_7a6f");
+			dfs.addRawBytes(0x7a73, 0x2, "UnknownD2_Sound_7a73");
+			dfs.addRawBytes(0x7a75, 0x6a, "UnknownD2_Sound_7a75");
+			dfs.addRawBytes(0x7adf, 0x4, "UnknownD2_Sound_7adf");
+			dfs.addRawBytes(0x7ae3, 0x2, "UnknownD2_Sound_7ae3");
+			dfs.addRawBytes(0x7ae5, 0x2, "UnknownD2_Sound_7ae5");
+			dfs.addRawBytes(0x7ae7, 0x7e, "UnknownD2_Sound_7ae7");
+			dfs.addRawBytes(0x7b65, 0x6, "UnknownD2_Sound_7b65");
+			dfs.addRawBytes(0x7b6b, 0x4, "UnknownD2_Sound_7b6b");
+			dfs.addRawBytes(0x7b6f, 0x4, "UnknownD2_Sound_7b6f");
+			dfs.addRawBytes(0x7b73, 0xb1, "UnknownD2_Sound_7b73");
+			dfs.addRawBytes(0x7c24, 0x4, "UnknownD2_Sound_7c24");
+			dfs.addRawBytes(0x7c28, 0x2, "UnknownD2_Sound_7c28");
+			dfs.addRawBytes(0x7c2a, 0x2, "UnknownD2_Sound_7c2a");
+			dfs.addRawBytes(0x7c2c, 0xcd, "UnknownD2_Sound_7c2c");
+			dfs.addRawBytes(0x7cf9, 0x6, "UnknownD2_Sound_7cf9");
+			dfs.addRawBytes(0x7cff, 0x12, "UnknownD2_Sound_7cff");
+			dfs.addRawBytes(0x7d11, 0x10, "UnknownD2_Sound_7d11");
+			dfs.addRawBytes(0x7d21, 0x123, "UnknownD2_Sound_7d21");
+			dfs.addRawBytes(0x7e44, 0x4, "UnknownD2_Sound_7e44");
+			dfs.addRawBytes(0x7e48, 0x2, "UnknownD2_Sound_7e48");
+			dfs.addRawBytes(0x7e4a, 0x2, "UnknownD2_Sound_7e4a");
+			dfs.addRawBytes(0x7e4c, 0x45, "UnknownD2_Sound_7e4c");
+			dfs.addRawBytes(0x7e91, 0xc, "UnknownD2_Sound_7e91");
+			dfs.addRawBytes(0x7e9d, 0xc, "UnknownD2_Sound_7e9d");
+			dfs.addRawBytes(0x7ea9, 0xc, "UnknownD2_Sound_7ea9");
+			dfs.addRawBytes(0x7eb5, 0x13b, "UnknownD2_Sound_7eb5");
+		}
+		dfs.addRawBytes(0x657b, 0x4, "Unknown_Sound_657b");
+		dfs.addRawBytes(0x657f, 0x4, "Unknown_Sound_657f");
+		dfs.addRawBytes(0x659b, 0x5, "Unknown_Sound_659b");
+		dfs.addRawBytes(0x65a0, 0x5, "Unknown_Sound_65a0");
+		dfs.addRawBytes(0x65a5, 0x5, "Unknown_Sound_65a5");
+		dfs.addRawBytes(0x65e7, 0x5, "Unknown_Sound_65e7");
+		dfs.addRawBytes(0x65ec, 0x5, "Unknown_Sound_65ec");
+		dfs.addRawBytes(0x6623, 0x5, "Unknown_Sound_6623");
+		dfs.addRawBytes(0x6640, 0x5, "Unknown_Sound_6640");
+		dfs.addRawBytes(0x6645, 0x5, "Unknown_Sound_6645");
+		dfs.addRawBytes(0x664a, 0x5, "Unknown_Sound_664a");
+		dfs.addRawBytes(0x664f, 0x5, "Unknown_Sound_664f");
+		dfs.addRawBytes(0x6695, 0x5, "Unknown_Sound_6695");
+		dfs.addRawBytes(0x669a, 0xb, "Unknown_Sound_669a");
+		dfs.addRawBytes(0x66a5, 0xa, "Unknown_Sound_66a5");
+		dfs.addRawBytes(0x66ec, 0x5, "Unknown_Sound_66ec");
+		dfs.addRawBytes(0x66f1, 0x6, "Unknown_Sound_66f1");
+		dfs.addRawBytes(0x66f7, 0x5, "Unknown_Sound_66f7");
+		dfs.addRawBytes(0x6740, 0x5, "Unknown_Sound_6740");
+		dfs.addRawBytes(0x6745, 0x4, "Unknown_Sound_6745");
+		dfs.addRawBytes(0x6749, 0x4, "Unknown_Sound_6749");
+		dfs.addRawBytes(0x674d, 0x4, "Unknown_Sound_674d");
+		dfs.addRawBytes(0x6751, 0x4, "Unknown_Sound_6751");
+		dfs.addRawBytes(0x6755, 0x24, "Unknown_Sound_6755");
+		dfs.addRawBytes(0x6779, 0x24, "Unknown_Sound_6779");
+		dfs.addRawBytes(0x67fb, 0x5, "Unknown_Sound_67fb");
+		dfs.addRawBytes(0x6857, 0x3, "Unknown_Sound_6857");
+		dfs.addRawBytes(0x685a, 0x2, "Unknown_Sound_685a");
+		dfs.addRawBytes(0x685c, 0x3, "Unknown_Sound_685c");
+		dfs.addRawBytes(0x685f, 0x2, "Unknown_Sound_685f");
+		dfs.addRawBytes(0x6861, 0x3, "Unknown_Sound_6861");
+		dfs.addRawBytes(0x6864, 0x2, "Unknown_Sound_6864");
+		dfs.addRawBytes(0x6866, 0x3, "Unknown_Sound_6866");
+		dfs.addRawBytes(0x6869, 0x2, "Unknown_Sound_6869");
+		dfs.addByteArray(0x6abe, 17, "Unknown_Sound_6abe",
+				ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+		dfs.addFunction(0x6d9d, ".unused_6d9d");
+		dfs.addFunction(0x6da1, ".unused_6da1");
+
+		dfs.addRawBytes(0x6dcb, 0x37, "Unknown_Sound_6dcb");
+		dfs.addRawBytes(0x6e02, 0x92, "Unknown_Sound_6e02");
+		dfs.addRawBytes(0x6e94, 0x15, "Unknown_Sound_6e94");
+		dfs.addRawBytes(0x6ea9, 0x20, "Unknown_Sound_6ea9");
+		dfs.addRawBytes(0x6ec9, 0x10, "Unknown_Sound_6ec9");
+		dfs.addRawBytes(0x6ed9, 0x10, "Unknown_Sound_6ed9");
+		dfs.addRawBytes(0x6ee9, 0x10, "Unknown_Sound_6ee9");
+
 
 		dfs.addFunction(0x2a7f, "DMARoutine");
 	}
