@@ -9,13 +9,13 @@ public class PressButton extends DelayableCachableMove {
 	private int moves;
 	private int waitKeys;
 	private Metric metric;
-	
+
 	public PressButton(int moves) {
-		this(moves,null,0);
+		this(moves, null, 0);
 	}
-	
+
 	public PressButton(int moves, Metric metric) {
-		this(moves,metric,0);
+		this(moves, metric, 0);
 	}
 
 	public PressButton(int moves, Metric metric, int waitKeys) {
@@ -23,7 +23,7 @@ public class PressButton extends DelayableCachableMove {
 		this.metric = metric;
 		this.waitKeys = waitKeys;
 	}
-	
+
 	@Override
 	public int getInitialKey() {
 		return moves;
@@ -41,13 +41,13 @@ public class PressButton extends DelayableCachableMove {
 			if (metric != null)
 				Util.runToFirstDifference(waitKeys, moves, metric);
 			else
-				Util.runToNextInputFrame(waitKeys);
+				Util.runToNextInputFrame(waitKeys, waitKeys);
 		while(skips-- > 0) {
 			State.step(waitKeys);
 			if (metric != null)
 				Util.runToFirstDifference(waitKeys, moves, metric);
 			else
-				Util.runToNextInputFrame(waitKeys);
+				Util.runToNextInputFrame(waitKeys, waitKeys);
 		}
 	}
 }

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import mrwint.gbtasgen.main.RomInfo;
+import mrwint.gbtasgen.rom.RomInfo;
 
 public class StateBuffer {
 
@@ -213,6 +213,8 @@ public class StateBuffer {
 	}
 
 	public boolean addState(State s) {
+		if (s.rngState == -1)
+			throw new IllegalArgumentException("Tried to add state "+s+" without rngState.");
 
 		if(!stateMap.containsKey(s.stepCount))
 			stateMap.put(s.stepCount, useList ? new SubMapList() : new SubMapMap());

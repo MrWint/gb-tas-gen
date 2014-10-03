@@ -2,7 +2,7 @@ package mrwint.gbtasgen.segment.util;
 
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.segment.TextSegment;
+import mrwint.gbtasgen.segment.pokemon.TextSegment;
 
 public class SkipTextsSegment extends SeqSegment {
 

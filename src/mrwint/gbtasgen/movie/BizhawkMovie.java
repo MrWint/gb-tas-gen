@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.main.RomInfo;
 import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.State.InputNode;
 import mrwint.gbtasgen.util.Util;

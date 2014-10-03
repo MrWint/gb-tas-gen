@@ -12,41 +12,58 @@ import java.util.List;
 import java.util.Map;
 
 import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.main.RomInfo;
+import mrwint.gbtasgen.rom.RomInfo;
 
 public class State {
-	
-	private ByteBuffer bb;
+
+	public static boolean onFrameBoundaries = true;
+	public static long rerecordCount = 0;
+
+	public static State root;
+
+	public static int currentStepCount = 0;
+	public static int currentDelayStepCount = 0;
+	public static int currentOcdCount = 0;
+	public static int currentLastMove = -1;
+	public static InputNode currentInputNode = null;
+	public static Map<String,Object> currentAttributes = new HashMap<String, Object>();
+
+	static int[] currentRegisters = new int[Gb.NUM_REGISTERS];
+	static boolean currentRegistersValid = false;
+	static int[] currentMemory = new int[Gb.GB_MEMORY];
+	static boolean currentMemoryValid = false;
+	static int[] ROM = null;
+	static boolean ROMValid = false;
+
+	// common
 	public int stepCount;
 	public int delayStepCount;
 	public int ocdCount;
 	public int lastMove;
-	public int rngState;
 	public InputNode inputs;
 	public Map<String,Object> attributes;
-	
-	
+	// state only
+	private ByteBuffer bb;
+	public int rngState;
+
+
 	public State() {
-		this(-1, new HashMap<String, Object>(currentAttributes));
+		this(Gb.saveState(),currentStepCount,currentDelayStepCount, -1 /* rngState */, new HashMap<String, Object>(currentAttributes), currentOcdCount, currentLastMove, currentInputNode);
 	}
-	
-	private State(int rngState, Map<String, Object> attributes) {
-		this(Gb.saveState(),currentStepCount,currentDelayStepCount,rngState, attributes,currentOcdCount,currentLastMove,currentInputNode);
-	}
-	
+
 	private State(ByteBuffer bb, int stepCount, int delayStepCount, int rngState, Map<String, Object> attributes,int ocdCount,int lastMove,InputNode inputs) {
 		if(!onFrameBoundaries)
 			System.err.println("WARNING: creating State while not on frame boundaries!");
 		this.bb = bb;
 		this.stepCount = stepCount;
 		this.delayStepCount = delayStepCount;
-		this.rngState = rngState;
-		this.inputs = inputs;
 		this.ocdCount = ocdCount;
 		this.lastMove = lastMove;
+		this.rngState = rngState;
+		this.inputs = inputs;
 		this.attributes = attributes;
 	}
-	
+
 	public int getAttributeInt(String name) {
 		if(!attributes.containsKey(name))
 			return -1;
@@ -56,7 +73,7 @@ public class State {
 		attributes.put(name, value);
 		return this;
 	}
-	
+
 	public static int getCAttributeInt(String name) {
 		if(!currentAttributes.containsKey(name))
 			return -1;
@@ -65,26 +82,21 @@ public class State {
 	public static void setCAttributeInt(String name, int value) {
 		currentAttributes.put(name, value);
 	}
-	
+
 	public static State createState() {
-		return createState(currentAttributes,false);
+		return createState(false);
 	}
-	
+
 	public static State createState(boolean noRestore) {
-		return createState(currentAttributes,noRestore);
-	}
-	
-	public static State createState(Map<String,Object> attributes, boolean noRestore) {
 		State ret = new State();
 		step(); // finish current frame, forces random to reflect the inputs
-		int rngState = Gb.getRNGState(RomInfo.rom.rngAddress);
+		int rngState = RomInfo.rom.getRngState();
 		if(!noRestore)
 			ret.restore();
 		ret.rngState = rngState;
-		ret.attributes = new HashMap<String, Object>(attributes);
 		return ret;
 	}
-	
+
 	public int restore() {
 		if(!onFrameBoundaries)
 			step(); // get to next frame boundary
@@ -99,8 +111,8 @@ public class State {
 		rerecordCount++;
 		return stepCount;
 	}
-	
-	
+
+
 	public void save(String filename) {
 		try {
 			String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
@@ -111,7 +123,7 @@ public class State {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void save(ObjectOutputStream oos) {
 		try {
 			int len = bb.limit();
@@ -131,7 +143,7 @@ public class State {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void saveInputs(ObjectOutputStream oos) throws IOException {
 		List<InputNode> inputList = new ArrayList<InputNode>();
 		InputNode n = inputs;
@@ -147,7 +159,7 @@ public class State {
 	public static State load(String filename) {
 		try {
 			String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
-			
+
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
 			State ret = load(ois);
 			ois.close();
@@ -157,7 +169,7 @@ public class State {
 			return null;
 		}
 	}
-	
+
 	public static State load(ObjectInputStream ois) {
 		try {
 			int stepCount = ois.readInt();
@@ -171,7 +183,7 @@ public class State {
 			byte[] buf = new byte[len];
 			ois.readFully(buf);
 			InputNode inputs = loadInputs(ois);
-			
+
 			ByteBuffer bb = Gb.createDirectByteBuffer(len);
 			bb.put(buf);
 			bb.flip();
@@ -181,7 +193,7 @@ public class State {
 			return null;
 		}
 	}
-	
+
 	private static InputNode loadInputs(ObjectInputStream ois) throws IOException {
 		int len = ois.readInt();
 		InputNode ret = null;
@@ -189,35 +201,17 @@ public class State {
 			ret = new InputNode(ois.readInt(), ret);
 		return ret;
 	}
-	
-	public static State root;
-	
+
 	public static void init(String romName) {
 		Gb.startEmulator(romName);
 		root = new State();
-		
+
 		ROM = new int[Gb.getROMSize()];
-		
+
 		State.step(); // initialize all emulator resources (for gambatte)
 		root.restore();
 	}
 
-	public static boolean onFrameBoundaries = true;
-	public static long rerecordCount = 0;
-		
-	public static int currentStepCount = 0;
-	public static int currentDelayStepCount = 0;
-	public static Map<String,Object> currentAttributes = new HashMap<String, Object>();
-	public static int currentOcdCount = 0;
-	public static int currentLastMove = -1;
-	
-	static int[] currentRegisters = new int[Gb.NUM_REGISTERS];
-	static boolean currentRegistersValid = false;
-	static int[] currentMemory = new int[Gb.GB_MEMORY];
-	static boolean currentMemoryValid = false;
-	static int[] ROM = null;
-	static boolean ROMValid = false;
-	
 	public static class InputNode {
 		public int input;
 		public InputNode prev;
@@ -226,9 +220,7 @@ public class State {
 			this.prev = prev;
 		}
 	}
-	
-	public static InputNode currentInputNode = null;
-	
+
 	public static void logInput(int moves) {
 		if(!onFrameBoundaries)
 			return;
@@ -242,7 +234,7 @@ public class State {
 		onFrameBoundaries = true;
 		clearCache();
 	}
-	
+
 	public static void steps(int numberOfSteps) {
 		steps(numberOfSteps,0);
 	}
@@ -259,7 +251,7 @@ public class State {
 				currentOcdCount++;
 			currentLastMove = moves;
 		}
-		
+
 		int ret = Gb.step(moves, addresses);
 		logInput(moves);
 		onFrameBoundaries = (ret == 0);
@@ -292,7 +284,7 @@ public class State {
 		ROMValid = true;
 		return ROM;
 	}
-	
+
 	public static void clearCache() {
 		currentRegistersValid = false;
 		currentMemoryValid = false;

@@ -3,6 +3,7 @@ package mrwint.gbtasgen.segment;
 import java.util.ArrayList;
 import java.util.List;
 
+import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;

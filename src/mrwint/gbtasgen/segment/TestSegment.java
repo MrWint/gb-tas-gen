@@ -1,11 +1,12 @@
 package mrwint.gbtasgen.segment;
 
-import mrwint.gbtasgen.metric.CheckEncounterMetric;
+import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.WriteMemory;
-import mrwint.gbtasgen.move.gen1.WalkStep;
-import mrwint.gbtasgen.move.gen1.OverworldInteract;
+import mrwint.gbtasgen.move.pokemon.gen1.OverworldInteract;
+import mrwint.gbtasgen.move.pokemon.gen1.WalkStep;
+import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;

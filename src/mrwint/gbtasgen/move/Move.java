@@ -20,11 +20,9 @@ public abstract class Move {
 	public static PressButton press(int move) {
 		return new PressButton(move, Metric.DOWN_JOY);
 	}
-
 	public static PressButton menu(int move) {
 		return new PressButton(move, Metric.MENU_JOY);
 	}
-
 
 
 	State cachedState = null;

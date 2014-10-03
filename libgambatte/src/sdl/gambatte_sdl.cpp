@@ -416,17 +416,14 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_writeMemory
 /*
  * Class:     mrwint_gbtasgen_Gb
  * Method:    getRNGState
- * Signature: (I)I
+ * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_getRNGState
-  (JNIEnv *env, jclass clazz, jint address){
+  (JNIEnv *env, jclass clazz){
 	UNUSED(env);UNUSED(clazz);
 	int cc = gambatteSdl.gambatte.p_->cpu.cycleCounter_;
-	int rng1 = gambatteSdl.gambatte.p_->cpu.memory.read(address,cc);
-	int rng2 = gambatteSdl.gambatte.p_->cpu.memory.read(address+1,cc);
 	int divOff = cc - gambatteSdl.gambatte.p_->cpu.memory.divLastUpdate;
 	int div = gambatteSdl.gambatte.p_->cpu.memory.ioamhram[0x104];
-	int divCount =  ((div + (divOff>>8)) & 0xFF)+((divOff & 0xFF)<<6);
-	return divCount << 16 | rng1 << 8 | rng2;
+	return (((div << 8) + divOff) >> 2) & 0x3FFF;
 }
 
