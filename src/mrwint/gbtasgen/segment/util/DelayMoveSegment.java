@@ -10,11 +10,11 @@ import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class DelayMoveSegment extends Segment {
-	
+
 	public static interface DelayableMoveFactory {
 		Move create();
 	}
-	
+
 	public static class PressButtonFactory implements DelayableMoveFactory{
 		int move;
 		Metric metric;
@@ -30,7 +30,7 @@ public class DelayMoveSegment extends Segment {
 			return new PressButton(move, metric);
 		}
 	}
-	
+
 	public static class DelayUntilFactory implements DelayableMoveFactory{
 		DelayableMoveFactory moveFactory;
 		Metric metric;
@@ -44,45 +44,45 @@ public class DelayMoveSegment extends Segment {
 			return new DelayUntil(new WithMetric(moveFactory.create(), true, metric));
 		}
 	}
-	
+
 	DelayableMoveFactory factory;
 	Segment verificationSegment;
-	
+
 	int fullCutoffDelay = 0;
 	int nonemptyCutoffDelay = 4;
-	int maxDelay = 100;
-	
+	int maxDelay = 1000000;
+
 	public DelayMoveSegment withMaxDelay(int maxDelay) {
 		this.maxDelay = maxDelay;
 		return this;
 	}
-	
+
 	boolean metricBeforeExecution = false;
-	
+
 	public DelayMoveSegment(Segment verificationSegment) {
 		this.factory = new PressButtonFactory(0, null);
 		this.verificationSegment = verificationSegment;
 		this.metricBeforeExecution = true;
 	}
-	
+
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment) {
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
 	}
-	
+
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, boolean metricBeforeExecution) {
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
 		this.metricBeforeExecution = metricBeforeExecution;
 	}
-	
+
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, int fullCutoffDelay, int nonemptyCutoffDelay) {
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
 		this.fullCutoffDelay = fullCutoffDelay;
 		this.nonemptyCutoffDelay = nonemptyCutoffDelay;
 	}
-	
+
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, int fullCutoffDelay, int nonemptyCutoffDelay, boolean metricBeforeExecution) {
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
@@ -90,7 +90,7 @@ public class DelayMoveSegment extends Segment {
 		this.nonemptyCutoffDelay = nonemptyCutoffDelay;
 		this.metricBeforeExecution = metricBeforeExecution;
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		System.out.println("DelayMoveSegment starts");
@@ -106,7 +106,7 @@ public class DelayMoveSegment extends Segment {
 			active[cs] = true;
 			dus[cs] = factory.create();
 		}
-		
+
 		int skips = -1;
 		while(numActive > 0) {
 			skips++;
@@ -119,12 +119,12 @@ public class DelayMoveSegment extends Segment {
 					continue;
 				s.restore();
 				dus[cs].prepare(skips,true);
-				
+
 				if(!metricBeforeExecution)
 					dus[cs].doMove();
-				
+
 				int curActiveFrame = State.currentStepCount;
-				
+
 				if(skips > maxDelay) {
 					System.out.println("DelayMoveSegment interrupting search (maxDelay)!");
 					active[cs] = false;
@@ -137,14 +137,14 @@ public class DelayMoveSegment extends Segment {
 					numActive--;
 					continue;
 				}
-				
+
 				if(nonemptyFrame < curActiveFrame-nonemptyCutoffDelay) {
 					System.out.println("DelayMoveSegment interrupting search (nonemptyFrame)!");
 					active[cs] = false;
 					numActive--;
 					continue;
 				}
-				
+
 				StateBuffer sb = new StateBuffer();
 				sb.addState(State.createState(true));
 				sb = verificationSegment.execute(sb);
@@ -162,7 +162,7 @@ public class DelayMoveSegment extends Segment {
 				}
 			}
 		}
-		
+
 		System.out.println("DelayMoveSegment returns: "+ret);
 		return ret;
 	}

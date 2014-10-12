@@ -4,7 +4,7 @@ import mrwint.gbtasgen.tools.deasm.CPUState;
 import mrwint.gbtasgen.tools.deasm.DFS;
 import mrwint.gbtasgen.tools.deasm.ROM;
 
-public class TetrisSpecialCallHandler extends SpecialCallHandler {
+public class Tetris11SpecialCallHandler extends SpecialCallHandler {
 
 	@Override
 	public boolean vetoContinueAfterCall(int currentAddress, int jumpAddress) {
@@ -23,7 +23,7 @@ public class TetrisSpecialCallHandler extends SpecialCallHandler {
 	public void handleDFSInit() {
 		// rst $28
 		dfs.addJumpTable(0x6e, 5);
-		dfs.addJumpTable(0x2fb, 55);
+		dfs.addJumpTable(0x2fb, 55, "GameStateTable");
 
 		dfs.addJumpTable(0x6480, 8);
 		dfs.addJumpTable(0x6490, 8);

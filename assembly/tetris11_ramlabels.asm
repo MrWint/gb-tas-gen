@@ -68,6 +68,7 @@ hDemoControlDataPtr EQU $ffeb ; +1
 hDemoSimulatedJoyDown EQU $ffed
 hDemoStoredJoyDown EQU $ffee
 
+hSRocketType	EQU $fff3 ; $58, $59 or $5a
 hHeartMode		EQU $fff4 ; >0 -> heart mode
 
 

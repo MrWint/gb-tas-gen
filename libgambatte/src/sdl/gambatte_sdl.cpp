@@ -427,3 +427,13 @@ JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_getRNGState
 	return (((div << 8) + divOff) >> 2) & 0x3FFF;
 }
 
+/*
+ * Class:     mrwint_gbtasgen_Gb
+ * Method:    offsetRNG
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_offsetRNG
+  (JNIEnv *env, jclass clazz, jint offset){
+    gambatteSdl.gambatte.p_->cpu.memory.divLastUpdate -= (offset << 2);
+}
+

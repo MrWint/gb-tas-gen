@@ -65,4 +65,5 @@ public class Gb {
 	public static native void writeMemory(int address, int value);
 
 	public static native int getRNGState();
+	public static native void offsetRNG(int offset);
 }

@@ -20,7 +20,7 @@ public class Runner {
 
 		/// execute segment ///
 		StateBuffer outBuffer = new StateBuffer();
-		outBuffer.addState(new State());
+		outBuffer.addState(State.createState());
 		outBuffer = segment.execute(outBuffer);
 
 		//// save movie ////

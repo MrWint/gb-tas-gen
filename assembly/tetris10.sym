@@ -1,0 +1,187 @@
+0:0150 Start
+0:017e HandleSerialInterrupt
+0:019b Serial00Func
+0:01c2 Serial01Func
+0:01c7 Serial02Func
+0:01dd Serial03Func
+0:01fd VBlank
+
+0:028b StartUp
+0:0293 .wipeRamLoop
+0:029a Reset
+0:02b2 .waitForVBlankLoop
+0:02df .wipeRamLoop
+0:02ea .wipeStackLoop
+0:02f9 .wipeVRamLoop
+0:0305 .wipeOamLoop
+0:030e .wipeHRamLoop
+0:0319 .copyDmaRoutineLoop
+0:0343 MainLoop
+0:035a .counterLoop
+0:036c .waitForVBlankLoop
+0:0377 GameStateFunc
+
+0:0579 DemoHandleSerial
+0:05af DemoSimulateJoypad
+0:05f0 Unused_DemoRecording
+0:0620 DemoRestoreJoypad
+
+
+0:1c29 GS00Func
+0:1d3d GS01Func
+0:12a8 GS02Func
+0:12df GS03Func
+0:1d61 GS04Func
+0:1d81 GS05Func
+0:0419 GS06Func
+0:04e6 GS07Func
+
+0:14a8 GS08Func
+0:14f0 GS09Func
+0:1a6b GS0aFunc
+0:1e1b GS0bFunc
+0:1f71 GS0cFunc
+0:1f7a GS0dFunc
+0:1589 GS0eFunc
+0:1514 GS0fFunc
+
+0:15df GS10Func
+0:1623 GS11Func
+0:168d GS12Func
+0:16de GS13Func
+0:174f GS14Func
+0:1977 GS15Func
+0:06e4 GS16Func
+0:0799 GS17Func
+
+0:0892 GS18Func
+0:0953 GS19Func
+0:0b95 GS1aFunc
+0:0d4f GS1bFunc
+0:0b41 GS1cFunc
+0:0d96 GS1dFunc
+0:0e87 GS1eFunc
+0:1176 GS1fFunc
+
+0:0dfd GS20Func
+0:0eee GS21Func
+0:1e29 GS22Func
+0:1e9c GS23Func
+0:03e6 GS24Func
+0:0410 GS25Func
+0:11cb GS26Func
+0:124a GS27Func
+
+0:1260 GS28Func
+0:1280 GS29Func
+0:0634 GS2aFunc
+0:0664 GS2bFunc
+0:1317 GS2cFunc
+0:1369 GS2dFunc
+0:1388 GS2eFunc
+0:13b5 GS2fFunc
+
+0:13cb GS30Func
+0:13e2 GS31Func
+0:1419 GS32Func
+0:1449 GS33Func
+0:137f GS34Func
+0:283e GS35Func
+
+
+
+0:1b43 GetLevelFrameDelay
+0:1b76 InitDemoFillHighLines
+0:1bc3 FillGarbageRows
+0:1bc4 .findStartRowLoop
+0:1bca .nextRandomBlock
+0:1bcd .blockFilled
+0:1bcf .blockFilledEmptyLoop
+0:1bda .loopDone
+0:1be6 .blockEmpty
+0:1be8 .blockChosen
+0:1bfb .keepChosenBlock
+0:1bfc .writeChosenBlock
+0:1c1d .nextRow
+0:1c23 .checkDone
+0:1c68 HandleIngamePause
+
+0:1fec TypeAAddScore
+0:2062 GetNextPiece
+0:207f .demo
+0:209c .noDemo
+0:209e .reroll
+0:20a1 .wrapToZero
+0:20a2 .loop
+0:20af .checkForReroll
+0:20bd .storeNextPiece
+
+0:20cc HandleDrop_downPressed
+0:20f7 handleDrop
+0:2199 HandleFinishedRows
+0:21ae .rowLoop
+0:21b1 .rowCheckLoop
+0:21c6 .rowDone
+0:21fb .typeB
+0:220a .updateCount
+0:222f .done
+0:2238 .unfinishedRow
+0:223b .typeBDone
+
+0:2240 HandleRowBlink
+0:22ad MoveUpFinishedRows
+0:22fe UpdateBoardStage2
+0:230d UpdateBoardStage3
+0:231c UpdateBoardStage4
+0:232b UpdateBoardStage5
+0:233a UpdateBoardStage6
+0:2349 UpdateBoardStage7
+0:2358 UpdateBoardStage8
+0:2383 UpdateBoardStage9
+0:2392 UpdateBoardStage10
+0:23a1 UpdateBoardStage11
+0:23b0 UpdateBoardStage12
+0:23bf UpdateBoardStage13
+0:23ce UpdateBoardStage14
+0:23dd UpdateBoardStage15
+0:23ec UpdateBoardStage16
+0:23fe UpdateBoardStage17
+0:2417 UpdateBoardStage18
+0:242c UpdateBoardStage19
+
+0:249b PrintIngameScore
+0:24ab UpdateLevel
+
+0:2506 UpdateBoardRow
+0:2515 HandleRotationAndShift
+0:252e .rotateACarry
+0:2534 .rotateB
+0:253e .rotateBCarry
+0:2542 .applyRotation
+0:255d .noRotate
+0:257b .rightPressed
+0:258e .undoShift
+0:259d .done
+0:25a0 .checkLeft
+0:25b2 .leftPressed
+
+0:25c7 CheckSpriteCollision
+0:25f5 LockCurPiece
+0:2611 .waitForHBlankLoop
+0:2623 .done
+
+0:26d7 UpdateCurPieceSprite
+0:26ea UpdatePreviewPieceSprite
+
+0:27e9 FillTileMap0
+0:27f8 CopyHLToDE
+0:2817 Copy1ppAlphabet
+
+
+0:29fa ReadJoypad
+0:2a2b SpritePosToBoardPos
+
+1:6553 HandleSound_
+1:7ff0 HandleSound
+
+
