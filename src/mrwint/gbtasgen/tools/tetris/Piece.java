@@ -39,7 +39,7 @@ public class Piece {
         if (curData[y][x] == 1) {
           int boardX = x + offsetX;
           int boardY = y + offsetY;
-          if (boardX < 0 || boardX >= Board.WIDTH || boardY >= Board.HEIGHT)
+          if (boardX < 0 || boardX >= Board.WIDTH || boardY >= board.length)
             return false;
           if (boardY < 0 || ((board[boardY] >> boardX) & 1) == 0)
             continue;
@@ -113,7 +113,9 @@ public class Piece {
         if (curData[y][x] == 1) {
           int boardX = x + offsetX;
           int boardY = y + offsetY;
-          if (boardX < 0 || boardX >= Board.WIDTH || boardY >= Board.HEIGHT || boardY < 0)
+          if (boardY < 0)
+            return null;
+          if (boardX < 0 || boardX >= Board.WIDTH || boardY >= board.length || boardY < 0)
             continue;
           newBoard[boardY] |= (1 << boardX);
         }

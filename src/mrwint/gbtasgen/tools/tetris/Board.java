@@ -7,7 +7,7 @@ public class Board {
   public static final int HEIGHT = 18;
 
   public static void print(short[] board) {
-    for (int y = 0; y < HEIGHT; y++) {
+    for (int y = 0; y < board.length; y++) {
       for (int x = 0; x < WIDTH; x++) {
         System.out.print(((board[y] >> x) & 1) == 1 ? 'x' : '.');
       }
@@ -31,7 +31,7 @@ public class Board {
   }
   public int clearLines() {
     int numClearedLines = 0;
-    for (int curOldLine = HEIGHT-1 ; curOldLine >= 0; curOldLine--) {
+    for (int curOldLine = board.length-1 ; curOldLine >= 0; curOldLine--) {
       if (board[curOldLine] == 0x3ff)
         numClearedLines++;
       else

@@ -15,7 +15,7 @@ import mrwint.gbtasgen.tools.tetris.LockPiece;
 import mrwint.gbtasgen.tools.tetris.LockPiece.Log;
 import mrwint.gbtasgen.util.Runner;
 
-public class TetrisLockPiece extends SeqSegment {
+public class TetrisLockPieceTest extends SeqSegment {
 
   @Override
   protected void execute() {
@@ -68,7 +68,7 @@ public class TetrisLockPiece extends SeqSegment {
 
   private static <T> void testLockPiece(short[] board, int curPiece, Log<T> logStrategy) {
     Board.print(board);
-    LockPiece<T> pp = new LockPiece<>(board, curPiece, logStrategy);
+    LockPiece<T> pp = new LockPiece<>(board, curPiece, logStrategy, LockPiece.NINE_HEART_DROP_DELAY);
     for(Map.Entry<Board, T> e : pp.lockPiece().entrySet()) {
       System.out.println("dist: " + e.getValue());
       e.getKey().print();
@@ -79,6 +79,6 @@ public class TetrisLockPiece extends SeqSegment {
   public static void main(String[] args) {
     RomInfo.setRom(new TetrisRomInfo());
 
-    Runner.run(new TetrisLockPiece());
+    Runner.run(new TetrisLockPieceTest());
   }
 }
