@@ -17,13 +17,22 @@ import mrwint.gbtasgen.tools.tetris.search.SearchAlgorithm.StateDist;
 public class TetrisDfsTest2 {
 
 
-  private static void testTetrisDfs(short[] board, int[] forcedPieces, int rows) {
-    Board.print(board);
+  private static void testTetrisDfs(short[] initialBoard, int[] forcedPieces, int rows, short[] expectedBoard) {
+    Board.print(initialBoard);
+    if (expectedBoard != null) {
+      System.out.println("to:");
+      Board.print(expectedBoard);
+    }
     //    SearchAlgorithm search = new IDAStar(board, forcedPieces, rows, new NullHeuristic());
-    AStar search = new AStar(board, forcedPieces, rows, LockPiece.NINE_DROP_DELAY, new CompositeHeuristic(
+    AStar search = new AStar(initialBoard, forcedPieces, rows, LockPiece.NINE_HEART_DROP_DELAY, expectedBoard, new CompositeHeuristic(
         new NoOverhangHeuristic(6),
-        new ClearLinesHeuristic(2)
-//      (SearchState s) -> s.board.board[5] == 0x238 ? 0 : SearchAlgorithm.OO
+        new ClearLinesHeuristic(1),
+//        (SearchState s) -> (s.board.board[0] & 0x10) == 0 ? 0 : SearchAlgorithm.OO,
+        (SearchState s) -> (s.board.board[1] & 0x10) == 0 ? 0 : SearchAlgorithm.OO,
+        (SearchState s) -> (s.board.board[2] & 0x10) == 0 ? 0 : SearchAlgorithm.OO,
+        (SearchState s) -> (s.board.board[3] & 0x10) == 0 ? 0 : SearchAlgorithm.OO,
+        (SearchState s) -> (s.board.board[4] & 0x10) == 0 ? 0 : SearchAlgorithm.OO,
+        (SearchState s) -> (s.board.board[5] & 0x10) == 0 ? 0 : SearchAlgorithm.OO
 //      (SearchState s) -> Integer.bitCount(s.board.board[0]) <= 1 ? 0 : SearchAlgorithm.OO
     ));
 //    search.stateDistMap.put(new SearchState(new Board(new short[]{0,0,0,0,0}), -1, 0, null, -1), 0);
@@ -49,13 +58,23 @@ public class TetrisDfsTest2 {
 
     long start = System.currentTimeMillis();
 
-    short[] board = new short[6];
-//    board[1] = 0x8;
-//    board[2] = 0x8;
-//    board[3] = 0x8;
-//    board[4] = 0x8;
+    short[] initialBoard = new short[6];
+//    initialBoard[0] = 0x3c0;
+//    initialBoard[1] = 0x3c0;
+//    initialBoard[2] = 0x3c0;
+//    initialBoard[3] = 0x3cf;
+//    initialBoard[4] = 0x3cf;
+    initialBoard[5] = 0x3ef;
 
-    testTetrisDfs(board, new int[] {}, 4);
+//    short[] expectedBoard = null;
+    short[] expectedBoard = new short[6];
+//    expectedBoard[1] = 0x3cf;
+//    expectedBoard[2] = 0x3cf;
+//    expectedBoard[3] = 0x3cf;
+//    expectedBoard[4] = 0x3cf;
+    expectedBoard[5] = 0x3ef;
+
+    testTetrisDfs(initialBoard, new int[] {}, 4, expectedBoard);
 
     System.out.println("Time: " +(System.currentTimeMillis()-start));
   }

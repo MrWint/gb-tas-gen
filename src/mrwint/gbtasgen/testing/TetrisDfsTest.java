@@ -73,7 +73,7 @@ public class TetrisDfsTest extends SeqSegment {
 
   private static void testTetrisDfs(short[] board, int[] forcedPieces) {
     Board.print(board);
-    SearchAlgorithm tetrisDFS = new AStar(board, forcedPieces, 1, LockPiece.NINE_HEART_DROP_DELAY, new NullHeuristic());
+    SearchAlgorithm tetrisDFS = new AStar(board, forcedPieces, 1, LockPiece.NINE_HEART_DROP_DELAY, null, new NullHeuristic());
     StateDist stateDist = tetrisDFS.search();
     System.out.println("Dist: " + stateDist.dist);
     printDfsState(stateDist.state);

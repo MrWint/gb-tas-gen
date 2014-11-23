@@ -17,6 +17,7 @@ public abstract class SearchAlgorithm {
   private final int rowsToClear;
   private LockPiece.Log<Integer> logStrategy;
   private final int initialDropDelay;
+  private Board expectedBoard;
 
   public static class SearchState {
     public Board board;
@@ -86,7 +87,12 @@ public abstract class SearchAlgorithm {
   }
 
   public SearchAlgorithm(short[] initialBoard, int[] forcedPieces, int rowsToClear, int initialDropDelay) {
+    this(initialBoard, forcedPieces, rowsToClear, initialDropDelay, null);
+  }
+
+  public SearchAlgorithm(short[] initialBoard, int[] forcedPieces, int rowsToClear, int initialDropDelay, short[] expectedBoard) {
     this.initialBoard = initialBoard;
+    this.expectedBoard = expectedBoard == null ? null : new Board(expectedBoard);
     this.forcedPieces = forcedPieces;
     this.rowsToClear = rowsToClear;
     this.logStrategy = new SizeLog();
@@ -127,5 +133,9 @@ public abstract class SearchAlgorithm {
       }
     }
     return bestStateDist;
+  }
+
+  protected boolean isExpectedBoard(Board board) {
+    return expectedBoard == null || expectedBoard.equals(board);
   }
 }

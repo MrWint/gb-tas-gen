@@ -28,10 +28,10 @@ public class LockPiece<T> {
     private boolean BDown;
     private Piece piece;
 
-    public LockPieceState(int downCooldown, int initialDropDelay, boolean leftDown, boolean rightDown, boolean ADown, boolean BDown, Piece piece) {
+    public LockPieceState(int downCooldown, int initialDropDelay, int timedDropDelay, boolean leftDown, boolean rightDown, boolean ADown, boolean BDown, Piece piece) {
       this.downCooldown = downCooldown;
       this.initialDropDelay = initialDropDelay;
-      this.timedDropDelay = initialDropDelay;
+      this.timedDropDelay = timedDropDelay;
       this.leftDown = leftDown;
       this.rightDown = rightDown;
       this.ADown = ADown;
@@ -39,10 +39,10 @@ public class LockPiece<T> {
       this.piece = piece;
     }
     public static LockPieceState start(int pieceIndex, short[] board, int initialDropDelay) {
-      return new LockPieceState(0, initialDropDelay, false, false, false, false, Piece.fromIndex(pieceIndex, board));
+      return new LockPieceState(0, initialDropDelay, initialDropDelay, false, false, false, false, Piece.fromIndex(pieceIndex, board));
     }
     public static LockPieceState withPiece(LockPieceState oldState, Piece piece) {
-      return new LockPieceState(oldState.downCooldown, oldState.timedDropDelay, oldState.leftDown, oldState.rightDown, oldState.ADown, oldState.BDown, piece);
+      return new LockPieceState(oldState.downCooldown, oldState.initialDropDelay, oldState.timedDropDelay, oldState.leftDown, oldState.rightDown, oldState.ADown, oldState.BDown, piece);
     }
     public boolean timedDrop() {
       if (timedDropDelay == 0) {
@@ -65,7 +65,7 @@ public class LockPiece<T> {
       return this;
     }
     public static LockPieceState tickAB(LockPieceState oldState) {
-      return new LockPieceState(oldState.downCooldown, oldState.timedDropDelay, oldState.leftDown, oldState.rightDown, false, false, oldState.piece);
+      return new LockPieceState(oldState.downCooldown, oldState.initialDropDelay, oldState.timedDropDelay, oldState.leftDown, oldState.rightDown, false, false, oldState.piece);
     }
     public boolean tickAndDrop() {
       tick();

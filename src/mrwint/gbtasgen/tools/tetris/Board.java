@@ -32,7 +32,7 @@ public class Board {
   public int clearLines() {
     int numClearedLines = 0;
     for (int curOldLine = board.length-1 ; curOldLine >= 0; curOldLine--) {
-      if (board[curOldLine] == 0x3ff)
+      if (curOldLine >= 2 && board[curOldLine] == 0x3ff)
         numClearedLines++;
       else
         board[curOldLine + numClearedLines] = board[curOldLine];
