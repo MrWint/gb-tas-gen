@@ -13,30 +13,35 @@ import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.tools.tetris.Board;
 import mrwint.gbtasgen.tools.tetris.LockPiece;
 import mrwint.gbtasgen.tools.tetris.LockPiece.Log;
+import mrwint.gbtasgen.tools.tetris.Piece;
 import mrwint.gbtasgen.util.Runner;
 
 public class TetrisLockPieceTest extends SeqSegment {
 
   @Override
   protected void execute() {
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x35 ? 1 : 0);}));
+    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x35 ? 1 : 0));
+//    seq(new Wait(1));
     seq(Move.START);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x7 ? 1 : 0);}));
-    seq(Move.START | Move.DOWN);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0xe ? 1 : 0);}));
+    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x7 ? 1 : 0));
+//    seq(new Wait(1));
+    seq(Move.START /*| Move.DOWN*/);
+    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0xe ? 1 : 0));
     seq(Move.RIGHT);
+    seq(new Wait(1));
     seq(Move.START);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x13 ? 1 : 0);}));
+    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x13 ? 1 : 0));
     seq(Move.DOWN);
     seq(Move.LEFT);
     seq(Move.DOWN);
+//    seq(new Wait(1));
     seq(Move.A);
     seq(Move.RIGHT);
     seq(Move.DOWN);
     seq(Move.RIGHT);
-    seq(new Wait(1));
-    seq(new PressButton(Move.A), 0);
-    //    seq(new PressButton(Move.START), 0);
+    seq(new Wait(2));
+//    seq(new PressButton(Move.A), 0);
+    seq(new PressButton(Move.START), 0);
     seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x0 ? 1 : 0);}));
     seq(() -> {
       short[] board = new short[Board.HEIGHT];
@@ -48,7 +53,10 @@ public class TetrisLockPieceTest extends SeqSegment {
             board[y] |= 1 << x;
 
       int curPiece = (Gb.readMemory(RomInfo.tetris.wCurPiece) >> 2);
+      int previewPiece = (Gb.readMemory(RomInfo.tetris.wPreviewPiece) >> 2);
+      int nextPreviewPiece = (Gb.readMemory(RomInfo.tetris.hNextPreviewPiece) >> 2);
       testLockPiece(board, curPiece, new LockPiece.SizeLog());
+      System.out.println("pieces: " + Piece.PIECE_NAMES[curPiece] + " " + Piece.PIECE_NAMES[previewPiece] + " " + Piece.PIECE_NAMES[nextPreviewPiece]);
       return 1;
     });
     seq(new Wait(10));
@@ -57,7 +65,7 @@ public class TetrisLockPieceTest extends SeqSegment {
       @Override
       public boolean doMove() {
         try {
-          Thread.sleep(100000);
+          Thread.sleep(10000);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }

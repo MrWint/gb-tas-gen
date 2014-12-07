@@ -29,7 +29,8 @@ public class Gb {
 	public static native long saveState(ByteBuffer buffer, int size);
 	public static native void loadState(ByteBuffer buffer, int size);
 
-	public static final int MAX_SAVE_SIZE = 211243;
+//  public static final int MAX_SAVE_SIZE = 211243;
+  public static final int MAX_SAVE_SIZE = 153894; // Tetris
 
 	public static ByteBuffer createDirectByteBuffer(int capacity){
 		byte[] zeros = new byte[capacity];

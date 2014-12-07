@@ -10,50 +10,51 @@ import java.util.TreeMap;
 import mrwint.gbtasgen.move.Move;
 
 public class LockPiece<T> {
+  public static final int ZERO_DROP_DELAY = 52;
   public static final int NINE_DROP_DELAY = 10;
   public static final int NINE_HEART_DROP_DELAY = 3;
 
   private final short[] board;
   private final int pieceIndex;
   private final Log<T> logStrategy;
-  private final int initialDropDelay;
+  private final int levelDropDelay;
 
-  private static class LockPieceState {
-    private int downCooldown;
-    private int initialDropDelay;
-    private int timedDropDelay;
-    private boolean leftDown;
-    private boolean rightDown;
-    private boolean ADown;
-    private boolean BDown;
-    private Piece piece;
+  static class LockPieceState implements Comparable<LockPieceState>{
+    int downCooldown;
+    int levelDropDelay;
+    int remainingDropDelay;
+    boolean leftDown;
+    boolean rightDown;
+    boolean ADown;
+    boolean BDown;
+    Piece piece;
 
-    public LockPieceState(int downCooldown, int initialDropDelay, int timedDropDelay, boolean leftDown, boolean rightDown, boolean ADown, boolean BDown, Piece piece) {
+    public LockPieceState(int downCooldown, int levelDropDelay, int remainingDropDelay, boolean leftDown, boolean rightDown, boolean ADown, boolean BDown, Piece piece) {
       this.downCooldown = downCooldown;
-      this.initialDropDelay = initialDropDelay;
-      this.timedDropDelay = timedDropDelay;
+      this.levelDropDelay = levelDropDelay;
+      this.remainingDropDelay = remainingDropDelay;
       this.leftDown = leftDown;
       this.rightDown = rightDown;
       this.ADown = ADown;
       this.BDown = BDown;
       this.piece = piece;
     }
-    public static LockPieceState start(int pieceIndex, short[] board, int initialDropDelay) {
-      return new LockPieceState(0, initialDropDelay, initialDropDelay, false, false, false, false, Piece.fromIndex(pieceIndex, board));
+    public static LockPieceState start(int pieceIndex, short[] board, int levelDropDelay, int initialRemainingDropDelay) {
+      return new LockPieceState(0, levelDropDelay, initialRemainingDropDelay, false, false, false, false, Piece.fromIndex(pieceIndex, board));
     }
     public static LockPieceState withPiece(LockPieceState oldState, Piece piece) {
-      return new LockPieceState(oldState.downCooldown, oldState.initialDropDelay, oldState.timedDropDelay, oldState.leftDown, oldState.rightDown, oldState.ADown, oldState.BDown, piece);
+      return new LockPieceState(oldState.downCooldown, oldState.levelDropDelay, oldState.remainingDropDelay, oldState.leftDown, oldState.rightDown, oldState.ADown, oldState.BDown, piece);
     }
     public boolean timedDrop() {
-      if (timedDropDelay == 0) {
+      if (remainingDropDelay == 0) {
         if (piece.canMoveDown()) {
           piece.moveDown();
-          timedDropDelay = initialDropDelay;
+          remainingDropDelay = levelDropDelay;
         } else {
           return true;
         }
       } else {
-        timedDropDelay--;
+        remainingDropDelay--;
       }
       return false;
     }
@@ -65,7 +66,7 @@ public class LockPiece<T> {
       return this;
     }
     public static LockPieceState tickAB(LockPieceState oldState) {
-      return new LockPieceState(oldState.downCooldown, oldState.initialDropDelay, oldState.timedDropDelay, oldState.leftDown, oldState.rightDown, false, false, oldState.piece);
+      return new LockPieceState(oldState.downCooldown, oldState.levelDropDelay, oldState.remainingDropDelay, oldState.leftDown, oldState.rightDown, false, false, oldState.piece);
     }
     public boolean tickAndDrop() {
       tick();
@@ -82,7 +83,7 @@ public class LockPiece<T> {
       result = prime * result + (leftDown ? 1231 : 1237);
       result = prime * result + ((piece == null) ? 0 : piece.hashCode());
       result = prime * result + (rightDown ? 1231 : 1237);
-      result = prime * result + timedDropDelay;
+      result = prime * result + remainingDropDelay;
       return result;
     }
     @Override
@@ -109,11 +110,19 @@ public class LockPiece<T> {
         return false;
       if (rightDown != other.rightDown)
         return false;
-      if (timedDropDelay != other.timedDropDelay)
+      if (remainingDropDelay != other.remainingDropDelay)
         return false;
       return true;
     }
 
+    @Override
+    public int compareTo(LockPieceState o) {
+      if (piece.offsetY != o.piece.offsetY)
+        return piece.offsetY - o.piece.offsetY;
+      if (remainingDropDelay != o.remainingDropDelay)
+        return o.remainingDropDelay - remainingDropDelay;
+      return o.downCooldown - downCooldown;
+    }
   }
 
   public static interface Log<T> {
@@ -167,11 +176,11 @@ public class LockPiece<T> {
     }
   }
 
-  public LockPiece(short[] board, int pieceIndex, Log<T> logStrategy, int initialDropDelay) {
+  public LockPiece(short[] board, int pieceIndex, Log<T> logStrategy, int levelDropDelay) {
     this.board = board;
     this.pieceIndex = pieceIndex;
     this.logStrategy = logStrategy;
-    this.initialDropDelay = initialDropDelay;
+    this.levelDropDelay = levelDropDelay;
   }
 
 
@@ -238,7 +247,7 @@ public class LockPiece<T> {
     stateDistQueue = new LinkedList<>();
     boardDistMap = new HashMap<>();
 
-    LockPieceState startState = LockPieceState.start(pieceIndex, board, initialDropDelay);
+    LockPieceState startState = LockPieceState.start(pieceIndex, board, levelDropDelay, levelDropDelay);
     stateDistMap.put(startState, logStrategy.emptyLog());
     stateDistQueue.add(startState);
     while (!stateDistQueue.isEmpty()) {

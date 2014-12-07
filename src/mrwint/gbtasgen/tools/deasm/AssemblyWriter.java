@@ -142,7 +142,7 @@ public class AssemblyWriter {
 			for (int i = 0; i < rom.width[curAddress]; i++) {
 				if (i > 0)
 					dataString += ", ";
-				dataString += Util.format(rom.data[curAddress+i]&0xFF, rom.format[curAddress+i]);
+				dataString += DeasmUtil.format(rom.data[curAddress+i]&0xFF, rom.format[curAddress+i]);
 			}
 
 			if(rom.comment[curAddress] != null && !rom.comment[curAddress].isEmpty())
@@ -187,7 +187,7 @@ public class AssemblyWriter {
 		for(int i=0;i<opCode.extraBytes; i++)
 			opData += (rom.data[curAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian)
 
-		int opDataAsAddress = Util.toFull(opData, Util.getBank(address));
+		int opDataAsAddress = DeasmUtil.toFull(opData, DeasmUtil.getBank(address));
 
 		String name = opCode.name;
 

@@ -14,6 +14,7 @@ public class TetrisRomInfo extends RomInfo {
   public int wCurPiece = 0xc203;
   public int wPreviewPiece = 0xc213;
   public int hNextPreviewPiece = 0xffae;
+  public int hCurPieceState = 0xff98;
 
   public TetrisRomInfo() {
 
@@ -29,5 +30,5 @@ public class TetrisRomInfo extends RomInfo {
     hJoypadDownAddress = 0xff80;
     hJoypadPressedAddress = 0xff81;
     hJoypadMenuAddress = 0;
-  }
+}
 }

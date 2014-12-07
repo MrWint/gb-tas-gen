@@ -15,6 +15,7 @@ import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SleepSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.tools.tetris.Piece;
 import mrwint.gbtasgen.util.Runner;
 import mrwint.gbtasgen.util.Util;
 
@@ -54,26 +55,23 @@ public class Tetris extends SeqSegment {
       if (nextPreviewPiece == 3 && curPiece != 0 && curPiece != 1 && previewPiece != 0 && previewPiece != 1)
         return 0;
       System.out.println(String.format("full: %s, regions: %s, pointRegions: %s", numFull, numRegions, numPointRegions));
-      System.out.println("pieces: " + curPiece + " " + previewPiece + " " + nextPreviewPiece);
+      System.out.println("pieces: " + Piece.PIECE_NAMES[curPiece] + " " + Piece.PIECE_NAMES[previewPiece] + " " + Piece.PIECE_NAMES[nextPreviewPiece]);
       return 1;
     }
   }
 
-  private final class FourExtraPieces implements StateResettingMetric {
+  private final class TwoExtraPieces implements StateResettingMetric {
     @Override
     public int getMetricInternal() {
       State.steps(10);
       int numFull = 0;
       int numRegions = 0;
-      int numSupports = 0;
       int numPointRegions = 0;
       int startAddress = 0xc902;
       for (int a = 0; a < 10; a++) {
         if (Gb.readMemory(startAddress + a) != 0x2f)
           numFull++;
         else {
-          if (Gb.readMemory(startAddress + a + 0x20) != 0x2f)
-            numSupports++;
           if (a == 0 || Gb.readMemory(startAddress + a - 1) != 0x2f) {
             numRegions++;
             if ((a == 9 || Gb.readMemory(startAddress + a + 1) != 0x2f) && Gb.readMemory(startAddress + a + 0x20) != 0x2f)
@@ -84,8 +82,13 @@ public class Tetris extends SeqSegment {
       int curPiece = (Gb.readMemory(RomInfo.tetris.wCurPiece) >> 2);
       int previewPiece = (Gb.readMemory(RomInfo.tetris.wPreviewPiece) >> 2);
       int nextPreviewPiece = (Gb.readMemory(RomInfo.tetris.hNextPreviewPiece) >> 2);
+      if (previewPiece != 0 && previewPiece != 1 && curPiece != 0 && curPiece != 1)
+        return 0;
+      if (Gb.readMemory(0xc90b) == 0x2f && Gb.readMemory(0xc90a) == 0x2f && Gb.readMemory(0xc909) == 0x2f && Gb.readMemory(0xc908) == 0x2f && Gb.readMemory(0xc907) == 0x2f)
+        return 0;
+
       System.out.println(String.format("full: %s, regions: %s, pointRegions: %s", numFull, numRegions, numPointRegions));
-      System.out.println("pieces: " + curPiece + " " + previewPiece + " " + nextPreviewPiece);
+      System.out.println("pieces: " + Piece.PIECE_NAMES[curPiece] + " " + Piece.PIECE_NAMES[previewPiece] + " " + Piece.PIECE_NAMES[nextPreviewPiece]);
       return 1;
     }
   }
@@ -99,14 +102,14 @@ public class Tetris extends SeqSegment {
     seq(new FindShortestSequenceSegment(new Move[]{
         waitForGameState(0x35),
         new PressButton(Move.START),
-        waitForGameState(0x7),
-        new PressButton(Move.START | Move.DOWN),
-        waitForGameState(0xe),
+        new Wait(1), // waitForGameState(0x7),
+        new PressButton(Move.START),
+        new Wait(1), // waitForGameState(0xe),
         new SequenceMove(
             new PressButton(Move.RIGHT),
             new PressButton(Move.START)),
         new SequenceMove(
-            waitForGameState(0x13),
+            new Wait(1), // waitForGameState(0x13),
             new PressButton(Move.DOWN),
             new PressButton(Move.LEFT),
             new PressButton(Move.DOWN),
@@ -117,14 +120,14 @@ public class Tetris extends SeqSegment {
             new PressButton(Move.RIGHT),
             new PressButton(Move.START)),
         waitForGameState(0xa),
-    }, new ThreeExtraPieces()));
+    }, new TwoExtraPieces()));
     seq(new Wait(20));
     seq(new Move() {
       @Override public int getInitialKey() { return 0; }
       @Override
       public boolean doMove() {
         try {
-          Thread.sleep(1000000);
+          Thread.sleep(100000);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }

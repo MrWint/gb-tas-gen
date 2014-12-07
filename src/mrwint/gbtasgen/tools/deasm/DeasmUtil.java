@@ -1,6 +1,6 @@
 package mrwint.gbtasgen.tools.deasm;
 
-public class Util {
+public class DeasmUtil {
 	public static int toFull(int memoryLocation, int bank) {
 		if (memoryLocation < 0x4000)
 			return memoryLocation;

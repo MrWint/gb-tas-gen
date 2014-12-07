@@ -1,7 +1,6 @@
 package mrwint.gbtasgen.tools.tetris.search;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 
 import mrwint.gbtasgen.tools.tetris.heuristic.Heuristic;
@@ -76,7 +75,7 @@ public class IDAStar extends SearchAlgorithm {
   }
 
   @Override
-  protected StateDist exploreChild(SearchState newState, int newDist) {
+  protected StateDist exploreChild(SearchState newState, int newDist, int edgeDist) {
     return limitDfs(newState, newDist, maxDist);
   }
 }

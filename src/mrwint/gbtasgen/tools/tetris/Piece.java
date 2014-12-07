@@ -7,7 +7,7 @@ public class Piece {
   private final byte[][][] data;
   private final short[] board;
   private int curRotation;
-  private int offsetY;
+  public int offsetY;
   private int offsetX;
 
   public static Piece fromIndex(int index, short[] board) {
@@ -280,5 +280,5 @@ public class Piece {
     }
   };
   private static byte[][][][] indexToData = {L, J, I, O, Z, S, T};
-  public static String[] PIECE_NAMES = {"L", "J", "I", "O", "Z", "S", "T"};
+  public static String[] PIECE_NAMES = {"L", "J", "I", "O", "Z", "S", "T", "X"};
 }

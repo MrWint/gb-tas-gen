@@ -1,7 +1,11 @@
 package mrwint.gbtasgen.tools.tetris.search;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import mrwint.gbtasgen.tools.tetris.Board;
 import mrwint.gbtasgen.tools.tetris.LockPiece;
@@ -27,13 +31,23 @@ public abstract class SearchAlgorithm {
     public SearchState prevState;
     public int prevPieceIndex;
 
+    public List<BackLink> backLinks;
+    public int distToGoal;
+    public Set<Short> possibleNextPieces;
+
     public SearchState(Board board, int forcedPieceCounter, int rowsToGo, SearchState prevState, int prevPieceIndex) {
+      // board state
       this.board = board;
       this.forcedPieceCounter = forcedPieceCounter;
       this.rowsToGo = rowsToGo;
 
+      // reconstruction info
       this.prevState = prevState;
       this.prevPieceIndex = prevPieceIndex;
+      // reverse pruning info
+      this.backLinks = new ArrayList<>();
+      this.distToGoal = OO;
+      this.possibleNextPieces = new HashSet<>();
     }
 
     @Override
@@ -64,6 +78,18 @@ public abstract class SearchAlgorithm {
       if (rowsToGo != other.rowsToGo)
         return false;
       return true;
+    }
+  }
+
+  public class BackLink {
+    public SearchState state;
+    public int dist;
+    public int piece;
+
+    public BackLink(SearchState state, int dist, int piece) {
+      this.state = state;
+      this.dist = dist;
+      this.piece = piece;
     }
   }
 
@@ -99,7 +125,7 @@ public abstract class SearchAlgorithm {
     this.initialDropDelay = initialDropDelay;
   }
 
-  protected SearchState getInitialState() {
+  public SearchState getInitialState() {
     return new SearchState(new Board(initialBoard), forcedPieces.length == 0 ? -1 : 0, rowsToClear, null, -1);
   }
   protected int getRowsToClear() {
@@ -108,7 +134,7 @@ public abstract class SearchAlgorithm {
 
   public abstract StateDist search();
 
-  protected abstract StateDist exploreChild(SearchState newState, int newDist);
+  protected abstract StateDist exploreChild(SearchState newState, int newDist, int edgeDist);
 
   protected StateDist expandChildren(SearchState oldState, int oldDist) {
     int[] pieceIndices = oldState.forcedPieceCounter >= 0 ? new int[]{forcedPieces[oldState.forcedPieceCounter]} : ALL_PIECES;
@@ -123,7 +149,8 @@ public abstract class SearchAlgorithm {
         int newRowsToGo = oldState.rowsToGo - clearedLines;
         if (newRowsToGo != oldState.rowsToGo && (newRowsToGo+3) / 4 == (oldState.rowsToGo+3) / 4)
           continue;
-        StateDist sd = exploreChild(new SearchState(board, newForcedPieceCounter, newRowsToGo, oldState, pieceIndex), appendDist(oldDist, e.getValue()));
+        int newDist = appendDist(oldDist, e.getValue());
+        StateDist sd = exploreChild(new SearchState(board, newForcedPieceCounter, newRowsToGo, oldState, pieceIndex), newDist, newDist - oldDist);
         if (sd != null) {
           if (sd.state != null)
             return sd;
