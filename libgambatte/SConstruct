@@ -1,13 +1,20 @@
+import sys
+
 global_cflags = ARGUMENTS.get('CFLAGS', '-Wall -Wextra -O2 -fomit-frame-pointer')
 global_cxxflags = ARGUMENTS.get('CXXFLAGS', global_cflags + ' -fno-exceptions -fno-rtti')
 global_defines = ' -DHAVE_STDINT_H'
+if sys.platform == 'darwin':
+    global_cpppath = ['src', 'include', 'common', '/Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home/include', '/Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home/include/darwin']
+else:
+    global_cpppath = ['src', 'include', 'common', '/usr/lib/jvm/java-8-oracle/include', '/usr/lib/jvm/java-8-oracle/include/linux']
 vars = Variables()
 vars.Add('CC')
 vars.Add('CXX')
 
-env = Environment(CPPPATH = ['src', 'include', 'common','/usr/lib/jvm/java-8-oracle/include','/usr/lib/jvm/java-8-oracle/include/linux'],
+env = Environment(CPPPATH = global_cpppath,
                   CFLAGS = global_cflags + global_defines,
                   CXXFLAGS = global_cxxflags + global_defines,
+                  LINKFLAGS = '-lz',
                   variables = vars)
 
 env.ParseConfig('sdl-config --cflags --libs')

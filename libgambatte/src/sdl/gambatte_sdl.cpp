@@ -31,6 +31,9 @@
 #include <memory>
 #include <vector>
 #include <map>
+#ifdef __APPLE__
+#include <dlfcn.h>  //To make it work on mac
+#endif
 
 #include "blitterwrapper.h"
 #include "mrwint_gbtasgen_Gb.h"
@@ -52,12 +55,27 @@ class SdlIniter {
 	bool failed;
 public:
 	SdlIniter() : failed(false) {
+#ifdef __APPLE__
+        pre_init();
+#endif
 		if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 			std::fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
 			failed = true;
 		}
 	}
 	~SdlIniter() { SDL_Quit(); }
+
+#ifdef __APPLE__
+    void pre_init()
+    {
+        void* cocoa_lib;
+
+        cocoa_lib = dlopen( "/System/Library/Frameworks/Cocoa.framework/Cocoa", RTLD_LAZY );
+        void (*nsappload)(void);
+        nsappload = (void(*)()) dlsym( cocoa_lib, "NSApplicationLoad");
+        nsappload();
+    }
+#endif
 	bool isFailed() const { return failed; }
 };
 
@@ -113,11 +131,11 @@ bool GambatteSdl::init(const char* romName) {
 			std::printf("header checksum: %s\n", pak.headerChecksumOk() ? "ok" : "bad");
 			std::printf("cgb: %d\n", gambatte.isCgb());
 		}
-		
+
 		blitter.setScale(scaleOption);
 		blitter.setYuv(false);
 		blitter.setVideoFilter(0);
-		
+
 		unsigned const gbbuts[8] = {
 			InputGetter::START, InputGetter::SELECT,
 			InputGetter::A, InputGetter::B,

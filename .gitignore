@@ -17,6 +17,7 @@ temp/*
 *.o
 *.os
 *.so
+*.dylib
 
 # logs
 *.log
