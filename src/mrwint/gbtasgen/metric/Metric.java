@@ -16,9 +16,9 @@ public interface Metric {
 	static final Metric MENU_JOY = () -> {return Gb.readMemory(RomInfo.rom.hJoypadMenuAddress);};
 
 	static Metric forAddress(int address) {
-		return () -> {return Gb.readMemory(address);};
+		return () -> Gb.readMemory(address);
 	}
 	static Metric forRegister(int register) {
-		return () -> {return State.getRegister(register);};
+		return () -> State.getRegister(register);
 	}
 }

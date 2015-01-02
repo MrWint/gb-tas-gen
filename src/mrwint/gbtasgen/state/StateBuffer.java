@@ -21,7 +21,7 @@ public class StateBuffer {
   public static Decider DECIDER = Decider.SUM;
   public static SecondaryDecider SECONDARY_DECIDER = SecondaryDecider.OCD;
 
-  public static final int MAX_BUFFER_SIZE = 20;//128;
+  public static final int MAX_BUFFER_SIZE = 1;//128;
   public static final int MAX_BUFFER_SIZE_HARDLIMIT = 128;
   public static final boolean BOUNDED_USE_MAPS = true;
   public static final boolean UNBOUNDED_USE_MAPS = true;
@@ -192,7 +192,7 @@ public class StateBuffer {
 
 
 
-  public Map<Integer,SubMap> stateMap;
+  public TreeMap<Integer,SubMap> stateMap;
   public int maxBufferSize;
 
   private boolean useList;
@@ -252,6 +252,14 @@ public class StateBuffer {
 
   public boolean isEmpty() {
     return stateMap.isEmpty();
+  }
+
+  public int getMinStepCount() {
+    return stateMap.firstKey();
+  }
+
+  public State getAnyMinState() {
+    return stateMap.firstEntry().getValue().getStates().iterator().next();
   }
 
   public int size() {

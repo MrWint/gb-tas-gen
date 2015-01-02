@@ -2,7 +2,7 @@ package mrwint.gbtasgen.segment.tetris;
 
 import mrwint.gbtasgen.state.tetris.TetrisStateBuffer;
 
-public abstract class TetrisSeqSegment extends TetrisSegment {
+public abstract class TetrisSeqSegment implements TetrisSegment {
 
 	private TetrisStateBuffer in;
 	private TetrisStateBuffer save;

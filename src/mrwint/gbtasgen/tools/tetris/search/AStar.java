@@ -13,7 +13,7 @@ public class AStar extends SearchAlgorithm {
   public final HashMap<SearchState, SearchState> stateSet;
   private final PriorityQueue<StateDist> stateDistQueue;
   private final Heuristic h;
-  public short expectedNextPieces = 0b111111111;
+  public short[] expectedNextPieces = new short[] {0b111111111};
 
   public AStar(short[] initialBoard, int[] forcedPieces, int rowsToClear, int initialDropDelay, short[] expectedBoard, Heuristic h) {
     super(initialBoard, forcedPieces, rowsToClear, initialDropDelay, expectedBoard);
@@ -64,7 +64,8 @@ public class AStar extends SearchAlgorithm {
       if (oldState.rowsToGo <= 0) {
         if (result == null && isExpectedBoard(oldState.board))
           result = stateDist;
-        continue;
+        if (rowsToClear > 0)
+          continue;
       }
       expandChildren(oldState, oldDist);
     }
@@ -80,7 +81,8 @@ public class AStar extends SearchAlgorithm {
     for (SearchState s : stateSet.keySet()) {
       if (s.rowsToGo <= 0 && isExpectedBoard(s.board)) {
         s.distToGoal = 0;
-        s.possibleNextPieces.add(expectedNextPieces);
+        for (short expectedNextPiece : expectedNextPieces)
+          s.possibleNextPieces.add(expectedNextPiece);
         stateDistQueue.add(new StateDist(s, 0));
       }
     }

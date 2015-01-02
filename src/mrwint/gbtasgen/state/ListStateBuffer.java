@@ -9,11 +9,11 @@ import mrwint.gbtasgen.state.tetris.TetrisStateBuffer;
 
 public class ListStateBuffer {
 
-  public static final int MAX_BUFFER_SIZE = 1;
-  public static final int MAX_SUBMAP_SIZE = 1;
+  public static final int MAX_BUFFER_SIZE = 10;
+  public static final int MAX_SUBMAP_SIZE = 2;
 
-  public static final int MAX_STEP_COUNT_DIFFERENCE = 10;
-  public static final int MAX_STEP_COUNT = 1600;
+  public static final int MAX_STEP_COUNT_DIFFERENCE = 15;
+  public static final int MAX_STEP_COUNT = Integer.MAX_VALUE;
 
   public TreeMap<Integer, List<ListState>> stateMap;
   public int maxBufferSize;
@@ -41,25 +41,25 @@ public class ListStateBuffer {
     return buffer;
   }
 
-  public StateBuffer toStateBuffer(State initialState) {
+  public StateBuffer toStateBuffer(State initialState, boolean linesCleared) {
     StateBuffer buffer = new StateBuffer();
     for (ListState listState : getStates())
-      buffer.addState(listState.toState(initialState));
+      buffer.addState(listState.toState(initialState, linesCleared));
     return buffer;
   }
 
-  public StateBuffer toStateBuffer(StateBuffer initialStates) {
+  public StateBuffer toStateBuffer(StateBuffer initialStates, boolean linesCleared) {
     StateBuffer buffer = new StateBuffer();
     for (State state : initialStates.getStates())
-      buffer.addAll(toStateBuffer(state));
+      buffer.addAll(toStateBuffer(state, linesCleared));
     return buffer;
   }
 
-  public TetrisStateBuffer toTetrisStateBuffer(StateBuffer initialStates) {
+  public TetrisStateBuffer toTetrisStateBuffer(StateBuffer initialStates, boolean linesCleared) {
     TetrisStateBuffer result = new TetrisStateBuffer();
     for (State initialState : initialStates.getStates())
       for (ListState listState : getStates())
-        result.addState(listState.toState(initialState));
+        result.addState(listState.toState(initialState, linesCleared));
     return result;
   }
 
@@ -113,7 +113,7 @@ public class ListStateBuffer {
     HashMap<Integer, ListState> listStateMap = new HashMap<>();
     for (ListState listState : listStates) {
       for (State state : initialStates.getStates()) {
-        State s = listState == null ? state : listState.toState(state);
+        State s = listState == null ? state : listState.toState(state, false);
         if (!listStateMap.containsKey(s.rngState))
           listStateMap.put(s.rngState, listState);
       }

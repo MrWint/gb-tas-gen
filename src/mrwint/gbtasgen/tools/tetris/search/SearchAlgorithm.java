@@ -12,13 +12,13 @@ import mrwint.gbtasgen.tools.tetris.LockPiece;
 import mrwint.gbtasgen.tools.tetris.LockPiece.SizeLog;
 
 public abstract class SearchAlgorithm {
-  protected static final int NEXT_PIECE_DELAY = 3;
+  protected static final int NEXT_PIECE_DELAY = 2;
   protected static int[] ALL_PIECES = {0, 1, 2, 3, 4, 5, 6};
   public static int OO = 1000000;
 
   private short[] initialBoard;
   private final int[] forcedPieces;
-  private final int rowsToClear;
+  protected final int rowsToClear;
   private LockPiece.Log<Integer> logStrategy;
   private final int initialDropDelay;
   private Board expectedBoard;
@@ -81,7 +81,7 @@ public abstract class SearchAlgorithm {
     }
   }
 
-  public class BackLink {
+  public static class BackLink {
     public SearchState state;
     public int dist;
     public int piece;
@@ -93,7 +93,7 @@ public abstract class SearchAlgorithm {
     }
   }
 
-  public class StateDist implements Comparable<StateDist> {
+  public static class StateDist implements Comparable<StateDist> {
     public SearchState state;
     public int dist;
 
@@ -162,7 +162,7 @@ public abstract class SearchAlgorithm {
     return bestStateDist;
   }
 
-  protected boolean isExpectedBoard(Board board) {
-    return expectedBoard == null || expectedBoard.equals(board);
+  public boolean isExpectedBoard(Board board) {
+    return expectedBoard == null || board.matches(expectedBoard);
   }
 }

@@ -50,10 +50,18 @@ public class Util {
 			State.step(i == 0 ? startKeys : baseKeys);
 		}
 	}
-	public static void runUntil(int keys, Metric m, Comparator comp, int value) {
-		while (!comp.compare(m.getMetric(), value))
-			State.step(keys);
-	}
+  public static void runUntil(int keys, Metric m, Comparator comp, int value) {
+    while (!comp.compare(m.getMetric(), value))
+      State.step(keys);
+  }
+  public static void runToFrameBeforeUntil(int keys, Metric m, Comparator comp, int value) {
+    State cur = new State();
+    int startSteps = State.currentStepCount;
+    runUntil(keys, m, comp, value);
+    int steps = State.currentStepCount - startSteps - 1;
+    cur.restore();
+    runFor(steps, keys, keys);
+  }
 
 	public static void runToFrameBeforeAddress(int baseKeys, int startKeys, int... addresses) {
 		State cur = new State();

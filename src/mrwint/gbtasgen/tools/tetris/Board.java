@@ -46,6 +46,13 @@ public class Board {
     return numClearedLines;
   }
 
+  public boolean matches(Board pattern) {
+    for (int i = 0; i < board.length; i++)
+      if (pattern.board[i] >= 0 && pattern.board[i] != board[i])
+        return false;
+    return true;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

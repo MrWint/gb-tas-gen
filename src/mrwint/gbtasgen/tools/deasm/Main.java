@@ -16,16 +16,16 @@ public class Main {
 	 * @throws Throwable
 	 */
 	public static void main(String[] args) throws Throwable {
-		String romName = "roms/tetris10.gb";
+		String romName = "roms/tetris11.gb";
 		if(args.length > 0)
 			romName = args[0];
 		String romBaseName = romName.substring(Math.max(0,romName.lastIndexOf("/")), romName.lastIndexOf("."));
 
 		ROM rom = new ROM(romName);
 		rom.addEquFile("assembly/hardware_constants.asm");
-		rom.addEquFile("assembly/tetris10_ramlabels.asm");
-		rom.addSymFile("assembly/tetris10.sym");
-		new DFS(rom, new Tetris10SpecialCallHandler())
+		rom.addEquFile("assembly/tetris11_ramlabels.asm");
+		rom.addSymFile("assembly/tetris11.sym");
+		new DFS(rom, new Tetris11SpecialCallHandler())
 			.addInterrupts()
 			.addInit()
 			.dfs();

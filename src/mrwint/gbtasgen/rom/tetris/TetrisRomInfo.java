@@ -15,6 +15,7 @@ public class TetrisRomInfo extends RomInfo {
   public int wPreviewPiece = 0xc213;
   public int hNextPreviewPiece = 0xffae;
   public int hCurPieceState = 0xff98;
+  public int hBoardUpdateState = 0xffe3;
 
   public TetrisRomInfo() {
 
