@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.segment.tetris;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
@@ -89,7 +90,13 @@ public class TetrisDfsSegment implements TetrisSegment {
 
     stateDistMap = new HashMap<>();
     stateBufferMap = new HashMap<>();
-    stateDistQueue = new PriorityQueue<>();
+//    stateDistQueue = new PriorityQueue<>();
+    stateDistQueue = new PriorityQueue<>(new Comparator<StateDist>() {
+      @Override
+      public int compare(StateDist o1, StateDist o2) {
+        return o1.state.numDroppedPieces - o2.state.numDroppedPieces;
+      }
+    });
   }
 
   @Override
@@ -99,9 +106,16 @@ public class TetrisDfsSegment implements TetrisSegment {
     return search(in);
   }
 
+  private static int estimateDistToGoal(SearchState oldState) {
+    return 0;
+//    return oldState.distToGoal;
+  }
+
   private TetrisStateBuffer search(TetrisStateBuffer in) {
     stateDistQueue.clear();
     veryFirstPiece = withVeryFirstPiece;
+
+    TetrisStateBuffer result = null;
 
     addState(search.stateSet.get(search.getInitialState()), in);
     int counter = 0;
@@ -109,7 +123,7 @@ public class TetrisDfsSegment implements TetrisSegment {
       StateDist stateDist = stateDistQueue.poll();
       SearchState oldState = stateDist.state;
       int oldDist = stateDistMap.get(oldState);
-      if (stateDist.dist > oldDist + oldState.distToGoal)
+      if (stateDist.dist > oldDist + estimateDistToGoal(oldState))
         continue;
       if (counter++ % 1 == 0) {
         System.out.println("Board:");
@@ -117,17 +131,20 @@ public class TetrisDfsSegment implements TetrisSegment {
         System.out.println("Est: " + stateDist.dist + " Dist: " + oldDist + " size: " + stateDistMap.size() + " unexplored: " + stateDistQueue.size());
       }
 
-      if (oldState.rowsToGo <= 0 && search.isExpectedBoard(oldState.board))
-        return stateBufferMap.get(oldState);
-
-      expandChildren(oldState, oldDist);
+      if (oldState.rowsToGo <= 0 && search.isExpectedBoard(oldState.board)) {
+//        return stateBufferMap.get(oldState);
+        if (result == null)
+          result = stateBufferMap.get(oldState);
+      } else {
+        expandChildren(oldState, oldDist);
+        stateBufferMap.put(oldState, null);
+      }
       veryFirstPiece = false;
     }
-    return null;
+    return result;
   }
 
   protected void expandChildren(SearchState oldState, int oldDist) {
-    int newForcedPieceCounter = oldState.forcedPieceCounter >= 0 && oldState.forcedPieceCounter+1 < forcedPieces.length ? oldState.forcedPieceCounter+1 : -1;
 
     HashMap<Integer, HashMap<Board, ListStateBuffer>> cache = new HashMap<>();
 
@@ -146,7 +163,7 @@ public class TetrisDfsSegment implements TetrisSegment {
         int newRowsToGo = oldState.rowsToGo - clearedLines;
         if (newRowsToGo != oldState.rowsToGo && (newRowsToGo+3) / 4 == (oldState.rowsToGo+3) / 4)
           continue;
-        SearchState newState = new SearchState(board, newForcedPieceCounter, newRowsToGo, oldState, pieceIndex);
+        SearchState newState = new SearchState(board, oldState.numDroppedPieces + 1, newRowsToGo, oldState, pieceIndex);
         addState(newState, e.getValue(), stateEntry.getValue(), clearedLines > 0);
       }
     }
@@ -172,10 +189,10 @@ public class TetrisDfsSegment implements TetrisSegment {
     if (!tmpBuffer.isEmpty()) {
       if (!stateBufferMap.containsKey(state))
         stateBufferMap.put(state, tmpBuffer);
-      else
+      else if(stateBufferMap.get(state) != null)
         stateBufferMap.get(state).addAll(tmpBuffer);
 
-      int estimatedDist = dist + state.distToGoal;
+      int estimatedDist = dist + estimateDistToGoal(state);
       Integer curDist = stateDistMap.get(state);
       if (curDist == null || dist < curDist) {
         stateDistMap.put(state, dist);

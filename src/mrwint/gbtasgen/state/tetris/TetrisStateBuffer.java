@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.state.State;
@@ -33,7 +32,7 @@ public class TetrisStateBuffer {
 
   public static short getNextPieces(State s) {
     s.restore();
-    Util.runUntil(0, Metric.forAddress(RomInfo.tetris.hCurPieceState), Comparator.EQUAL, 0);
+    Util.runUntil(0, () -> Gb.readMemory(RomInfo.tetris.hCurPieceState) + Gb.readMemory(RomInfo.tetris.hBoardUpdateState), Comparator.EQUAL, 0);
 //    State.steps(3);
     int curPiece = (Gb.readMemory(RomInfo.tetris.wCurPiece) >> 2);
     int previewPiece = (Gb.readMemory(RomInfo.tetris.wPreviewPiece) >> 2);

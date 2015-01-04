@@ -8,6 +8,8 @@ import mrwint.gbtasgen.tools.tetris.TetrisUtil;
 import mrwint.gbtasgen.tools.tetris.heuristic.CompositeHeuristic;
 import mrwint.gbtasgen.tools.tetris.heuristic.FieldEmptyHeuristic;
 import mrwint.gbtasgen.tools.tetris.heuristic.Heuristic;
+import mrwint.gbtasgen.tools.tetris.heuristic.NoCaveHeuristic;
+import mrwint.gbtasgen.tools.tetris.heuristic.NoNOverhangHeuristic;
 import mrwint.gbtasgen.tools.tetris.heuristic.NoOverhangHeuristic;
 import mrwint.gbtasgen.tools.tetris.search.AStar;
 import mrwint.gbtasgen.tools.tetris.search.SearchAlgorithm;
@@ -25,7 +27,9 @@ public class TetrisDfsTest2 {
     }
     //    SearchAlgorithm search = new IDAStar(board, forcedPieces, rows, new NullHeuristic());
     AStar search = new AStar(initialBoard, forcedPieces, rows, LockPiece.NINE_DROP_DELAY, expectedBoard, new CompositeHeuristic(new Heuristic[] {
-        new NoOverhangHeuristic(6),
+        new NoOverhangHeuristic(6, 1),
+//        new NoNOverhangHeuristic(2, 2),
+//        new NoCaveHeuristic(2),
         new FieldEmptyHeuristic(0, 0b0000100000),
         new FieldEmptyHeuristic(1, 0b0000100000),
         new FieldEmptyHeuristic(2, 0b0000100000),
@@ -77,10 +81,10 @@ public class TetrisDfsTest2 {
 
     short[] initialBoard = new short[6];
     initialBoard[0] = reverseBoardBits(0b0000000000);
-    initialBoard[1] = reverseBoardBits(0b1111011111);
-    initialBoard[2] = reverseBoardBits(0b1111011111);
-    initialBoard[3] = reverseBoardBits(0b1111011111);
-    initialBoard[4] = reverseBoardBits(0b1111011111);
+    initialBoard[1] = reverseBoardBits(0b0000000000);
+    initialBoard[2] = reverseBoardBits(0b0000000000);
+    initialBoard[3] = reverseBoardBits(0b0000000000);
+    initialBoard[4] = reverseBoardBits(0b0000000000);
     initialBoard[5] = reverseBoardBits(0b1111011111);
 //    initialBoard[6] = reverseBoardBits(0b0000000000);
 //    initialBoard[7] = reverseBoardBits(0b0000000000);
@@ -88,17 +92,17 @@ public class TetrisDfsTest2 {
 //    short[] expectedBoard = null;
     short[] expectedBoard = new short[6];
     expectedBoard[0] = reverseBoardBits(0b0000000000);
-    expectedBoard[1] = reverseBoardBits(0b1111001111);
-    expectedBoard[2] = reverseBoardBits(0b1111001111);
-    expectedBoard[3] = reverseBoardBits(0b1111001111);
-    expectedBoard[4] = reverseBoardBits(0b1111001111);
+    expectedBoard[1] = reverseBoardBits(0b1111011111);
+    expectedBoard[2] = reverseBoardBits(0b1111011111);
+    expectedBoard[3] = reverseBoardBits(0b1111011111);
+    expectedBoard[4] = reverseBoardBits(0b1111011111);
     expectedBoard[5] = reverseBoardBits(0b1111011111);
 //    expectedBoard[6] = reverseBoardBits(0b0001110010);
 //    expectedBoard[7] = reverseBoardBits(0b0000010010);
 //    expectedBoard[6] = -1;
 //    expectedBoard[7] = -1;
 
-    testTetrisDfs(initialBoard, new int[] {}, 8, expectedBoard);
+    testTetrisDfs(initialBoard, new int[] {1}, 4, expectedBoard);
 
     System.out.println("Time: " +(System.currentTimeMillis()-start));
   }

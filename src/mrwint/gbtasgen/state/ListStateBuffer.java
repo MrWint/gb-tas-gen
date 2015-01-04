@@ -9,10 +9,10 @@ import mrwint.gbtasgen.state.tetris.TetrisStateBuffer;
 
 public class ListStateBuffer {
 
-  public static final int MAX_BUFFER_SIZE = 10;
-  public static final int MAX_SUBMAP_SIZE = 2;
+  public static final int MAX_BUFFER_SIZE = 20;
+  public static final int MAX_SUBMAP_SIZE = 1;
 
-  public static final int MAX_STEP_COUNT_DIFFERENCE = 15;
+  public static final int MAX_STEP_COUNT_DIFFERENCE = 1500;
   public static final int MAX_STEP_COUNT = Integer.MAX_VALUE;
 
   public TreeMap<Integer, List<ListState>> stateMap;
@@ -88,7 +88,8 @@ public class ListStateBuffer {
   public void prune() {
     while(size() > maxBufferSize) {
       boolean cont = false;
-      for (Integer key : stateMap.descendingKeySet()) {
+      for (Integer key : stateMap.keySet()) {
+//      for (Integer key : stateMap.descendingKeySet()) {
         if (stateMap.get(key).size() > MAX_SUBMAP_SIZE) {
           stateMap.get(key).remove(stateMap.get(key).size()-1);
           cont = true;

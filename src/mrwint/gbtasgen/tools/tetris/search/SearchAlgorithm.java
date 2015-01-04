@@ -12,6 +12,7 @@ import mrwint.gbtasgen.tools.tetris.LockPiece;
 import mrwint.gbtasgen.tools.tetris.LockPiece.SizeLog;
 
 public abstract class SearchAlgorithm {
+  protected static final int LINE_CLEAR_DELAY = 93;
   protected static final int NEXT_PIECE_DELAY = 2;
   protected static int[] ALL_PIECES = {0, 1, 2, 3, 4, 5, 6};
   public static int OO = 1000000;
@@ -25,7 +26,7 @@ public abstract class SearchAlgorithm {
 
   public static class SearchState {
     public Board board;
-    public int forcedPieceCounter;
+    public int numDroppedPieces;
     public int rowsToGo;
 
     public SearchState prevState;
@@ -35,10 +36,10 @@ public abstract class SearchAlgorithm {
     public int distToGoal;
     public Set<Short> possibleNextPieces;
 
-    public SearchState(Board board, int forcedPieceCounter, int rowsToGo, SearchState prevState, int prevPieceIndex) {
+    public SearchState(Board board, int numDroppedPieces, int rowsToGo, SearchState prevState, int prevPieceIndex) {
       // board state
       this.board = board;
-      this.forcedPieceCounter = forcedPieceCounter;
+      this.numDroppedPieces = numDroppedPieces;
       this.rowsToGo = rowsToGo;
 
       // reconstruction info
@@ -55,7 +56,7 @@ public abstract class SearchAlgorithm {
       final int prime = 31;
       int result = 1;
       result = prime * result + ((board == null) ? 0 : board.hashCode());
-      result = prime * result + forcedPieceCounter;
+      result = prime * result + numDroppedPieces;
       result = prime * result + rowsToGo;
       return result;
     }
@@ -73,7 +74,7 @@ public abstract class SearchAlgorithm {
           return false;
       } else if (!board.equals(other.board))
         return false;
-      if (forcedPieceCounter != other.forcedPieceCounter)
+      if (numDroppedPieces != other.numDroppedPieces)
         return false;
       if (rowsToGo != other.rowsToGo)
         return false;
@@ -108,8 +109,8 @@ public abstract class SearchAlgorithm {
     }
   }
 
-  private int appendDist(int curDist, int length) {
-    return curDist + length + NEXT_PIECE_DELAY;
+  private int appendDist(int curDist, int length, boolean hasClearedLines) {
+    return curDist + length + (hasClearedLines ? LINE_CLEAR_DELAY : NEXT_PIECE_DELAY);
   }
 
   public SearchAlgorithm(short[] initialBoard, int[] forcedPieces, int rowsToClear, int initialDropDelay) {
@@ -126,7 +127,7 @@ public abstract class SearchAlgorithm {
   }
 
   public SearchState getInitialState() {
-    return new SearchState(new Board(initialBoard), forcedPieces.length == 0 ? -1 : 0, rowsToClear, null, -1);
+    return new SearchState(new Board(initialBoard), 0, rowsToClear, null, -1);
   }
   protected int getRowsToClear() {
     return rowsToClear;
@@ -137,8 +138,7 @@ public abstract class SearchAlgorithm {
   protected abstract StateDist exploreChild(SearchState newState, int newDist, int edgeDist);
 
   protected StateDist expandChildren(SearchState oldState, int oldDist) {
-    int[] pieceIndices = oldState.forcedPieceCounter >= 0 ? new int[]{forcedPieces[oldState.forcedPieceCounter]} : ALL_PIECES;
-    int newForcedPieceCounter = oldState.forcedPieceCounter >= 0 && oldState.forcedPieceCounter+1 < forcedPieces.length ? oldState.forcedPieceCounter+1 : -1;
+    int[] pieceIndices = oldState.numDroppedPieces >= forcedPieces.length ? ALL_PIECES : new int[]{forcedPieces[oldState.numDroppedPieces]};
     StateDist bestStateDist = null;
     for (int pieceIndex : pieceIndices) {
       LockPiece<Integer> lockPiece = new LockPiece<>(oldState.board.board, pieceIndex, logStrategy, initialDropDelay);
@@ -149,8 +149,8 @@ public abstract class SearchAlgorithm {
         int newRowsToGo = oldState.rowsToGo - clearedLines;
         if (newRowsToGo != oldState.rowsToGo && (newRowsToGo+3) / 4 == (oldState.rowsToGo+3) / 4)
           continue;
-        int newDist = appendDist(oldDist, e.getValue());
-        StateDist sd = exploreChild(new SearchState(board, newForcedPieceCounter, newRowsToGo, oldState, pieceIndex), newDist, newDist - oldDist);
+        int newDist = appendDist(oldDist, e.getValue(), clearedLines > 0);
+        StateDist sd = exploreChild(new SearchState(board, oldState.numDroppedPieces + 1, newRowsToGo, oldState, pieceIndex), newDist, newDist - oldDist);
         if (sd != null) {
           if (sd.state != null)
             return sd;

@@ -41,6 +41,8 @@ public class Piece {
           int boardY = y + offsetY;
           if (boardX < 0 || boardX >= Board.WIDTH || boardY >= board.length)
             return false;
+          if (boardY < 0 && boardX >= 5)
+            return false;
           if (boardY < 0 || ((board[boardY] >> boardX) & 1) == 0)
             continue;
           return false;
@@ -113,7 +115,7 @@ public class Piece {
         if (curData[y][x] == 1) {
           int boardX = x + offsetX;
           int boardY = y + offsetY;
-          if (boardY < 0)
+          if (boardY < 0 && boardX < 5)
             return null;
           if (boardX < 0 || boardX >= Board.WIDTH || boardY >= board.length || boardY < 0)
             continue;

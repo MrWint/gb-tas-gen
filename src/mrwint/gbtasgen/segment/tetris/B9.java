@@ -1,12 +1,18 @@
 package mrwint.gbtasgen.segment.tetris;
 
 import static mrwint.gbtasgen.tools.tetris.TetrisUtil.reverseBoardBits;
+
+import java.util.ArrayList;
+
 import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.tetris.TetrisRomInfo;
+import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.tetris.b9.Intro;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SleepSegment;
+import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.tools.tetris.LockPiece;
 import mrwint.gbtasgen.tools.tetris.heuristic.CompositeHeuristic;
 import mrwint.gbtasgen.tools.tetris.heuristic.FieldEmptyHeuristic;
@@ -71,8 +77,28 @@ public class B9 extends SeqSegment {
 //            new FieldEmptyHeuristic(5, 0b0000100000),
 //          }), null, false));
 //        save("b9_8");
-        load("b9_8");
-        seq(new TetrisDfsSegment(4, LockPiece.NINE_DROP_DELAY, new short[] {
+//        load("b9_8");
+//        seq(new TetrisDfsSegment(8, LockPiece.NINE_DROP_DELAY, new short[] {
+//            reverseBoardBits(0b0000000000),
+//            reverseBoardBits(0b1111011111),
+//            reverseBoardBits(0b1111011111),
+//            reverseBoardBits(0b1111011111),
+//            reverseBoardBits(0b1111011111),
+//            reverseBoardBits(0b1111011111),
+//          }, new CompositeHeuristic(new Heuristic[] {
+//            new NoOverhangHeuristic(6, 1),
+//            new FieldEmptyHeuristic(0, 0b0000100000),
+//            new FieldEmptyHeuristic(1, 0b0000100000),
+//            new FieldEmptyHeuristic(2, 0b0000100000),
+//            new FieldEmptyHeuristic(3, 0b0000100000),
+//            new FieldEmptyHeuristic(4, 0b0000100000),
+//            new FieldEmptyHeuristic(5, 0b0000100000),
+//          }), new short[] {
+//          2, 66, 130, 194, 258, 386, 10, 74, 138, 202, 330, 394, 18, 82, 146, 210, 402, 26, 90, 154, 218, 410, 50, 178, 242, 434, 114,
+//          }, false));
+//        save("b9_12");
+        load("b9_12");
+        seq(new TetrisDfsSegment(8, LockPiece.NINE_DROP_DELAY, new short[] {
             reverseBoardBits(0b0000000000),
             reverseBoardBits(0b1111001111),
             reverseBoardBits(0b1111001111),
@@ -80,7 +106,7 @@ public class B9 extends SeqSegment {
             reverseBoardBits(0b1111001111),
             reverseBoardBits(0b1111011111),
           }, new CompositeHeuristic(new Heuristic[] {
-            new NoOverhangHeuristic(6),
+            new NoOverhangHeuristic(6, 1),
             new FieldEmptyHeuristic(0, 0b0000100000),
             new FieldEmptyHeuristic(1, 0b0000100000),
             new FieldEmptyHeuristic(2, 0b0000100000),
@@ -88,13 +114,9 @@ public class B9 extends SeqSegment {
             new FieldEmptyHeuristic(4, 0b0000100000),
             new FieldEmptyHeuristic(5, 0b0000100000),
           }), new short[] {
-            0022,
-            0122,
-            0222,
-            0322,
-            0622,
+            0633,
           }, false));
-        save("b9_12");
+        save("b9_20");
       }
     }));
 //    seq(new Segment() {
