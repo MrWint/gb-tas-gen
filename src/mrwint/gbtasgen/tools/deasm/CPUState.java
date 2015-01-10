@@ -121,29 +121,29 @@ public class CPUState {
 	}
 
 	// true -> veto continue
-	public boolean prepareForgoJump(int opCodeValue, int currentAddress, int jumpAddress, SpecialCallHandler sch) {
+	public boolean prepareForgoJump(int opCodeValue, int currentAddress, int jumpAddress, SpecialCallHandler sch, boolean reachable) {
 		// jumps, calls, ret, rst
 		// invalidate data if conditional jump may have been fulfilled in the current state
 		if(Arrays.asList(new Integer[]{0x20,0xC0,0xC2,0xC4}).contains(opCodeValue)) // jr ret jp call: nz
 			if(getZero() != KNOWN_TRUE)
-				if(opCodeValue != 0xC4 || !sch.handleAfterCall(currentAddress, jumpAddress, this))
+				if(opCodeValue != 0xC4 || !sch.handleAfterCall(currentAddress, jumpAddress, this, reachable))
 					invalidateAll();
 		if(Arrays.asList(new Integer[]{0x28,0xC8,0xCA,0xCC}).contains(opCodeValue)) // jr ret jp call: z
 			if(getZero() != KNOWN_FALSE)
-				if(opCodeValue != 0xCC || !sch.handleAfterCall(currentAddress, jumpAddress, this))
+				if(opCodeValue != 0xCC || !sch.handleAfterCall(currentAddress, jumpAddress, this, reachable))
 					invalidateAll();
 		if(Arrays.asList(new Integer[]{0x30,0xD0,0xD2,0xD4}).contains(opCodeValue)) // jr ret jp call: nc
 			if(getCarry() != KNOWN_TRUE)
-				if(opCodeValue != 0xD4 || !sch.handleAfterCall(currentAddress, jumpAddress, this))
+				if(opCodeValue != 0xD4 || !sch.handleAfterCall(currentAddress, jumpAddress, this, reachable))
 					invalidateAll();
 		if(Arrays.asList(new Integer[]{0x38,0xD8,0xDA,0xDC}).contains(opCodeValue)) // jr ret jp call: c
 			if(getCarry() != KNOWN_FALSE)
-				if(opCodeValue != 0xDC || !sch.handleAfterCall(currentAddress, jumpAddress, this))
+				if(opCodeValue != 0xDC || !sch.handleAfterCall(currentAddress, jumpAddress, this, reachable))
 					invalidateAll();
 		if(Arrays.asList(new Integer[]{	0xc7,0xcf,0xd7,0xdf,0xe7,0xef,0xf7,0xff, // rst
 										0xC9, 0xD9, // ret(i)
 										0xCD}).contains(opCodeValue)) // call
-			if(!sch.handleAfterCall(currentAddress, jumpAddress, this))
+			if(!sch.handleAfterCall(currentAddress, jumpAddress, this, reachable))
 				invalidateAll();
 
 		return sch.vetoContinueAfterCall(currentAddress, jumpAddress);

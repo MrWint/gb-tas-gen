@@ -1,0 +1,141 @@
+0:0150 Start
+
+0:01a4 ExecuteGameStateFunc
+0:01a7 GameStateJumpTable
+0:01e7 HandleSoftReset
+0:01f6 SoftReset
+
+0:0270 VBlank
+0:02ad HandleLCDInterrupt
+0:02c4 HandleTimerInterrupt
+
+0:06a2 AbortDemo
+
+0:0faa WriteDMARoutine
+0:0fc2 ExecuteJumpTable
+
+0:100b ReadJoypad
+0:1040 FillMemoryL
+0:1049 FillMemoryS
+
+0:1d0b IncrementGameState
+0:1d13 IncrementSubState
+
+0:33f4 GS02TitleScreen
+0:33fa GS02JumpTable
+0:3410 GS02_0Func
+1:4998 GS02_1Func
+1:49bf GS02_2Func
+1:49ef GS02_3Func
+1:4a2e GS02_4Func
+1:4a75 GS02_5Func
+1:4aa4 GS02_6Func
+1:4b14 GS02_7Func
+1:4b21 GS02_8Func
+1:4a7f GS02_9Func
+1:4b2a GS02_aFunc
+
+0:357b GS03FileSelect
+0:3581 GS03JumpTable
+0:35cb GS03_00Func
+1:5117 GS03_01Ready
+1:52b2 GS03_02Walk
+1:5302 GS03_03WalkLeft
+1:534f GS03_04Func
+1:5352 GS03_05Selected1
+1:5377 GS03_06Selected2
+1:538d GS03_07Selected3
+1:53cd GS03_08GrabBomb
+1:53d0 GS03_0dFunc
+1:53f9 GS03_11Func
+1:5405 GS03_12Func
+1:5538 GS03_13StageUp1
+1:5597 GS03_14StageUpDown2
+1:5667 GS03_15StageUpDown3
+1:55f9 GS03_16StageDown1
+1:5674 GS03_19Func
+1:56b7 GS03_1aFunc
+1:56d1 GS03_1bFunc
+1:360b GS03_1dFunc
+1:5675 GS03_1eDropBomb
+1:56ac GS03_1fFunc
+1:56a3 GS03_21Func
+1:522d GS03_22Func
+1:524f GS03_23Func
+1:5259 GS03_24Func
+
+0:288e GS04Func
+0:3638 GS08Func
+
+0:06ba GS10InGame
+0:06bd GS10JumpTable
+0:0719 GS10_00Func
+0:0734 GS10_01Func
+0:07dd GS10_02Func
+0:0833 GS10_03Func
+0:083c GS10_04Func
+0:084e GS10_06Func
+0:0848 GS10_0aFunc
+0:0988 GS10_0bFunc
+0:08ec GS10_0cFunc
+0:095a GS10_0dFunc
+0:08c1 GS10_10Func
+0:08d3 GS10_11Func
+0:08da GS10_12Func
+0:08dd GS10_13Func
+0:09fe GS10_14Func
+0:0a32 GS10_15Func
+0:097e GS10_16Func
+0:0989 GS10_17Func
+0:09ab GS10_18Func
+0:09b8 GS10_19Func
+0:09c7 GS10_1aFunc
+0:0a73 GS10_1bFunc
+0:0a81 GS10_1cFunc
+0:0a9e GS10_1dFunc
+0:0aa5 GS10_1eFunc
+0:0a7e GS10_1fFunc
+0:0aad GS10_20Func
+0:0ac0 GS10_21Func
+0:0ac7 GS10_22Func
+0:0ad9 GS10_23Func
+0:0ae6 GS10_24Func
+0:0aeb GS10_25Func
+0:0afe GS10_26Func
+0:0b05 GS10_27Func
+0:0b0a GS10_28Func
+0:0b11 GS10_29Func
+0:0b2e GS10_2aFunc
+0:0b53 GS10_2bFunc
+0:0b7e GS10_2cFunc
+0:0bc7 GS10_2dFunc
+
+0:34c0 GS11Func
+0:068f GS12Demo
+
+0:2655 GS14StageSelect
+0:2668 GS14JumpTable
+0:269e GS14_00Func
+1:43f9 GS14_01Ready
+1:4586 GS14_02Func
+1:45bb GS14_03Func
+1:4748 GS14_04Func
+1:4757 GS14_05Func
+1:476c GS14_06Func
+1:47ad GS14_07Func
+1:47d5 GS14_08Func
+1:464c GS14_09Func
+1:4673 GS14_0aFunc
+1:46a2 GS14_0bFunc
+1:46f5 GS14_0dFunc
+1:470e GS14_0eFunc
+1:4807 GS14_0fFunc
+1:483a GS14_10Func
+1:448e GS14_12Selected
+
+0:3563 GS15Func
+0:3644 GS16Func
+0:365a GS1aFunc
+0:3452 GS1cFunc
+0:28f0 GS1eMarioDemo
+

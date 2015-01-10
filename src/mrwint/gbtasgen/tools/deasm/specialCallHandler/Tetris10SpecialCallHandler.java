@@ -1,7 +1,6 @@
 package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
 import mrwint.gbtasgen.tools.deasm.CPUState;
-import mrwint.gbtasgen.tools.deasm.DFS;
 import mrwint.gbtasgen.tools.deasm.ROM;
 
 public class Tetris10SpecialCallHandler extends SpecialCallHandler {

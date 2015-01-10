@@ -96,9 +96,9 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 		//dfs.addJumpTable(0xf0f9, 10);
 
 		// jp [hl] continuations
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x168, new CPUState()));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x168, new CPUState(), true));
 		dfs.rom.labelType[0x168] = 1;
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x9164d, new CPUState()));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x9164d, new CPUState(), true));
 		dfs.rom.labelType[0x9164d] = 1;
 	}
 
@@ -119,7 +119,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 
 	@SuppressWarnings("static-access")
 	@Override
-	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s) {
+	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s, boolean reachable) {
 		if(callAddress == 0x8) { // rst $8: FarCall a:hl
 			if((s.rMask[s.A] & s.rMask[s.H] & s.rMask[s.L]) == 0xFF) {
 				int jumpAddress;
@@ -139,7 +139,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 				if(s.rLoadedFromAddress[s.H] == s.rLoadedFromAddress[s.L] && s.rLoadedFromAddress[s.H] != -1)
 					dfs.rom.payloadAsAddress[s.rLoadedFromAddress[s.H]] = jumpAddress;
 
-				dfs.addIndirectJump(currentAddress, jumpAddress, new CPUState(), 3);
+				dfs.addIndirectJump(currentAddress, jumpAddress, new CPUState(), 3, reachable);
 			}
 			return false;
 		}

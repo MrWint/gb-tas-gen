@@ -9,6 +9,8 @@ bin/
 movies/*
 roms/*
 saves/*
+assembly/dk.asm
+assembly/sml2_10.asm
 assembly/tetris10.asm
 assembly/tetris11.asm
 temp/*

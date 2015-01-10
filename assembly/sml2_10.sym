@@ -1,0 +1,79 @@
+0:0150 Init_
+0:01e5 Start
+
+0:0264 MainLoop
+0:029f Reset
+0:02ad ExecuteGameState
+0:02b0 GameStateJumpTable
+0:02ff EndTickWithAnimatedTiles
+0:031c ClearFakeOAM
+0:0327 ClearBGMap
+0:0336 CopyHLtoDE
+0:0348 TurnOffLCD
+
+0:0154 HandleVBlankInterrupt
+0:372a HandleLCDInterrupt
+0:0347 HandleTimerInterrupt
+0:0153 HandleSerialInterrupt
+
+0:1fd2 ReadJoypad
+0:2728 EndTick
+
+0:207d InitSound
+4:4000 InitSound_
+
+0:38b9 HandleDemo
+0:38c8 HandleDemoPlayback
+0:38ce .exitPlayback
+0:3911 HandleDemoRecording
+
+0:3e00 FarCall
+
+0:2cc4 GS00LoadTitleScreen
+0:2abe LoadTitleScreenTiles
+5:4043 GS00LoadTitleScreen_
+
+0:2cdb GS01TitleScreen
+
+0:03f1 GS02Func
+0:04f1 GS03Func
+0:05d5 GS04Func
+0:27af GS05Func
+0:02fe GSNoOp
+0:287e GS07Func
+0:2756 GS08Func
+0:311a GS09Func
+0:2ce9 GS0bFunc
+0:2c2e GS0cFunc
+0:2974 GS10Func
+0:29ca GS11Func
+0:2cae GS12Func
+0:2cb9 GS13Func
+0:2c23 GS14Func
+0:353e GS15Func
+0:3573 GS16Func
+0:35cd GS17Func
+0:3547 GS18Func
+0:2be5 GS19Func
+0:2bf0 GS1aFunc
+0:2ad3 GS1bFunc
+0:2ade GS1cFunc
+0:2ae9 GS1eFunc
+0:2af4 GS1fFunc
+0:2a80 GS20Func
+0:2a8b GS21Func
+0:2c98 GS22Func
+0:03af GS23Func
+
+0:2b4f ClearUnusedOAMFrom1a
+0:2b63 ClearUnusedOAMFromc
+0:2cff ClearUnusedOAMFromHome
+1:52e7 ClearUnusedOAM
+
+0:2089 UpdateSoundFromHome
+0:2a96 UpdateSoundFrom1a
+0:2aaa UpdateSoundFromf
+4:4030 UpdateSound
+
+
+

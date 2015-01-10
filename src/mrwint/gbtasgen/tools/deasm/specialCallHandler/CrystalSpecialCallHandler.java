@@ -12,7 +12,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 
 	@Override
 	@SuppressWarnings("static-access")
-	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s) {
+	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s, boolean reachable) {
 		if(callAddress == 0x8) { // rst $8: FarCall a:hl
 			if((s.rMask[s.A] & s.rMask[s.H] & s.rMask[s.L]) == 0xFF) {
 				int jumpAddress;
@@ -32,7 +32,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 				if(s.rLoadedFromAddress[s.H] == s.rLoadedFromAddress[s.L] && s.rLoadedFromAddress[s.H] != -1)
 					dfs.rom.payloadAsAddress[s.rLoadedFromAddress[s.H]] = jumpAddress;
 
-				dfs.addIndirectJump(currentAddress, jumpAddress, new CPUState(), 3);
+				dfs.addIndirectJump(currentAddress, jumpAddress, new CPUState(), 3, reachable);
 			}
 			return false;
 		}
@@ -287,29 +287,29 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 		dfs.addJumpTable(0xc8ca5, 3);
 
 		// jp [hl] continuations
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x4932f, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x9168e, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x8ea8c, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x5042d, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x50f12, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0xf3df, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x172eb9, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x118284, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x365d7, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x178000, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x1060e5, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x129f4, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x129d5, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x24706, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0xe00ee, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0xe1e5b, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x926c7, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x93188, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x44607, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x445f4, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x26806, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0xedfa, new CPUState()));
-		dfs.dfsStack.add(new DFS.DFSStackElem(0x114243, new CPUState()));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x4932f, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x9168e, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x8ea8c, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x5042d, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x50f12, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0xf3df, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x172eb9, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x118284, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x365d7, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x178000, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x1060e5, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x129f4, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x129d5, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x24706, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0xe00ee, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0xe1e5b, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x926c7, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x93188, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x44607, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x445f4, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x26806, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0xedfa, new CPUState(), true));
+		dfs.dfsStack.add(new DFS.DFSStackElem(0x114243, new CPUState(), true));
 	}
 
 	@Override

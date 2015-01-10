@@ -9,7 +9,7 @@ public class SpecialCallHandler {
 		this.dfs = dfs;
 	}
 
-	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s) {
+	public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s, boolean reachable) {
 		return false;
 	}
 

@@ -1,13 +1,6 @@
 package mrwint.gbtasgen.tools.deasm;
 
-import mrwint.gbtasgen.tools.deasm.specialCallHandler.CrystalSpecialCallHandler;
-import mrwint.gbtasgen.tools.deasm.specialCallHandler.SpecialCallHandler;
-import mrwint.gbtasgen.tools.deasm.specialCallHandler.Tetris10SpecialCallHandler;
-import mrwint.gbtasgen.tools.deasm.specialCallHandler.Tetris11SpecialCallHandler;
-import mrwint.gbtasgen.tools.updateAssembly.FixBankswitchs;
-import mrwint.gbtasgen.tools.updateAssembly.FixBankswitchs2;
-import mrwint.gbtasgen.tools.updateAssembly.FixCallLabels;
-import mrwint.gbtasgen.tools.updateAssembly.FixROMDataPointers;
+import mrwint.gbtasgen.tools.deasm.specialCallHandler.SML2_10SpecialCallHandler;
 
 public class Main {
 
@@ -16,17 +9,21 @@ public class Main {
 	 * @throws Throwable
 	 */
 	public static void main(String[] args) throws Throwable {
-		String romName = "roms/tetris11.gb";
+		String romName = "roms/sml2_10.gb";
 		if(args.length > 0)
 			romName = args[0];
 		String romBaseName = romName.substring(Math.max(0,romName.lastIndexOf("/")), romName.lastIndexOf("."));
 
 		ROM rom = new ROM(romName);
-		rom.addEquFile("assembly/hardware_constants.asm");
-		rom.addEquFile("assembly/tetris11_ramlabels.asm");
-		rom.addSymFile("assembly/tetris11.sym");
-		new DFS(rom, new Tetris11SpecialCallHandler())
-			.addInterrupts()
+    rom.addEquFile("assembly/hardware_constants.asm");
+    rom.addIncludeFile("assembly/macros.asm");
+		rom.addEquFile("assembly/sml2_10_ramlabels.asm");
+		rom.addSymFile("assembly/sml2_10.sym");
+		new DFS(rom, new SML2_10SpecialCallHandler())
+      .addFunction(0x40, "VBlankInterrupt")
+      .addFunction(0x48, "LCDInterrupt")
+      .addFunction(0x50, "TimerInterrupt")
+      .addFunction(0x58, "SerialInterrupt")
 			.addInit()
 			.dfs();
 		rom.fixLabelTypes();

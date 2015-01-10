@@ -18,7 +18,8 @@ public class ROM {
 	public static final byte UNKNOWN = -1;
 	public static final byte CODE = 0;
 	public static final byte DATA_JUMPPOINTER = 1;
-	public static final byte DATA_BYTEARRAY = 2;
+  public static final byte DATA_BYTEARRAY = 2;
+  public static final byte DATA_BANKJUMPPOINTER = 3;
 
 	public static final int LABEL_NONE = 0;
 	public static final int LABEL_RELATIVE = 1;
@@ -33,6 +34,7 @@ public class ROM {
 	public int len;
 	public String filename;
 	public byte[] data;
+  public boolean[] reachable;
 	public String[] section;
 	public byte[] type;
 	public Set<Integer>[] accesses;
@@ -55,6 +57,7 @@ public class ROM {
 		File f = new File(filename);
 		len = (int)f.length();
 		data = new byte[len];
+		reachable = new boolean[len];
 		section = new String[len];
 		type = new byte[len];
 		accesses = new Set[len];
@@ -66,7 +69,7 @@ public class ROM {
 		payloadAsAddress = new int[len];
 		payloadAsBank = new int[len];
 		indirectJumpTo = new int[len];
-		ramLabel = new ArrayList[0x4000];
+		ramLabel = new ArrayList[0x8000];
 
 		includeFiles = new ArrayList<>();
 
@@ -78,8 +81,9 @@ public class ROM {
 			type[i] = UNKNOWN;
 			format[i] = FORMAT_HEX;
 			width[i] = 1;
+			reachable[i] = false;
 		}
-		for(int i=0;i<0x4000;i++)
+		for(int i=0;i<0x8000;i++)
 			ramLabel[i] = new ArrayList<String>();
 
 		InputStream is;
@@ -104,12 +108,12 @@ public class ROM {
 
 		if(type[i] == CODE) {
 			if(labelType[i] == LABEL_RELATIVE)
-				return ".asm_"+Util.toHex(i, 4);
+				return (reachable[i] ? ".asm_" : ".unused_")+Util.toHex(i, 4);
 			if(labelType[i] == LABEL_ABSOLUTE)
-				return "asm_"+Util.toHex(i, 4);
+				return (reachable[i] ? "asm_" : "unused")+Util.toHex(i, 4);
 			if(labelType[i] == LABEL_FUNCTION)
-				return "Func"+Util.toHex(i, 4);
-		} else if(type[i] == DATA_JUMPPOINTER) {
+				return (reachable[i] ? "Func" : "Unused")+Util.toHex(i, 4);
+		} else if(type[i] == DATA_JUMPPOINTER || type[i] == DATA_BANKJUMPPOINTER) {
 			if(labelType[i] == LABEL_RELATIVE)
 				return ".jumptable_"+Util.toHex(i, 4);
 			if(labelType[i] >= LABEL_ABSOLUTE)
@@ -179,8 +183,8 @@ public class ROM {
 				name = name.substring(name.lastIndexOf("."));
 			if(name.startsWith(".asm"))
 				continue;
-			if(address >= 0xc000) {
-				ramLabel[address-0xc000].add(name);
+			if(address >= 0x8000) {
+				ramLabel[address-0x8000].add(name);
 				continue;
 			}
 			if(address >= 0x8000)
@@ -194,6 +198,9 @@ public class ROM {
 		System.out.println("inserted "+numInserted+" of "+numRead+" labels");
 	}
 
+  public void addIncludeFile(String fileName) throws Throwable {
+    includeFiles.add(fileName);
+  }
 
 	public void addEquFile(String fileName) throws Throwable {
 		includeFiles.add(fileName);
@@ -233,11 +240,11 @@ public class ROM {
 				address = Integer.valueOf(ss[2].substring(1),2);
 			else
 				address = Integer.valueOf(ss[2],10);
-			if(address >= 0xc000) {
-				ramLabel[address-0xc000].add(name);
+			if(address >= 0x8000) {
+				ramLabel[address-0x8000].add(name);
 				numInserted++;
 				for (int i = 1; i <= additionalEqus ; i++) {
-					ramLabel[address-0xc000+i].add(name + "+" + i);
+					ramLabel[address-0x8000+i].add(name + "+" + i);
 					numInserted++;
 				}
 			}

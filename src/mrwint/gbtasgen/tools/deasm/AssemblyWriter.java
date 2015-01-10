@@ -73,8 +73,10 @@ public class AssemblyWriter {
 				curAddress = writeCode(bw, curAddress);
 				if (rom.type[curAddress] != ROM.CODE)
 					bw.write("; "+prettyPrintAddress(curAddress)+"\n\n");
-			} else if(rom.type[curAddress] == ROM.DATA_JUMPPOINTER) {
-				curAddress = writeJumpPointer(bw, curAddress, end);
+      } else if(rom.type[curAddress] == ROM.DATA_JUMPPOINTER) {
+        curAddress = writeJumpPointer(bw, curAddress, end);
+      } else if(rom.type[curAddress] == ROM.DATA_BANKJUMPPOINTER) {
+        curAddress = writeBankJumpPointer(bw, curAddress, end);
 			} else if(rom.type[curAddress] == ROM.DATA_BYTEARRAY) {
 				curAddress = writeByteArray(bw, curAddress, end);
 			} else
@@ -114,25 +116,48 @@ public class AssemblyWriter {
 		bw.close();
 	}
 
-	private int writeJumpPointer(BufferedWriter bw, int curAddress, int end) throws Throwable {
+  private int writeJumpPointer(BufferedWriter bw, int curAddress, int end) throws Throwable {
 
-		for(;rom.type[curAddress] == ROM.DATA_JUMPPOINTER && curAddress < end;curAddress+=2) {
-			addLabel(bw, curAddress);
+    for(;rom.type[curAddress] == ROM.DATA_JUMPPOINTER && curAddress < end;curAddress+=2) {
+      addLabel(bw, curAddress);
 
-			String dataString = "$"+Integer.toHexString(((rom.data[curAddress]&0xFF) | ((rom.data[curAddress+1]&0xFF) << 8)) & 0xFFFF);
+      String dataString = "$"+Integer.toHexString(((rom.data[curAddress]&0xFF) | ((rom.data[curAddress+1]&0xFF) << 8)) & 0xFFFF);
 
-			if(rom.payloadAsAddress[curAddress] >= 0)
-				dataString = rom.getLabel(rom.payloadAsAddress[curAddress]);
+      if(rom.payloadAsAddress[curAddress] >= 0)
+        dataString = rom.getLabel(rom.payloadAsAddress[curAddress]);
 
-			if(rom.comment[curAddress] != null && !rom.comment[curAddress].isEmpty())
-				dataString += " ; "+rom.comment[curAddress];
+      if(rom.comment[curAddress] != null && !rom.comment[curAddress].isEmpty())
+        dataString += " ; "+rom.comment[curAddress];
 
-			bw.write("\tdw "+dataString+"\n");
-		}
-		if (rom.type[curAddress] != ROM.DATA_BYTEARRAY)
-			bw.write("\n");
-		return curAddress;
-	}
+      bw.write("\tdw "+dataString+"\n");
+    }
+    if (rom.type[curAddress] != ROM.DATA_BYTEARRAY)
+      bw.write("\n");
+    return curAddress;
+  }
+
+  private int writeBankJumpPointer(BufferedWriter bw, int curAddress, int end) throws Throwable {
+
+    for(;rom.type[curAddress] == ROM.DATA_BANKJUMPPOINTER && curAddress < end;curAddress+=3) {
+      addLabel(bw, curAddress);
+
+      String bankString = "$"+Integer.toHexString(rom.data[curAddress] & 0xFF);
+      String dataString = "$"+Integer.toHexString(((rom.data[curAddress+1]&0xFF) | ((rom.data[curAddress+2]&0xFF) << 8)) & 0xFFFF);
+
+      if(rom.payloadAsBank[curAddress] >= 0)
+        bankString = "BANK("+rom.getLabel(rom.payloadAsBank[curAddress])+")";
+      if(rom.payloadAsAddress[curAddress+1] >= 0)
+        dataString = rom.getLabel(rom.payloadAsAddress[curAddress+1]);
+
+      if(rom.comment[curAddress] != null && !rom.comment[curAddress].isEmpty())
+        dataString += " ; "+rom.comment[curAddress];
+
+      bw.write("\tdbw "+bankString+", "+dataString+"\n");
+    }
+    if (rom.type[curAddress] != ROM.DATA_BYTEARRAY)
+      bw.write("\n");
+    return curAddress;
+  }
 
 	private int writeByteArray(BufferedWriter bw, int curAddress, int end) throws Throwable {
 		for(; rom.type[curAddress] == ROM.DATA_BYTEARRAY && curAddress < end; curAddress += rom.width[curAddress]) {
@@ -187,7 +212,7 @@ public class AssemblyWriter {
 		for(int i=0;i<opCode.extraBytes; i++)
 			opData += (rom.data[curAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian)
 
-		int opDataAsAddress = DeasmUtil.toFull(opData, DeasmUtil.getBank(address));
+		int opDataAsAddress = opData < 0x8000 ? DeasmUtil.toFull(opData, DeasmUtil.getBank(address)) : -1;
 
 		String name = opCode.name;
 
@@ -195,12 +220,15 @@ public class AssemblyWriter {
 
 		if(name.contains("?")) {
 			String tmp = name.substring(0,name.indexOf("?")).toLowerCase();
+			if(name.startsWith("LD") && opData >= 0xff00) {
+			  tmp = "dbw $"+Integer.toHexString(opCodeValue)+", $"+Integer.toHexString(opData)+" ; "+tmp;
+			}
 			if(rom.payloadAsAddress[address] >= 0) {
 				tmp += rom.getLabel(rom.payloadAsAddress[address]);
-			} else if(opData >= 0xc000 && !rom.ramLabel[opData-0xc000].isEmpty()) { // add ram labels here
-				tmp += rom.ramLabel[opData-0xc000].get(0);
-				comment = generateRamLabelComment("$" + Integer.toHexString(opData),opData-0xc000);
-			} else if(opDataAsAddress > 0x100 && opDataAsAddress < rom.len && (rom.label[opDataAsAddress] != null || rom.labelType[opDataAsAddress] != ROM.LABEL_NONE)) { // add rom labels here
+			} else if(opData >= 0x8000 && !rom.ramLabel[opData-0x8000].isEmpty()) { // add ram labels here
+				tmp += rom.ramLabel[opData-0x8000].get(0);
+				comment = generateRamLabelComment("$" + Integer.toHexString(opData),opData-0x8000);
+			} else if(opDataAsAddress > 0x100 && opDataAsAddress < rom.len && (rom.label[opDataAsAddress] != null || (rom.labelType[opDataAsAddress] != ROM.LABEL_NONE && rom.labelType[opDataAsAddress] != ROM.LABEL_RELATIVE))) { // add rom labels here
 				tmp += rom.getLabel(opDataAsAddress);
 				comment = "$" + Integer.toHexString(opData).toLowerCase();
 			} else
@@ -209,9 +237,9 @@ public class AssemblyWriter {
 			name = tmp;
 		} else if(name.contains("$FF00+x")) {
 			String tmp = name.substring(0,name.indexOf("$FF00+x")).toLowerCase();
-			if(!rom.ramLabel[opData+0x3f00].isEmpty()) { // add ram labels here
-				tmp += rom.ramLabel[opData+0x3f00].get(0);
-				comment = generateRamLabelComment("$FF00+$" + Integer.toHexString(opData),opData+0x3f00);
+			if(!rom.ramLabel[opData+0x7f00].isEmpty()) { // add ram labels here
+				tmp += rom.ramLabel[opData+0x7f00].get(0);
+				comment = generateRamLabelComment("$FF00+$" + Integer.toHexString(opData),opData+0x7f00);
 			} else
 				tmp += "$FF00+$" + Integer.toHexString(opData).toLowerCase();
 			tmp += name.substring(name.indexOf("x")+1).toLowerCase();
