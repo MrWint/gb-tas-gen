@@ -14,10 +14,6 @@ public class DKSpecialCallHandler extends SpecialCallHandler {
   }
 
   @Override
-  public void handleBeforeOp(int currentAddress, CPUState s) {
-  }
-
-  @Override
   public void handleDFSInit() {
     // rst $8
     dfs.addJumpTable(0x1a7, 32);

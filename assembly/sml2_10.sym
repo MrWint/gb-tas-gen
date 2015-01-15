@@ -10,8 +10,45 @@
 0:0327 ClearBGMap
 0:0336 CopyHLtoDE
 0:0348 TurnOffLCD
+0:0361 LoadLevelBlocks
+
+0:2934 SaveGame
+0:2bfb CopyHLtoDEFromf
 
 0:0154 HandleVBlankInterrupt
+0:2c18 VBlank_GS0c
+0:3e73 VBlank_GS0c_
+f:6aff VBlank_GS0c__
+0:01c5 HandleVBlankInterrupt_End
+f:50d7 GS0c_EnterTreeZone
+f:51e0 GS0c_EnterPumpkinZone
+f:533a GS0c_EnterMarcoZone
+f:5477 GS0c_EnterSpaceZone
+f:55ec GS0c_EnterTurtleZoneD
+f:55d0 GS0c_EnterTurtleZone67
+f:5760 GS0c_EnterMarioZone
+f:5848 GS0c_EnterCasinoHill
+f:745e GS0c_EnterCasinoHill6e
+f:7427 GS0c_EnterCasinoHill6f
+f:73f0 GS0c_EnterCasinoHill70
+f:73b9 GS0c_EnterCasinoHill71
+f:56c3 GS0c_EnterWarioCastle
+f:69fb GS0c_FadeOutScreen
+f:69ec DelayFrameUpdateSound
+
+f:46b0 GS0c_CheckLeaveTreeZone
+f:46ca GS0c_CheckLeavePumpkinZone
+f:46e4 GS0c_LeavePumpkinZone2d
+f:46f6 GS0c_LeavePumpkinZone30
+f:4708 GS0c_CheckLeaveMarcoZone
+f:4731 GS0c_LeaveSpaceZone40
+f:4743 GS0c_CheckLeaveTurtleZone
+f:475d GS0c_LeaveTurtleZone4a
+f:476f GS0c_CheckLeaveMarioZone
+f:4789 GS0c_CheckLeaveWarioCastle
+f:47a3 GS0c_CheckLeaveCasinoHill
+f:62f7 GS0c_LeaveToOverworld
+
 0:372a HandleLCDInterrupt
 0:0347 HandleTimerInterrupt
 0:0153 HandleSerialInterrupt
@@ -28,42 +65,209 @@
 0:3911 HandleDemoRecording
 
 0:3e00 FarCall
+0:3e46 ClearOAM
+0:2d41 ClearOAM1FromHome
+1:5302 ClearOAM1
+0:3e7b FarLoadByteFromf
 
 0:2cc4 GS00LoadTitleScreen
-0:2abe LoadTitleScreenTiles
+0:2abe LoadTitleScreenGFX
+5:41e5 TitleScreenGFX
 5:4043 GS00LoadTitleScreen_
+5:59e5 TitleScreenTiles
 
 0:2cdb GS01TitleScreen
+5:407c GS01TitleScreen_
+5:40a8 .selectPressed
+5:40d6 .startDemo
+5:4113 GS01_ClearUnusedOAM
 
-0:03f1 GS02Func
+0:03f1 GS02LoadLevel
+0:0669 LoadLevelGFX
+
 0:04f1 GS03Func
+
+0:07db LoadBottomBarTiles
+
 0:05d5 GS04Func
 0:27af GS05Func
 0:02fe GSNoOp
 0:287e GS07Func
 0:2756 GS08Func
 0:311a GS09Func
-0:2ce9 GS0bFunc
-0:2c2e GS0cFunc
+
+0:2ce9 GS0bLoadLevelHeader
+1:5579 GS0bLoadLevelHeader_
+
+0:2c2e GS0cMapScreen
+f:4000 GS0cMapScreen_
+f:404d .overworld
+f:4063 .pumpkinZone
+f:406f .treeZone
+f:407b .macroZone
+f:4087 .spaceZone
+f:4093 .turtleZone
+f:409f .marioZone
+f:40ab .warioZone
+f:40b7 .casinoHill
+f:40c3 .casinoHill71
+f:40ca .casinoHill70
+f:40d1 .casinoHill6f
+f:40d8 .casinoHill6e
+f:40df .unknown0d
+f:410e .unknown0e
+
+f:413e GS0c_UpdateCommonVars
+f:58e6 GS0c_PumpkinZone
+f:5a2d GS0c_TreeZone
+f:5b12 GS0c_MacroZone
+f:5b40 GS0c_SpaceZone
+f:5dd3 GS0c_TurtleZone
+f:5ec7 GS0c_MarioZone
+f:5fe8 GS0c_WarioZone
+f:5d8c GS0c_CasinoHill
+f:5dc3 GS0c_CasinoHill71
+f:5dc7 GS0c_CasinoHill70
+f:5dcb GS0c_CasinoHill6f
+f:5dcf GS0c_CasinoHill6e
+f:4169 GS0c_CheckStartLevel
+
+
 0:2974 GS10Func
 0:29ca GS11Func
 0:2cae GS12Func
 0:2cb9 GS13Func
-0:2c23 GS14Func
-0:353e GS15Func
-0:3573 GS16Func
-0:35cd GS17Func
+
+0:2c23 GS14LoadMapScreen
+f:6f2b GS14LoadMapScreen_
+f:703d .overworld
+f:704d .nonOverworldLocation
+f:7060 .pumpkinZone
+f:706b .notPumpkinZone
+f:706f .macroZone
+f:707a .notMacroZone
+f:707e .spaceZone
+f:7089 .notSpaceZone
+f:7098 .notTurtleZone
+f:70a7 .notMarioZone
+f:70c2 .notWarioCastle
+f:70f6 .notSecretLevels
+f:7104 .notCasinoHill
+f:7123 .notPumpkinSecretEntrance1
+f:7142 .notPumpkinSecretEntrance2
+f:7147 .loadedZone
+f:714c .loadedOverworld
+
+f:7156 LoadOverworld
+f:6ef0 UpdateLevelCompletionFlags
+
+f:6ea4 LoadSaveDataLocationParams
+f:56eb LoadWarioCastleExterior
+f:50ff LoadTreeZomeExterior
+f:5208 LoadPumpkinZoneExterior
+f:5371 LoadMacroZoneExterior
+f:549f LoadSpaceZoneExterior
+f:561f LoadTurtleZoneExterior
+f:579a LoadMarioZoneExterior
+f:5880 LoadCasinoHillExterior
+
+f:67eb CopyHLToDeF
+
+d:4000 OverworldMarioGFX
+11:5a00 WarioCastleExteriorGFX
+e:7d80 WarioCastleExteriorTiles
+e:5a00 TreeTurtleZoneExteriorGFX
+e:7240 TreeZoneExteriorTiles
+e:4200 PumpkinZoneExteriorGFX
+e:7000 PumpkinZoneExteriorTiles
+d:5a00 MacroZoneExteriorGFX
+e:76c0 MacroZoneExteriorTiles
+10:4200 SpaceZoneExteriorGFX
+e:7480 SpaceZoneExteriorTiles
+e:7900 TurtleZoneExteriorTiles
+11:4200 MarioZoneExteriorGFX
+e:7b40 MarioZoneExteriorTiles
+10:7000 CasinoHillExteriorGFX
+
+f:46bd GS14_CheckTreeZoneFinalLevelBeaten
+f:46d7 GS14_CheckPumpkinZoneFinalLevelBeaten
+f:4724 GS14_CheckMacroZoneFinalLevelBeaten
+f:4736 GS14_CheckSpaceZoneFinalLevelBeaten
+f:4750 GS14_CheckTurtleZoneFinalLevelBeaten
+f:477c GS14_CheckMarioZoneFinalLevelBeaten
+
+0:353e GS15PreLoadMapScreen
+0:3573 GS16CheckLoadLevel
+0:35cd GS17EasyModeScreen
 0:3547 GS18Func
-0:2be5 GS19Func
-0:2bf0 GS1aFunc
-0:2ad3 GS1bFunc
-0:2ade GS1cFunc
+
+f:429a AutoMoveRight
+f:42a0 AutoMoveLeft
+f:42ac AutoMoveUp
+f:42a6 AutoMoveDown
+f:42b2 AutoMoveEnterZone
+
+
+0:2be5 GS19LoadFileSelect
+c:4000 GS19LoadFileSelect_
+0:2b8b GS19_LoadGFX
+7:5e00 FileSelectBgGFX
+7:6a00 MiscBgGFX
+6:4000 MarioGFX
+6:4800 MarioGFX2
+6:5000 MarioSpaceGFX
+1b:7000 MiscSpriteGFX1
+c:6aca MiscSpriteGFX2
+c:4a52 FileSelectTiles
+0:28d9 CheckSaveFiles
+0:28ec CheckSaveFile
+
+0:2bf0 GS1aFileSelect
+c:405f GS1aFileSelect_
+c:412e ExecuteFileSelectState
+c:4132 FileSelectStateJumpTable
+c:43d6 FSS0Initial
+
+c:4326 FSS1Ready
+c:437d .selectPressed
+c:4398 .rightPressed
+c:43b7 .leftPressed
+c:431a FSS_LoadMarioSprite
+
+c:42f1 FSS2WalkRight
+c:42c8 FSS3WalkLeft
+c:440d FSS_UpdateMarioAnimation
+c:426d FSS4ToggleClear
+c:428a .ascent
+c:4291 .toggleBomb
+c:4291 .descent
+c:4291 .starSprite
+
+c:41c6 FSS5Selected
+c:4227 .eraseFile
+
+c:4140 FSS6Cleared
+
+0:2ad3 GS1bLoadSixCoinDoor
+0:2ade GS1cSixCoinDoor
 0:2ae9 GS1eFunc
 0:2af4 GS1fFunc
 0:2a80 GS20Func
 0:2a8b GS21Func
 0:2c98 GS22Func
 0:03af GS23Func
+
+0:2b13 LoadSpriteFromc
+0:2b27 LoadSpriteFrom1a
+0:2cf4 LoadSpriteFromHome
+0:3f30 LoadSpriteFromf
+0:3f44 LoadSpriteFrom18
+1:5297 LoadSprite
+
+0:2b3b PrintTwoDigitNumberSpriteFromc
+1:5267 PrintTwoDigitNumberSprite
+1:5272 PrintOneDigitNumberSprite
+1:527c PrintDigit
 
 0:2b4f ClearUnusedOAMFrom1a
 0:2b63 ClearUnusedOAMFromc
@@ -72,8 +276,7 @@
 
 0:2089 UpdateSoundFromHome
 0:2a96 UpdateSoundFrom1a
+f:6ad7 UpdateSoundfSave
 0:2aaa UpdateSoundFromf
 4:4030 UpdateSound
-
-
 

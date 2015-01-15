@@ -4,7 +4,9 @@ import static mrwint.gbtasgen.tools.deasm.CPUState.A;
 import static mrwint.gbtasgen.tools.deasm.CPUState.H;
 import static mrwint.gbtasgen.tools.deasm.CPUState.L;
 import mrwint.gbtasgen.tools.deasm.CPUState;
+import mrwint.gbtasgen.tools.deasm.OpCode;
 import mrwint.gbtasgen.tools.deasm.ROM;
+import mrwint.gbtasgen.util.Util;
 
 public class SML2_10SpecialCallHandler extends SpecialCallHandler {
 
@@ -13,10 +15,6 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
     if(jumpAddress == 0x28) // messes with stack, reads return address as jumptable
       return true;
     return false;
-  }
-
-  @Override
-  public void handleBeforeOp(int currentAddress, CPUState s) {
   }
 
   @Override
@@ -162,9 +160,9 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
     // data
     dfs.addByteArray(0x3e1, 4, "Unknown_3e1",
         ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
-    dfs.addByteArray(0x763, 4, "Unknown_763",
-        ROM.FORMAT_HEX, ROM.FORMAT_HEX);
-    dfs.addByteArray(0x7ea, 5, "Unknown_7ea",
+    dfs.rom.payloadAsAddress[0x6fc] = 0x6f000;
+    dfs.addPointerTable(0x763, 4, "BlockBellGoalGFXTable", 7, false);
+    dfs.addByteArray(0x7ea, 5, "BottomBarTiles",
         ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
 
     dfs.addRawBytes(0x18af, 0x18fb-0x18af, "MarioSpeedTableV");
@@ -182,7 +180,55 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
     dfs.addRawBytes(0x29bd, 0x29ca - 0x29bd, "GameClearedText");
     dfs.addRawBytes(0x31ef, 0x324f - 0x31ef, "MarioSpeedTableDead");
     dfs.addRawBytes(0x3439, 0x3451 - 0x3439, "Unknown_3439");
-    dfs.addRawBytes(0x377b, 0x3873 - 0x377b, "Unknown_377b");
+    dfs.addRawBytes(0x35ea, 0x20, "LevelIndexToAnimatedTileModeMap");
+    dfs.addRawBytes(0x360a, 0x20, "LevelIndexToGFXSetMap");
+    dfs.addByteArray(0x362a, 0x20, "LevelIndexToEnemyGFXSetMap",
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+    dfs.addByteArray(0x36aa, 0x20, "LevelIndexToTileGFXSetMap",
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+    dfs.addRawBytes(0x3e50e, 0x82, "LocationToLevelSaveIndexMap");
+    dfs.addRawBytes(0x3c218, 0x82, "LocationToLevelDataIndexMap");
+    dfs.addByteArray(0x61ee6, 0x83, "Unknown_61ee6",
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+    dfs.rom.payloadAsAddress[0x3eea7] = 0x61ee6;
+    dfs.rom.payloadAsBank[0x3eeba] = 0x61ee6;
+
+    dfs.addRawBytes(0x3012a, 4, "BombSpriteIndexOffsetTable");
+
+    // Level Headers
+    dfs.addPointerTable(0x55cb, 0x20, "LevelHeaderTable");
+    for (int i=0;i<0x20; i++) {
+      int add = dfs.rom.payloadAsAddress[0x55cb+2*i];
+      dfs.rom.label[add] = "LevelHeader"+Util.toHex(i, 2);
+      dfs.addRawWord(add+0, "Mario Starting Y");
+      dfs.addRawWord(add+2, "Mario Starting X");
+      dfs.addRawWord(add+4, "Camera Starting Y");
+      dfs.addRawWord(add+6, "Camera Starting X");
+      dfs.addRawByte(add+8);
+      dfs.addRawByte(add+9);
+      dfs.addRawByte(add+10, "Level Number");
+      dfs.addRawWord(add+11, "Tileset pointer");
+      int tilesetAddress = (8-1)*0x4000 + (dfs.rom.data[add+12] << 8) + dfs.rom.data[add+11];
+      dfs.rom.payloadAsAddress[add+11] = tilesetAddress;
+      dfs.rom.label[tilesetAddress] = "Level"+Util.toHex(i, 2)+"Tileset";
+      dfs.addRawByte(add+13, "Level Bank");
+      dfs.addRawByte(add+14, "Level Music");
+      dfs.addRawByte(add+15, "BGP");
+      dfs.addRawByte(add+16, "OBP0");
+      dfs.addRawByte(add+17, "OBP1");
+      dfs.addRawByte(add+18, "Level Number (in bank)");
+      dfs.addRawByte(add+19, "Time");
+    }
+//    dfs.addRawBytes(0x377b, 0x3873 - 0x377b, "Unknown_377b");
+    for (int i=0;i<0x1f; i++) {
+      int add = 0x377b+8*i;
+      dfs.rom.label[add] = "LevelHeaderBell"+Util.toHex(i, 2);
+      dfs.addRawWord(add+0, "Mario Starting Y");
+      dfs.addRawWord(add+2, "Mario Starting X");
+      dfs.addRawWord(add+4, "Camera Starting Y");
+      dfs.addRawWord(add+6, "Camera Starting X");
+    }
 
     // unused code
     dfs.addUnusedFunction(0x33f);
@@ -214,6 +260,12 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
   }
 
   @Override
+  public void handleBeforeOp(int currentAddress, OpCode opCode, int opData, CPUState s) {
+    if (OpCode.loadFromHl.contains(opCode.opCode))
+      considerHlAsData(currentAddress, s);
+  }
+
+  @Override
   public boolean handleAfterCall(int currentAddress, int callAddress, CPUState s, boolean reachable) {
     if(callAddress == 0x3e00) { // FarCall a:hl
       if((s.rMask[A] & s.rMask[H] & s.rMask[L]) == 0xFF) {
@@ -238,6 +290,55 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
       }
       return false;
     }
-    return false;
+    if(callAddress == 0x336) { // CopyHLtoDE
+      considerHlAsData(currentAddress, s);
+      s.invalidateRegisters();
+      return true;
+    }
+    if(callAddress == 0x2bfb) { // CopyHLtoDEfromf
+      if((s.rMask[A] & s.rMask[H] & s.rMask[L]) == 0xFF) {
+        int dataAddress;
+        if(s.r[H] < 0x40)
+          dataAddress = ((s.r[H]*0x100) | s.r[L]);
+        else if(s.r[H] < 0x80)
+          dataAddress = (s.r[A]-1)*0x4000 + ((s.r[H]*0x100) | s.r[L]);
+        else {
+          s.invalidateRegisters();
+          return true;
+        }
+
+        // set up indirect labels
+        if (dfs.rom.label[dataAddress] == null)
+          dfs.rom.labelType[dataAddress] = ROM.LABEL_ABSOLUTE;
+        if(s.r[H] >= 0x40)
+          if(s.rLoadedFromAddress[A] != -1)
+            dfs.rom.payloadAsBank[s.rLoadedFromAddress[A]] = dataAddress;
+        if(s.rLoadedFromAddress[H] == s.rLoadedFromAddress[L] && s.rLoadedFromAddress[H] != -1)
+          dfs.rom.payloadAsAddress[s.rLoadedFromAddress[H]] = dataAddress;
+      }
+    }
+    s.invalidateRegisters();
+    return true;
+  }
+
+  private void considerHlAsData(int currentAddress, CPUState s) {
+    if((s.rMask[H] & s.rMask[L]) == 0xFF) {
+      int dataAddress;
+      if(s.r[H] < 0x40)
+        dataAddress = ((s.r[H]*0x100) | s.r[L]);
+      else if(s.r[H] < 0x80 && currentAddress > 0x4000)
+        dataAddress = (currentAddress/0x4000-1)*0x4000 + ((s.r[H]*0x100) | s.r[L]);
+      else if(s.r[H] < 0x80 && s.loadedBank > 0)
+        dataAddress = (s.loadedBank-1)*0x4000 + ((s.r[H]*0x100) | s.r[L]);
+      else {
+        return;
+      }
+
+      // set up indirect labels
+      if (dfs.rom.label[dataAddress] == null)
+        dfs.rom.labelType[dataAddress] = ROM.LABEL_ABSOLUTE;
+      if(s.rLoadedFromAddress[H] == s.rLoadedFromAddress[L] && s.rLoadedFromAddress[H] != -1)
+        dfs.rom.payloadAsAddress[s.rLoadedFromAddress[H]] = dataAddress;
+    }
   }
 }

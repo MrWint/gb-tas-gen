@@ -2,6 +2,7 @@ package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
 import mrwint.gbtasgen.tools.deasm.CPUState;
 import mrwint.gbtasgen.tools.deasm.DFS;
+import mrwint.gbtasgen.tools.deasm.OpCode;
 
 public class SpecialCallHandler {
 	public DFS dfs;
@@ -13,7 +14,7 @@ public class SpecialCallHandler {
 		return false;
 	}
 
-	public void handleBeforeOp(int currentAddress, CPUState s) {
+	public void handleBeforeOp(int currentAddress, OpCode opCode, int opData, CPUState s) {
 	}
 
 	public void handleDFSInit() {

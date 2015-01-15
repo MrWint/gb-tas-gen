@@ -58,7 +58,8 @@ public class AssemblyWriter {
 		while(curAddress < end) {
 			int startAddress = curAddress;
 			boolean all0s = true;
-			while(curAddress < end && rom.type[curAddress] <= ROM.UNKNOWN) {
+			while(curAddress < end && rom.type[curAddress] <= ROM.UNKNOWN
+			    && (curAddress == startAddress || (rom.label[curAddress] == null && rom.labelType[curAddress] == ROM.LABEL_NONE))) {
 				all0s &= (rom.data[curAddress] == 0 || rom.type[curAddress] == ROM.IGNORE);
 				curAddress++;
 			}
@@ -66,6 +67,7 @@ public class AssemblyWriter {
 				if (curAddress >= end && all0s)
 					break;
 				writeIncBin(bw,startAddress,curAddress);
+				continue;
 			}
 			if(curAddress >= end)
 				break;
@@ -80,7 +82,7 @@ public class AssemblyWriter {
 			} else if(rom.type[curAddress] == ROM.DATA_BYTEARRAY) {
 				curAddress = writeByteArray(bw, curAddress, end);
 			} else
-				System.err.println("writing unknown section type "+rom.type[curAddress]+" at "+(curAddress++));
+				System.err.println("writing unknown section type "+rom.type[curAddress]+" at "+Integer.toHexString(curAddress++));
 		}
 		return curAddress;
 	}
@@ -301,7 +303,10 @@ public class AssemblyWriter {
 	}
 
 	private void writeIncBin(BufferedWriter bw, int start, int end) throws Throwable {
-		bw.write("INCBIN \""+rom.filename+"\",$");
+
+    addLabel(bw, start);
+
+    bw.write("INCBIN \""+rom.filename+"\",$");
 		bw.write(Integer.toHexString(start));
 		bw.write(",$");
 		bw.write(Integer.toHexString(end));

@@ -2,6 +2,7 @@ package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
 import mrwint.gbtasgen.tools.deasm.CPUState;
 import mrwint.gbtasgen.tools.deasm.DFS;
+import mrwint.gbtasgen.tools.deasm.OpCode;
 
 public class CrystalSpecialCallHandler extends SpecialCallHandler {
 	public DFS dfs;
@@ -48,7 +49,7 @@ public class CrystalSpecialCallHandler extends SpecialCallHandler {
 	}
 
 	@Override
-	public void handleBeforeOp(int currentAddress, CPUState s) {
+	public void handleBeforeOp(int currentAddress, OpCode opCode, int opData, CPUState s) {
 		if(currentAddress == 0x242)
 			s.loadedBank = 0x1;
 		if(currentAddress == 0x2dc9)

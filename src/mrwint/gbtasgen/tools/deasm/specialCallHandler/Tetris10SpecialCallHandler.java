@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
 import mrwint.gbtasgen.tools.deasm.CPUState;
+import mrwint.gbtasgen.tools.deasm.OpCode;
 import mrwint.gbtasgen.tools.deasm.ROM;
 
 public class Tetris10SpecialCallHandler extends SpecialCallHandler {
@@ -15,7 +16,7 @@ public class Tetris10SpecialCallHandler extends SpecialCallHandler {
 	}
 
 	@Override
-	public void handleBeforeOp(int currentAddress, CPUState s) {
+	public void handleBeforeOp(int currentAddress, OpCode opCode, int opData, CPUState s) {
 		s.loadedBank = 0x1;
 		return;
 	}

@@ -2,6 +2,7 @@ package mrwint.gbtasgen.tools.deasm.specialCallHandler;
 
 import mrwint.gbtasgen.tools.deasm.CPUState;
 import mrwint.gbtasgen.tools.deasm.DFS;
+import mrwint.gbtasgen.tools.deasm.OpCode;
 
 public class GoldSpecialCallHandler extends SpecialCallHandler {
 
@@ -103,7 +104,7 @@ public class GoldSpecialCallHandler extends SpecialCallHandler {
 	}
 
 	@Override
-	public void handleBeforeOp(int currentAddress, CPUState s) {
+	public void handleBeforeOp(int currentAddress, OpCode opCode, int opData, CPUState s) {
 		if(currentAddress == 0x68b)
 			s.loadedBank = 0x1;
 		if(currentAddress == 0x3daf)

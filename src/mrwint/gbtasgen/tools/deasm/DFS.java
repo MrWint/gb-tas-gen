@@ -60,7 +60,6 @@ public class DFS {
       return;
     rom.type[address] = ROM.CODE;
     rom.reachable[address] |= reachable;
-    sch.handleBeforeOp(address,s);
     //rom.comment[address] = s.getCPUStateInfo();
 
     int nextAddress = address;
@@ -80,6 +79,8 @@ public class DFS {
       for(int i=0;i<opCode.extraBytes; i++)
         opData += (rom.data[nextAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian)
     }
+
+    sch.handleBeforeOp(address,opCode,opData,s);
 
     //System.out.println("visit "+opCode.name);
 
@@ -246,6 +247,38 @@ public class DFS {
       rom.format[ca] = ROM.FORMAT_HEX;
       rom.width[ca] = Math.min(length-i, 8);
     }
+
+    return this;
+  }
+  public DFS addRawByte(int address) {
+    return addRawByte(address, null);
+  }
+  public DFS addRawByte(int address, String comment) {
+    if (comment != null)
+      rom.comment[address] = comment;
+
+    rom.type[address] = ROM.DATA_BYTEARRAY;
+    rom.format[address] = ROM.FORMAT_HEX;
+    rom.width[address] = 1;
+
+    return this;
+  }
+  public DFS addRawWord(int address) {
+    return addRawWords(address, 1, null);
+  }
+  public DFS addRawWord(int address, String comment) {
+    return addRawWords(address, 1, comment);
+  }
+  public DFS addRawWords(int address, int length) {
+    return addRawWords(address, length, null);
+  }
+  public DFS addRawWords(int address, int length, String comment) {
+
+    if (comment != null)
+      rom.comment[address] = comment;
+
+    for(int i = 0; i < length; i++)
+      rom.type[address + 2*i] = ROM.DATA_JUMPPOINTER;
 
     return this;
   }
