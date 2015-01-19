@@ -11,6 +11,25 @@
 0:0336 CopyHLtoDE
 0:0348 TurnOffLCD
 0:0361 LoadLevelBlocks
+0:20a4 ExecutePipeFunc
+0:20d9 .executeNextCommand
+0:20eb .checkCommand20
+0:210e .checkCommand80
+0:211e .checkCommand30
+0:214f .checkCommand50
+0:2162 .checkCommand60
+0:216c .checkCommandb0
+0:217e .checkCommand00
+0:218c .checkCommand10
+0:2198 .checkCommand40
+0:21a7 .checkCommanda0
+0:21e8 .commandEnd
+0:21ee .done
+0:2323 Command40Warp
+0:2359 .right
+0:23e4 .left
+0:2524 .up
+0:246f .down
 
 0:2934 SaveGame
 0:2bfb CopyHLtoDEFromf
@@ -35,6 +54,9 @@ f:73b9 GS0c_EnterCasinoHill71
 f:56c3 GS0c_EnterWarioCastle
 f:69fb GS0c_FadeOutScreen
 f:69ec DelayFrameUpdateSound
+0:0afb LoadBlockList
+0:3873 VBlank_UpdateAnimatedTiles
+0:076b VBlank_UpdateHUD
 
 f:46b0 GS0c_CheckLeaveTreeZone
 f:46ca GS0c_CheckLeavePumpkinZone
@@ -85,16 +107,74 @@ f:62f7 GS0c_LeaveToOverworld
 0:03f1 GS02LoadLevel
 0:0669 LoadLevelGFX
 
-0:04f1 GS03Func
+0:04f1 GS03LoadLevelBlocks
 
 0:07db LoadBottomBarTiles
 
-0:05d5 GS04Func
-0:27af GS05Func
+0:05d5 GS04InGame
+0:0879 LoadBlockStripes
+0:08a2 loadBlockStripes_up
+0:08ad loadBlockStripes_up_noCheck
+0:08d4 loadBlockStripes_down
+0:0905 loadBlockStripes_left
+0:0937 loadBlockStripes_right
+0:0969 LoadHorizontalBlockStripe
+0:0a35 LoadVerticalBlockStripe
+0:2c61 UpdateTimeAndMusic
+1:5d25 UpdateTimeAndMusic_
+1:6442 Unused6442
+0:0ded ExecuteScreenTransition
+0:0eb0 .endScreenTransition
+0:0f0b TriggerPipeFunc
+0:0b2a UpdateCameraPosition
+0:0b5e .checkScrollRight
+0:0b7d .scrollRightForcedBack
+0:0b90 .scrollRight
+0:0bd3 .scrollRightNoCatchUp
+0:0be5 .checkScrollLeft
+0:0c0f .scrollLeftForcedBack
+0:0c21 .scrollLeft
+0:0c64 .scrollLeftNoCatchUp
+0:0c76 .endHorizontalScroll
+0:0c7d .verticalScroll
+0:0cc0 .scrollDownForcedBack
+0:0cd3 .scrollDownWithBorder
+0:0cec .scrollDownNoBorder
+0:0d05 .checkScrollUp
+0:0d3d .scrollUpForcedBack
+0:0d4f .checkScrollUpWithBorder
+0:0d5d .scrollUpWithBorderHesitant
+0:0d63 .scrollUpWithBorder
+0:0d74 .checkScrollUpNoBorder
+0:0d82 .scrollUpNoBorderHesitant
+0:0d88 .scrollUpNoBorder
+0:0d97 .endVerticalScroll
+0:0daf HandleAutoScroll
+0:2062 UpdateWindowPosition
+0:2d0a LoadMarioSprite
+0:2c82 LoadOtherSprites
+0:315c HandleDeadMario
+0:2d15 LoadDeadMarioSprite
+1:5550 LoadDeadMarioSprite_
+0:273e HandlePause
+0:13fe InitMovementVars
+0:14bf MarioHMovementToCameraScroll
+0:1efa FindBlockAtPos
+0:2c0d SetBlockAtPos
+1:5cf2 SetBlockAtPos_
+0:200c PosToBgMapPtr
+0:1d75 CheckCollectCoin
+0:1da5 RemoveCoin
+
+0:32c1 HandleMarioShooting
+0:324f LoadMarioShotsSprite
+0:331c UpdateMarioShots
+
+0:27af GS05GameOver
 0:02fe GSNoOp
-0:287e GS07Func
-0:2756 GS08Func
-0:311a GS09Func
+0:287e GS07GameOverCoinDoor
+0:2756 GS08Paused
+0:311a GS09Dead
 
 0:2ce9 GS0bLoadLevelHeader
 1:5579 GS0bLoadLevelHeader_
@@ -135,8 +215,11 @@ f:4169 GS0c_CheckStartLevel
 
 0:2974 GS10Func
 0:29ca GS11Func
-0:2cae GS12Func
-0:2cb9 GS13Func
+0:2cae GS12LoadCredits
+1a:4000 GS12LoadCredits_
+
+0:2cb9 GS13Credits
+1a:400f GS13Credits_
 
 0:2c23 GS14LoadMapScreen
 f:6f2b GS14LoadMapScreen_
@@ -199,7 +282,7 @@ f:477c GS14_CheckMarioZoneFinalLevelBeaten
 0:353e GS15PreLoadMapScreen
 0:3573 GS16CheckLoadLevel
 0:35cd GS17EasyModeScreen
-0:3547 GS18Func
+0:3547 GS18LevelComplete
 
 f:429a AutoMoveRight
 f:42a0 AutoMoveLeft
@@ -250,12 +333,12 @@ c:4140 FSS6Cleared
 
 0:2ad3 GS1bLoadSixCoinDoor
 0:2ade GS1cSixCoinDoor
-0:2ae9 GS1eFunc
-0:2af4 GS1fFunc
+0:2ae9 GS1eSixCoinDoorLevelCompleteUpdate
+0:2af4 GS1fSixCoinDoorLevelCompleteCoins
 0:2a80 GS20Func
 0:2a8b GS21Func
 0:2c98 GS22Func
-0:03af GS23Func
+0:03af GS23CreditsFadeOut
 
 0:2b13 LoadSpriteFromc
 0:2b27 LoadSpriteFrom1a

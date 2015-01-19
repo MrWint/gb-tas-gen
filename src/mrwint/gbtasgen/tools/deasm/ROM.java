@@ -215,10 +215,12 @@ public class ROM {
 				break;
 			int additionalEqus = 0;
 			if(line.contains(";")) {
-				String comment = line.substring(line.indexOf(";")+1).trim();
+        String firstComment = line.substring(line.indexOf(";")+1).trim();
+        if (firstComment.contains(";"))
+          firstComment = firstComment.substring(0, firstComment.indexOf(";")).trim();
 				line = line.substring(0,line.indexOf(";")); // cut off comments
-				if (comment.startsWith("+"))
-					additionalEqus = Integer.valueOf(comment.substring(1));
+				if (firstComment.startsWith("+"))
+					additionalEqus = Integer.valueOf(firstComment.substring(1));
 			}
 			line = line.replace('\t', ' ');
 			while(!line.equals(line.replace("  ", " ")))

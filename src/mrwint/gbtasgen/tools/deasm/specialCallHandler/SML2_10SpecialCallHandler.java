@@ -171,10 +171,10 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
     dfs.addRawBytes(0x19ff, 0x100, "MarioSpeedTableH");
     dfs.addRawBytes(0x1aff, 0x100, "MarioSpeedTableHWaterSpaceBubble");
 
-    dfs.addRawBytes(0x1f51, 0x20, "LevelPropertiesUNK");
+    dfs.addRawBytes(0x1f51, 0x20, "LevelPropertiesScrollUpThreshold");
     dfs.addRawBytes(0x1f71, 0x20, "LevelPropertiesAutoScroll");
     dfs.addRawBytes(0x1f91, 0x20, "LevelPropertiesSpace");
-    dfs.addRawBytes(0x21e5, 0x3, "Unknown_21e5");
+    dfs.addRawBytes(0x21e5, 0x3, ".palettes");
     dfs.addRawBytes(0x268b, 0x2699 - 0x268b, "Unknown_268b");
     dfs.addRawBytes(0x2699, 0x26c3 - 0x2699, "Unknown_2699");
     dfs.addRawBytes(0x29bd, 0x29ca - 0x29bd, "GameClearedText");
@@ -196,6 +196,25 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
 
     dfs.addRawBytes(0x3012a, 4, "BombSpriteIndexOffsetTable");
 
+    dfs.addPointerTable(0x14125, 0x20, "PipeFuncTable");
+    for (int i = 0; i < 0x20; i++) {
+      int add = dfs.rom.payloadAsAddress[0x14125 + 2*i];
+      dfs.rom.label[add] = "PipeFunc"+Util.toHex(i, 2);
+      while (true) {
+        if (dfs.rom.data[add] == 0x40) {
+          dfs.addRawBytes(add, 2);
+          add += 2;
+          continue;
+        }
+        dfs.addRawByte(add);
+        if (dfs.rom.data[add] == (byte)0xff)
+          break;
+        add++;
+      }
+    }
+    dfs.rom.payloadAsBank[0x20bd] = 0x14125;
+    dfs.rom.payloadAsAddress[0x20cf] = 0x14125;
+
     // Level Headers
     dfs.addPointerTable(0x55cb, 0x20, "LevelHeaderTable");
     for (int i=0;i<0x20; i++) {
@@ -209,9 +228,6 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
       dfs.addRawByte(add+9);
       dfs.addRawByte(add+10, "Level Number");
       dfs.addRawWord(add+11, "Tileset pointer");
-      int tilesetAddress = (8-1)*0x4000 + (dfs.rom.data[add+12] << 8) + dfs.rom.data[add+11];
-      dfs.rom.payloadAsAddress[add+11] = tilesetAddress;
-      dfs.rom.label[tilesetAddress] = "Level"+Util.toHex(i, 2)+"Tileset";
       dfs.addRawByte(add+13, "Level Bank");
       dfs.addRawByte(add+14, "Level Music");
       dfs.addRawByte(add+15, "BGP");
@@ -219,6 +235,28 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
       dfs.addRawByte(add+17, "OBP1");
       dfs.addRawByte(add+18, "Level Number (in bank)");
       dfs.addRawByte(add+19, "Time");
+
+      int tilesetAddress = (8-1)*0x4000 + (dfs.rom.data[add+12] << 8) + dfs.rom.data[add+11];
+      dfs.rom.payloadAsAddress[add+11] = tilesetAddress;
+      if (dfs.rom.label[tilesetAddress] == null)
+        dfs.rom.label[tilesetAddress] = "Level"+Util.toHex(i, 2)+"Tileset";
+
+      int levelBank = dfs.rom.data[add+13];
+      int levelInBank = dfs.rom.data[add+18];
+      dfs.addPointerTable(levelBank*0x4000, 1, "LevelBank"+Util.toHex(levelBank)+"ScrollArrayPtr");
+      int scrollArrayPtr = dfs.rom.payloadAsAddress[levelBank*0x4000] + (levelInBank * 0x30);
+      dfs.addByteArray(scrollArrayPtr, 0x3, "Level"+Util.toHex(i, 2)+"ScrollArray",
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+      dfs.addPointerTable(levelBank*0x4000+2, 1, "LevelBank"+Util.toHex(levelBank)+"PipeFuncArrayPtr");
+      int unk1Ptr = dfs.rom.payloadAsAddress[levelBank*0x4000+2] + (levelInBank * 0x30);
+      dfs.addByteArray(unk1Ptr, 0x3, "Level"+Util.toHex(i, 2)+"PipeFuncArray",
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+          ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
     }
 //    dfs.addRawBytes(0x377b, 0x3873 - 0x377b, "Unknown_377b");
     for (int i=0;i<0x1f; i++) {
