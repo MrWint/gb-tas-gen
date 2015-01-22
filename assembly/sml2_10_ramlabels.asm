@@ -16,12 +16,19 @@ sCurDemo				EQU $a0f0
 
 sOAM					EQU $a100 ; +159
 
+sMarioHSpeedIndex		EQU $a200
+sMarioVSpeedIndex		EQU $a201
+sMarioHDelta			EQU $a202
 sLoadStripeCurBlockPtr	EQU $a203 ; +1
 sPosBgMapPtr			EQU $a205 ; +1
 sLastMarioYPos			EQU $a20c
 sBlockAtPos				EQU $a20d
 sScreenTransitionDirection EQU $a20e
+sMarioOnGround			EQU $a214 ; ff=on ground
 sCurPowerup				EQU $a216
+sMarioHitBlinkCounter	EQU $a217
+sBlockBroken			EQU $a220 ; ff=broken
+sMarioPipeStatus		EQU $a221 ; lower nibble=ready to go; higher nibble=in transit
 sMarioAnimationCounter	EQU $a222
 sStripeRefreshDirection	EQU $a223 ; flags: DULRxxxx
 sMarioDead				EQU $a224 ; 0=alive, ff=dead, 15=loaded save
@@ -45,20 +52,28 @@ sLevelBank				EQU $a258
 sCoins					EQU $a262 ; +1
 sSavedNextFreeOAM		EQU $a264
 sFrameCountDown			EQU $a266 ; +1
+sMarioDrillJump			EQU $a268
 sCurLevelIndex			EQU $a269
+sMarioConsumedItem		EQU $a26c
+sMarioInGoo				EQU $a26d ; ff=in goo
 sLastFreeOAM			EQU $a26e
 sFileSelectState		EQU $a277 ; 0=init pipe, 1=ready, 2=right, 3=left, 4=jump, 5=selected, 6=erased
 sFileSelectCounter		EQU $a278
-
+sStarKillCount			EQU $a279
+sMarioFlutterCounter	EQU $a27c
 sCurLevelFlags			EQU $a27d
 sBGP					EQU $a27e
 sOBP0					EQU $a27f
 sOBP1					EQU $a280
-sMoonPhysics			EQU $a287
+sA283_unused			EQU $a283
+sMarioFlutterStarted	EQU $a284 ; ff=started
+sMarioPhysics			EQU $a287 ; bit 0 = space, bit 1 = water, bit 2 = bubble, bit 3 = moon
 sA288_unused			EQU $a288
+sMarioConveyorDirection	EQU $a28a
 sNumKills				EQU $a28d
 sPipeFunc				EQU $a28e
 sA28F_unused			EQU $a28f
+sMarioDucking			EQU $a291
 sLevelMusic				EQU $a292
 sAnimatedTileCounter	EQU $a298 ; animated tiles at $9200
 sAnimatedTileMode		EQU $a299 ; 0=disabled, high nybble*2 = frequency, low nybble = tile select
@@ -69,6 +84,9 @@ sSelectedFile			EQU	$a2a3
 sA2A7_unused			EQU $a2a7
 sWindowY				EQU $a2b0
 sWindowX				EQU $a2b1
+sUsedBonusExit			EQU $a2b4
+sMarioSavedYPos			EQU $a2b8 ; +1
+sMarioSavedXPos			EQU $a2ba ; +1
 sNumBeatenLevels		EQU $a2c5
 sFileSelectBomb			EQU $a2c6 ; 0=no bomb, ff=bomb
 sBombStarSprite			EQU $a2c7 ; !=0 -> render star sprite

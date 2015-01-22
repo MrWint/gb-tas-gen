@@ -168,8 +168,12 @@ public class SML2_10SpecialCallHandler extends SpecialCallHandler {
     dfs.addRawBytes(0x18af, 0x18fb-0x18af, "MarioSpeedTableV");
     dfs.addRawBytes(0x18fb, 0x1947-0x18fb, "MarioSpeedTableVGoo");
     dfs.addRawBytes(0x1947, 0x1993-0x1947, "MarioSpeedTableVWaterSpaceBubble");
-    dfs.addRawBytes(0x19ff, 0x100, "MarioSpeedTableH");
-    dfs.addRawBytes(0x1aff, 0x100, "MarioSpeedTableHWaterSpaceBubble");
+    dfs.addByteArray(0x19ff, 0x20, "MarioSpeedTableH",
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
+    dfs.addByteArray(0x1aff, 0x20, "MarioSpeedTableHWaterSpaceBubble",
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX,
+        ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX, ROM.FORMAT_HEX);
 
     dfs.addRawBytes(0x1f51, 0x20, "LevelPropertiesScrollUpThreshold");
     dfs.addRawBytes(0x1f71, 0x20, "LevelPropertiesAutoScroll");
