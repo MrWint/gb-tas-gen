@@ -84,6 +84,7 @@ sSelectedFile			EQU	$a2a3
 sA2A7_unused			EQU $a2a7
 sWindowY				EQU $a2b0
 sWindowX				EQU $a2b1
+sMarioMoonDescentDelayCounter	EQU $a2b2
 sUsedBonusExit			EQU $a2b4
 sMarioSavedYPos			EQU $a2b8 ; +1
 sMarioSavedXPos			EQU $a2ba ; +1

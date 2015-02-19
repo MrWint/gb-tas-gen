@@ -183,7 +183,14 @@ f:62f7 GS0c_LeaveToOverworld
 0:17c4 handleWalkLeftRight_done
 0:17c5 handleWalkLeftRight_standStill
 0:307d HandleLookUpDown
-0:0ff2 HandleMoonGravity
+0:0ff2 HandleMarioPhysics
+0:101d .bubbleRise
+0:1029 .moon
+0:104a .moonOnGround
+0:1050 .moonStartDescent
+0:1055 .water
+0:106f .space
+0:1084 .spaceRise
 0:14a6 HandleMarioDucking
 0:1bff HandleTouchedBlockEffect
 0:1c39 .spikeSmallMario
@@ -233,7 +240,7 @@ f:62f7 GS0c_LeaveToOverworld
 0:1136 .checkPipeRight
 0:1160 .checkPipeLeft
 0:1e36 CheckStandOnSolidGroundNoYPosCheck
-0:1dfe CheckMarioInSolidBlock
+0:1dfe CheckMarioUnderSolidBlock
 0:0f71 ExecuteMarioActions
 0:0fbb .inPipe
 
