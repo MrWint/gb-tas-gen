@@ -22,24 +22,24 @@ public class TetrisDfsTest extends SeqSegment {
 
   @Override
   protected void execute() {
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x35 ? 1 : 0);}));
-    seq(Move.START);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x7 ? 1 : 0);}));
-    seq(Move.START | Move.DOWN);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0xe ? 1 : 0);}));
-    seq(Move.RIGHT);
-    seq(Move.START);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x13 ? 1 : 0);}));
-    seq(Move.DOWN);
-    seq(Move.LEFT);
-    seq(Move.DOWN);
-    seq(Move.A);
-    seq(Move.RIGHT);
-    seq(Move.DOWN);
-    seq(Move.RIGHT);
+    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x35 ? 1 : 0);}));
+    seqButton(Move.START);
+    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x7 ? 1 : 0);}));
+    seqButton(Move.START | Move.DOWN);
+    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0xe ? 1 : 0);}));
+    seqButton(Move.RIGHT);
+    seqButton(Move.START);
+    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x13 ? 1 : 0);}));
+    seqButton(Move.DOWN);
+    seqButton(Move.LEFT);
+    seqButton(Move.DOWN);
+    seqButton(Move.A);
+    seqButton(Move.RIGHT);
+    seqButton(Move.DOWN);
+    seqButton(Move.RIGHT);
     //    seq(Move.A);
-    seq(Move.START);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x0 ? 1 : 0);}));
+    seqButton(Move.START);
+    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x0 ? 1 : 0);}));
     //    seq(new Wait(10));
     //    seq(() -> {
     //      short[] board = new short[Board.HEIGHT];
@@ -56,8 +56,8 @@ public class TetrisDfsTest extends SeqSegment {
     //      testTetrisDfs(board, new int[] {curPiece, previewPiece, nextPreviewPiece});
     //      return 1;
     //    });
-    seq(new Wait(10));
-    seq(new Move() {
+    seqMove(new Wait(10));
+    seqMove(new Move() {
       @Override public int getInitialKey() { return 0; }
       @Override
       public boolean doMove() {

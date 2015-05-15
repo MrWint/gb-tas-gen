@@ -175,7 +175,7 @@ public class MtMoonNormal extends SeqSegment {
 		seq(Segment.scrollFast(3)); // moon stone
 		seq(new UseEvoStoneSegment(-1)); // Clefable
 		seq(Segment.repress(Move.B));
-		seq(Move.START);
+		seqButton(Move.START);
 		seq(new WalkToSegment(13,4));
 		seq(new WalkToSegment(13,3, false)); // correct facing direction
 		seq(Segment.press(Move.A)); // use PC

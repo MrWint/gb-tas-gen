@@ -16,10 +16,10 @@ public class OakSpeech extends SeqSegment {
 	public void execute() {
 		seq(new SkipTextsSegment(13));
 
-		seq(Move.DOWN);
+		seqButton(Move.DOWN);
 //		seq(Segment.skip(1));
 //		seq(Move.DOWN);
-		seq(Move.A); // name select "RED"
+		seqButton(Move.A); // name select "RED"
 
 		seq(new SkipTextsSegment(5));
 
@@ -27,8 +27,8 @@ public class OakSpeech extends SeqSegment {
 //		seq(Segment.skip(1));
 //		seq(Move.DOWN);
 //		seq(Segment.skip(1));
-		seq(Move.DOWN);
-		seq(Move.A);
+		seqButton(Move.DOWN);
+		seqButton(Move.A);
 
 		seq(new SkipTextsSegment(7));
 		seq(new TextSegment());

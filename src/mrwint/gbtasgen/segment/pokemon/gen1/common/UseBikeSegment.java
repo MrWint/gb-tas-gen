@@ -6,7 +6,7 @@ import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 
 public class UseBikeSegment extends SeqSegment {
-	
+
 	int menuscroll;
 	int itemscroll;
 	public UseBikeSegment() {
@@ -16,7 +16,7 @@ public class UseBikeSegment extends SeqSegment {
 		this.menuscroll = menuscroll;
 		this.itemscroll = itemscroll;
 	}
-	
+
 	@Override
 	public void execute() {
 		seq(Segment.repress(Move.START));
@@ -24,7 +24,7 @@ public class UseBikeSegment extends SeqSegment {
 		if (itemscroll == 0)
 			seq(Segment.repress(Move.A));
 		else
-			seq(Segment.scrollFastA(itemscroll));
+			seq(Segment.scrollFastAF(itemscroll));
 		seq(new SkipTextsSegment(1)); // got on bike
 	}
 }

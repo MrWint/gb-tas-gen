@@ -23,9 +23,9 @@ public class TestRed extends SeqSegment {
 	@Override
 	public void execute() {
 
-		seq(Move.DOWN);
-		seq(Move.START);
-		seq(Move.A);
+		seqButton(Move.DOWN);
+		seqButton(Move.START);
+		seqButton(Move.A);
 
 		{
 			seq(Segment.scrollAF(3)); // 4th
@@ -48,12 +48,12 @@ public class TestRed extends SeqSegment {
 			seq(Segment.skip(1));
 			seq(Segment.scrollAF(3)); // 10th
 
-			seq(Move.B);
+			seqButton(Move.B);
 			seq(Segment.scrollA(1));
 			seq(new SwapWithSegment(4)); // swap Item 1 with Item 5
 			seq(Segment.scrollFast(-2)); // Item 3
 			seq(new SwapWithSegment(10)); // Item 13
-			seq(Move.B);
+			seqButton(Move.B);
 
 			seq(Segment.scrollA(-1));
 
@@ -69,8 +69,8 @@ public class TestRed extends SeqSegment {
 			seq(Segment.scrollAF(1)); // swap
 			seq(Segment.scrollAF(-5)); // 18th
 
-			seq(Move.B);
-			seq(Move.START);
+			seqButton(Move.B);
+			seqButton(Move.START);
 		}
 
 

@@ -178,12 +178,12 @@ public class ViridianForestNidoking extends SeqSegment {
 
 		for(int i=0;i<6;i++) {
 			seq(Segment.press(Move.A));
-			seq(new SelectMoveInList(1, 2)); // select growl
+			seqMove(new SelectMoveInList(1, 2)); // select growl
 			seq(new DelayMoveSegment(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new SeqSegment() {
 				@Override
 				protected void execute() {
-					seq(new CheckMoveOrderMetric(true, new int[]{39}, Move.A));
-					seq(Move.A);
+					seqMetric(new CheckMoveOrderMetric(true, new int[]{39}, Move.A));
+					seqButton(Move.A);
 				}
 			}, 60, 2, true));
 			seq(new TextSegment(Move.A)); // used
@@ -191,17 +191,17 @@ public class ViridianForestNidoking extends SeqSegment {
 			seq(new DelayMoveSegment(new SeqSegment() {
 				@Override
 				protected void execute() {
-					seq(Move.B);
+					seqButton(Move.B);
 					seq(new TextSegment(Move.A, false));
 //					seq(new CheckAttackMisses());
-					seq(new CheckLowerStatEffectMisses());
-					seq(new Wait(1));
+					seqMetric(new CheckLowerStatEffectMisses());
+					seqMove(new Wait(1));
 				}
 			}));
 			seq(new SkipTextsSegment(1));
 		}
 
-		seq(Move.DOWN); // item
+		seqButton(Move.DOWN); // item
 //		{
 //			seq(Move.A); // item
 //			seq(new BallSuccessSegment());
@@ -212,8 +212,8 @@ public class ViridianForestNidoking extends SeqSegment {
 //			seq(new SkipTextsSegment(2)); // no nickname
 //		}
 		{
-			seq(Move.RIGHT); // run
-			seq(Move.A); // run
+			seqButton(Move.RIGHT); // run
+			seqButton(Move.A); // run
 			seq(new SkipTextsSegment(1)); // got away safely
 		}
 
@@ -224,7 +224,7 @@ public class ViridianForestNidoking extends SeqSegment {
 		save("tmp6");
 //		load("tmp6");
 
-		seq(Move.START);
+		seqButton(Move.START);
 		seq(new CatchMonSegment(0, "A"));
 
 		save("tmp7");
@@ -232,21 +232,21 @@ public class ViridianForestNidoking extends SeqSegment {
 
 		seq(Segment.repress(Move.START));
 		seq(Segment.scroll(1));
-		seq(Move.A);
+		seqButton(Move.A);
 		seq(Segment.repress(Move.A));
-		seq(Move.DOWN);
-		seq(Move.A);
-		seq(Move.DOWN);
-		seq(Move.A);
-		seq(Move.B);
-		seq(Move.START);
+		seqButton(Move.DOWN);
+		seqButton(Move.A);
+		seqButton(Move.DOWN);
+		seqButton(Move.A);
+		seqButton(Move.B);
+		seqButton(Move.START);
 
 		seq(new WalkToSegment(23, 9)); // walk up to encounter
 		seq(new DelayMoveSegment(new SeqSegment() {
 			@Override
 			protected void execute() {
-				seq(Move.LEFT);
-				seq(new CheckEncounterMetric(112 /*Weedle*/, 3));
+				seqButton(Move.LEFT);
+				seqMetric(new CheckEncounterMetric(112 /*Weedle*/, 3));
 			}
 		}));
 
@@ -255,20 +255,20 @@ public class ViridianForestNidoking extends SeqSegment {
 
 		seq(new SkipTextsSegment(1));
 		seq(new TextSegment());
-		seq(Move.RIGHT);
-		seq(Move.A);
-		seq(Move.DOWN);
-		seq(Move.A);
+		seqButton(Move.RIGHT);
+		seqButton(Move.A);
+		seqButton(Move.DOWN);
+		seqButton(Move.A);
 		seq(new DelayMoveSegment(new SeqSegment() {
 			@Override
 			protected void execute() {
 				seq(Segment.repress(Move.A));
-				seq(new CheckMoveOrderMetric(true, new int[]{81}, Move.A));
+				seqMetric(new CheckMoveOrderMetric(true, new int[]{81}, Move.A));
 				seq(new TextSegment()); // come back
 				seq(new TextSegment()); // go
 				seq(new TextSegment(Move.A, false)); // used
-				seq(new CheckLowerStatEffectMisses());
-				seq(new Wait(1));
+				seqMetric(new CheckLowerStatEffectMisses());
+				seqMove(new Wait(1));
 				seq(new SkipTextsSegment(1));
 			}
 		}));

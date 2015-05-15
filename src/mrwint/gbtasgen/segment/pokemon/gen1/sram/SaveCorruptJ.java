@@ -15,16 +15,16 @@ public class SaveCorruptJ extends SeqSegment {
 
 	@Override
 	public void execute() {
-		seq(Move.START);
+		seqButton(Move.START);
 		seq(Segment.scrollA(-3)); // save
 		seq(new SkipTextsSegment(1, true)); // save
 		seq(new TextSegment()); // saving
-		seq(new Wait(7));
-		seq(new HardResetMove());
-		seq(Move.A);
-		seq(Move.START);
-		seq(Move.A);
-		seq(Move.START);
-		seq(Move.A);
+		seqMove(new Wait(7));
+		seqMove(new HardResetMove());
+		seqButton(Move.A);
+		seqButton(Move.START);
+		seqButton(Move.A);
+		seqButton(Move.START);
+		seqButton(Move.A);
 	}
 }

@@ -23,8 +23,8 @@ public class Test extends SeqSegment {
 	@Override
 	public void execute() {
 
-		seq(Move.START);
-		seq(Move.A);
+		seqButton(Move.START);
+		seqButton(Move.A);
 
 //		{
 //			seq(Segment.scrollA(1)); // 2nd
@@ -78,21 +78,21 @@ public class Test extends SeqSegment {
 			seq(Segment.scrollA(1)); // swap
 			seq(Segment.scrollA(-2)); // 11th
 
-			seq(Move.B);
+			seqButton(Move.B);
 			seq(Segment.scrollA(1));
 			seq(Segment.scrollFast(8)); // Item 9
 			seq(new SwapWithSegment(2)); // Item 11
-			seq(Move.B);
+			seqButton(Move.B);
 
 			seq(Segment.scrollA(-1));
 
 			seq(Segment.repress(Move.A)); // 11th
 			seq(Segment.scrollA(1)); // swap
 			seq(Segment.scrollA(1)); // 12th
-			seq(Move.B);
+			seqButton(Move.B);
 //			save("tmp");
-			seq(Move.START);
-			seq(Move.A);
+			seqButton(Move.START);
+			seqButton(Move.A);
 			prep(new PressButton(Move.A));
 			seq(new MoveSegment(new PressButton(Move.B, Metric.MENU_JOY, Move.A)));
 //			seq(new SkipTextsSegment(1));

@@ -17,7 +17,7 @@ public class OakSpeech extends SeqSegment {
 	public void execute() {
 		seq(new SkipTextsSegment(13));
 		
-		seq(new PressButton(Move.A)); // name select
+		seqMove(new PressButton(Move.A)); // name select
 		
 		seq(new NamingSegment("BCVXZQr"));
 		seq(Segment.press(Move.START));

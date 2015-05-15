@@ -15,22 +15,22 @@ public class Intro extends SeqSegment {
 
   @Override
   protected void execute() {
-    seq(waitForGameState(0x35), 0);
-    seq(new PressButton(Move.START), 0);
-    seq(new Wait(1), 0); // waitForGameState(0x7)
-    seq(new PressButton(Move.START), 0);
-    seq(new Wait(1), 0); // waitForGameState(0xe)
-    seq(new PressButton(Move.RIGHT), 0);
-    seq(new PressButton(Move.START), 0);
-    seq(new Wait(1), 0); // waitForGameState(0x13)
-    seq(new PressButton(Move.DOWN), 0);
-    seq(new PressButton(Move.LEFT), 0);
-    seq(new PressButton(Move.DOWN), 0);
-    seq(new PressButton(Move.A), 0);
-    seq(new PressButton(Move.RIGHT), 0);
-    seq(new PressButton(Move.DOWN), 0);
-    seq(new PressButton(Move.RIGHT), 0);
-    seq(new PressButton(Move.START), 0);
-    seq(new Wait(8), 0); // waitForGameState(0x0)
+    seqMove(waitForGameState(0x35), 0);
+    seqMove(new PressButton(Move.START), 0);
+    seqMove(new Wait(1), 0); // waitForGameState(0x7)
+    seqMove(new PressButton(Move.START), 0);
+    seqMove(new Wait(1), 0); // waitForGameState(0xe)
+    seqMove(new PressButton(Move.RIGHT), 0);
+    seqMove(new PressButton(Move.START), 0);
+    seqMove(new Wait(1), 0); // waitForGameState(0x13)
+    seqMove(new PressButton(Move.DOWN), 0);
+    seqMove(new PressButton(Move.LEFT), 0);
+    seqMove(new PressButton(Move.DOWN), 0);
+    seqMove(new PressButton(Move.A), 0);
+    seqMove(new PressButton(Move.RIGHT), 0);
+    seqMove(new PressButton(Move.DOWN), 0);
+    seqMove(new PressButton(Move.RIGHT), 0);
+    seqMove(new PressButton(Move.START), 0);
+    seqMove(new Wait(8), 0); // waitForGameState(0x0)
   }
 }

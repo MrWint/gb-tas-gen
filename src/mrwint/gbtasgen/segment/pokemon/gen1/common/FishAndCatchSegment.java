@@ -35,9 +35,9 @@ public class FishAndCatchSegment extends SeqSegment {
 		delay(new SeqSegment() {
 			@Override
 			protected void execute() {
-				seq(Move.A);
+				seqButton(Move.A);
 				seq(new TextSegment(Move.A, false)); // used rod
-				seq(new CheckFishResultMetric(mon, 0)); // mon
+				seqMetric(new CheckFishResultMetric(mon, 0)); // mon
 				seq(Segment.wait(1)); // finish text box
 			}
 		});

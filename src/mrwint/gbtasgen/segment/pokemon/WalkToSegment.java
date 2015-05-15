@@ -95,7 +95,7 @@ public class WalkToSegment extends Segment {
 	}
 
 	private void initWalkSteps() {
-		PokemonRomInfo pri = (PokemonRomInfo) RomInfo.pokemon;
+		PokemonRomInfo pri = RomInfo.pokemon;
 		walkSegment = new Segment[4];
 		walkSegment[0] = new MoveSegment(pri.getWalkStep(Move.DOWN, true, false),0,0);
 		walkSegment[1] = new MoveSegment(pri.getWalkStep(Move.RIGHT,true, false),0,0);
@@ -115,8 +115,12 @@ public class WalkToSegment extends Segment {
 
 		State s = in.getStates().iterator().next();
 		s.restore();
-		Util.runToFirstDifference(0, Move.DOWN, Metric.DOWN_JOY);
+		Util.runToFirstDifference(0, Move.UP, Metric.DOWN_JOY);
 		//Util.runToAddress(Move.UP, Move.UP, 0x51D); // .handleDirectionButtonPress
+
+    int playerX = (State.getCurrentMemory()[RomInfo.pokemon.curPositionXAddress]+RomInfo.pokemon.curPositionOffset)+6;
+    int playerY = (State.getCurrentMemory()[RomInfo.pokemon.curPositionYAddress]+RomInfo.pokemon.curPositionOffset)+6;
+
 		for(int i = 0; i < 100; i++)
 			State.step(); // skip until map loading is finished
 
@@ -148,8 +152,6 @@ public class WalkToSegment extends Segment {
 			}
 		}
 
-		int playerX = (State.getCurrentMemory()[RomInfo.pokemon.curPositionXAddress]+RomInfo.pokemon.curPositionOffset)+6;
-		int playerY = (State.getCurrentMemory()[RomInfo.pokemon.curPositionYAddress]+RomInfo.pokemon.curPositionOffset)+6;
 		int destX = this.destX + 6;
 		int destY = this.destY + 6;
 		Pos initialPos = new Pos(playerX, playerY);

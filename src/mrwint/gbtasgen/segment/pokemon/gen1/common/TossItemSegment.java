@@ -21,14 +21,14 @@ public class TossItemSegment extends SeqSegment {
 	public void execute() {
 		if (!alreadySelected)
 			seq(Segment.repress(Move.A)); // select
-		seq(Move.DOWN); // toss
-		seq(Move.A); // toss
+		seqButton(Move.DOWN); // toss
+		seqButton(Move.A); // toss
 		if (scroll == 0)
 			seq(Segment.repress(Move.A));
 		else
 			seq(Segment.scrollA(scroll)); // all
 		seq(new SkipTextsSegment(1)); // ok to toss?
-		seq(Move.A); // yes
+		seqButton(Move.A); // yes
 		seq(new SkipTextsSegment(1)); // threw away
 	}
 }

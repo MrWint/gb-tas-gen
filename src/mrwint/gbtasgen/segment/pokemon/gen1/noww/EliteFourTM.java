@@ -270,7 +270,7 @@ public class EliteFourTM extends SeqSegment {
 		save("tmp11");
 		load("tmp11");
 		seq(new ThrashEnemyMonSegment(188, true)); // Blastoise
-		seq(Move.B);
+		seqButton(Move.B);
 		seq(new EndFightSegment(6)); // player defeated enemy
 		seq(new SkipTextsSegment(6+28+15)); // Oak HoF speech
 		seq(new TextSegment());

@@ -307,7 +307,7 @@ public class OldMan extends SeqSegment {
 		seq(new TextSegment());
 		seq(new TextSegment()); // evolution
 		seq(Segment.repress(Move.B));
-		seq(Move.START);
+		seqButton(Move.START);
 		seq(Segment.press(Move.A)); // use PC
 		seq(new SkipTextsSegment(1)); // booted PC
 		seq(Segment.press(Move.A)); // someones PC

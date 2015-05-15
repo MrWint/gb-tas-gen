@@ -62,8 +62,8 @@ public class EncounterAndCatchSegment extends SeqSegment {
 			@Override
 			protected void execute() {
 				if(move != 0)
-					seq(new WalkStep(move, false));
-				seq(metric);
+					seqMove(new WalkStep(move, false));
+				seqMetric(metric);
 			}
 		});
 		seq(new CatchMonSegment(ballIndex, withCoolTrainerMon, extraBPresses, extraBPresses2).withExtraSkips(extraSkips));

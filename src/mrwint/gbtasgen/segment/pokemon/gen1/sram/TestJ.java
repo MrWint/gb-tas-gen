@@ -21,13 +21,13 @@ public class TestJ extends SeqSegment {
 
 	@Override
 	public void execute() {
-		seq(new WriteMemory(0xd2d8, 0x7e));
-		seq(new WriteMemory(0xd2d9, 0x29));
+		seqMove(new WriteMemory(0xd2d8, 0x7e));
+		seqMove(new WriteMemory(0xd2d9, 0x29));
 
-		seq(new WriteMemory(0xd2cf, 0xcf));
+		seqMove(new WriteMemory(0xd2cf, 0xcf));
 
-		seq(Move.START);
-		seq(new WriteMemory(0xd2dd, 0xcf));
+		seqButton(Move.START);
+		seqMove(new WriteMemory(0xd2dd, 0xcf));
 		seq(Segment.skip(1));
 		save("tmp");
 //		seq(Move.A);
@@ -134,11 +134,11 @@ public class TestJ extends SeqSegment {
 			load("tmp");
 			if(i % 0x100 == 0)
 				System.out.println("try " + Util.toHex(i, 4));
-			seq(new WriteMemory(0xd2ed, i & 0xFF));
-			seq(new WriteMemory(0xd2ee, (i>>8) & 0xFF));
-			seq(new PressButton(Move.START), 0);
+			seqMove(new WriteMemory(0xd2ed, i & 0xFF));
+			seqMove(new WriteMemory(0xd2ee, (i>>8) & 0xFF));
+			seqMove(new PressButton(Move.START), 0);
 			final int ca = i;
-			seq(new Move() {
+			seqMove(new Move() {
 				@Override public int getInitialKey() { return 0; }
 				@Override
 				public boolean doMove() {

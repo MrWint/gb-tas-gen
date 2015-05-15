@@ -21,24 +21,24 @@ public class TestSegment extends SeqSegment {
 
 	@Override
 	public void execute() {
-		seq(new WriteMemory(0xd355, 0xc0)); // fastest text
-		seq(new WriteMemory(0xd356, 0xff)); // get all badges
+		seqMove(new WriteMemory(0xd355, 0xc0)); // fastest text
+		seqMove(new WriteMemory(0xd356, 0xff)); // get all badges
 //		seq(new WriteMemory(0xd19f, 19));   // fly
-		seq(new WriteMemory(0xd19f, 91));   // dig
+		seqMove(new WriteMemory(0xd19f, 91));   // dig
 //		seq(new WriteMemory(0xd31e, 4));    // 1st item pokeball
 //		seq(new WriteMemory(0xd31e, 6));    // 1st item bicycle
 //		seq(new WriteMemory(0xd31e, 29));   // 1st item escape rope
 //		seq(new WriteMemory(0xd31e, 0x1F)); // 1st item OLD AMBER
-		seq(new WriteMemory(0xd31e, 0xb4)); // 1st item JACK
-		seq(new WriteMemory(0xd31f, 0x50)); // x80
-		seq(new WriteMemory(0xd320, 4));    // 2nd item pokeball
+		seqMove(new WriteMemory(0xd31e, 0xb4)); // 1st item JACK
+		seqMove(new WriteMemory(0xd31f, 0x50)); // x80
+		seqMove(new WriteMemory(0xd320, 4));    // 2nd item pokeball
 //		seq(new WriteMemory(0xd320, 0x28)); // 2nd item rare candy
-		seq(new WriteMemory(0xd321, 0x50)); // x80
-		seq(new WriteMemory(0xd31d, 0xff)); // underflow item counter
+		seqMove(new WriteMemory(0xd321, 0x50)); // x80
+		seqMove(new WriteMemory(0xd31d, 0xff)); // underflow item counter
 
 		seq(new WalkToSegment(19, 17));
 		seq(Segment.press(Move.START));
-		seq(new WriteMemory(0xd3b1, 0x00)); // set index to 0
+		seqMove(new WriteMemory(0xd3b1, 0x00)); // set index to 0
 		seq(Segment.press(Move.DOWN));
 		seq(Segment.press(Move.A));
 		seq(Segment.scrollFast(4));
@@ -67,8 +67,8 @@ public class TestSegment extends SeqSegment {
 
 
 		seq(new WalkToSegment(3, 8, false));
-		seq(new WalkStep(Move.LEFT, true));
-		seq(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.LEFT, true));
 		seq(Segment.skip(1));
 		seq(Segment.press(Move.UP));
 		seq(Segment.skip(1));
@@ -92,24 +92,24 @@ public class TestSegment extends SeqSegment {
 		seq(Segment.press(Move.B));
 		seq(Segment.repress(Move.B));
 		seq(Segment.press(Move.START));
-		seq(new WalkStep(Move.LEFT, true));
-		seq(new WalkStep(Move.UP, true));
-		seq(new WalkStep(Move.UP, true));
-		seq(new WalkStep(Move.LEFT, true));
-		seq(new WalkStep(Move.LEFT, true));
-		seq(new WalkStep(Move.LEFT, true));
-		seq(new WalkStep(Move.LEFT, true));
-		seq(new WalkStep(Move.DOWN, true));
-		seq(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.UP, true));
+		seqMove(new WalkStep(Move.UP, true));
+		seqMove(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.LEFT, true));
+		seqMove(new WalkStep(Move.DOWN, true));
+		seqMove(new WalkStep(Move.LEFT, true));
 		seq(Segment.press(Move.START));
-		seq(new WriteMemory(0xd719, 0x06)); // set teleport to celadon
+		seqMove(new WriteMemory(0xd719, 0x06)); // set teleport to celadon
 		seq(Segment.scroll(-1));
 		seq(Segment.press(Move.A));
 		seq(Segment.repress(Move.A));
 		seq(Segment.repress(Move.A));
 		seq(Segment.skip(1));
 		seq(new WalkToSegment(50, 10));
-		seq(new WriteMemory(0xd173, 0x00)); // delete first move
+		seqMove(new WriteMemory(0xd173, 0x00)); // delete first move
 		seq(new WalkToSegment(7, 2, false));
 		seq(new DelayMoveSegment(new PressButtonFactory(Move.RIGHT), new CheckMetricSegment(new CheckEncounterMetric(0, 0))));
 //		seq(new SkipTextsSegment(2)); // wild mon, go mon

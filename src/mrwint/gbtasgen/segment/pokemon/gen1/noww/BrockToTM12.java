@@ -39,7 +39,7 @@ public class BrockToTM12 extends SeqSegment {
 		load("tm1");
 		
 		seq(Segment.skip(1));
-		seq(Move.START);
+		seqButton(Move.START);
 		seq(Segment.scrollA(2)); // items
 		seq(Segment.scrollFastA(1)); // TM12
 		seq(Segment.repress(Move.A)); // use
@@ -67,7 +67,7 @@ public class BrockToTM12 extends SeqSegment {
 		seq(new WalkToSegment(34, 18)); // walk up to pewter skip
 		seq(new WalkToSegment(37, 18)); // walk up to pewter skip
 		seq(new SkipTextsSegment(4)); // pewter skip text
-		seq(new PressButton(Move.START), 0); // open menu
+		seqMove(new PressButton(Move.START), 0); // open menu
 		seq(Segment.press(Move.A)); // save
 		seq(new SkipTextsSegment(1, true)); // say "yes"
 		seq(new ResetAndContinueSegment()); // reset

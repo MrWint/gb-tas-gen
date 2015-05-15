@@ -6,7 +6,7 @@ import mrwint.gbtasgen.util.Util;
 public class CheckDisableEffectMisses implements StateResettingMetric {
 	@Override
 	public int getMetricInternal() {
-		int add = Util.runToAddressNoLimit(0, 0, 0x3faa8, 0x3fb06); // hit, miss
+		int add = Util.runToAddressLimit(0, 0, 100, 0x3faa8, 0x3fb06); // hit, miss
 		return (add == 0x3fb06 ? 1 : 0);
 	}
 }

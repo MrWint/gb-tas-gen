@@ -15,6 +15,7 @@ public class ThrashEnemyMonSegment extends SeqSegment {
 
 	int minDmg;
 	boolean crit;
+	int numAdditionalTexts = 0;
 	public ThrashEnemyMonSegment() {
 		this(1, false);
 	}
@@ -23,23 +24,30 @@ public class ThrashEnemyMonSegment extends SeqSegment {
 		this.crit = crit;
 	}
 
+	public ThrashEnemyMonSegment withAdditionalTexts(int numAdditionalTexts) {
+	  this.numAdditionalTexts = numAdditionalTexts;
+	  return this;
+	}
+
 	@Override
 	public void execute() {
 		delay(new SeqSegment() {
 			@Override
 			protected void execute() {
-				seq(Move.B); // continue text
+				seqButton(Move.B); // continue text
 				seq(new TextSegment(Move.A, false, 0)); // sent out new mon
-				seq(new CheckMoveOrderMetric(true, new int[0], 0));
+				seqMetric(new CheckMoveOrderMetric(true, new int[0], 0));
 				seq(new MoveSegment(new Wait(1), 0, 0)); // finish text frame
 				seq(new TextSegment(Move.A, false, 0)); // thrashing about
-				seq(new CheckMoveDamage(crit, false, !crit, false, false, false, 0), GREATER_EQUAL, minDmg);
+				seqMetric(new CheckMoveDamage(crit, false, !crit, false, false, false, 0), GREATER_EQUAL, minDmg);
 				seq(Segment.wait(1)); // finish text frame
 			}
 		});
 		if (crit)
 			seq(new SkipTextsSegment(1)); // critical hit
 		seq(new SkipTextsSegment(1)); // mon fainted
+		for (int i=0; i<numAdditionalTexts; i++)
+	    seq(new SkipTextsSegment(1)); // additional texts
 		seq(new TextSegment()); // gained exp
 	}
 }

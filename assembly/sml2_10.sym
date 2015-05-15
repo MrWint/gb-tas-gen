@@ -1,3 +1,5 @@
+0:0028 ExecFuncTable
+
 0:0150 Init_
 0:01e5 Start
 
@@ -390,6 +392,7 @@ c:4132 FileSelectStateJumpTable
 c:43d6 FSS0Initial
 
 c:4326 FSS1Ready
+c:4367 .fileSelected
 c:437d .selectPressed
 c:4398 .rightPressed
 c:43b7 .leftPressed

@@ -16,21 +16,21 @@ public class OakSpeechJ extends SeqSegment {
 	public void execute() {
 		seq(new SkipTextsSegment(11));
 
-		seq(Move.DOWN);
-		seq(Move.A); // name select "RED"
+		seqButton(Move.DOWN);
+		seqButton(Move.A); // name select "RED"
 
 		seq(new SkipTextsSegment(4));
 
-		seq(Move.A);
-		seq(Move.SELECT);
-		seq(Move.A);
-		seq(Move.LEFT);
-		seq(Move.A);
-		seq(Move.LEFT);
-		seq(Move.A);
-		seq(Move.LEFT);
-		seq(Move.A);
-		seq(Move.START);
+		seqButton(Move.A);
+		seqButton(Move.SELECT);
+		seqButton(Move.A);
+		seqButton(Move.LEFT);
+		seqButton(Move.A);
+		seqButton(Move.LEFT);
+		seqButton(Move.A);
+		seqButton(Move.LEFT);
+		seqButton(Move.A);
+		seqButton(Move.START);
 
 		seq(new SkipTextsSegment(4));
 		seq(new TextSegment());

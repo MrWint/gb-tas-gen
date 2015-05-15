@@ -17,20 +17,20 @@ public class BrockDemo extends SeqSegment {
 		seq(new WalkToSegment(0, 8));
 		seq(new WalkToSegment(-1, 8));
 		seq(new WalkToSegment(36, 16));
-		seq(new OverworldInteract(5));
+		seqMove(new OverworldInteract(5));
 		seq(new SkipTextsSegment(4)); // pewter skip text
 		for (int i=0;i<35;i++) {
-			seq(Move.SELECT | Move.RIGHT);
+			seqButton(Move.SELECT | Move.RIGHT);
 		}
-		seq(Move.SELECT | Move.UP);
+		seqButton(Move.SELECT | Move.UP);
 		for (int i=0;i<30;i++) {
-			seq(Move.SELECT | Move.RIGHT);
+			seqButton(Move.SELECT | Move.RIGHT);
 		}
 		for (int i=0;i<8;i++) {
-			seq(Move.SELECT | Move.UP);
+			seqButton(Move.SELECT | Move.UP);
 		}
 		for (int i=0;i<93;i++) {
-			seq(Move.SELECT | Move.RIGHT);
+			seqButton(Move.SELECT | Move.RIGHT);
 		}
 	}
 }

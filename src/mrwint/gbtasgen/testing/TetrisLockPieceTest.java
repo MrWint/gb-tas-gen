@@ -20,30 +20,30 @@ public class TetrisLockPieceTest extends SeqSegment {
 
   @Override
   protected void execute() {
-    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x35 ? 1 : 0));
+    seqMove(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x35 ? 1 : 0));
 //    seq(new Wait(1));
-    seq(Move.START);
-    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x7 ? 1 : 0));
+    seqButton(Move.START);
+    seqMove(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x7 ? 1 : 0));
 //    seq(new Wait(1));
-    seq(Move.START /*| Move.DOWN*/);
-    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0xe ? 1 : 0));
-    seq(Move.RIGHT);
-    seq(new Wait(1));
-    seq(Move.START);
-    seq(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x13 ? 1 : 0));
-    seq(Move.DOWN);
-    seq(Move.LEFT);
-    seq(Move.DOWN);
+    seqButton(Move.START /*| Move.DOWN*/);
+    seqMove(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0xe ? 1 : 0));
+    seqButton(Move.RIGHT);
+    seqMove(new Wait(1));
+    seqButton(Move.START);
+    seqMove(new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == 0x13 ? 1 : 0));
+    seqButton(Move.DOWN);
+    seqButton(Move.LEFT);
+    seqButton(Move.DOWN);
 //    seq(new Wait(1));
-    seq(Move.A);
-    seq(Move.RIGHT);
-    seq(Move.DOWN);
-    seq(Move.RIGHT);
-    seq(new Wait(2));
+    seqButton(Move.A);
+    seqButton(Move.RIGHT);
+    seqButton(Move.DOWN);
+    seqButton(Move.RIGHT);
+    seqMove(new Wait(2));
 //    seq(new PressButton(Move.A), 0);
-    seq(new PressButton(Move.START), 0);
-    seq(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x0 ? 1 : 0);}));
-    seq(() -> {
+    seqMove(new PressButton(Move.START), 0);
+    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x0 ? 1 : 0);}));
+    seqMetric(() -> {
       short[] board = new short[Board.HEIGHT];
 
       int startAddress = 0xc802;
@@ -59,8 +59,8 @@ public class TetrisLockPieceTest extends SeqSegment {
       System.out.println("pieces: " + Piece.PIECE_NAMES[curPiece] + " " + Piece.PIECE_NAMES[previewPiece] + " " + Piece.PIECE_NAMES[nextPreviewPiece]);
       return 1;
     });
-    seq(new Wait(10));
-    seq(new Move() {
+    seqMove(new Wait(10));
+    seqMove(new Move() {
       @Override public int getInitialKey() { return 0; }
       @Override
       public boolean doMove() {

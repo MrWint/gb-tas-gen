@@ -17,21 +17,21 @@ public class BrockToEliteFourTM extends SeqSegment {
 		seq(new WalkToSegment(0, 8));
 		seq(new WalkToSegment(-1, 8));
 		seq(new WalkToSegment(36, 16));
-		seq(new OverworldInteract(5));
+		seqMove(new OverworldInteract(5));
 		seq(new SkipTextsSegment(4)); // pewter skip text
 		for (int i=0;i<38;i++) {
-			seq(new PressButton(Move.RIGHT | Move.LEFT), 0);
+			seqMove(new PressButton(Move.RIGHT | Move.LEFT), 0);
 		}
 		for (int i=0;i<100;i++) {
-			seq(new PressButton(Move.RIGHT | Move.DOWN), 0);
+			seqMove(new PressButton(Move.RIGHT | Move.DOWN), 0);
 		}
-		seq(new PressButton(Move.RIGHT | Move.LEFT), 0);
-		seq(new PressButton(Move.RIGHT | Move.UP), 0);
+		seqMove(new PressButton(Move.RIGHT | Move.LEFT), 0);
+		seqMove(new PressButton(Move.RIGHT | Move.UP), 0);
 		for (int i=0;i<44;i++) {
-			seq(new PressButton(Move.RIGHT | Move.UP), 0);
+			seqMove(new PressButton(Move.RIGHT | Move.UP), 0);
 		}
 		for (int i=0;i<4;i++) {
-			seq(new PressButton(Move.RIGHT | Move.LEFT), 0);
+			seqMove(new PressButton(Move.RIGHT | Move.LEFT), 0);
 		}
 		seq(new WalkToSegment(15,9));
 		seq(new WalkToSegment(15,8, false)); // correct facing direction

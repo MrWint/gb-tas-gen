@@ -47,7 +47,7 @@ public abstract class Segment {
 			@Override
 			protected void execute() {
 				seq(scroll(num));
-				seq(move);
+				seqButton(move);
 			}
 		};
 	}
@@ -62,7 +62,7 @@ public abstract class Segment {
 			@Override
 			protected void execute() {
 				seq(scrollFast(num));
-				seq(move);
+				seqButton(move);
 			}
 		};
 	}

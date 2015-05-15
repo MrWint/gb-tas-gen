@@ -12,7 +12,7 @@ public class Gen1Map extends Map {
 			return new Gen1Map(blockAllWarps, ignoreTrainers);
 		}
 	}
-	
+
 	private boolean checkIsPassable(int x, int y) {
 		int c = collisionAddress;
 		while(memory[c] != 0xFF) {
@@ -21,11 +21,11 @@ public class Gen1Map extends Map {
 		}
 		return false;
 	}
-	
+
 	private boolean isPassable(int x, int y) {
 		return !collisionMap[x][y];
 	}
-	
+
 	private boolean isPassableFromTo(int fromx,int fromy, int tox,int toy) {
 		int tileFrom = mapSteps[fromx][fromy];
 		int tileTo= mapSteps[tox][toy];
@@ -54,7 +54,7 @@ public class Gen1Map extends Map {
 	private int[][] mapTiles; // in tiles; including 3 border blocks in each direction
 	private int[][] mapSteps; // in steps; including 3 border blocks in each direction
 	private boolean[][] collisionMap;
-	
+
 	private int[] rom;
 	private int[] memory;
 	private int curMapID;
@@ -68,17 +68,19 @@ public class Gen1Map extends Map {
 	private int grassTile;
 	private int textDataPointer;
 	private int collisionAddress;
-	
+
 	private boolean blockAllWarps;
 	private boolean ignoreTrainers;
-	
-	public int getStepWidth() {
+
+	@Override
+  public int getStepWidth() {
 		return (mapWidth+6)*2;
 	}
-	public int getStepHeight() {
+	@Override
+  public int getStepHeight() {
 		return (mapHeight+6)*2;
 	}
-	
+
 	public Gen1Map(boolean blockAllWarps, boolean ignoreTrainers) {
 		this.rom = State.getROM();
 		this.memory = State.getCurrentMemory();
@@ -89,7 +91,7 @@ public class Gen1Map extends Map {
 
 		loadMap();
 	}
-	
+
 	public Gen1Map(int curMapID) {
 		this.rom = State.getROM();
 		this.memory = State.getCurrentMemory();
@@ -98,7 +100,7 @@ public class Gen1Map extends Map {
 
 		loadMap();
 	}
-	
+
 	private void loadMap() {
 		rom = State.getROM();
 		memory = State.getCurrentMemory();
@@ -119,7 +121,7 @@ public class Gen1Map extends Map {
 
 		blockTilesAddress = Util.getMemoryWordLE(RomInfo.pokemon.blockTilesPointerAddress+1) + (memory[RomInfo.pokemon.blockTilesPointerAddress]-1)*0x4000;
 		grassTile = memory[RomInfo.pokemon.grassTileAddress];
-		
+
 		// build tile map
 		mapTiles = new int[(mapWidth+6)*4][(mapHeight+6)*4];
 		for(int blockX=0;blockX<mapWidth+6;blockX++) {
@@ -132,7 +134,7 @@ public class Gen1Map extends Map {
 				}
 			}
 		}
-		
+
 		// build step map
 		mapSteps = new int[(mapWidth+6)*2][(mapHeight+6)*2];
 		collisionMap = new boolean[(mapWidth+6)*2][(mapHeight+6)*2];
@@ -143,13 +145,13 @@ public class Gen1Map extends Map {
 				collisionMap[x][y] = !checkIsPassable(x,y);
 			}
 		}
-		
+
 		// parse map header
 		int curAdd = curMapHeaderAddress + 5;
-		
+
 		textDataPointer = Util.getRomWordLE(curAdd) + (mapHeaderBank-1)*0x4000;
 		curAdd += 4; // skip script pointer
-		
+
 		int cons = rom[curAdd++];
 //		System.out.println("map connections: "+Integer.toHexString(cons));
 		while(cons > 0) {
@@ -183,7 +185,7 @@ public class Gen1Map extends Map {
 			int mov2 = rom[objectDataPointer++];
 			int textID = rom[objectDataPointer++];
 			//System.out.println("sprite "+i+": ("+x+","+y+") "+mov1+" "+mov2+" "+textID);
-			
+
 			if(mov1 == 0xFF) {
 				if(!isSpriteHidden(i+1))
 					collisionMap[x][y] = true; // stationary sprite blocks step
@@ -191,64 +193,72 @@ public class Gen1Map extends Map {
 //					System.out.println("sprite "+(i+1)+" is hidden");
 			} else
 				numMovingSprites++;
-			
+
 			if((textID & 0x40) != 0) { // trainer
 				objectDataPointer+=2;
-				
+
 				if(ignoreTrainers || isSpriteHidden(i+1))
 					continue;
-				
+
 				textID &= 0x3f;
 				int textAdd = rom[textDataPointer+2*(textID-1)] + (rom[textDataPointer+2*(textID-1)+1] << 8) + (mapHeaderBank-1)*0x4000;
 //				System.out.println("trainer text pointer: "+Integer.toHexString(textAdd));
-				if(rom[textAdd] != 0x08
-						|| rom[textAdd+1] != 0x21
-						|| rom[textAdd+4] != 0xCD
-						|| rom[textAdd+5] != 0xCC
-						|| rom[textAdd+6] != 0x31
-						|| rom[textAdd+7] != 0xC3
-						|| rom[textAdd+8] != 0xD7
-						|| rom[textAdd+9] != 0x24) {
-					System.out.println("ignoring irregular trainer text!");
+				if (rom[textAdd] != 0x08
+            || rom[textAdd+1] != 0x21)
+				{
+          System.out.println("ignoring irregular trainer text!");
 				} else {
-					int headerPtr = Util.getRomWordLE(textAdd+2) + (mapHeaderBank-1)*0x4000;
-//					System.out.println("trainer header pointer: "+Integer.toHexString(headerPtr));
-					int flagBit = rom[headerPtr];
-					int engageDist = rom[headerPtr+1];
-					int flagByte = Util.getRomWordLE(headerPtr+2);
-					System.out.println("trainer flag: "+Integer.toHexString(flagByte)+":"+flagBit);
-					flagByte += flagBit/8;
-					flagBit %= 8;
-					boolean alreadFought = (Gb.readMemory(flagByte) & (1<<flagBit)) != 0;
-					if(alreadFought)
-						System.out.println("trainer already fought!");
-					else {
-						System.out.println("trainer engage distance: "+engageDist);
-						engageDist /= 0x10;
-						if(mov1 == 0xFF) {
-							switch(mov2) {
-							case 0xD0: // down
-								while(engageDist --> 0)
-									collisionMap[x][++y] = true;
-								break;
-							case 0xD1: // up
-								while(engageDist --> 0)
-									collisionMap[x][--y] = true;
-								break;
-							case 0xD2: // left
-								while(engageDist --> 0)
-									collisionMap[--x][y] = true;
-								break;
-							case 0xD3: // right
-								while(engageDist --> 0)
-									collisionMap[++x][y] = true;
-								break;
-							default:
-								System.out.println("unknown facing direction "+mov2);
-								break;
-							}
-						}
-					}
+				  int textAdd2 = textAdd + 4;
+				  if (rom[textAdd+4] == 0x18) // jr
+				    textAdd2 = textAdd + 6 + ((byte)rom[textAdd+5]);
+  				if(rom[textAdd2] != 0xCD
+  						|| rom[textAdd2+1] != 0xCC
+  						|| rom[textAdd2+2] != 0x31
+  						|| rom[textAdd2+3] != 0xC3
+  						|| rom[textAdd2+4] != 0xD7
+  						|| rom[textAdd2+5] != 0x24) {
+  					System.out.println("ignoring irregular trainer text!");
+  				} else {
+  					int headerPtr = Util.getRomWordLE(textAdd+2) + (mapHeaderBank-1)*0x4000;
+  //					System.out.println("trainer header pointer: "+Integer.toHexString(headerPtr));
+  					int flagBit = rom[headerPtr];
+  					int engageDist = rom[headerPtr+1];
+  					int flagByte = Util.getRomWordLE(headerPtr+2);
+  					System.out.println("trainer flag: "+Integer.toHexString(flagByte)+":"+flagBit);
+  					flagByte += flagBit/8;
+  					flagBit %= 8;
+  					boolean alreadFought = (Gb.readMemory(flagByte) & (1<<flagBit)) != 0;
+  					if(alreadFought)
+  						System.out.println("trainer already fought!");
+  					else {
+  						System.out.println("trainer engage distance: "+engageDist);
+  						engageDist /= 0x10;
+  						if(mov1 == 0xFF) {
+  							switch(mov2) {
+  							case 0xD0: // down
+  							  engageDist = Math.min(engageDist, 3); // limit engage dist, 4+ won't engage
+  								while(engageDist --> 0)
+  									collisionMap[x][++y] = true;
+  								break;
+  							case 0xD1: // up
+  								while(engageDist --> 0)
+  									collisionMap[x][--y] = true;
+  								break;
+  							case 0xD2: // left
+  								while(engageDist --> 0)
+  									collisionMap[--x][y] = true;
+  								break;
+  							case 0xD3: // right
+  								while(engageDist --> 0)
+  									collisionMap[++x][y] = true;
+  								break;
+  							default:
+  								System.out.println("unknown facing direction "+mov2);
+  								break;
+  							}
+  						}
+  					}
+  				}
 				}
 			} else if((textID & 0x80) != 0) { // item
 				objectDataPointer+=1;
@@ -257,7 +267,7 @@ public class Gen1Map extends Map {
 //		if(numMovingSprites > 0)
 //			System.out.println("map contains "+numMovingSprites+" moving sprites");
 	}
-	
+
 	private static boolean isSpriteHidden(int spriteIndex) {
 		int[] memory = State.getCurrentMemory();
 		int curAdd = RomInfo.pokemon.missableObjectListAddress; // W_MISSABLEOBJECTLIST
@@ -269,7 +279,7 @@ public class Gen1Map extends Map {
 		}
 		if(bitIndex == -1)
 			return false;
-		
+
 		curAdd = RomInfo.pokemon.missableObjectFlagsAddress + (bitIndex/8); // W_MISSABLEOBJECTFLAGS
 		return (memory[curAdd] & (1 << (bitIndex%8))) != 0;
 	}
@@ -283,7 +293,8 @@ public class Gen1Map extends Map {
 		System.out.println();
 	}
 
-	public void printMap() {
+	@Override
+  public void printMap() {
 		for(int y=0;y<mapSteps[0].length;y++) {
 			for(int x=0;x<mapSteps.length;x++)
 				System.out.print("#.~ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(collisionMap[x][y]?0:(mapSteps[x][y]==grassTile?2:1)));

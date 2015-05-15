@@ -13,7 +13,9 @@ public class CheckEncounterMetric implements StateResettingMetric {
 	int startMove;
 	int[] specialDefStat;
 	int[] specialDV;
-	int[] defStat;
+  int[] atkDV;
+  int[] spdDV;
+  int[] defStat;
 	int[] hpStat;
 	int minDSum = 0x00;
 	int maxDSum = 0xff;
@@ -36,14 +38,22 @@ public class CheckEncounterMetric implements StateResettingMetric {
 		this.specialDefStat = specialDefStat;
 		return this;
 	}
-	public CheckEncounterMetric withDefStat(int... defStat) {
-		this.defStat = defStat;
-		return this;
-	}
+  public CheckEncounterMetric withDefStat(int... defStat) {
+    this.defStat = defStat;
+    return this;
+  }
 	public CheckEncounterMetric withHPStat(int... hpStat) {
 		this.hpStat = hpStat;
 		return this;
 	}
+  public CheckEncounterMetric withAtkDV(int... atkDV) {
+    this.atkDV = atkDV;
+    return this;
+  }
+  public CheckEncounterMetric withSpdDV(int... spdDV) {
+    this.spdDV = spdDV;
+    return this;
+  }
 	public CheckEncounterMetric withSpcDV(int... specialDV) {
 		this.specialDV = specialDV;
 		return this;
@@ -80,12 +90,24 @@ public class CheckEncounterMetric implements StateResettingMetric {
 			if(!Util.arrayContains(specialDefStat, DamageCalc.getStat(false, DamageCalc.STAT_SPCDEF, false)))
 				return 0;
 		}
-		if(specialDV != null) {
-			Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress);
-			int curSpcDV = Gb.readMemory(RomInfo.pokemon.fightEnemyDVsAddress + 1) & 0xF;
-			if(!Util.arrayContains(specialDV, curSpcDV))
-				return 0;
-		}
+    if(atkDV != null) {
+      Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress);
+      int curAtkDV = (Gb.readMemory(RomInfo.pokemon.fightEnemyDVsAddress) & 0xF0) >> 4;
+      if(!Util.arrayContains(atkDV, curAtkDV))
+        return 0;
+    }
+    if(spdDV != null) {
+      Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress);
+      int curSpdDV = (Gb.readMemory(RomInfo.pokemon.fightEnemyDVsAddress + 1) & 0xF0) >> 4;
+      if(!Util.arrayContains(spdDV, curSpdDV))
+        return 0;
+    }
+    if(specialDV != null) {
+      Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress);
+      int curSpcDV = Gb.readMemory(RomInfo.pokemon.fightEnemyDVsAddress + 1) & 0xF;
+      if(!Util.arrayContains(specialDV, curSpcDV))
+        return 0;
+    }
 		if(defStat != null) {
 			Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress);
 			if(!Util.arrayContains(defStat, DamageCalc.getStat(false, DamageCalc.STAT_DEF, false)))
@@ -96,6 +118,7 @@ public class CheckEncounterMetric implements StateResettingMetric {
 			if(!Util.arrayContains(hpStat, Util.getMemoryWordBE(RomInfo.pokemon.fightEnemyMonHPAddress)))
 				return 0;
 		}
+		System.out.println("found suitable encounter with DVs: " + Util.toHex(Util.getMemoryWordBE(RomInfo.pokemon.fightEnemyDVsAddress)));
 		return 1;
 	}
 }

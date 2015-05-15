@@ -121,8 +121,8 @@ public class Tetris extends SeqSegment {
             new PressButton(Move.START)),
         waitForGameState(0xa),
     }, new TwoExtraPieces()));
-    seq(new Wait(20));
-    seq(new Move() {
+    seqMove(new Wait(20));
+    seqMove(new Move() {
       @Override public int getInitialKey() { return 0; }
       @Override
       public boolean doMove() {

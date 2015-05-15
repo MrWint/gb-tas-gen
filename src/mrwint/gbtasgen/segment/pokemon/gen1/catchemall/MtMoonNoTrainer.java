@@ -70,19 +70,19 @@ public class MtMoonNoTrainer extends SeqSegment {
 
 		seq(new WalkToSegment(33,31).setBlockAllWarps(true)); // go to Rare Candy
 		seq(new WalkToSegment(34,31)); // go to Rare Candy
-		seq(new OverworldInteract(10)); // pick up Rare Candy
+		seqMove(new OverworldInteract(10)); // pick up Rare Candy
 		seq(new TextSegment()); // pick up Rare Candy
 
 		seq(new WalkToSegment(4,2).setBlockAllWarps(true)); // go to Moon Stone
 		seq(new WalkToSegment(3,2)); // go to Moon Stone
-		seq(new OverworldInteract(9)); // pick up Moon Stone
+		seqMove(new OverworldInteract(9)); // pick up Moon Stone
 		seq(new TextSegment()); // pick up Moon Stone
 
 		seq(new WalkToSegment(5,5,false).setBlockAllWarps(true)); // go to MtMoon2
 		seq(new WalkToSegment(21,17)); // go to MtMoon3
 
 		seq(new WalkToSegment(17,12).setIgnoreTrainers(true)); // go to Moon Stone
-		seq(Move.A); // pick up Moon Stone
+		seqButton(Move.A); // pick up Moon Stone
 		seq(new TextSegment()); // pick up Moon Stone
 
 		seq(new WalkToSegment(13,7).setIgnoreTrainers(true)); // go to fossil
@@ -96,8 +96,8 @@ public class MtMoonNoTrainer extends SeqSegment {
 		delay(new SeqSegment() {
 			@Override
 			protected void execute() {
-				seq(Move.LEFT);
-				seq(new CheckEncounterMetric(4, 0)); // Clefairy
+				seqButton(Move.LEFT);
+				seqMetric(new CheckEncounterMetric(4, 0)); // Clefairy
 			}
 		});
 		seq(new CatchMonSegment(0));

@@ -116,7 +116,7 @@ public class RedRomInfo extends GenIRomInfo {
 			fightEndTurnAddresses = new int[] {printLetterDelayJoypadAddress, 0x3c364, 0x3c380, 0x3c34e, 0x3c3a4}; // after both calls of ExecutePlayerMove; after both calls of ExecuteEnemyMove
 //			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress, 0x3c349, 0x3c39f};
 			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress/*, 0x3e6bc*/, 0x3a808};
-			fightAIExecuteMove = 0x3e6bc;
+			fightAIExecuteMove = printLetterDelayJoypadAddress; //0x3e6bc;
 
 			listMoveNamesAddress = 0xb0000;
 			listMovesAddress = 0x38000;

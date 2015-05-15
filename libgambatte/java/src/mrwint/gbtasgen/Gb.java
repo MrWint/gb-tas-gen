@@ -30,7 +30,9 @@ public class Gb {
 	public static native void loadState(ByteBuffer buffer, int size);
 
 //  public static final int MAX_SAVE_SIZE = 211243;
-  public static final int MAX_SAVE_SIZE = 153894; // Tetris
+//  public static final int MAX_SAVE_SIZE = 153894; // Tetris
+//  public static final int MAX_SAVE_SIZE = 162092; // Sml2_10
+  public static final int MAX_SAVE_SIZE = 186666; // PokeRed
 
 	public static ByteBuffer createDirectByteBuffer(int capacity){
 		byte[] zeros = new byte[capacity];

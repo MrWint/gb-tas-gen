@@ -22,7 +22,7 @@ public class SkipTextsSegment extends SeqSegment {
 	protected void execute() {
 		for(int i=0;i<numTexts;i++) {
 			seq(new TextSegment(confirmWithA ? Move.B : Move.A));
-			seq(new PressButton(confirmWithA ? Move.A : Move.B));
+			seqMove(new PressButton(confirmWithA ? Move.A : Move.B));
 		}
 	}
 }

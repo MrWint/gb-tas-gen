@@ -31,8 +31,8 @@ public class ChooseStarter extends SeqSegment {
 		// go to oak's house
 		seq(new SkipTextsSegment(18));
 
-		seq(new WalkStep(Move.RIGHT,false,true),0);
-		seq(new OverworldInteract(2));
+		seqMove(new WalkStep(Move.RIGHT,false,true),0);
+		seqMove(new OverworldInteract(2));
 
 		seq(Segment.press(Move.B)); // cancel dex
 		seq(Segment.press(Move.A)); // cancel dex

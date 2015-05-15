@@ -33,13 +33,13 @@ public class CooltrainerMapPositionTest extends SeqSegment {
 
 		seq(new WalkToSegment(19, 17));
 		seq(Segment.skip(1));
-		seq(new WriteMemory(0xd3b1, 0x00)); // set index to 0
+		seqMove(new WriteMemory(0xd3b1, 0x00)); // set index to 0
 		qsave();
 		for (int map=MIN_MAP;map<=MAX_MAP;map++) {
 			if(excludedMaps.contains(map))
 				continue;
 			qload();
-			seq(new WriteMemory(0xd3b2, map)); // set map
+			seqMove(new WriteMemory(0xd3b2, map)); // set map
 			seq(new WalkToSegment(3,8, false));
 			System.out.println("Map "+map);
 			seq(Segment.skip(10));

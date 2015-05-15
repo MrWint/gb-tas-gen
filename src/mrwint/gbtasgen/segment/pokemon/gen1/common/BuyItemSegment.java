@@ -14,7 +14,7 @@ public class BuyItemSegment extends SeqSegment {
 	
 	@Override
 	public void execute() {
-		seq(Move.A); // select
+		seqButton(Move.A); // select
 		seq(Segment.scroll(scroll));
 		seq(Segment.repress(Move.A));
 		seq(new SkipTextsSegment(1)); // that will be

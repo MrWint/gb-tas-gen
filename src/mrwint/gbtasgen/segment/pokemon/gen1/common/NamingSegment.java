@@ -196,6 +196,6 @@ public class NamingSegment extends SeqSegment {
 	@Override
 	public void execute() {
 		for(Integer i : moveList)
-			seq(new PressButton(i, Metric.PRESSED_JOY), 0);
+			seqMove(new PressButton(i, Metric.PRESSED_JOY), 0);
 	}
 }

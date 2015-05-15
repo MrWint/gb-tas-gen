@@ -140,7 +140,7 @@ sLevelHeaderNrInBank	EQU $a812
 sLevelHeaderTime		EQU $a813
 
 sCurSaveData			EQU $a840 ; +63
-sMarioShotsData			Equ $a880 ; +31
+sMarioShotsData			EQU $a880 ; +31
 
 sPipeFuncArray			EQU $a900 ; +47
 sScrollArray			EQU $a960 ; +47

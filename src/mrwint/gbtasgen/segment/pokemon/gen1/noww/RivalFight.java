@@ -37,33 +37,33 @@ public class RivalFight extends SeqSegment {
 			final boolean last = i == 3;
 			seq(Segment.repress(Move.A));
 			if (i == 0)
-				seq(Move.DOWN);
+				seqButton(Move.DOWN);
 			else
 				seq(Segment.skip(1));
 			seq(new DelayMoveSegment(new SeqSegment() {
 				@Override
 				protected void execute() {
-					seq(new CheckMoveOrderMetric(true, new int[]{33}, Move.A));
-					seq(Move.A);
+					seqMetric(new CheckMoveOrderMetric(true, new int[]{33}, Move.A));
+					seqButton(Move.A);
 					seq(new TextSegment(Move.A, false, 0));
-					seq(new Metric() {
+					seqMetric(new Metric() {
 						@Override
 						public int getMetric() {
 							return Gb.readMemory(RomInfo.pokemon.fightCurEnemyMoveAddress) == 33 ? 1 : 0;
 						}
 					});
-					seq(new CheckLowerStatEffectMisses());
-					seq(new Wait(1));
+					seqMetric(new CheckLowerStatEffectMisses());
+					seqMove(new Wait(1));
 					seq(new TextSegment()); // it failed
 				}
 			}));
 			seq(new DelayMoveSegment(new SeqSegment() {
 				@Override
 				protected void execute() {
-					seq(Move.B);
+					seqButton(Move.B);
 					seq(new TextSegment(Move.A, false, 0));
-					seq(new CheckMoveDamage(false, false, true, false, false, false, 0), GREATER_EQUAL, last ? 4 : 5);
-					seq(new Wait(1));
+					seqMetric(new CheckMoveDamage(false, false, true, false, false, false, 0), GREATER_EQUAL, last ? 4 : 5);
+					seqMove(new Wait(1));
 				}
 			}));
 		}

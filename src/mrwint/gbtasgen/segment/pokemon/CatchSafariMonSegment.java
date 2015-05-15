@@ -26,7 +26,7 @@ public class CatchSafariMonSegment extends SeqSegment {
 		seq(new TextSegment());
 		if (extraSkips > 0)
 			seq(Segment.skip(extraSkips));
-		seq(Move.B);
+		seqButton(Move.B);
 		seq(new SkipTextsSegment(1)); // no nickname
 		if (partyFull) {
 			seq(new SkipTextsSegment(2)); // transferred to PC

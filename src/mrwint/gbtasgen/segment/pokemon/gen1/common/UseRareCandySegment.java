@@ -25,8 +25,8 @@ public class UseRareCandySegment extends SeqSegment {
 					seq(Segment.skip(1));
 				seq(Segment.scrollAF(monscroll));
 			}
-			seq(Move.B); // rose to lvl
-			seq(Move.A); // clear stats
+			seqButton(Move.B); // rose to lvl
+			seqButton(Move.A); // clear stats
 			
 			monscroll = 0;
 		}

@@ -42,15 +42,15 @@ public class CatchMonSegment extends SeqSegment {
 
 	@Override
 	public void execute() {
-		boolean partyFull = Gb.readMemory(RomInfo.pokemon.numPartyMonAddress) >= 6;
 		seq(new SkipTextsSegment(2)); // wild mon, go mon
+    boolean partyFull = Gb.readMemory(RomInfo.pokemon.numPartyMonAddress) >= 6;
 		if (withCooltrainerMon > 0) {
 			delay(new SeqSegment() {
 				@Override
 				protected void execute() {
-					seq(Move.A); // select fight
-					seq(Move.B); // back
-					seq(Metric.forAddress(RomInfo.pokemon.encounterMonSpeciesAddress), EQUAL, withCooltrainerMon);
+					seqButton(Move.A); // select fight
+					seqButton(Move.B); // back
+					seqMetric(Metric.forAddress(RomInfo.pokemon.encounterMonSpeciesAddress), EQUAL, withCooltrainerMon);
 				}
 			});
 		}
@@ -70,11 +70,11 @@ public class CatchMonSegment extends SeqSegment {
 		seq(new TextSegment());
 		if (extraSkips > 0)
 			seq(Segment.skip(extraSkips));
-		seq(Move.B);
+		seqButton(Move.B);
 		seq(new SkipTextsSegment(1, name != null)); // nickname?
 		if (name != null) {
 			seq(new NamingSegment(name));
-			seq(Move.START);
+			seqButton(Move.START);
 		}
 		if (partyFull) {
 			seq(new SkipTextsSegment(2)); // transferred to PC

@@ -263,7 +263,7 @@ public class NuggetBridgeNormal extends SeqSegment {
 
 		seq(new WalkToSegment(18,7)); // walk up to trainer 2
 		seq(new WalkToSegment(18,8,false)); // walk up to trainer 2
-		seq(new OverworldInteract(4)); // talk to trainer 2
+		seqMove(new OverworldInteract(4)); // talk to trainer 2
 
 		seq(new InitFightSegment(1)); // start fight
 		{
@@ -305,7 +305,7 @@ public class NuggetBridgeNormal extends SeqSegment {
 
 		seq(new WalkToSegment(35,4)); // walk up to trainer 4
 		seq(new WalkToSegment(36,4)); // walk up to trainer 4
-		seq(new OverworldInteract(6)); // talk to trainer 4
+		seqMove(new OverworldInteract(6)); // talk to trainer 4
 
 		seq(new InitFightSegment(2)); // start fight
 		{
@@ -337,19 +337,19 @@ public class NuggetBridgeNormal extends SeqSegment {
 
 		seq(new WalkToSegment(4,5)); // walk up to bill
 		seq(new WalkToSegment(5,5)); // walk up to bill
-		seq(new OverworldInteract(1)); // talk to bill
+		seqMove(new OverworldInteract(1)); // talk to bill
 
 		seq(new SkipTextsSegment(10));
 		seq(new SkipTextsSegment(1, true)); // help
 		seq(new SkipTextsSegment(4));
 
 		seq(new WalkToSegment(1,4,false)); // walk up to desk
-		seq(Move.A); // talk to desk
+		seqButton(Move.A); // talk to desk
 		seq(new SkipTextsSegment(2));
 
 		seq(new WalkToSegment(4,5)); // walk up to bill
 		seq(new WalkToSegment(4,4,false)); // walk up to bill
-		seq(new OverworldInteract(2)); // talk to bill
+		seqMove(new OverworldInteract(2)); // talk to bill
 		seq(new SkipTextsSegment(18));
 		
 		save("nb7");
@@ -357,38 +357,38 @@ public class NuggetBridgeNormal extends SeqSegment {
 //
 		seq(Segment.repress(Move.START));
 		seq(Segment.scroll(2)); // items
-		seq(Move.A);
-		seq(Move.SELECT); // pokeball
+		seqButton(Move.A);
+		seqButton(Move.SELECT); // pokeball
 		seq(Segment.scrollFast(5));
-		seq(Move.SELECT); // nugget
+		seqButton(Move.SELECT); // nugget
 		seq(Segment.scrollFast(-4));
-		seq(Move.A);
+		seqButton(Move.A);
 		seq(Segment.repress(Move.A));
 		
 		seq(Segment.skip(2));
 		seq(new WalkToSegment(13, 15));
 		seq(new WalkToSegment(1, 4));
 		seq(new WalkToSegment(1, 3));
-		seq(new OverworldInteract(2));
+		seqMove(new OverworldInteract(2));
 		seq(new SkipTextsSegment(3));
-		seq(Move.START);
-		seq(Move.B);
+		seqButton(Move.START);
+		seqButton(Move.B);
 		seq(new WalkToSegment(2, 8, false));
 		seq(new WalkToSegment(20, -1));
 		
-		seq(Move.START);
+		seqButton(Move.START);
 		
 //		save("nb14a");
 //		load("nb14a");
 //
 		seq(new SkipTextsSegment(1)); // wild missingno
 		seq(new TextSegment()); // go A
-		seq(Move.DOWN); // items
-		seq(Move.A); // items
+		seqButton(Move.DOWN); // items
+		seqButton(Move.A); // items
 		seq(Segment.scrollFast(5)); // pokeball
-		seq(Move.SELECT);
+		seqButton(Move.SELECT);
 		seq(Segment.scrollFast(-3)); // rare candy
-		seq(Move.SELECT);
+		seqButton(Move.SELECT);
 		{
 			seq(new BallSuccessSegment()); // pokeball
 			seq(new SkipTextsSegment(4)); // cought, new dex data

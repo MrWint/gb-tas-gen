@@ -19,7 +19,7 @@ public class PewterNormal extends SeqSegment {
 	public void execute() {
 		seq(Segment.press(Move.START)); // open menu
 		for(int i=0;i<3;i++)
-			seq(new PressButton(Move.UP,Metric.PRESSED_JOY)); // move to "save"
+			seqMove(new PressButton(Move.UP,Metric.PRESSED_JOY)); // move to "save"
 		seq(Segment.press(Move.START)); // close menu
 
 //		seq(new WalkToSegment(13, 25)); // enter pewter center
@@ -52,7 +52,7 @@ public class PewterNormal extends SeqSegment {
 		seq(new WalkToSegment(34, 18)); // walk up to pewter skip
 		seq(new WalkToSegment(37, 18)); // walk up to pewter skip
 		seq(new SkipTextsSegment(4)); // pewter skip text
-		seq(new PressButton(Move.START), 0); // open menu
+		seqMove(new PressButton(Move.START), 0); // open menu
 		seq(Segment.press(Move.A)); // save
 		seq(new SkipTextsSegment(1, true)); // say "yes"
 		seq(new ResetAndContinueSegment()); // reset

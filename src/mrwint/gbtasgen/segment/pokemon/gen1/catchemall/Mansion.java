@@ -382,7 +382,7 @@ public class Mansion extends SeqSegment {
 		seq(Segment.scrollA(1)); // items
 		seq(Segment.scrollFastA(6)); // JACK
 		seq(Segment.repress(Move.A)); // use
-		seq(Move.B);
+		seqButton(Move.B);
 		seq(Segment.scrollFastA(-5)); // Bike
 		seq(new SkipTextsSegment(1)); // got on bike
 //		seq(Segment.repress(Move.B));
@@ -390,7 +390,7 @@ public class Mansion extends SeqSegment {
 		seq(new WalkToSegment(18, -1));
 		seq(new WalkToSegment(8, 31).setIgnoreTrainers(true));
 		seq(new WalkToSegment(10, 31).setIgnoreTrainers(true));
-		seq(Move.START);
+		seqButton(Move.START);
 		seq(Segment.scrollA(-1)); // mons
 		seq(Segment.repress(Move.A)); // mew
 		seq(Segment.scrollA(1)); // fly
@@ -444,7 +444,7 @@ public class Mansion extends SeqSegment {
 		seq(new SwapWithSegment(14));
 		seq(new TossItemSegment(256-228)); // warp 228:8
 		seq(Segment.repress(Move.B));
-		seq(Move.START);
+		seqButton(Move.START);
 		seq(new WalkToSegment(3, 8, false));
 //
 //		save("ma8");

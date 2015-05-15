@@ -155,6 +155,11 @@ public class KillEnemyMonSegment extends Segment {
 			//Util.runToAddress(0, 0, RomInfo.rom.fightDamageVariation);
 			//int maxdmg = Util.getMemoryBigEndian(RomInfo.rom.fightCurDamageAddress);
 
+//      Util.runToAddressNoLimit(0, 0, 0x3d6fc, 0x3e779);
+//      int missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
+//      Util.runToAddressNoLimit(0, 0, 0x3d702, 0x3e77f);
+//      missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
+
 			Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.fightBattleCommand0a);
 			int crit = Gb.readMemory(RomInfo.pokemon.fightCriticalHitAddress);
 			int missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
@@ -349,6 +354,10 @@ public class KillEnemyMonSegment extends Segment {
 			enemyDmg[i][1] = DamageCalc.getDamage(false, i, true, true);
 			enemyMove[i] = DamageCalc.getMove(false,i);
 
+			if (DamageCalc.getMove(true, i) == 90 && faster) { // adjust for fissure
+			  attackDmg[i][0] = attackDmg[i][1] = enemyHP;
+			}
+
 			if(attackDmg[i][0] < 0) {
 				if(attackCount[i][0] + attackCount[i][1] > 0) System.err.println("ERROR: used invalid move "+i);
 			} else {
@@ -511,8 +520,9 @@ public class KillEnemyMonSegment extends Segment {
 		final boolean playerCrit = (ac == 1);
 		final boolean playerEffective = attackEffective[ai];
 		final boolean lastTurn = (n==0);
+    final boolean makeEnemyFlinch = PokemonUtil.isGen1() && faster && DamageCalc.getMove(true, ai) == 44; // Bite
 		final boolean pauseAfterPlayerAttack = playerEffective || playerCrit;
-		final boolean pauseAfterEnemyAttack = getEnemyMoveSegment(curTurn).getFinishMove() != null;
+		final boolean pauseAfterEnemyAttack = getEnemyMoveSegment(curTurn).getFinishMove() != null || makeEnemyFlinch;
 		final boolean separateAttacks = (faster && pauseAfterPlayerAttack) || (faster && lastTurn) || (!faster && pauseAfterEnemyAttack);
 
 		int sumCrits = 0;
@@ -520,7 +530,7 @@ public class KillEnemyMonSegment extends Segment {
 			sumCrits += fs.atkCnt[i][1];
 		final boolean playerForgoMaxCrit = (MAX_SKIPS < 0) && (sumCrits <= fs.spareDamage);
 
-		final AttackActionSegment curEnemyMoveSegment = getEnemyMoveSegment(curTurn);
+    final AttackActionSegment curEnemyMoveSegment = makeEnemyFlinch ? new EnemyFlinchSegment() : getEnemyMoveSegment(curTurn);
 		setAppendEnemyMoveMetric(curEnemyMoveSegment, curTurn, faster && !pauseAfterEnemyAttack && getNumEndOfTurnTexts(curTurn) == 0);
 		final int[] curEnemyMove = getEnemyMove(curTurn);
 		final int curEnemyMoveMinDamage = (curEnemyMove.length  == 0) ? 0 : enemyDmg[getEnemyMoveIndex(curEnemyMove[0])][0];
@@ -779,7 +789,7 @@ public class KillEnemyMonSegment extends Segment {
 				int curActiveFrame = State.currentStepCount;
 
 				StateBuffer sb = new StateBuffer();
-				sb.addState(new State());
+				sb.addState(State.createState());
 				sb = bFirst ?
 						executeAttackInternal(sb, curActiveFrame, goalAValue, minBValue, imActiveFrame, bActionSegment, goalBValue, false):
 						executeAttackInternal(sb, curActiveFrame, minAValue, goalBValue, imActiveFrame, aActionSegment, goalAValue, true);

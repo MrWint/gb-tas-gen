@@ -33,7 +33,8 @@ public class WalkStep extends Move {
 		int startSteps = State.currentStepCount;
 		// forward to first possible input frame
 		while(true) {
-			Util.runToFirstDifference(0, dir, Metric.DOWN_JOY);
+      Util.runToFirstDifference(0, Move.UP, Metric.DOWN_JOY); // for bike road
+//      Util.runToFirstDifference(0, dir, Metric.DOWN_JOY);
 			State s = new State();
 			int add = State.step(dir, RomInfo.pokemon.doPlayerMovementFuncAddress);//, 0x700); // .handleDirectionButtonPress
 			s.restore();
