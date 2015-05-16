@@ -1,11 +1,13 @@
-package mrwint.gbtasgen.state;
+package mrwint.gbtasgen.state.tetris;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
-import mrwint.gbtasgen.state.tetris.TetrisStateBuffer;
+import mrwint.gbtasgen.state.Gameboy;
+import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.state.StateBuffer;
 
 public class ListStateBuffer {
 
@@ -34,36 +36,36 @@ public class ListStateBuffer {
     return "("+super.toString()+", "+size()+" States"+(isEmpty() ? "" : ", ["+stateMap.firstKey()+","+stateMap.lastKey()+"]")+")";
   }
 
-  public ListStateBuffer appendMove(int move) {
+  public ListStateBuffer appendMove(Gameboy gb, int move) {
     ListStateBuffer buffer = new ListStateBuffer(maxBufferSize);
     for (ListState listState : getStates())
-      buffer.addState(new ListState(move, listState));
+      buffer.addState(gb, new ListState(move, listState));
     return buffer;
   }
 
-  public StateBuffer toStateBuffer(State initialState, boolean linesCleared) {
+  public StateBuffer toStateBuffer(Gameboy gb, State initialState, boolean linesCleared) {
     StateBuffer buffer = new StateBuffer();
     for (ListState listState : getStates())
-      buffer.addState(listState.toState(initialState, linesCleared));
+      buffer.addState(listState.toState(gb, initialState, linesCleared));
     return buffer;
   }
 
-  public StateBuffer toStateBuffer(StateBuffer initialStates, boolean linesCleared) {
+  public StateBuffer toStateBuffer(Gameboy gb, StateBuffer initialStates, boolean linesCleared) {
     StateBuffer buffer = new StateBuffer();
     for (State state : initialStates.getStates())
-      buffer.addAll(toStateBuffer(state, linesCleared));
+      buffer.addAll(toStateBuffer(gb, state, linesCleared));
     return buffer;
   }
 
-  public TetrisStateBuffer toTetrisStateBuffer(StateBuffer initialStates, boolean linesCleared) {
+  public TetrisStateBuffer toTetrisStateBuffer(Gameboy gb, StateBuffer initialStates, boolean linesCleared) {
     TetrisStateBuffer result = new TetrisStateBuffer();
     for (State initialState : initialStates.getStates())
       for (ListState listState : getStates())
-        result.addState(listState.toState(initialState, linesCleared));
+        result.addState(gb, listState.toState(gb, initialState, linesCleared));
     return result;
   }
 
-  public boolean addState(ListState s) {
+  public boolean addState(Gameboy gb, ListState s) {
     int stepCount = s == null ? 0 : s.stepCount;
     if (stepCount > MAX_STEP_COUNT)
       return false;
@@ -75,14 +77,14 @@ public class ListStateBuffer {
 
     subMap.add(s);
     if (in != null)
-      pruneState(in);
+      pruneState(gb, in);
     prune();
     return true;
   }
 
-  public void addAll(ListStateBuffer buf) {
+  public void addAll(Gameboy gb, ListStateBuffer buf) {
     for(ListState s : buf.getStates())
-      addState(s);
+      addState(gb, s);
   }
 
   public void prune() {
@@ -104,17 +106,17 @@ public class ListStateBuffer {
     }
   }
 
-  private void pruneState(StateBuffer initialStates) {
+  private void pruneState(Gameboy gb, StateBuffer initialStates) {
     for (Integer key : stateMap.keySet())
       if (size() > maxBufferSize)
-        removeAny(stateMap.get(key), initialStates);
+        removeAny(gb, stateMap.get(key), initialStates);
   }
 
-  private void removeAny(List<ListState> listStates, StateBuffer initialStates) {
+  private void removeAny(Gameboy gb, List<ListState> listStates, StateBuffer initialStates) {
     HashMap<Integer, ListState> listStateMap = new HashMap<>();
     for (ListState listState : listStates) {
       for (State state : initialStates.getStates()) {
-        State s = listState == null ? state : listState.toState(state, false);
+        State s = listState == null ? state : listState.toState(gb, state, false);
         if (!listStateMap.containsKey(s.rngState))
           listStateMap.put(s.rngState, listState);
       }

@@ -1,16 +1,15 @@
 package mrwint.gbtasgen.segment.tetris.b9;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.RunUntil;
 import mrwint.gbtasgen.move.Wait;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 
 public class Intro extends SeqSegment {
   private Move waitForGameState(int gameState) {
-    return new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == gameState ? 1 : 0);
+    return new RunUntil(() -> curGb.readMemory(curGb.tetris.hGameState) == gameState ? 1 : 0);
   }
 
   @Override

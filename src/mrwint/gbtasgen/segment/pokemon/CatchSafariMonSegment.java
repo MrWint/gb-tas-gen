@@ -1,8 +1,7 @@
 package mrwint.gbtasgen.segment.pokemon;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
@@ -14,9 +13,10 @@ public class CatchSafariMonSegment extends SeqSegment {
 		this.extraSkips = extraSkips;
 		return this;
 	}
-	
-	public void execute() {
-		boolean partyFull = Gb.readMemory(RomInfo.pokemon.numPartyMonAddress) == 6;
+
+	@Override
+  public void execute() {
+		boolean partyFull = curGb.readMemory(curGb.pokemon.numPartyMonAddress) == 6;
 		seq(new SkipTextsSegment(1)); // wild mon
 		seq(new BallSuccessSegment());
 

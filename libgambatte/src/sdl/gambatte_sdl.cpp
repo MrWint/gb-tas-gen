@@ -54,14 +54,27 @@ public:
 class SdlIniter {
 	bool failed;
 public:
-	SdlIniter() : failed(false) {
+	BlitterWrapper blitter;
+
+	SdlIniter() : failed(false) {}
+    void init(int numScreens) {
 #ifdef __APPLE__
         pre_init();
 #endif
+
+		const int scaleOption = 1;
 		if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 			std::fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
 			failed = true;
 		}
+
+		blitter.setScale(scaleOption);
+		blitter.setYuv(false);
+		blitter.setVideoFilter(0);
+
+		blitter.init(numScreens);
+		SDL_ShowCursor(SDL_DISABLE);
+		SDL_WM_SetCaption("Gambatte SDL", NULL);
 	}
 	~SdlIniter() { SDL_Quit(); }
 
@@ -79,19 +92,21 @@ public:
 	bool isFailed() const { return failed; }
 };
 
+SdlIniter sdl;
+
 class GambatteSdl {
 public:
 	Array<Sint16> inBuf;
 	GB gambatte;
-	SdlIniter sdlIniter;
-	BlitterWrapper blitter;
+	
 	GetInput inputGetter;
 	std::map<SDLKey,unsigned> keyMap;
 	
 	unsigned samples;
 	bool init(const char* romName);
+	int screen;
 	
-	GambatteSdl() : inBuf((35112 + 2064) * 2),samples(0) {}
+	GambatteSdl(int screen_) : inBuf((35112 + 2064) * 2),samples(0),screen(screen_) {}
 	void step();
 	void step2();
 	void step3();
@@ -105,14 +120,13 @@ bool GambatteSdl::init(const char* romName) {
 
 	keepRunning = true;
 	
-	if (sdlIniter.isFailed())
+	if (sdl.isFailed())
 		return 1;
 	
 	{
 		const bool gbaCgbOption = false;
 		const bool forceDmgOption = false;
 		const bool multicartCompatOption = false;
-		const int scaleOption = 1;
 		
 		if (LoadRes const error =
 				gambatte.load(romName,
@@ -132,10 +146,6 @@ bool GambatteSdl::init(const char* romName) {
 			std::printf("cgb: %d\n", gambatte.isCgb());
 		}
 
-		blitter.setScale(scaleOption);
-		blitter.setYuv(false);
-		blitter.setVideoFilter(0);
-
 		unsigned const gbbuts[8] = {
 			InputGetter::START, InputGetter::SELECT,
 			InputGetter::A, InputGetter::B,
@@ -154,10 +164,6 @@ bool GambatteSdl::init(const char* romName) {
 	
 	gambatte.setInputGetter(&inputGetter);
 	
-	blitter.init();
-	SDL_ShowCursor(SDL_DISABLE);
-	SDL_WM_SetCaption("Gambatte SDL", NULL);
-	
 	return 0;
 }
 
@@ -170,7 +176,7 @@ void GambatteSdl::handleInput() {
 			if (e.key.keysym.mod & KMOD_CTRL) {
 				switch (e.key.keysym.sym) {
 				case SDLK_f:
-					blitter.toggleFullScreen();
+					sdl.blitter.toggleFullScreen();
 					break;
 				case SDLK_r:
 					//gambatte.reset();
@@ -180,7 +186,7 @@ void GambatteSdl::handleInput() {
 			} else {
 				switch (e.key.keysym.sym) {
 				case SDLK_ESCAPE: keepRunning = false; return;
-				case SDLK_F5: gambatte.saveState(blitter.inBuf().pixels, blitter.inBuf().pitch); break;
+				case SDLK_F5: gambatte.saveState(sdl.blitter.inBuf(screen).pixels, sdl.blitter.inBuf(screen).pitch); break;
 				case SDLK_F6: gambatte.selectState(gambatte.currentState() - 1); break;
 				case SDLK_F7: gambatte.selectState(gambatte.currentState() + 1); break;
 				case SDLK_F8: gambatte.loadState(); break;
@@ -217,7 +223,7 @@ const unsigned SAMPLES_PER_FRAME = 35112;
 
 
 void GambatteSdl::step() {
-	const BlitterWrapper::Buf &vbuf = blitter.inBuf();
+	const BlitterWrapper::Buf &vbuf = sdl.blitter.inBuf(screen);
 	unsigned emusamples = SAMPLES_PER_FRAME - samples;
 
 
@@ -231,227 +237,197 @@ void GambatteSdl::step() {
 	}
 	
 	if (ret >= 0) {
-		blitter.draw();
-		blitter.present();
+		sdl.blitter.draw();
+		sdl.blitter.present();
 	}
 }
 } // anon namespace
-
-GambatteSdl gambatteSdl;
 
 
 
 #define UNUSED(x)  (void)(x)
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    startEmulator
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_startEmulator
-  (JNIEnv *env, jclass clazz, jstring str) {
-  UNUSED(clazz);
 
-  gambatteSdl.init(env->GetStringUTFChars(str, 0));
+// initSdl
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_initSdl
+    (JNIEnv *env, jclass clazz, jint numScreens) {
+  UNUSED(env);UNUSED(clazz);
+
+  sdl.init(numScreens);
 }
 
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    nstep
- * Signature: (I)V
- */
+// createGb
+JNIEXPORT jlong JNICALL Java_mrwint_gbtasgen_Gb_createGb
+    (JNIEnv *env, jclass clazz, jint screen) {
+  UNUSED(env);UNUSED(clazz);
+
+  GambatteSdl* gb = new GambatteSdl(screen);
+  return (jlong)gb;
+}
+
+// startEmulator
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_startEmulator
+  (JNIEnv *env, jclass clazz, jlong gb, jstring str) {
+  UNUSED(clazz);
+
+  ((GambatteSdl*)gb)->init(env->GetStringUTFChars(str, 0));
+}
+
+// nstep
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nstep
-  (JNIEnv *env, jclass clazz, jint keymask){
+    (JNIEnv *env, jclass clazz, jlong gb, jint keymask){
   UNUSED(env);UNUSED(clazz);
 
   if(keymask == -1)
-    gambatteSdl.handleInput();
+    ((GambatteSdl*)gb)->handleInput();
   else
-    gambatteSdl.inputGetter.is = keymask;
+    ((GambatteSdl*)gb)->inputGetter.is = keymask;
 
-  gambatteSdl.gambatte.p_->cpu.numInterruptAddresses = 0; // no interrupts
-  gambatteSdl.step();
+  ((GambatteSdl*)gb)->gambatte.p_->cpu.numInterruptAddresses = 0; // no interrupts
+  ((GambatteSdl*)gb)->step();
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    nstepUntil
- * Signature: (I[I)I
- */
+// nstepUntil
 JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_nstepUntil
-  (JNIEnv *env, jclass clazz, jint keymask, jintArray arr){
+    (JNIEnv *env, jclass clazz, jlong gb, jint keymask, jintArray arr){
   UNUSED(env);UNUSED(clazz);UNUSED(keymask);UNUSED(arr);
 
   if(keymask == -1)
-    gambatteSdl.handleInput();
+    ((GambatteSdl*)gb)->handleInput();
   else
-    gambatteSdl.inputGetter.is = keymask;
+    ((GambatteSdl*)gb)->inputGetter.is = keymask;
 
   jsize len = env->GetArrayLength(arr);
   jint* addresses = env->GetIntArrayElements(arr,0);
 
-  gambatteSdl.gambatte.p_->cpu.numInterruptAddresses = len;
-  gambatteSdl.gambatte.p_->cpu.interruptAddresses = addresses; // set up interrupts
-  gambatteSdl.step();
+  ((GambatteSdl*)gb)->gambatte.p_->cpu.numInterruptAddresses = len;
+  ((GambatteSdl*)gb)->gambatte.p_->cpu.interruptAddresses = addresses; // set up interrupts
+  ((GambatteSdl*)gb)->step();
 
   env->ReleaseIntArrayElements(arr,addresses,0);
-  return gambatteSdl.gambatte.p_->cpu.hitInterruptAddress;
+  return ((GambatteSdl*)gb)->gambatte.p_->cpu.hitInterruptAddress;
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    nreset
- * Signature: ()V
- */
+// nreset
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nreset
-  (JNIEnv *env, jclass clazz){
+    (JNIEnv *env, jclass clazz, jlong gb){
   UNUSED(env);UNUSED(clazz);
-  gambatteSdl.gambatte.reset(0);
+
+  ((GambatteSdl*)gb)->gambatte.reset(0);
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    saveState
- * Signature: (Ljava/nio/ByteBuffer;I)J
- */
-JNIEXPORT jlong JNICALL Java_mrwint_gbtasgen_Gb_saveState
-  (JNIEnv *env, jclass clazz, jobject buffer, jint size){
-	UNUSED(clazz);
-	char* buffer_address = ((char*) env->GetDirectBufferAddress(buffer));
+// saveState
+JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_saveState
+    (JNIEnv *env, jclass clazz, jlong gb, jobject buffer, jint size){
+  UNUSED(clazz);
 
-	std::vector<char> data;
-	gambatteSdl.gambatte.saveState(data);
+  char* buffer_address = ((char*) env->GetDirectBufferAddress(buffer));
+  std::vector<char> data;
+  ((GambatteSdl*)gb)->gambatte.saveState(data);
 
-	if((int)data.size() > size)
-		std::cout << "too big! " << data.size() << " vs. " << size << std::endl;
+  if((int)data.size() > size)
+    std::cout << "too big! " << data.size() << " vs. " << size << std::endl;
 
-	std::copy(data.begin(), data.end(), buffer_address);
+  std::copy(data.begin(), data.end(), buffer_address);
 
-	return data.size();
+  return data.size();
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    loadState
- * Signature: (Ljava/nio/ByteBuffer;I)V
- */
+// loadState
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_loadState
-  (JNIEnv *env, jclass clazz, jobject buffer, jint size){
-	UNUSED(clazz);
-	char* buffer_address = ((char*) env->GetDirectBufferAddress(buffer));
+    (JNIEnv *env, jclass clazz, jlong gb, jobject buffer, jint size){
+  UNUSED(clazz);
 
-	std::vector<char> data(buffer_address,buffer_address+size);
+  char* buffer_address = ((char*) env->GetDirectBufferAddress(buffer));
 
-	gambatteSdl.gambatte.loadState(data);
+  std::vector<char> data(buffer_address,buffer_address+size);
+
+  ((GambatteSdl*)gb)->gambatte.loadState(data);
 }
 
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    getROMSize
- * Signature: ()I
- */
+// getROMSize
 JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_getROMSize
-  (JNIEnv *env, jclass clazz){
-	UNUSED(env);UNUSED(clazz);
-	return gambatteSdl.gambatte.p_->cpu.memory.cart.memptrs.numRombanks*0x4000;
+    (JNIEnv *env, jclass clazz, jlong gb){
+  UNUSED(env);UNUSED(clazz);
+
+  return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.memptrs.numRombanks*0x4000;
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    getROM
- * Signature: ([I)V
- */
+// getROM
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_getROM
-(JNIEnv *env, jclass clazz, jintArray arr){
-	UNUSED(env);UNUSED(clazz);UNUSED(arr);
-	int size = gambatteSdl.gambatte.p_->cpu.memory.cart.memptrs.numRombanks*0x4000;
-	jint *rom_store = env->GetIntArrayElements(arr, 0);
-	for(int i=0;i<size;i++)
-		rom_store[i] = gambatteSdl.gambatte.p_->cpu.memory.cart.memptrs.romdata()[i];
-	env->ReleaseIntArrayElements(arr, rom_store, 0);
+    (JNIEnv *env, jclass clazz, jlong gb, jintArray arr){
+  UNUSED(env);UNUSED(clazz);UNUSED(arr);
+
+  int size = ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.memptrs.numRombanks*0x4000;
+  jint *rom_store = env->GetIntArrayElements(arr, 0);
+  for(int i=0;i<size;i++)
+    rom_store[i] = ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.memptrs.romdata()[i];
+  env->ReleaseIntArrayElements(arr, rom_store, 0);
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    getRegisters
- * Signature: ([I)V
- */
+// getRegisters
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_getRegisters
-  (JNIEnv *env, jclass clazz, jintArray arr){
+    (JNIEnv *env, jclass clazz, jlong gb, jintArray arr){
   UNUSED(env);UNUSED(clazz);UNUSED(arr);
-	jint *registers_store = env->GetIntArrayElements(arr, 0);
 
-	registers_store[0] = gambatteSdl.gambatte.p_->cpu.PC_;
-	registers_store[1] = gambatteSdl.gambatte.p_->cpu.SP;
-	registers_store[2] = gambatteSdl.gambatte.p_->cpu.A_ << 8;
-	registers_store[3] = (gambatteSdl.gambatte.p_->cpu.B << 8) + gambatteSdl.gambatte.p_->cpu.C;
-	registers_store[4] = (gambatteSdl.gambatte.p_->cpu.D << 8) + gambatteSdl.gambatte.p_->cpu.E;
-	registers_store[5] = (gambatteSdl.gambatte.p_->cpu.H << 8) + gambatteSdl.gambatte.p_->cpu.L;
+  jint *registers_store = env->GetIntArrayElements(arr, 0);
 
-	env->ReleaseIntArrayElements(arr, registers_store, 0);
+  registers_store[0] = ((GambatteSdl*)gb)->gambatte.p_->cpu.PC_;
+  registers_store[1] = ((GambatteSdl*)gb)->gambatte.p_->cpu.SP;
+  registers_store[2] = ((GambatteSdl*)gb)->gambatte.p_->cpu.A_ << 8;
+  registers_store[3] = (((GambatteSdl*)gb)->gambatte.p_->cpu.B << 8) + ((GambatteSdl*)gb)->gambatte.p_->cpu.C;
+  registers_store[4] = (((GambatteSdl*)gb)->gambatte.p_->cpu.D << 8) + ((GambatteSdl*)gb)->gambatte.p_->cpu.E;
+  registers_store[5] = (((GambatteSdl*)gb)->gambatte.p_->cpu.H << 8) + ((GambatteSdl*)gb)->gambatte.p_->cpu.L;
+
+  env->ReleaseIntArrayElements(arr, registers_store, 0);
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    getMemory
- * Signature: ([I)V
- */
+// getMemory
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_getMemory
-  (JNIEnv *env, jclass clazz, jintArray arr){
+    (JNIEnv *env, jclass clazz, jlong gb, jintArray arr){
   UNUSED(env);UNUSED(clazz);UNUSED(arr);
-	UNUSED(clazz);
-	jint *mem_store = env->GetIntArrayElements(arr, 0);
-	int cc = gambatteSdl.gambatte.p_->cpu.cycleCounter_;
-	for(int i=0;i<0x10000;i++)
-		mem_store[i] = gambatteSdl.gambatte.p_->cpu.memory.read(i,cc);
-	env->ReleaseIntArrayElements(arr, mem_store, 0);
+
+  jint *mem_store = env->GetIntArrayElements(arr, 0);
+  int cc = ((GambatteSdl*)gb)->gambatte.p_->cpu.cycleCounter_;
+  for(int i=0;i<0x10000;i++)
+    mem_store[i] = ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.read(i,cc);
+  env->ReleaseIntArrayElements(arr, mem_store, 0);
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    readMemory
- * Signature: (I)I
- */
+// readMemory
 JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_readMemory
-  (JNIEnv *env, jclass clazz, jint address){
-	UNUSED(env);UNUSED(clazz);
-	return gambatteSdl.gambatte.p_->cpu.memory.read(address,gambatteSdl.gambatte.p_->cpu.cycleCounter_);
+    (JNIEnv *env, jclass clazz, jlong gb, jint address){
+  UNUSED(env);UNUSED(clazz);
+
+  return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.read(address,((GambatteSdl*)gb)->gambatte.p_->cpu.cycleCounter_);
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    writeMemory
- * Signature: (II)V
- */
+// writeMemory
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_writeMemory
-  (JNIEnv *env, jclass clazz, jint address, jint value){
-	UNUSED(env);UNUSED(clazz);
-	gambatteSdl.gambatte.p_->cpu.memory.write(address,value,gambatteSdl.gambatte.p_->cpu.cycleCounter_);
+    (JNIEnv *env, jclass clazz, jlong gb, jint address, jint value){
+  UNUSED(env);UNUSED(clazz);
+
+  ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.write(address,value,((GambatteSdl*)gb)->gambatte.p_->cpu.cycleCounter_);
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    getRNGState
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_getRNGState
-  (JNIEnv *env, jclass clazz){
-	UNUSED(env);UNUSED(clazz);
-	int cc = gambatteSdl.gambatte.p_->cpu.cycleCounter_;
-	int divOff = cc - gambatteSdl.gambatte.p_->cpu.memory.divLastUpdate;
-	int div = gambatteSdl.gambatte.p_->cpu.memory.ioamhram[0x104];
-	return (((div << 8) + divOff) >> 2) & 0x3FFF;
+// getDivState
+JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_getDivState
+    (JNIEnv *env, jclass clazz, jlong gb){
+  UNUSED(env);UNUSED(clazz);
+
+  int cc = ((GambatteSdl*)gb)->gambatte.p_->cpu.cycleCounter_;
+  int divOff = cc - ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.divLastUpdate;
+  int div = ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.ioamhram[0x104];
+  return (((div << 8) + divOff) >> 2) & 0x3FFF;
 }
 
-/*
- * Class:     mrwint_gbtasgen_Gb
- * Method:    offsetRNG
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_offsetRNG
-  (JNIEnv *env, jclass clazz, jint offset){
-    gambatteSdl.gambatte.p_->cpu.memory.divLastUpdate -= (offset << 2);
+// offsetDiv
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_offsetDiv
+    (JNIEnv *env, jclass clazz, jlong gb, jint offset){
+  UNUSED(env);UNUSED(clazz);
+
+  ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.divLastUpdate -= (offset << 2);
 }
 

@@ -1,8 +1,7 @@
 package mrwint.gbtasgen.metric.pokemon;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.state.State;
 
 public class PressMemoryMetric implements StateResettingMetric {
 
@@ -18,7 +17,7 @@ public class PressMemoryMetric implements StateResettingMetric {
 
 	@Override
 	public int getMetricInternal() {
-	  State.step(move);
-	  return Gb.readMemory(address) == goalValue ? 1 : 0;
+	  curGb.step(move);
+	  return curGb.readMemory(address) == goalValue ? 1 : 0;
 	}
 }

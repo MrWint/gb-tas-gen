@@ -1,6 +1,6 @@
 package mrwint.gbtasgen.segment.pokemon.fight;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
@@ -17,7 +17,7 @@ public class EnemyFlinchSegment extends AttackActionSegment {
     @Override
     public int getMetricInternal() {
       Util.runToAddressNoLimit(0, 0, 0x3e8e7); // run to start of flinch check
-      int enemyStatus = Gb.readMemory(0xd067); // W_ENEMYBATTSTATUS1
+      int enemyStatus = curGb.readMemory(0xd067); // W_ENEMYBATTSTATUS1
       if ((enemyStatus & 0b1000) != 0)
         return 1;
       return 0;

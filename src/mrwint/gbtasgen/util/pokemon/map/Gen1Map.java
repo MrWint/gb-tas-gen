@@ -1,8 +1,6 @@
 package mrwint.gbtasgen.util.pokemon.map;
 
-import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.rom.RomInfo;
-import mrwint.gbtasgen.state.State;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.util.Util;
 
 public class Gen1Map extends Map {
@@ -29,8 +27,8 @@ public class Gen1Map extends Map {
 	private boolean isPassableFromTo(int fromx,int fromy, int tox,int toy) {
 		int tileFrom = mapSteps[fromx][fromy];
 		int tileTo= mapSteps[tox][toy];
-		int curTileSet = Gb.readMemory(RomInfo.pokemon.curTilesetAddress);
-		for(int c = RomInfo.pokemon.tilePairCollisionsLandAddress; memory[c] != 0xFF; c+=3) {
+		int curTileSet = curGb.readMemory(curGb.pokemon.curTilesetAddress);
+		for(int c = curGb.pokemon.tilePairCollisionsLandAddress; memory[c] != 0xFF; c+=3) {
 			if(memory[c] != curTileSet)
 				continue;
 			if(memory[c+1] == tileFrom && memory[c+2] == tileTo)
@@ -82,8 +80,8 @@ public class Gen1Map extends Map {
 	}
 
 	public Gen1Map(boolean blockAllWarps, boolean ignoreTrainers) {
-		this.rom = State.getROM();
-		this.memory = State.getCurrentMemory();
+		this.rom = curGb.getROM();
+		this.memory = curGb.getCurrentMemory();
 		this.blockAllWarps = blockAllWarps;
 		this.ignoreTrainers = ignoreTrainers;
 
@@ -93,8 +91,8 @@ public class Gen1Map extends Map {
 	}
 
 	public Gen1Map(int curMapID) {
-		this.rom = State.getROM();
-		this.memory = State.getCurrentMemory();
+		this.rom = curGb.getROM();
+		this.memory = curGb.getCurrentMemory();
 
 		this.curMapID = curMapID;
 
@@ -102,11 +100,11 @@ public class Gen1Map extends Map {
 	}
 
 	private void loadMap() {
-		rom = State.getROM();
-		memory = State.getCurrentMemory();
+		rom = curGb.getROM();
+		memory = curGb.getCurrentMemory();
 
-		mapHeaderBank = rom[RomInfo.pokemon.mapHeaderBanksAddress+curMapID];
-		curMapHeaderAddress = Util.getRomWordLE(RomInfo.pokemon.mapHeaderPointersAddress+2*curMapID) + (mapHeaderBank-1)*0x4000;
+		mapHeaderBank = rom[curGb.pokemon.mapHeaderBanksAddress+curMapID];
+		curMapHeaderAddress = Util.getRomWordLE(curGb.pokemon.mapHeaderPointersAddress+2*curMapID) + (mapHeaderBank-1)*0x4000;
 
 //		System.out.println("Map ID "+Integer.toHexString(curMapID)+" header at "+Util.toHex(curMapHeaderAddress));
 
@@ -119,14 +117,14 @@ public class Gen1Map extends Map {
 
 //		System.out.println("Map dimensions "+mapWidth+"x"+mapHeight);
 
-		blockTilesAddress = Util.getMemoryWordLE(RomInfo.pokemon.blockTilesPointerAddress+1) + (memory[RomInfo.pokemon.blockTilesPointerAddress]-1)*0x4000;
-		grassTile = memory[RomInfo.pokemon.grassTileAddress];
+		blockTilesAddress = Util.getMemoryWordLE(curGb.pokemon.blockTilesPointerAddress+1) + (memory[curGb.pokemon.blockTilesPointerAddress]-1)*0x4000;
+		grassTile = memory[curGb.pokemon.grassTileAddress];
 
 		// build tile map
 		mapTiles = new int[(mapWidth+6)*4][(mapHeight+6)*4];
 		for(int blockX=0;blockX<mapWidth+6;blockX++) {
 			for(int blockY=0;blockY<mapHeight+6;blockY++) {
-				int block = memory[RomInfo.pokemon.curBlockDataAddress + blockY*(mapWidth+6) + blockX];
+				int block = memory[curGb.pokemon.curBlockDataAddress + blockY*(mapWidth+6) + blockX];
 				for(int y=0;y<4;y++) {
 					for(int x=0;x<4;x++) {
 						mapTiles[blockX*4 + x][blockY*4 + y] = rom[blockTilesAddress + block*0x10 + y*4 + x];
@@ -138,7 +136,7 @@ public class Gen1Map extends Map {
 		// build step map
 		mapSteps = new int[(mapWidth+6)*2][(mapHeight+6)*2];
 		collisionMap = new boolean[(mapWidth+6)*2][(mapHeight+6)*2];
-		collisionAddress = Util.getMemoryWordLE(RomInfo.pokemon.collisionDataAddress);
+		collisionAddress = Util.getMemoryWordLE(curGb.pokemon.collisionDataAddress);
 		for(int y=0;y<(mapHeight+6)*2;y++) {
 			for(int x=0;x<(mapWidth+6)*2;x++) {
 				mapSteps[x][y] = mapTiles[2*x][2*y+1];
@@ -227,7 +225,7 @@ public class Gen1Map extends Map {
   					System.out.println("trainer flag: "+Integer.toHexString(flagByte)+":"+flagBit);
   					flagByte += flagBit/8;
   					flagBit %= 8;
-  					boolean alreadFought = (Gb.readMemory(flagByte) & (1<<flagBit)) != 0;
+  					boolean alreadFought = (curGb.readMemory(flagByte) & (1<<flagBit)) != 0;
   					if(alreadFought)
   						System.out.println("trainer already fought!");
   					else {
@@ -269,8 +267,8 @@ public class Gen1Map extends Map {
 	}
 
 	private static boolean isSpriteHidden(int spriteIndex) {
-		int[] memory = State.getCurrentMemory();
-		int curAdd = RomInfo.pokemon.missableObjectListAddress; // W_MISSABLEOBJECTLIST
+		int[] memory = curGb.getCurrentMemory();
+		int curAdd = curGb.pokemon.missableObjectListAddress; // W_MISSABLEOBJECTLIST
 		int bitIndex = -1;
 		while(memory[curAdd] != 0xFF) {
 			if(memory[curAdd] == spriteIndex)
@@ -280,7 +278,7 @@ public class Gen1Map extends Map {
 		if(bitIndex == -1)
 			return false;
 
-		curAdd = RomInfo.pokemon.missableObjectFlagsAddress + (bitIndex/8); // W_MISSABLEOBJECTFLAGS
+		curAdd = curGb.pokemon.missableObjectFlagsAddress + (bitIndex/8); // W_MISSABLEOBJECTFLAGS
 		return (memory[curAdd] & (1 << (bitIndex%8))) != 0;
 	}
 

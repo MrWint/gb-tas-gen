@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.rom.RomInfo;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
@@ -30,18 +29,18 @@ public class TetrisStateBuffer {
     this.maxBufferSize = maxBufferSize;
   }
 
-  public static short getNextPieces(State s) {
-    s.restore();
-    Util.runUntil(0, () -> Gb.readMemory(RomInfo.tetris.hCurPieceState) + Gb.readMemory(RomInfo.tetris.hBoardUpdateState), Comparator.EQUAL, 0);
+  public static short getNextPieces(Gameboy gb, State s) {
+    gb.restore(s);
+    Util.runUntil(0, () -> gb.readMemory(gb.tetris.hCurPieceState) + gb.readMemory(gb.tetris.hBoardUpdateState), Comparator.EQUAL, 0);
 //    State.steps(3);
-    int curPiece = (Gb.readMemory(RomInfo.tetris.wCurPiece) >> 2);
-    int previewPiece = (Gb.readMemory(RomInfo.tetris.wPreviewPiece) >> 2);
-    int nextPreviewPiece = (Gb.readMemory(RomInfo.tetris.hNextPreviewPiece) >> 2);
+    int curPiece = (gb.readMemory(gb.tetris.wCurPiece) >> 2);
+    int previewPiece = (gb.readMemory(gb.tetris.wPreviewPiece) >> 2);
+    int nextPreviewPiece = (gb.readMemory(gb.tetris.hNextPreviewPiece) >> 2);
     return (short)(curPiece | (previewPiece << 3) | (nextPreviewPiece << 6));
   }
 
-  public boolean addState(State s) {
-    return addState(s, getNextPieces(s));
+  public boolean addState(Gameboy gb, State s) {
+    return addState(s, getNextPieces(gb, s));
   }
 
   public boolean addState(State s, short nextPieces) {
@@ -75,9 +74,9 @@ public class TetrisStateBuffer {
     return ret;
   }
 
-  public void save(String filename) {
+  public void save(String filename, String suffix) {
     try {
-      String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
+      String path = "saves/" + filename + suffix;
       ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
       save(oos);
       oos.close();
@@ -100,9 +99,9 @@ public class TetrisStateBuffer {
   }
 
 
-  public static TetrisStateBuffer load(String filename) {
+  public static TetrisStateBuffer load(String filename, String suffix) {
     try {
-      String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
+      String path = "saves/" + filename + suffix;
 
       ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
       TetrisStateBuffer ret = load(ois);

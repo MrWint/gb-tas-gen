@@ -1,5 +1,7 @@
 package mrwint.gbtasgen.tools.tetris;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
@@ -9,8 +11,8 @@ import java.util.TreeMap;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.util.MoveSegment;
-import mrwint.gbtasgen.state.ListStateBuffer;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.state.tetris.ListStateBuffer;
 import mrwint.gbtasgen.tools.tetris.LockPiece.LockPieceState;
 
 public class SBLockPiece {
@@ -19,12 +21,12 @@ public class SBLockPiece {
   }
 
   public ListStateBuffer appendLog(ListStateBuffer states, int move) {
-    return states.appendMove(move);
+    return states.appendMove(curGb, move);
   }
 
   public ListStateBuffer emptyLog() {
     ListStateBuffer buffer = new ListStateBuffer();
-    buffer.addState(null);
+    buffer.addState(curGb, null);
     return buffer;
   }
 
@@ -54,7 +56,7 @@ public class SBLockPiece {
       stateDistQueue.add(newState);
     } else {
       if (stateDistMap.get(newState) != null)
-        stateDistMap.get(newState).addAll(newLog);
+        stateDistMap.get(newState).addAll(curGb, newLog);
       else
         System.out.println("ERROR!!!");
     }
@@ -67,7 +69,7 @@ public class SBLockPiece {
       if (!boardDistMap.containsKey(board)) {
         boardDistMap.put(board, newLog);
       } else
-        boardDistMap.get(board).addAll(newLog);
+        boardDistMap.get(board).addAll(curGb, newLog);
     }
   }
 

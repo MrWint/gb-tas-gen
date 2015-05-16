@@ -1,11 +1,11 @@
 package mrwint.gbtasgen.metric.pokemon.gen2;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.Arrays;
 
 import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.state.Register;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
 public class Gen2CheckDVMetric implements StateResettingMetric {
@@ -29,8 +29,8 @@ public class Gen2CheckDVMetric implements StateResettingMetric {
 	public int getMetricInternal() {
 		if(initialMove != 0)
 			Util.runToNextInputFrame();
-		Util.runToAddressNoLimit(0, initialMove, RomInfo.pokemon.afterDVGenerationAddress);
-		int bc = State.getRegister(Register.BC);
+		Util.runToAddressNoLimit(0, initialMove, curGb.pokemon.afterDVGenerationAddress);
+		int bc = curGb.getRegister(Register.BC);
 		int atk = (bc >> 12) & 0xF;
 		int def = (bc >> 8) & 0xF;
 		int spd = (bc >> 4) & 0xF;

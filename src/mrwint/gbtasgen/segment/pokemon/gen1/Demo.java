@@ -4,6 +4,7 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
 import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.demo.BrockDemo;
 import mrwint.gbtasgen.segment.pokemon.gen1.demo.ChooseStarter;
 import mrwint.gbtasgen.segment.pokemon.gen1.demo.Intro;
@@ -13,9 +14,9 @@ import mrwint.gbtasgen.segment.pokemon.gen1.demo.PewterNormal;
 import mrwint.gbtasgen.segment.pokemon.gen1.demo.RivalFight;
 import mrwint.gbtasgen.segment.pokemon.gen1.demo.ViridianForestNormal;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
-public class Demo extends SeqSegment {
+public class Demo extends SingleGbSegment {
 
 	@Override
 	protected void execute() {
@@ -25,15 +26,15 @@ public class Demo extends SeqSegment {
 //		load("intro10");
 //		seq(new OakSpeech());
 //		save("oakSpeech10");
-//		
+//
 //		load("oakSpeech10");
 //		seq(new ChooseStarter());
 //		save("chooseStarter10");
-		
+
 //		load("chooseStarter10");
 //		seq(new RivalFight());
 //		save("rivalFight10");
-		
+
 //		load("rivalFight10");
 //		seq(new OaksParcel());
 //		save("oaksParcel10");
@@ -53,11 +54,11 @@ public class Demo extends SeqSegment {
 //		load("pewterNormal20");
 //		seq(new Route3Normal());
 //		save("route3Normal20");
-		
+
 //		load("route3Normal20");
 //		seq(new MtMoonNormal());
 //		save("mtMoonNormal50");
-		
+
 //		load("mtMoonNormal50");
 //		seq(new NuggetBridgeNormal());
 //		save("nuggetBridgeNormal20");
@@ -90,10 +91,8 @@ public class Demo extends SeqSegment {
 //		seq(new SafariZone());
 //		save("safariZone100");
 	}
-	
+
 	public static void main(String[] args) {
-		RomInfo.pokemon = new RedRomInfo();
-		
-		Runner.run(new Demo());
+    SingleGbRunner.run(new RedRomInfo(), new Demo());
 	}
 }

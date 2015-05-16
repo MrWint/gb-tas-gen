@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import mrwint.gbtasgen.rom.RomInfo;
-
 public class StateBuffer {
 
   public static StateMetric STATE_METRIC = StateMetric.DSum;
@@ -274,9 +272,9 @@ public class StateBuffer {
   }
 
 
-  public void save(String filename) {
+  public void save(String filename, String suffix) {
     try {
-      String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
+      String path = "saves/" + filename + suffix;
       ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
       save(oos);
       oos.close();
@@ -299,9 +297,9 @@ public class StateBuffer {
   }
 
 
-  public static StateBuffer load(String filename) {
+  public static StateBuffer load(String filename, String suffix) {
     try {
-      String path = "saves/" + filename + RomInfo.rom.fileNameSuffix;
+      String path = "saves/" + filename + suffix;
 
       ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
       StateBuffer ret = load(ois);

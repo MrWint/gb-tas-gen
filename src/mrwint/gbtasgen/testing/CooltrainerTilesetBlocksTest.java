@@ -1,5 +1,7 @@
 package mrwint.gbtasgen.testing;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,9 +10,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
-import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.util.Util;
 
 public class CooltrainerTilesetBlocksTest {
@@ -20,16 +21,15 @@ public class CooltrainerTilesetBlocksTest {
 	 */
 	public static void main(String[] args) {
 
-		// select ROM to use
-		RomInfo.setRom(new RedRomInfo());
+    Gb.loadGambatte(1);
 
-		Gb.loadGambatte();
-		State.init(RomInfo.pokemon.romFileName);
+		// select ROM to use
+    curGb = new Gameboy(new RedRomInfo(), 0);
 
 		Map<Integer, Set<String>> m = new TreeMap<Integer, Set<String>>();
 
 		int ptr = 0xc7be;
-		int[] rom = State.getROM();
+		int[] rom = curGb.getROM();
 		Map<Integer, Set<String>> sentinels = new TreeMap<Integer, Set<String>>();
 
 		Set<Integer> knownAddresses = new HashSet<Integer>();

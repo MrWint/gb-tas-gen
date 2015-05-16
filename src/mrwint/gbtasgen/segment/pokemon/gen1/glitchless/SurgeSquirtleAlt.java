@@ -158,106 +158,106 @@ public class SurgeSquirtleAlt extends SeqSegment {
 //    seq(new WalkToSegment(7, 7)); // leave ss.anne
 //
 //    save("sua3");
-    load("sua3");
-
-    seq(new WalkToSegment(26, 0, false)); // leave ss.anne
-    delay(new SeqSegment() {
-      @Override
-      protected void execute() {
-        seqButton(Move.UP);
-        seqMetric(new StateResettingMetric() {
-          @Override
-          public int getMetricInternal() {
-            Util.runToAddressNoLimit(0, 0, 0x197ca); // after setting first trash can
-            return Gb.readMemory(0xd743); // first trash can
-          }
-        }, Comparator.EQUAL, 4);
-      }
-    });
-
-    {
-      seq(Segment.repress(Move.START));
-      seq(Segment.scrollA(2)); // items
-      seq(Segment.scrollFastAF(6 + 1)); // HM01
-      seq(Segment.repress(Move.A));
-      seq(new SkipTextsSegment(2)); // booted up HM, contains xyz
-      seq(new SkipTextsSegment(1, true)); // learn
-      seq(Segment.scrollAF(2)); // sandshrew
-      seq(new SkipTextsSegment(1, true)); // learned HM
-      seqButton(Move.B); // close menu
-      seqButton(Move.START); // close menu
-    }
-    seq(new WalkToSegment(15, 16)); // go to bush
-    seq(new WalkToSegment(15, 17)); // go to bush
-    {
-      seq(Segment.repress(Move.START));
-      seq(Segment.scrollA(-1)); // mon
-      seq(Segment.repress(Move.A)); // sandshrew
-      seq(Segment.repress(Move.A)); // cut
-      seqButton(Move.B); // hacked away (to text scroll)?
-    }
-    seq(new WalkToSegment(12, 19)); // enter gym
-    {
-      seq(new WalkToSegment(4, 9)); // go to trash can
-      seqButton(Move.LEFT); // turn left
-    }
+//    load("sua3");
+//
+//    seq(new WalkToSegment(26, 0, false)); // leave ss.anne
+//    delay(new SeqSegment() {
+//      @Override
+//      protected void execute() {
+//        seqButton(Move.UP);
+//        seqMetric(new StateResettingMetric() {
+//          @Override
+//          public int getMetricInternal() {
+//            Util.runToAddressNoLimit(0, 0, 0x197ca); // after setting first trash can
+//            return Gb.readMemory(0xd743); // first trash can
+//          }
+//        }, Comparator.EQUAL, 4);
+//      }
+//    });
+//
 //    {
-//      seq(new WalkToSegment(4, 11)); // go to trash can
-//      seqButton(Move.RIGHT); // turn left
+//      seq(Segment.repress(Move.START));
+//      seq(Segment.scrollA(2)); // items
+//      seq(Segment.scrollFastAF(6 + 1)); // HM01
+//      seq(Segment.repress(Move.A));
+//      seq(new SkipTextsSegment(2)); // booted up HM, contains xyz
+//      seq(new SkipTextsSegment(1, true)); // learn
+//      seq(Segment.scrollAF(2)); // sandshrew
+//      seq(new SkipTextsSegment(1, true)); // learned HM
+//      seqButton(Move.B); // close menu
+//      seqButton(Move.START); // close menu
 //    }
-    delay(new SeqSegment() { // activate first can
-      @Override
-      protected void execute() {
-        seqButton(Move.A);
-        seqMetric(new StateResettingMetric() {
-          @Override
-          public int getMetricInternal() {
-            Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress); // after setting second trash can
-            return Gb.readMemory(0xd744); // first trash can
-          }
-        }, Comparator.EQUAL, 7);
-      }
-    });
-    seq(new SkipTextsSegment(4)); // opened first lock
-    {
-      seqMove(new WalkStep(Move.RIGHT, false, true), 0); // turn right
-      seqSkipInput(1); // allow update
-    }
+//    seq(new WalkToSegment(15, 16)); // go to bush
+//    seq(new WalkToSegment(15, 17)); // go to bush
 //    {
-//      seq(new WalkToSegment(4, 9)); // go to surge
-//      seqButton(Move.RIGHT);
+//      seq(Segment.repress(Move.START));
+//      seq(Segment.scrollA(-1)); // mon
+//      seq(Segment.repress(Move.A)); // sandshrew
+//      seq(Segment.repress(Move.A)); // cut
+//      seqButton(Move.B); // hacked away (to text scroll)?
 //    }
-    seqButton(Move.A);
-    seq(new SkipTextsSegment(2)); // opened second lock
-    seq(new WalkToSegment(5, 3)); // go to surge
-    seq(new WalkToSegment(5, 2)); // go to surge
-    seqMove(new OverworldInteract(1)); // talk to surge
-
-		seq(new InitFightSegment(10)); // start fight
-		{
-			KillEnemyMonSegment kems = new KillEnemyMonSegment();
-      kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
-//      kems.attackCount[3][1] = 1; // bubblebeam crit
-			kems.attackCount[0][1] = 1; // mega punch crit
-			seq(kems); // voltorb
-		}
-    seq(NewEnemyMonSegment.any()); // next mon
-    {
-      KillEnemyMonSegment kems = new KillEnemyMonSegment();
-      kems.attackCount[1][0] = 1; // bite
-      seq(kems); // pikachu
-    }
-    seq(NewEnemyMonSegment.any()); // next mon
-    {
-      KillEnemyMonSegment kems = new KillEnemyMonSegment();
-      kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(85)}; // thunderbolt
-      kems.attackCount[3][1] = 1; // bubblebeam crit // TODO: speed fall
-      kems.attackCount[1][0] = 1; // bite
-      kems.numExpGainers = 2; // level up to 27
-      seq(kems); // raichu
-    }
-		seq(new EndFightSegment(3)); // player defeated enemy
-    seq(new SkipTextsSegment(8)); // after battle texts
-    seq(new WalkToSegment(5, 18, false)); // leave gym
+//    seq(new WalkToSegment(12, 19)); // enter gym
+//    {
+//      seq(new WalkToSegment(4, 9)); // go to trash can
+//      seqButton(Move.LEFT); // turn left
+//    }
+////    {
+////      seq(new WalkToSegment(4, 11)); // go to trash can
+////      seqButton(Move.RIGHT); // turn left
+////    }
+//    delay(new SeqSegment() { // activate first can
+//      @Override
+//      protected void execute() {
+//        seqButton(Move.A);
+//        seqMetric(new StateResettingMetric() {
+//          @Override
+//          public int getMetricInternal() {
+//            Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress); // after setting second trash can
+//            return Gb.readMemory(0xd744); // first trash can
+//          }
+//        }, Comparator.EQUAL, 7);
+//      }
+//    });
+//    seq(new SkipTextsSegment(4)); // opened first lock
+//    {
+//      seqMove(new WalkStep(Move.RIGHT, false, true), 0); // turn right
+//      seqSkipInput(1); // allow update
+//    }
+////    {
+////      seq(new WalkToSegment(4, 9)); // go to surge
+////      seqButton(Move.RIGHT);
+////    }
+//    seqButton(Move.A);
+//    seq(new SkipTextsSegment(2)); // opened second lock
+//    seq(new WalkToSegment(5, 3)); // go to surge
+//    seq(new WalkToSegment(5, 2)); // go to surge
+//    seqMove(new OverworldInteract(1)); // talk to surge
+//
+//		seq(new InitFightSegment(10)); // start fight
+//		{
+//			KillEnemyMonSegment kems = new KillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
+////      kems.attackCount[3][1] = 1; // bubblebeam crit
+//			kems.attackCount[0][1] = 1; // mega punch crit
+//			seq(kems); // voltorb
+//		}
+//    seq(NewEnemyMonSegment.any()); // next mon
+//    {
+//      KillEnemyMonSegment kems = new KillEnemyMonSegment();
+//      kems.attackCount[1][0] = 1; // bite
+//      seq(kems); // pikachu
+//    }
+//    seq(NewEnemyMonSegment.any()); // next mon
+//    {
+//      KillEnemyMonSegment kems = new KillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(85)}; // thunderbolt
+//      kems.attackCount[3][1] = 1; // bubblebeam crit // TODO: speed fall
+//      kems.attackCount[1][0] = 1; // bite
+//      kems.numExpGainers = 2; // level up to 27
+//      seq(kems); // raichu
+//    }
+//		seq(new EndFightSegment(3)); // player defeated enemy
+//    seq(new SkipTextsSegment(8)); // after battle texts
+//    seq(new WalkToSegment(5, 18, false)); // leave gym
 	}
 }

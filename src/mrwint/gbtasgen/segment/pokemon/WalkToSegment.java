@@ -1,12 +1,13 @@
 package mrwint.gbtasgen.segment.pokemon;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.PokemonRomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
@@ -82,7 +83,7 @@ public class WalkToSegment extends Segment {
 	}
 
 	public WalkToSegment(int destX, int destY, boolean checkLastStep) {
-		this(destX,destY,checkLastStep,RomInfo.pokemon.mapFactory);
+		this(destX,destY,checkLastStep,curGb.pokemon.mapFactory);
 	}
 
 	public WalkToSegment(int destX, int destY, boolean checkLastStep, MapFactory mapFactory) {
@@ -95,7 +96,7 @@ public class WalkToSegment extends Segment {
 	}
 
 	private void initWalkSteps() {
-		PokemonRomInfo pri = RomInfo.pokemon;
+		PokemonRomInfo pri = curGb.pokemon;
 		walkSegment = new Segment[4];
 		walkSegment[0] = new MoveSegment(pri.getWalkStep(Move.DOWN, true, false),0,0);
 		walkSegment[1] = new MoveSegment(pri.getWalkStep(Move.RIGHT,true, false),0,0);
@@ -114,15 +115,15 @@ public class WalkToSegment extends Segment {
 			return new StateBuffer(maxBufferSize);
 
 		State s = in.getStates().iterator().next();
-		s.restore();
+		curGb.restore(s);
 		Util.runToFirstDifference(0, Move.UP, Metric.DOWN_JOY);
 		//Util.runToAddress(Move.UP, Move.UP, 0x51D); // .handleDirectionButtonPress
 
-    int playerX = (State.getCurrentMemory()[RomInfo.pokemon.curPositionXAddress]+RomInfo.pokemon.curPositionOffset)+6;
-    int playerY = (State.getCurrentMemory()[RomInfo.pokemon.curPositionYAddress]+RomInfo.pokemon.curPositionOffset)+6;
+    int playerX = (curGb.getCurrentMemory()[curGb.pokemon.curPositionXAddress]+curGb.pokemon.curPositionOffset)+6;
+    int playerY = (curGb.getCurrentMemory()[curGb.pokemon.curPositionYAddress]+curGb.pokemon.curPositionOffset)+6;
 
 		for(int i = 0; i < 100; i++)
-			State.step(); // skip until map loading is finished
+		  curGb.step(); // skip until map loading is finished
 
 		Map map = mapFactory.create(blockAllWarps, ignoreTrainers);
 		int width = map.getStepWidth();

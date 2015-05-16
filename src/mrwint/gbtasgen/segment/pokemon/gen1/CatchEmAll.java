@@ -4,6 +4,7 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
 import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.catchemall.CeruleanCave;
 import mrwint.gbtasgen.segment.pokemon.gen1.catchemall.ChooseStarter;
 import mrwint.gbtasgen.segment.pokemon.gen1.catchemall.Intro;
@@ -28,9 +29,9 @@ import mrwint.gbtasgen.segment.pokemon.gen1.catchemall.VictoryRoad;
 import mrwint.gbtasgen.segment.pokemon.gen1.catchemall.ViridianForestNidoking;
 import mrwint.gbtasgen.segment.pokemon.gen1.catchemall.ViridianForestNormal;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
-public class CatchEmAll extends SeqSegment {
+public class CatchEmAll extends SingleGbSegment {
 
 	@Override
 	protected void execute() {
@@ -40,15 +41,15 @@ public class CatchEmAll extends SeqSegment {
 //		load("intro10");
 //		seq(new OakSpeech());
 //		save("oakSpeech50");
-		
+
 //		load("oakSpeech50");
 //		seq(new ChooseStarter());
 //		save("chooseStarter50");
-		
+
 //		load("chooseStarter50");
 //		seq(new RivalFight());
 //		save("rivalFight20");
-		
+
 //		load("rivalFight15");
 //		seq(new OaksParcel());
 //		save("oaksParcel20");
@@ -64,11 +65,11 @@ public class CatchEmAll extends SeqSegment {
 //		load("pewterNormal20");
 //		seq(new Route3Normal());
 //		save("route3Normal20");
-		
+
 //		load("route3Normal20");
 //		seq(new MtMoonNormal());
 //		save("mtMoonNormal50");
-		
+
 //		load("mtMoonNormal50");
 //		seq(new NuggetBridgeNormal());
 //		save("nuggetBridgeNormal20");
@@ -101,10 +102,8 @@ public class CatchEmAll extends SeqSegment {
 		seq(new SafariZone());
 //		save("safariZone100");
 	}
-	
+
 	public static void main(String[] args) {
-		RomInfo.pokemon = new RedRomInfo();
-		
-		Runner.run(new CatchEmAll());
+    SingleGbRunner.run(new RedRomInfo(), new CatchEmAll());
 	}
 }

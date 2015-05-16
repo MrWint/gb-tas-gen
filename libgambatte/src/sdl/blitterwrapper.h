@@ -29,11 +29,13 @@ class BlitterWrapper {
 	std::auto_ptr<VideoLink> cconvert;
 	std::auto_ptr<VideoLink> vfilter;
 	unsigned vsrci;
+
+	int singleScreenWidth;
 	
 public:
 	struct Buf { gambatte::uint_least32_t* pixels; unsigned pitch; };
 	BlitterWrapper() : vsrci(0) {}
-	const Buf inBuf() const;
+	const Buf inBuf(int screen) const;
 	void draw();
 	void present() { blitter.present(); }
 	void toggleFullScreen() { blitter.toggleFullScreen(); }
@@ -42,7 +44,7 @@ public:
 	void setYuv(const bool yuv) { blitter.setYuv(yuv); }
 	void setVideoFilter(unsigned n) { vsrci = n; }
 	
-	void init();
+	void init(int numScreens);
 };
 
 #endif

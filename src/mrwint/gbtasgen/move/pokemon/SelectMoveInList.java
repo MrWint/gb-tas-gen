@@ -1,24 +1,23 @@
 package mrwint.gbtasgen.move.pokemon;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.rom.RomInfo;
 
 public class SelectMoveInList extends Move {
 
 	int goalIndex;
 	int numOwnMoves;
-	
+
 	public SelectMoveInList(int goalIndex, int numOwnMoves) {
 		this.goalIndex = goalIndex;
 		this.numOwnMoves = numOwnMoves;
 	}
-	
+
 	@Override
 	public int getInitialKey() {
-		int curIndex = Gb.readMemory(RomInfo.pokemon.fightCurMoveNumAddress);
+		int curIndex = curGb.readMemory(curGb.pokemon.fightCurMoveNumAddress);
 		int stepsDown = (goalIndex + numOwnMoves - curIndex) % numOwnMoves;
 		int stepsUp = (curIndex + numOwnMoves - goalIndex) % numOwnMoves;
 		if(stepsDown < stepsUp)
@@ -29,7 +28,7 @@ public class SelectMoveInList extends Move {
 
 	@Override
 	public boolean doMove() {
-		int curIndex = Gb.readMemory(RomInfo.pokemon.fightCurMoveNumAddress);
+		int curIndex = curGb.readMemory(curGb.pokemon.fightCurMoveNumAddress);
 		//System.out.println("current move index "+curIndex+", goal position is "+goalIndex);
 
 		int stepsDown = (goalIndex + numOwnMoves - curIndex) % numOwnMoves;

@@ -1,18 +1,12 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.sram;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.move.WriteMemory;
 import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.pokemon.TextSegment;
-import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.NamingSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.SwapWithSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
-import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
 public class TestJ extends SeqSegment {
@@ -145,7 +139,7 @@ public class TestJ extends SeqSegment {
 					int add = run(200, 0x5be34);
 					if (add != 0) {
 						System.out.println("FOUND: " + Util.toHex(ca, 4));
-						State.step();
+						curGb.step();
 					}
 					return true;
 				}
@@ -157,7 +151,7 @@ public class TestJ extends SeqSegment {
 		int steps = 0;
 		int[] moves = {Move.A, Move.B};
 		while(steps < stepLimit) {
-			int ret = State.step(moves[steps & 1], addresses);
+			int ret = curGb.step(moves[steps & 1], addresses);
 			if(ret != 0)
 				return ret;
 			steps++;

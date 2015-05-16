@@ -1,5 +1,7 @@
 package mrwint.gbtasgen.testing;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +12,11 @@ import java.util.TreeSet;
 
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.move.WriteMemory;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
 
@@ -43,7 +44,7 @@ public class ItemUnderflowItemFinderTest extends SeqSegment {
 			seq(new WalkToSegment(3,8, false));
 			System.out.println("Map "+map);
 			seq(Segment.skip(10));
-			int[] memory = State.getCurrentMemory();
+			int[] memory = curGb.getCurrentMemory();
 			for (int i=20;i<0x80;i++) {
 				int add = 0xd31e+2*i;
 				if (/*memory[add] == 0x48 || memory[add] == 0x49 || memory[add] == 0x4e || memory[add] == 0x29 ||memory[add] == 0xc5 || */memory[add] == 0x1f) {
@@ -64,14 +65,13 @@ public class ItemUnderflowItemFinderTest extends SeqSegment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+    Gb.loadGambatte(1);
+
 		// select ROM to use
-		RomInfo.setRom(new RedRomInfo());
-//		RomInfo.setRom(new BlueRomInfo());
+    curGb = new Gameboy(new RedRomInfo(), 0);
+//    curGb = new Gameboy(new BlueRomInfo());
 
-		Gb.loadGambatte();
-		State.init(RomInfo.pokemon.romFileName);
-
-		StateBuffer in = StateBuffer.load("test_1");
+		StateBuffer in = StateBuffer.load("test_1", "");
 		new ItemUnderflowItemFinderTest().execute(in);
 	}
 

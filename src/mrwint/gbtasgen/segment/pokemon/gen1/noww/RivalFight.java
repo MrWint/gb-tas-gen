@@ -1,12 +1,11 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.noww;
 
 import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.Wait;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.InitFightSegment;
@@ -49,7 +48,7 @@ public class RivalFight extends SeqSegment {
 					seqMetric(new Metric() {
 						@Override
 						public int getMetric() {
-							return Gb.readMemory(RomInfo.pokemon.fightCurEnemyMoveAddress) == 33 ? 1 : 0;
+							return curGb.readMemory(curGb.pokemon.fightCurEnemyMoveAddress) == 33 ? 1 : 0;
 						}
 					});
 					seqMetric(new CheckLowerStatEffectMisses());

@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.util;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.move.Move;
@@ -90,7 +91,7 @@ public abstract class SeqSegment extends Segment {
 	}
 
 	public void load(String name) {
-		in = StateBuffer.load(name);
+		in = StateBuffer.load(name, curGb.rom.fileNameSuffix);
 	}
 	public void qload() {
 		in = save;
@@ -99,7 +100,7 @@ public abstract class SeqSegment extends Segment {
 		return in;
 	}
 	public void save(String name) {
-		in.save(name);
+		in.save(name, curGb.rom.fileNameSuffix);
 	}
 	public void qsave() {
 		save = in;

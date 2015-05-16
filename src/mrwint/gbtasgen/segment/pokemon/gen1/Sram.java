@@ -1,22 +1,14 @@
 package mrwint.gbtasgen.segment.pokemon.gen1;
 
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
-import mrwint.gbtasgen.segment.pokemon.gen1.sram.Intro;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.sram.IntroRed;
-import mrwint.gbtasgen.segment.pokemon.gen1.sram.OakSpeech;
-import mrwint.gbtasgen.segment.pokemon.gen1.sram.OakSpeechJ;
 import mrwint.gbtasgen.segment.pokemon.gen1.sram.OakSpeechRed;
-import mrwint.gbtasgen.segment.pokemon.gen1.sram.SaveCorrupt;
-import mrwint.gbtasgen.segment.pokemon.gen1.sram.SaveCorruptJ;
 import mrwint.gbtasgen.segment.pokemon.gen1.sram.SaveCorruptRed;
-import mrwint.gbtasgen.segment.pokemon.gen1.sram.Test;
-import mrwint.gbtasgen.segment.pokemon.gen1.sram.TestJ;
 import mrwint.gbtasgen.segment.pokemon.gen1.sram.TestRed;
-import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
-public class Sram extends SeqSegment {
+public class Sram extends SingleGbSegment {
 
 	@Override
 	protected void execute() {
@@ -53,11 +45,9 @@ public class Sram extends SeqSegment {
 	}
 
 	public static void main(String[] args) {
-		RomInfo.pokemon = new RedRomInfo();
+    SingleGbRunner.run(new RedRomInfo(), new Sram());
 //		RomInfo.rom = new RomInfo.BlueRomInfo();
 //		RomInfo.rom = new RomInfo.YellowRomInfo();
 //		RomInfo.rom = new RomInfo.BlueJRomInfo();
-
-		Runner.run(new Sram());
 	}
 }

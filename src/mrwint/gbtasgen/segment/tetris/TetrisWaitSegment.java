@@ -1,11 +1,10 @@
 package mrwint.gbtasgen.segment.tetris;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.Map.Entry;
 
-import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.state.tetris.TetrisStateBuffer;
@@ -25,10 +24,10 @@ public class TetrisWaitSegment implements TetrisSegment {
 
     for (Entry<Short, StateBuffer> e : in.getMap().entrySet()) {
       for (State s : e.getValue().getStates()) {
-        s.restore();
-        Util.runToFrameBeforeUntil(0, () -> Gb.readMemory(RomInfo.tetris.hCurPieceState) + Gb.readMemory(RomInfo.tetris.hBoardUpdateState), Comparator.EQUAL, 0);
+        curGb.restore(s);
+        Util.runToFrameBeforeUntil(0, () -> curGb.readMemory(curGb.tetris.hCurPieceState) + curGb.readMemory(curGb.tetris.hBoardUpdateState), Comparator.EQUAL, 0);
 //        State.steps(numSkips);
-        out.addState(State.createState(true), e.getKey());
+        out.addState(curGb.createState(true), e.getKey());
       }
     }
     return out;

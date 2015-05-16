@@ -1,7 +1,7 @@
 package mrwint.gbtasgen.move.pokemon.gen2;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
 public class CoinCaseMove extends Move {
@@ -16,12 +16,12 @@ public class CoinCaseMove extends Move {
 //		0xa5, 0x81, 0xeb, 0xce, 0x37, 0xfe
 //		0xa5, 0x8b, 0xe1, 0x18, 0xd1
 	};
-	
+
 	@Override
 	public boolean doMove() {
 		Util.runToFrameBeforeAddress(0, 0, 0xd900); // delayFrame
 		for(int i : moves)
-			State.step(i);
+		  curGb.step(i);
 		return true;
 	}
 

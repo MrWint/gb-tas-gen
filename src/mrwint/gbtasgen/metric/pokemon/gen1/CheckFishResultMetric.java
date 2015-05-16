@@ -1,8 +1,8 @@
 package mrwint.gbtasgen.metric.pokemon.gen1;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.state.Register;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
 public class CheckFishResultMetric implements StateResettingMetric {
@@ -22,10 +22,10 @@ public class CheckFishResultMetric implements StateResettingMetric {
 	public int getMetricInternal() {
 		Util.runToAddressNoLimit(0, 0, 0xe28d); // RodResponse
 
-		boolean bite = (State.getRegister(Register.DE) & 0xFF) == 1;
+		boolean bite = (curGb.getRegister(Register.DE) & 0xFF) == 1;
 		if (!bite)
 			return 0;
-		int bc = State.getRegister(Register.BC);
+		int bc = curGb.getRegister(Register.BC);
 		int curLvl = (bc >> 8) & 0xFF;
 		int curMon = bc & 0xFF;
 		if((lvl > 0 && lvl != curLvl) || (mon > 0 && mon != curMon))

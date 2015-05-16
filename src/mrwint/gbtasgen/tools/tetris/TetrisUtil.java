@@ -1,9 +1,8 @@
 package mrwint.gbtasgen.tools.tetris;
 
-import java.util.HashSet;
-import java.util.Set;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 
-import mrwint.gbtasgen.Gb;
+import java.util.Set;
 
 public class TetrisUtil {
   public static void printNextPieces(short pieces) {
@@ -29,7 +28,7 @@ public class TetrisUtil {
     int startAddress = 0xc802;
     for (int y = 0; y < numRows; y++)
       for (int x = 0; x < Board.WIDTH; x++)
-        if (Gb.readMemory(startAddress + y*0x20 + x) != 0x2f)
+        if (curGb.readMemory(startAddress + y*0x20 + x) != 0x2f)
           board[y] |= 1 << x;
 
     return board;

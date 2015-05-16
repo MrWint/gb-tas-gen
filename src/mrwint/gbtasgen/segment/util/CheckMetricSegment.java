@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.segment.util;
 
 import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.segment.Segment;
@@ -29,7 +30,7 @@ public class CheckMetricSegment extends Segment {
 	public StateBuffer execute(StateBuffer in) {
 		StateBuffer out = new StateBuffer(0); // output buffer is unbounded
 		for(State s : in.getStates()) {
-			s.restore();
+			curGb.restore(s);
 			int curVal = metric.getMetric();
 			if(attributeName != null)
 				s.setAttributeInt(attributeName, curVal);

@@ -1,14 +1,17 @@
 package mrwint.gbtasgen.segment.tetris;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
-import mrwint.gbtasgen.state.ListStateBuffer;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.state.tetris.ListStateBuffer;
 import mrwint.gbtasgen.state.tetris.TetrisStateBuffer;
 import mrwint.gbtasgen.tools.tetris.Board;
 import mrwint.gbtasgen.tools.tetris.LockPiece;
@@ -45,9 +48,9 @@ public class TetrisDfsSegment implements TetrisSegment {
     State firstState = firstEntry.getValue().getStates().iterator().next();
 
     // Determine initial Board state
-    firstState.restore();
+    curGb.restore(firstState);
     Util.runToNextInputFrame();
-    State.step();
+    curGb.step();
     this.initialBoard = TetrisUtil.getBoard(expectedBoard.length);
     System.out.println("initial board:");
     Board.print(this.initialBoard);
@@ -172,7 +175,7 @@ public class TetrisDfsSegment implements TetrisSegment {
   private void addState(SearchState state, ListStateBuffer buf, StateBuffer oldStates, boolean linesCleared) {
     state = search.stateSet.get(state);
     if (state != null) {
-      addState(state, buf.toTetrisStateBuffer(oldStates, linesCleared));
+      addState(state, buf.toTetrisStateBuffer(curGb, oldStates, linesCleared));
     }
   }
 

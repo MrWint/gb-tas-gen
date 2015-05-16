@@ -6,8 +6,8 @@ import mrwint.gbtasgen.rom.RomInfo;
 public class Sml2RomInfo extends RomInfo {
 
   @Override
-  public int getRngState() {
-    return Gb.getRNGState();
+  public int getRngState(Gb gb) {
+    return gb.getDivState();
   }
 
   public int hGameState = 0xff9b;

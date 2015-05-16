@@ -1,7 +1,7 @@
 package mrwint.gbtasgen.metric.pokemon.gen1;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
 public class CheckLowerStatEffectMisses implements StateResettingMetric {
@@ -11,7 +11,7 @@ public class CheckLowerStatEffectMisses implements StateResettingMetric {
 		  return 0;
 		int add = 0;
 		while(add == 0)
-			add = State.step(0, 0x3f5a9, 0x3f65a); // hit, miss
+			add = curGb.step(0, 0x3f5a9, 0x3f65a); // hit, miss
 		return (add == 0x3f65a ? 1 : 0);
 	}
 }

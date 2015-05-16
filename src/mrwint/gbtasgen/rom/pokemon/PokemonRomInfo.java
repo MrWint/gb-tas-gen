@@ -3,15 +3,14 @@ package mrwint.gbtasgen.rom.pokemon;
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.rom.RomInfo;
-import mrwint.gbtasgen.util.Util;
 import mrwint.gbtasgen.util.pokemon.map.Map.MapFactory;
 
 public abstract class PokemonRomInfo extends RomInfo {
 	public abstract Move getWalkStep(int dir, boolean check, boolean skipStandStillTest);
 
 	@Override
-	public int getRngState() {
-		return (Util.getMemoryWordBE(rngAddress) << 14) + Gb.getRNGState();
+	public int getRngState(Gb gb) {
+		return (gb.readMemory(rngAddress) << 22) + (gb.readMemory(rngAddress+1) << 14) + gb.getDivState();
 	}
 
 	public static final int CRYSTAL = 0;

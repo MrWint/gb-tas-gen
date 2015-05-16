@@ -1,9 +1,8 @@
 package mrwint.gbtasgen.move.pokemon.gen1;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
@@ -30,14 +29,14 @@ public class WalkStep extends Move {
 	}
 
 	public static void runToNextWalkFrame(int dir) {
-		int startSteps = State.currentStepCount;
+		int startSteps = curGb.currentStepCount;
 		// forward to first possible input frame
 		while(true) {
       Util.runToFirstDifference(0, Move.UP, Metric.DOWN_JOY); // for bike road
 //      Util.runToFirstDifference(0, dir, Metric.DOWN_JOY);
-			State s = new State();
-			int add = State.step(dir, RomInfo.pokemon.doPlayerMovementFuncAddress);//, 0x700); // .handleDirectionButtonPress
-			s.restore();
+			State s = curGb.newState();
+			int add = curGb.step(dir, curGb.pokemon.doPlayerMovementFuncAddress);//, 0x700); // .handleDirectionButtonPress
+			curGb.restore(s);
 			if(add != 0) {
 				//System.out.println("found walk input frame ("+steps+")");
 //				if(add == 0x700) {
@@ -47,18 +46,18 @@ public class WalkStep extends Move {
 //				}
 				break;
 			}
-			System.out.println("INFO: WalkStep: found non-walk input frame ("+(State.currentStepCount - startSteps)+")");
-			State.step();
+			System.out.println("INFO: WalkStep: found non-walk input frame ("+(curGb.currentStepCount - startSteps)+")");
+			curGb.step();
 		}
 	}
 
 	public void prepareMovement() {
-		int startSteps = State.currentStepCount;
+		int startSteps = curGb.currentStepCount;
 		runToNextWalkFrame(dir);
 		if(!skipStandStillTest) {
-			int standStill = Gb.readMemory(RomInfo.pokemon.playerMovingIndicatorAddress);
+			int standStill = curGb.readMemory(curGb.pokemon.playerMovingIndicatorAddress);
 			if(standStill != 0) {
-				int oldDirection = Gb.readMemory(RomInfo.pokemon.playerDirectionAddress);
+				int oldDirection = curGb.readMemory(curGb.pokemon.playerDirectionAddress);
 				int newDirection;
 				if(dir == Move.LEFT)
 					newDirection = 0x02;
@@ -73,27 +72,27 @@ public class WalkStep extends Move {
 
 				if(newDirection != oldDirection) { // need to perform turn, which needs and additional step
 					if(!avoidEncounters) {
-						State.step(dir); // perform turn
+					  curGb.step(dir); // perform turn
 					} else {
 						while(true) {
-							State s = new State();
-							int add = State.step(dir, RomInfo.pokemon.doTurnPreEncounterCheckAddress);
-							if(add != RomInfo.pokemon.doTurnPreEncounterCheckAddress)
+							State s = curGb.newState();
+							int add = curGb.step(dir, curGb.pokemon.doTurnPreEncounterCheckAddress);
+							if(add != curGb.pokemon.doTurnPreEncounterCheckAddress)
 								System.out.println("ERROR: didn't find doTurnPreEncounterCheckAddress");
-							add = Util.runToAddressNoLimit(0, dir, RomInfo.pokemon.doTurnPostEncounterCheckAddress, RomInfo.pokemon.encounterCheckMainFuncEncounterAddress);
-							if(add == RomInfo.pokemon.doTurnPostEncounterCheckAddress) {
-								State.step(); // finish frame;
+							add = Util.runToAddressNoLimit(0, dir, curGb.pokemon.doTurnPostEncounterCheckAddress, curGb.pokemon.encounterCheckMainFuncEncounterAddress);
+							if(add == curGb.pokemon.doTurnPostEncounterCheckAddress) {
+							  curGb.step(); // finish frame;
 								break;
 							}
-							s.restore();
-							System.out.println("prepareMovement: avoiding encounter ("+(State.currentStepCount - startSteps)+")");
-							State.step(); // wait one more frame
+							curGb.restore(s);
+							System.out.println("prepareMovement: avoiding encounter ("+(curGb.currentStepCount - startSteps)+")");
+							curGb.step(); // wait one more frame
 							runToNextWalkFrame(dir); // find next walk frame
 						}
 					}
 					runToNextWalkFrame(dir); // find next walk frame
-					if(Gb.readMemory(RomInfo.pokemon.playerMovingIndicatorAddress) != 0)
-						throw new RuntimeException("standStill not fixed: "+Gb.readMemory(RomInfo.pokemon.playerMovingIndicatorAddress));
+					if(curGb.readMemory(curGb.pokemon.playerMovingIndicatorAddress) != 0)
+						throw new RuntimeException("standStill not fixed: "+curGb.readMemory(curGb.pokemon.playerMovingIndicatorAddress));
 				}
 			}
 		}
@@ -102,39 +101,39 @@ public class WalkStep extends Move {
 	@Override
 	public boolean doMove() {
 
-		int startSteps = State.currentStepCount;
+		int startSteps = curGb.currentStepCount;
 		prepareMovement();
 
 		while(true) {
 			if(!check) {
-				State.step(dir); // walk
+			  curGb.step(dir); // walk
 				break;
 			} else {
-				State s = new State();
-				int add = Util.runToAddressNoLimit(0, dir, RomInfo.pokemon.walkSuccessAddress, RomInfo.pokemon.walkFailAddress);
-				if(add != RomInfo.pokemon.walkSuccessAddress) { // test if we are in the walk animation
-					System.err.println("moving failed ("+(State.currentStepCount - startSteps)+")");
-					if((State.currentStepCount - startSteps) > 20) {
+				State s = curGb.newState();
+				int add = Util.runToAddressNoLimit(0, dir, curGb.pokemon.walkSuccessAddress, curGb.pokemon.walkFailAddress);
+				if(add != curGb.pokemon.walkSuccessAddress) { // test if we are in the walk animation
+					System.err.println("moving failed ("+(curGb.currentStepCount - startSteps)+")");
+					if((curGb.currentStepCount - startSteps) > 20) {
 						System.out.println("moving failed too often, giving up!");
 						return false;
 					}
-					s.restore();
-					State.step(); // wait frame
+					curGb.restore(s);
+					curGb.step(); // wait frame
 					prepareMovement(); // find next walk frame
 					continue;
 				}
-				State.step(); // finish frame
+				curGb.step(); // finish frame
 				if(avoidEncounters) {
-					State finished = new State();
-					Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.doWalkPreEncounterCheckAddress);
-					add = Util.runToAddressNoLimit(0,dir, RomInfo.pokemon.doWalkPostEncounterCheckAddress, RomInfo.pokemon.encounterCheckMainFuncEncounterAddress);
-					if(add == RomInfo.pokemon.doWalkPostEncounterCheckAddress) {
-						finished.restore();
+					State finished = curGb.newState();
+					Util.runToAddressNoLimit(0, 0, curGb.pokemon.doWalkPreEncounterCheckAddress);
+					add = Util.runToAddressNoLimit(0,dir, curGb.pokemon.doWalkPostEncounterCheckAddress, curGb.pokemon.encounterCheckMainFuncEncounterAddress);
+					if(add == curGb.pokemon.doWalkPostEncounterCheckAddress) {
+					  curGb.restore(finished);
 						break;
 					}
-					s.restore();
-					System.out.println("WalkStep: avoiding encounter ("+(State.currentStepCount - startSteps)+")");
-					State.step(); // wait one more frame
+					curGb.restore(s);
+					System.out.println("WalkStep: avoiding encounter ("+(curGb.currentStepCount - startSteps)+")");
+					curGb.step(); // wait one more frame
 					prepareMovement(); // find next walk frame
 					continue;
 				} else

@@ -1,10 +1,9 @@
 package mrwint.gbtasgen.segment.pokemon;
 
 import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.NamingSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -43,14 +42,14 @@ public class CatchMonSegment extends SeqSegment {
 	@Override
 	public void execute() {
 		seq(new SkipTextsSegment(2)); // wild mon, go mon
-    boolean partyFull = Gb.readMemory(RomInfo.pokemon.numPartyMonAddress) >= 6;
+    boolean partyFull = curGb.readMemory(curGb.pokemon.numPartyMonAddress) >= 6;
 		if (withCooltrainerMon > 0) {
 			delay(new SeqSegment() {
 				@Override
 				protected void execute() {
 					seqButton(Move.A); // select fight
 					seqButton(Move.B); // back
-					seqMetric(Metric.forAddress(RomInfo.pokemon.encounterMonSpeciesAddress), EQUAL, withCooltrainerMon);
+					seqMetric(Metric.forAddress(curGb.pokemon.encounterMonSpeciesAddress), EQUAL, withCooltrainerMon);
 				}
 			});
 		}

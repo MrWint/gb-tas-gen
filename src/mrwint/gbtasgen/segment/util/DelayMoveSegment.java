@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.util;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.DelayUntil;
 import mrwint.gbtasgen.move.Move;
@@ -117,13 +118,13 @@ public class DelayMoveSegment extends Segment {
 				cs++;
 				if(!active[cs])
 					continue;
-				s.restore();
+				curGb.restore(s);
 				dus[cs].prepare(skips,true);
 
 				if(!metricBeforeExecution)
 					dus[cs].doMove();
 
-				int curActiveFrame = State.currentStepCount;
+				int curActiveFrame = curGb.currentStepCount;
 
 				if(skips > maxDelay) {
 					System.out.println("DelayMoveSegment interrupting search (maxDelay)!");
@@ -146,7 +147,7 @@ public class DelayMoveSegment extends Segment {
 				}
 
 				StateBuffer sb = new StateBuffer();
-				sb.addState(State.createState(true));
+				sb.addState(curGb.createState(true));
 				sb = verificationSegment.execute(sb);
 				ret.addAll(sb);
 				if(sb.isEmpty())

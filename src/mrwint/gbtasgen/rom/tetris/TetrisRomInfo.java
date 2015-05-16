@@ -6,8 +6,8 @@ import mrwint.gbtasgen.rom.RomInfo;
 public class TetrisRomInfo extends RomInfo {
 
   @Override
-  public int getRngState() {
-    return Gb.getRNGState();
+  public int getRngState(Gb gb) {
+    return gb.getDivState();
   }
 
   public int hGameState = 0xffe1;

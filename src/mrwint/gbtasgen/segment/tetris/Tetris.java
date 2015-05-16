@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.tetris;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.move.Move;
@@ -8,15 +9,19 @@ import mrwint.gbtasgen.move.RunUntil;
 import mrwint.gbtasgen.move.SequenceMove;
 import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.rom.RomInfo;
+import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
 import mrwint.gbtasgen.rom.tetris.Tetris10RomInfo;
 import mrwint.gbtasgen.rom.tetris.TetrisRomInfo;
+import mrwint.gbtasgen.segment.SingleGbSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.GlitchlessRed;
 import mrwint.gbtasgen.segment.util.FindShortestSequenceSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SleepSegment;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.tools.tetris.Piece;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 import mrwint.gbtasgen.util.Util;
 
 public class Tetris extends SeqSegment {
@@ -24,30 +29,30 @@ public class Tetris extends SeqSegment {
   private final class ThreeExtraPieces implements StateResettingMetric {
     @Override
     public int getMetricInternal() {
-      State.steps(10);
+      curGb.steps(10);
       int numFull = 0;
       int numRegions = 0;
       int numSupports = 0;
       int numPointRegions = 0;
       int startAddress = 0xc902;
       for (int a = 0; a < 10; a++) {
-        if (Gb.readMemory(startAddress + a) != 0x2f)
+        if (curGb.readMemory(startAddress + a) != 0x2f)
           numFull++;
         else {
-          if (Gb.readMemory(startAddress + a + 0x20) != 0x2f)
+          if (curGb.readMemory(startAddress + a + 0x20) != 0x2f)
             numSupports++;
-          if (a == 0 || Gb.readMemory(startAddress + a - 1) != 0x2f) {
+          if (a == 0 || curGb.readMemory(startAddress + a - 1) != 0x2f) {
             numRegions++;
-            if ((a == 9 || Gb.readMemory(startAddress + a + 1) != 0x2f) && Gb.readMemory(startAddress + a + 0x20) == 0x2f && Gb.readMemory(startAddress + a + 0x40) != 0x2f)
+            if ((a == 9 || curGb.readMemory(startAddress + a + 1) != 0x2f) && curGb.readMemory(startAddress + a + 0x20) == 0x2f && curGb.readMemory(startAddress + a + 0x40) != 0x2f)
               numPointRegions++;
           }
         }
       }
       if (numFull < 6-numPointRegions || numRegions > 1+numPointRegions || numPointRegions > 1 || numSupports + numPointRegions < numRegions)
         return 0;
-      int curPiece = (Gb.readMemory(RomInfo.tetris.wCurPiece) >> 2);
-      int previewPiece = (Gb.readMemory(RomInfo.tetris.wPreviewPiece) >> 2);
-      int nextPreviewPiece = (Gb.readMemory(RomInfo.tetris.hNextPreviewPiece) >> 2);
+      int curPiece = (curGb.readMemory(curGb.tetris.wCurPiece) >> 2);
+      int previewPiece = (curGb.readMemory(curGb.tetris.wPreviewPiece) >> 2);
+      int nextPreviewPiece = (curGb.readMemory(curGb.tetris.hNextPreviewPiece) >> 2);
       if (numPointRegions > 0 && curPiece != 0 && curPiece != 1 && curPiece != 2)
         return 0;
       if (previewPiece == 3 && curPiece != 0 && curPiece != 1)
@@ -63,28 +68,28 @@ public class Tetris extends SeqSegment {
   private final class TwoExtraPieces implements StateResettingMetric {
     @Override
     public int getMetricInternal() {
-      State.steps(10);
+      curGb.steps(10);
       int numFull = 0;
       int numRegions = 0;
       int numPointRegions = 0;
       int startAddress = 0xc902;
       for (int a = 0; a < 10; a++) {
-        if (Gb.readMemory(startAddress + a) != 0x2f)
+        if (curGb.readMemory(startAddress + a) != 0x2f)
           numFull++;
         else {
-          if (a == 0 || Gb.readMemory(startAddress + a - 1) != 0x2f) {
+          if (a == 0 || curGb.readMemory(startAddress + a - 1) != 0x2f) {
             numRegions++;
-            if ((a == 9 || Gb.readMemory(startAddress + a + 1) != 0x2f) && Gb.readMemory(startAddress + a + 0x20) != 0x2f)
+            if ((a == 9 || curGb.readMemory(startAddress + a + 1) != 0x2f) && curGb.readMemory(startAddress + a + 0x20) != 0x2f)
               numPointRegions++;
           }
         }
       }
-      int curPiece = (Gb.readMemory(RomInfo.tetris.wCurPiece) >> 2);
-      int previewPiece = (Gb.readMemory(RomInfo.tetris.wPreviewPiece) >> 2);
-      int nextPreviewPiece = (Gb.readMemory(RomInfo.tetris.hNextPreviewPiece) >> 2);
+      int curPiece = (curGb.readMemory(curGb.tetris.wCurPiece) >> 2);
+      int previewPiece = (curGb.readMemory(curGb.tetris.wPreviewPiece) >> 2);
+      int nextPreviewPiece = (curGb.readMemory(curGb.tetris.hNextPreviewPiece) >> 2);
       if (previewPiece != 0 && previewPiece != 1 && curPiece != 0 && curPiece != 1)
         return 0;
-      if (Gb.readMemory(0xc90b) == 0x2f && Gb.readMemory(0xc90a) == 0x2f && Gb.readMemory(0xc909) == 0x2f && Gb.readMemory(0xc908) == 0x2f && Gb.readMemory(0xc907) == 0x2f)
+      if (curGb.readMemory(0xc90b) == 0x2f && curGb.readMemory(0xc90a) == 0x2f && curGb.readMemory(0xc909) == 0x2f && curGb.readMemory(0xc908) == 0x2f && curGb.readMemory(0xc907) == 0x2f)
         return 0;
 
       System.out.println(String.format("full: %s, regions: %s, pointRegions: %s", numFull, numRegions, numPointRegions));
@@ -94,7 +99,7 @@ public class Tetris extends SeqSegment {
   }
 
   private Move waitForGameState(int gameState) {
-    return new RunUntil(() -> Gb.readMemory(RomInfo.tetris.hGameState) == gameState ? 1 : 0);
+    return new RunUntil(() -> curGb.readMemory(curGb.tetris.hGameState) == gameState ? 1 : 0);
   }
 
   @Override
@@ -137,8 +142,12 @@ public class Tetris extends SeqSegment {
   }
 
   public static void main(String[] args) {
-    RomInfo.setRom(new TetrisRomInfo());
+    SingleGbRunner.run(new TetrisRomInfo(), new SingleGbSegment() {
 
-    Runner.run(new Tetris());
+      @Override
+      protected void execute() {
+        seq(new Tetris());
+      }
+    });
   }
 }

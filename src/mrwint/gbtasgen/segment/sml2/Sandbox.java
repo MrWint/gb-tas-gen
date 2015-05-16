@@ -1,16 +1,10 @@
 package mrwint.gbtasgen.segment.sml2;
 
-import static mrwint.gbtasgen.rom.RomInfo.sml2;
-import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.move.Wait;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.sml2.Sml2RomInfo;
-import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.Runner;
-import mrwint.gbtasgen.util.Util;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
 public class Sandbox extends SeqSegment {
 
@@ -55,8 +49,11 @@ public class Sandbox extends SeqSegment {
   }
 
   public static void main(String[] args) {
-    RomInfo.setRom(new Sml2RomInfo());
-
-    Runner.run(new Sandbox());
+    SingleGbRunner.run(new Sml2RomInfo(), new SingleGbSegment() {
+      @Override
+      protected void execute() {
+        seq(new Sandbox());
+      }
+    });
   }
 }

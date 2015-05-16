@@ -1,5 +1,7 @@
 package mrwint.gbtasgen.testing;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +12,11 @@ import java.util.TreeSet;
 
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.move.WriteMemory;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
 
@@ -48,10 +49,10 @@ public class CooltrainerMapPositionTest extends SeqSegment {
 			int mapHeight;
 			int mapWidth;
 			{
-				int[] rom = State.getROM();
-				int[] memory = State.getCurrentMemory();
-				int mapHeaderBank = rom[RomInfo.pokemon.mapHeaderBanksAddress+map];
-				int curMapHeaderAddress = Util.getRomWordLE(RomInfo.pokemon.mapHeaderPointersAddress+2*map) + (mapHeaderBank-1)*0x4000;
+				int[] rom = curGb.getROM();
+				int[] memory = curGb.getCurrentMemory();
+				int mapHeaderBank = rom[curGb.pokemon.mapHeaderBanksAddress+map];
+				int curMapHeaderAddress = Util.getRomWordLE(curGb.pokemon.mapHeaderPointersAddress+2*map) + (mapHeaderBank-1)*0x4000;
 
 				System.out.println("Map ID "+Integer.toHexString(map)+" header at "+Util.toHex(curMapHeaderAddress));
 
@@ -60,13 +61,13 @@ public class CooltrainerMapPositionTest extends SeqSegment {
 
 				System.out.println("Map dimensions "+mapWidth+"x"+mapHeight);
 
-				int blockTilesAddress = Util.getMemoryWordLE(RomInfo.pokemon.blockTilesPointerAddress+1) + (memory[RomInfo.pokemon.blockTilesPointerAddress]-1)*0x4000;
+				int blockTilesAddress = Util.getMemoryWordLE(curGb.pokemon.blockTilesPointerAddress+1) + (memory[curGb.pokemon.blockTilesPointerAddress]-1)*0x4000;
 
 				// build tile map
 				mapTiles = new int[(mapWidth+6)*4][(mapHeight+6)*4];
 				for(int blockX=0;blockX<mapWidth+6;blockX++) {
 					for(int blockY=0;blockY<mapHeight+6;blockY++) {
-						int block = memory[RomInfo.pokemon.curBlockDataAddress + blockY*(mapWidth+6) + blockX];
+						int block = memory[curGb.pokemon.curBlockDataAddress + blockY*(mapWidth+6) + blockX];
 						for(int y=0;y<4;y++) {
 							for(int x=0;x<4;x++) {
 								mapTiles[blockX*4 + x][blockY*4 + y] = rom[blockTilesAddress + block*0x10 + y*4 + x];
@@ -114,14 +115,13 @@ public class CooltrainerMapPositionTest extends SeqSegment {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+    Gb.loadGambatte(1);
+
 		// select ROM to use
-		RomInfo.setRom(new RedRomInfo());
-//		RomInfo.setRom(new BlueRomInfo());
+    curGb = new Gameboy(new RedRomInfo(), 0);
+//    curGb = new Gameboy(new BlueRomInfo());
 
-		Gb.loadGambatte();
-		State.init(RomInfo.pokemon.romFileName);
-
-		StateBuffer in = StateBuffer.load("test_1");
+		StateBuffer in = StateBuffer.load("test_1", "");
 		new CooltrainerMapPositionTest().execute(in);
 	}
 

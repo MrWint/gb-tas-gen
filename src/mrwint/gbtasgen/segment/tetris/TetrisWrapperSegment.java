@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.tetris;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -17,7 +18,7 @@ public class TetrisWrapperSegment extends Segment {
   public StateBuffer execute(StateBuffer in) {
     TetrisStateBuffer buf = new TetrisStateBuffer();
     for (State s : in.getStates())
-      buf.addState(s);
+      buf.addState(curGb, s);
     buf = segment.execute(buf);
     StateBuffer ret = new StateBuffer();
     for (StateBuffer sb : buf.getMap().values())

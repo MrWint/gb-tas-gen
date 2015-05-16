@@ -46,29 +46,29 @@ public class EliteFourSquirtle extends SeqSegment {
 
 	@Override
 	public void execute() {
-//
-//	  {
-//      seq(new WalkToSegment(15, 9)); // PC
-//      seq(new WalkToSegment(15, 8)); // PC
-//      seqButton(A); // PC
-//      seq(new SkipTextsSegment(1)); // turned on PC
-//      seqButton(A); // Bills PC
-//      seq(new SkipTextsSegment(2)); // access Bills PC
-//      seq(scrollAF(1)); // deposit
-//      seqSkipInput(1);
-//      seq(scrollAF(1)); // spearow
-//      seq(repress(A)); // deposit
-//      seq(new SkipTextsSegment(1)); // deposited
-//      seq(menu(A)); // deposit
-//      seqSkipInput(1);
-//      seq(scrollAF(1)); // sandshrew
-//      seq(repress(A)); // deposit
-//      seq(new SkipTextsSegment(1)); // deposited
-//      seq(menu(B)); // exit
-//      seq(menu(B)); // exit
-//	  }
-//
-//    seq(new WalkToSegment(8, 0)); // enter elite four
+
+	  {
+      seq(new WalkToSegment(15, 9)); // PC
+      seq(new WalkToSegment(15, 8)); // PC
+      seqButton(A); // PC
+      seq(new SkipTextsSegment(1)); // turned on PC
+      seqButton(A); // Bills PC
+      seq(new SkipTextsSegment(2)); // access Bills PC
+      seq(scrollAF(1)); // deposit
+      seqSkipInput(1);
+      seq(scrollAF(1)); // spearow
+      seq(repress(A)); // deposit
+      seq(new SkipTextsSegment(1)); // deposited
+      seq(menu(A)); // deposit
+      seqSkipInput(1);
+      seq(scrollAF(1)); // sandshrew
+      seq(repress(A)); // deposit
+      seq(new SkipTextsSegment(1)); // deposited
+      seq(menu(B)); // exit
+      seq(menu(B)); // exit
+	  }
+
+    seq(new WalkToSegment(8, 0)); // enter elite four
 //
 //    seq(new WalkToSegment(4, 2)); // engage lorelei
 //    seq(new WalkToSegment(5, 2, false)); // engage lorelei

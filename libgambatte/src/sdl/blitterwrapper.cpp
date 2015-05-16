@@ -20,15 +20,15 @@
 #include "videolink/vfilterinfo.h"
 #include "videolink/rgb32conv.h"
 
-const BlitterWrapper::Buf BlitterWrapper::inBuf() const {
+const BlitterWrapper::Buf BlitterWrapper::inBuf(int screen) const {
 	Buf buf;
 	
 	if (VideoLink *const gblink = vfilter.get() ? vfilter.get() : cconvert.get()) {
-		buf.pixels = static_cast<gambatte::uint_least32_t*>(gblink->inBuf());
+		buf.pixels = static_cast<gambatte::uint_least32_t*>(gblink->inBuf()) + (screen * singleScreenWidth);
 		buf.pitch  = gblink->inPitch();
 	} else {
 		const SdlBlitter::PixelBuffer &pxbuf = blitter.inBuffer();
-		buf.pixels = static_cast<gambatte::uint_least32_t*>(pxbuf.pixels);
+		buf.pixels = static_cast<gambatte::uint_least32_t*>(pxbuf.pixels) + (screen * singleScreenWidth);
 		buf.pitch = pxbuf.pitch;
 	}
 	
@@ -52,11 +52,12 @@ void BlitterWrapper::draw() {
 	blitter.draw();
 }
 
-void BlitterWrapper::init() {
+void BlitterWrapper::init(int numScreens) {
 	const VfilterInfo vfinfo = VfilterInfo::get(vsrci);
 	vfilter.reset(vfinfo.create());
-	blitter.setBufferDimensions(vfinfo.outWidth, vfinfo.outHeight);
+	singleScreenWidth = vfinfo.outWidth;
+	blitter.setBufferDimensions(numScreens * vfinfo.outWidth, vfinfo.outHeight);
 	cconvert.reset(Rgb32Conv::create(static_cast<Rgb32Conv::PixelFormat>(blitter.inBuffer().format),
-			vfinfo.outWidth, vfinfo.outHeight));
+			numScreens * vfinfo.outWidth, vfinfo.outHeight));
 	
 }

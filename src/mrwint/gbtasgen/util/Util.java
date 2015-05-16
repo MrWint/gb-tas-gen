@@ -1,15 +1,14 @@
 package mrwint.gbtasgen.util;
 
 import static mrwint.gbtasgen.metric.comparator.Comparator.UNEQUAL;
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.state.State;
 
 public class Util {
 	public static int getRomWordLE(int add) {
-		return State.getROM()[add] + (State.getROM()[add+1] << 8);
+		return curGb.getROM()[add] + (curGb.getROM()[add+1] << 8);
 	}
 	public static int getRomPointerAddressLE(int add) {
 		int ptrLocal = getRomWordLE(add);
@@ -23,17 +22,17 @@ public class Util {
 			return ptrLocal;
 	}
 	public static int getMemoryWordBE(int add) {
-		return (Gb.readMemory(add) << 8) + Gb.readMemory(add+1);
+		return (curGb.readMemory(add) << 8) + curGb.readMemory(add+1);
 	}
 	public static int getMemoryWordLE(int add) {
-		return Gb.readMemory(add) + (Gb.readMemory(add+1) << 8);
+		return curGb.readMemory(add) + (curGb.readMemory(add+1) << 8);
 	}
 
 	// returns address or 0
 	public static int runToAddressLimit(int baseKeys, int startKeys, int stepLimit, int... addresses) {
 		int steps = 0;
 		while(steps < stepLimit) {
-			int ret = State.step(steps == 0 ? startKeys : baseKeys, addresses);
+			int ret = curGb.step(steps == 0 ? startKeys : baseKeys, addresses);
 			if(ret != 0)
 				return ret;
 			steps++;
@@ -47,35 +46,35 @@ public class Util {
 
 	public static void runFor(int numFrames, int baseKeys, int startKeys) {
 		for (int i = 0; i < numFrames; i++) {
-			State.step(i == 0 ? startKeys : baseKeys);
+		  curGb.step(i == 0 ? startKeys : baseKeys);
 		}
 	}
   public static void runUntil(int keys, Metric m, Comparator comp, int value) {
     while (!comp.compare(m.getMetric(), value))
-      State.step(keys);
+      curGb.step(keys);
   }
   public static void runToFrameBeforeUntil(int keys, Metric m, Comparator comp, int value) {
-    State cur = new State();
-    int startSteps = State.currentStepCount;
+    State cur = curGb.newState();
+    int startSteps = curGb.currentStepCount;
     runUntil(keys, m, comp, value);
-    int steps = State.currentStepCount - startSteps - 1;
-    cur.restore();
+    int steps = curGb.currentStepCount - startSteps - 1;
+    curGb.restore(cur);
     runFor(steps, keys, keys);
   }
 
 	public static void runToFrameBeforeAddress(int baseKeys, int startKeys, int... addresses) {
-		State cur = new State();
-		int startSteps = State.currentStepCount;
+		State cur = curGb.newState();
+		int startSteps = curGb.currentStepCount;
 		runToAddressNoLimit(baseKeys, startKeys, addresses);
-		int steps = State.currentStepCount - startSteps;
-		cur.restore();
+		int steps = curGb.currentStepCount - startSteps;
+		curGb.restore(cur);
 		runFor(steps, baseKeys, startKeys);
 	}
 	public static void runToNextInputFrame() {
 		runToNextInputFrame(0, 0);
 	}
 	public static void runToNextInputFrame(int baseKeys, int startKeys) {
-		runToFrameBeforeAddress(baseKeys, startKeys, RomInfo.rom.readJoypadAddress);
+		runToFrameBeforeAddress(baseKeys, startKeys, curGb.rom.readJoypadAddress);
 	}
 
 	public static void runToFirstDifference(int baseKeys, int altKeys, Metric m) {
@@ -84,9 +83,9 @@ public class Util {
 	public static void runToFirstDifference(int baseKeys, int altKeys, Metric m, Comparator comp) {
 		while(true) {
 			runToNextInputFrame();
-			State cur = new State();
+			State cur = curGb.newState();
 			if(isDifferencePoint(baseKeys,altKeys,m,comp,cur)) {
-				cur.restore();
+				curGb.restore(cur);
 				//System.out.println("runToFirstDifference ran "+steps+" base steps");
 				return;
 			}
@@ -94,10 +93,10 @@ public class Util {
 	}
 
 	private static boolean isDifferencePoint(int baseKeys, int altKeys, Metric m, Comparator comp, State cur) {
-		State.step(altKeys);
+	  curGb.step(altKeys);
 		int altMetric = m.getMetric();
-		cur.restore();
-		State.step(baseKeys);
+		curGb.restore(cur);
+		curGb.step(baseKeys);
 		int baseMetric = m.getMetric();
 		return comp.compare(baseMetric, altMetric);
 	}

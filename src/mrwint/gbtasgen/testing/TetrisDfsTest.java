@@ -1,12 +1,11 @@
 package mrwint.gbtasgen.testing;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.RunUntil;
 import mrwint.gbtasgen.move.Wait;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.tetris.TetrisRomInfo;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.tools.tetris.Board;
 import mrwint.gbtasgen.tools.tetris.LockPiece;
@@ -16,20 +15,20 @@ import mrwint.gbtasgen.tools.tetris.search.AStar;
 import mrwint.gbtasgen.tools.tetris.search.SearchAlgorithm;
 import mrwint.gbtasgen.tools.tetris.search.SearchAlgorithm.SearchState;
 import mrwint.gbtasgen.tools.tetris.search.SearchAlgorithm.StateDist;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
 public class TetrisDfsTest extends SeqSegment {
 
   @Override
   protected void execute() {
-    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x35 ? 1 : 0);}));
+    seqMove(new RunUntil(() -> {return (curGb.readMemory(curGb.tetris.hGameState) == 0x35 ? 1 : 0);}));
     seqButton(Move.START);
-    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x7 ? 1 : 0);}));
+    seqMove(new RunUntil(() -> {return (curGb.readMemory(curGb.tetris.hGameState) == 0x7 ? 1 : 0);}));
     seqButton(Move.START | Move.DOWN);
-    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0xe ? 1 : 0);}));
+    seqMove(new RunUntil(() -> {return (curGb.readMemory(curGb.tetris.hGameState) == 0xe ? 1 : 0);}));
     seqButton(Move.RIGHT);
     seqButton(Move.START);
-    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x13 ? 1 : 0);}));
+    seqMove(new RunUntil(() -> {return (curGb.readMemory(curGb.tetris.hGameState) == 0x13 ? 1 : 0);}));
     seqButton(Move.DOWN);
     seqButton(Move.LEFT);
     seqButton(Move.DOWN);
@@ -39,7 +38,7 @@ public class TetrisDfsTest extends SeqSegment {
     seqButton(Move.RIGHT);
     //    seq(Move.A);
     seqButton(Move.START);
-    seqMove(new RunUntil(() -> {return (Gb.readMemory(RomInfo.tetris.hGameState) == 0x0 ? 1 : 0);}));
+    seqMove(new RunUntil(() -> {return (curGb.readMemory(curGb.tetris.hGameState) == 0x0 ? 1 : 0);}));
     //    seq(new Wait(10));
     //    seq(() -> {
     //      short[] board = new short[Board.HEIGHT];
@@ -89,8 +88,11 @@ public class TetrisDfsTest extends SeqSegment {
   }
 
   public static void main(String[] args) {
-    RomInfo.setRom(new TetrisRomInfo());
-
-    Runner.run(new TetrisDfsTest());
+    SingleGbRunner.run(new TetrisRomInfo(), new SingleGbSegment() {
+      @Override
+      protected void execute() {
+        seq(new TetrisDfsTest());
+      }
+    });
   }
 }

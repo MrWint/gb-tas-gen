@@ -1,20 +1,21 @@
 package mrwint.gbtasgen.testing;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
-import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.util.Util;
 
 public class CooltrainerGlitchMapTest {
@@ -33,14 +34,12 @@ public class CooltrainerGlitchMapTest {
 	 */
 	public static void main(String[] args) {
 
-		// select ROM to use
-		RomInfo.setRom(new RedRomInfo());
-//		RomInfo.setRom(new BlueRomInfo());
+	  Gb.loadGambatte(1);
 
-		Gb.loadGambatte();
-		State.init(RomInfo.pokemon.romFileName);
+    // select ROM to use
+	  curGb = new Gameboy(new RedRomInfo(), 0);
 
-		int[] rom = State.getROM();
+		int[] rom = curGb.getROM();
 
 		int mapHeaderBanks = 0xc23d;
 		int mapHeaderPointers = 0x01ae;
@@ -207,7 +206,7 @@ public class CooltrainerGlitchMapTest {
 
 	private static boolean checkIsPassable(int tile, int collisionAddress) {
 //		System.out.println("Checking tile "+tile);
-		int[] rom = State.getROM();
+		int[] rom = curGb.getROM();
 		int c = collisionAddress;
 		while(rom[c] != 0xFF) {
 //			System.out.println(" tile "+rom[c]);
@@ -240,7 +239,7 @@ public class CooltrainerGlitchMapTest {
 	}
 
 	public static int[][] getTiles(int dx, int dy, int width, int blockAdd, int tilesetAdd, int tilesetBankOffset) {
-		int[] rom = State.getROM();
+		int[] rom = curGb.getROM();
 		int[][] tmp = new int[24][20];
 		int add = blockAdd;
 		for (int y=0;y<5;y++) {

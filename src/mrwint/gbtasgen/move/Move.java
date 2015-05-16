@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.move;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.state.State;
 
@@ -57,13 +58,13 @@ public abstract class Move {
 		if(!isCachable() || !useCache || cachedSkips > skips)
 			clearCache();
 		else if(cachedState != null) {
-			cachedState.restore();
+		  curGb.restore(cachedState);
 			skipsLeft -= cachedSkips;
 			useCached = true;
 		}
 		prepareInternal(skipsLeft,useCached);
 		if (isCachable()) {
-			cachedState = new State();
+			cachedState = curGb.newState();
 			cachedSkips = skips;
 		}
 	}

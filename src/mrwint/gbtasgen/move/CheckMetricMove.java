@@ -1,9 +1,9 @@
 package mrwint.gbtasgen.move;
 
 import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.state.State;
 
 @Deprecated
 public class CheckMetricMove extends Move {
@@ -28,7 +28,7 @@ public class CheckMetricMove extends Move {
 	public boolean doMove() {
 		int curVal = metric.getMetric();
 		if(attributeName != null)
-			State.setCAttributeInt(attributeName, curVal);
+			curGb.setAttributeInt(attributeName, curVal);
 		return comp.compare(curVal, value);
 	}
 

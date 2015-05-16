@@ -1,11 +1,12 @@
 package mrwint.gbtasgen.segment.pokemon.fight;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckNoAIMove;
@@ -14,7 +15,6 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.WithMetric;
 import mrwint.gbtasgen.move.pokemon.SelectMoveInList;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
@@ -57,8 +57,8 @@ public class KillEnemyMonSegment extends Segment {
 		}
 		@Override
 		public int getMetricInternal() {
-			Util.runToAddressNoLimit(0, keys, RomInfo.pokemon.fightAfterAIChooseMove);
-			int enemyMove = Gb.readMemory(RomInfo.pokemon.fightCurEnemyMoveAddress); // selected enemy move
+			Util.runToAddressNoLimit(0, keys, curGb.pokemon.fightAfterAIChooseMove);
+			int enemyMove = curGb.readMemory(curGb.pokemon.fightCurEnemyMoveAddress); // selected enemy move
 			System.out.println("found enemy move "+enemyMove);
 			return (((move.length == 0 && enemyMove != 98/*Quick Attack*/) || Util.arrayContains(move,enemyMove)) ? 1 : 0);
 		}
@@ -77,21 +77,21 @@ public class KillEnemyMonSegment extends Segment {
 		public int getMetricInternal() {
 			//System.out.println("runToAddress");
 			//try {Thread.sleep(2000);} catch (InterruptedException e) {}
-			Util.runToAddressNoLimit(0, keys, RomInfo.pokemon.fightDetermineAttackOrder);
+			Util.runToAddressNoLimit(0, keys, curGb.pokemon.fightDetermineAttackOrder);
 			//System.out.println("ranToAddress");
 			//try {Thread.sleep(2000);} catch (InterruptedException e) {}
-			int enemyMove = Gb.readMemory(RomInfo.pokemon.fightCurEnemyMoveAddress); // selected enemy move
+			int enemyMove = curGb.readMemory(curGb.pokemon.fightCurEnemyMoveAddress); // selected enemy move
 			if(move.length > 0 && !Util.arrayContains(move, enemyMove))
 				return 0;
-			int add = Util.runToAddressNoLimit(0,0,RomInfo.pokemon.fightDetermineAttackOrderPlayerFirst,RomInfo.pokemon.fightDetermineAttackOrderEnemyFirst);
-			if ((add == RomInfo.pokemon.fightDetermineAttackOrderPlayerFirst) != faster)
+			int add = Util.runToAddressNoLimit(0,0,curGb.pokemon.fightDetermineAttackOrderPlayerFirst,curGb.pokemon.fightDetermineAttackOrderEnemyFirst);
+			if ((add == curGb.pokemon.fightDetermineAttackOrderPlayerFirst) != faster)
 				return 0;
 //			System.out.println("move "+enemyMove);
 			if (!faster)
-				add = Util.runToAddressNoLimit(0,0,RomInfo.pokemon.fightAIMoveCheck); // Check for AI moves (item uses etc.)
+				add = Util.runToAddressNoLimit(0,0,curGb.pokemon.fightAIMoveCheck); // Check for AI moves (item uses etc.)
 			else
 				return 1;
-			return (add == RomInfo.pokemon.fightAIExecuteMove) ? 1 : 0;
+			return (add == curGb.pokemon.fightAIExecuteMove) ? 1 : 0;
 		}
 	}
 
@@ -108,9 +108,9 @@ public class KillEnemyMonSegment extends Segment {
 		@Override
 		public int getMetric() {
 			State s = null;
-			if(resetState) s = new State();
-			int add = Util.runToAddressNoLimit(0, initialMove, RomInfo.pokemon.fightEndTurnAddresses);
-			if(add == RomInfo.pokemon.printLetterDelayJoypadAddress) {
+			if(resetState) s = curGb.newState();
+			int add = Util.runToAddressNoLimit(0, initialMove, curGb.pokemon.fightEndTurnAddresses);
+			if(add == curGb.pokemon.printLetterDelayJoypadAddress) {
 				System.out.println("CheckAdditionalTexts: found additional PrintText!");
 //				try { Thread.sleep(2000); } catch (InterruptedException e) { }
 //				for(int i=0;i<40;i++) {
@@ -118,10 +118,10 @@ public class KillEnemyMonSegment extends Segment {
 //					try { Thread.sleep(100); } catch (InterruptedException e) { }
 //				}
 //				try { Thread.sleep(2000); } catch (InterruptedException e) { }
-				if(resetState) s.restore();
+				if(resetState) curGb.restore(s);
 				return 0;
 			}
-			if(resetState) s.restore();
+			if(resetState) curGb.restore(s);
 			return 1;
 		}
 	}
@@ -160,21 +160,21 @@ public class KillEnemyMonSegment extends Segment {
 //      Util.runToAddressNoLimit(0, 0, 0x3d702, 0x3e77f);
 //      missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
 
-			Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.fightBattleCommand0a);
-			int crit = Gb.readMemory(RomInfo.pokemon.fightCriticalHitAddress);
-			int missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
+			Util.runToAddressNoLimit(0, 0, curGb.pokemon.fightBattleCommand0a);
+			int crit = curGb.readMemory(curGb.pokemon.fightCriticalHitAddress);
+			int missed = curGb.readMemory(curGb.pokemon.fightAttackMissedAddress);
 			boolean failure = missed != 0 || criticalHit != (crit != 0);
-			if (thrashAdditionalTurns > 0 && Gb.readMemory(RomInfo.pokemon.thrashNumTurnsAddress) < thrashAdditionalTurns) {
+			if (thrashAdditionalTurns > 0 && curGb.readMemory(curGb.pokemon.thrashNumTurnsAddress) < thrashAdditionalTurns) {
 				failure = true;
-				System.out.println("caught bad thrash "+ Gb.readMemory(RomInfo.pokemon.thrashNumTurnsAddress));
+				System.out.println("caught bad thrash "+ curGb.readMemory(curGb.pokemon.thrashNumTurnsAddress));
 			}
 			if (PokemonUtil.isGen2()) {
-				int effectMissed = Gb.readMemory(RomInfo.pokemon.fightEffectMissedAddress);
+				int effectMissed = curGb.readMemory(curGb.pokemon.fightEffectMissedAddress);
 				failure = failure || this.effectMiss != (effectMissed != 0);
 			}
 			if(failure)
 				return Integer.MIN_VALUE;
-			int dmg = Util.getMemoryWordBE(RomInfo.pokemon.fightCurDamageAddress);
+			int dmg = Util.getMemoryWordBE(curGb.pokemon.fightCurDamageAddress);
 			if(dmg > 0 && cat != null)
 				if(cat.getMetric() == (expectAdditionalTexts ? 1 : 0)) // found additional texts
 					return Integer.MIN_VALUE;
@@ -330,8 +330,8 @@ public class KillEnemyMonSegment extends Segment {
 		if(onlyPrintInfo)
 			return in;
 
-		int enemyHP = Util.getMemoryWordBE(RomInfo.pokemon.fightEnemyMonHPAddress);
-		int ownHP = Util.getMemoryWordBE(RomInfo.pokemon.fightBattleMonHPAddress);
+		int enemyHP = Util.getMemoryWordBE(curGb.pokemon.fightEnemyMonHPAddress);
+		int ownHP = Util.getMemoryWordBE(curGb.pokemon.fightBattleMonHPAddress);
 
 		if(maxOwnDamage < 0)
 			maxOwnDamage = ownHP -1;
@@ -625,11 +625,11 @@ public class KillEnemyMonSegment extends Segment {
 					@Override
 					public int getMetric() { // check for next mon
 						if(nextMonSpecies > 0 || nextMonLevel > 0) {
-							State s = new State();
-							Util.runToAddressNoLimit(0, 0, RomInfo.pokemon.printLetterDelayJoypadAddress);
-							int mon = Gb.readMemory(RomInfo.pokemon.fightEnemyMonSpeciesAddress);
-							int level = Gb.readMemory(RomInfo.pokemon.fightEnemyMonLevelAddress);
-							s.restore();
+							State s = curGb.newState();
+							Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+							int mon = curGb.readMemory(curGb.pokemon.fightEnemyMonSpeciesAddress);
+							int level = curGb.readMemory(curGb.pokemon.fightEnemyMonLevelAddress);
+							curGb.restore(s);
 							if(nextMonSpecies > 0 && nextMonSpecies != mon)
 								return 0;
 							if(nextMonLevel > 0 && nextMonLevel != level)
@@ -699,11 +699,11 @@ public class KillEnemyMonSegment extends Segment {
 			System.out.println("StateBuffer EMPTY!");
 			return;
 		}
-		in.getStates().iterator().next().restore(); // restore some state
+		curGb.restore(in.getStates().iterator().next()); // restore some state
 		Util.runToNextInputFrame(); // skip to menu, ensuring mons are loaded
 
-		int enemyHP = Util.getMemoryWordBE(RomInfo.pokemon.fightEnemyMonHPAddress);
-		int playerHP = Util.getMemoryWordBE(RomInfo.pokemon.fightBattleMonHPAddress);
+		int enemyHP = Util.getMemoryWordBE(curGb.pokemon.fightEnemyMonHPAddress);
+		int playerHP = Util.getMemoryWordBE(curGb.pokemon.fightBattleMonHPAddress);
 
 		System.out.println("Enemy HP: "+enemyHP);
 		System.out.print("Enemy stats:");
@@ -782,14 +782,14 @@ public class KillEnemyMonSegment extends Segment {
 					continue;
 				}
 
-				s.restore();
+				curGb.restore(s);
 				dus[cs].prepare(skips,true);
 				dus[cs].doMove();
 
-				int curActiveFrame = State.currentStepCount;
+				int curActiveFrame = curGb.currentStepCount;
 
 				StateBuffer sb = new StateBuffer();
-				sb.addState(State.createState());
+				sb.addState(curGb.createState());
 				sb = bFirst ?
 						executeAttackInternal(sb, curActiveFrame, goalAValue, minBValue, imActiveFrame, bActionSegment, goalBValue, false):
 						executeAttackInternal(sb, curActiveFrame, minAValue, goalBValue, imActiveFrame, aActionSegment, goalAValue, true);

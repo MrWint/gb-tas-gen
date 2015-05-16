@@ -1,12 +1,12 @@
 package mrwint.gbtasgen.move;
 
-import mrwint.gbtasgen.Gb;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 
 public class WriteMemory extends Move {
 
 	private int address;
 	private int value;
-	
+
 	public WriteMemory(int address, int value) {
 		this.address = address;
 		this.value = value;
@@ -14,10 +14,10 @@ public class WriteMemory extends Move {
 
 	@Override
 	public boolean doMove() {
-		Gb.writeMemory(address, value);
+	  curGb.writeMemory(address, value);
 		return true;
 	}
-	
+
 	@Override
 	public int getInitialKey() {
 		return 0;

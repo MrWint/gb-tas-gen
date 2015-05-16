@@ -1,17 +1,18 @@
 package mrwint.gbtasgen.move;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.state.State;
 
 public class DelayUntil extends Move {
 
 	private Move move;
-	
+
 	public DelayUntil(Move move) {
 		this.move = move;
 		if (!move.isDelayable())
 			throw new RuntimeException("move not delayable");
 	}
-	
+
 	@Override
 	public int getInitialKey() {
 		return move.getInitialKey();
@@ -24,12 +25,12 @@ public class DelayUntil extends Move {
 	public boolean isCachable() {
 		return move.isCachable();
 	}
-	
+
 	@Override
 	public void clearCache() {
 		move.clearCache();
 	}
-	
+
 	@Override
 	public void prepareInternal(int skips, boolean assumeOnSkip) {
 		//System.out.println("DelayUntil "+skips);
@@ -38,9 +39,9 @@ public class DelayUntil extends Move {
 			if (!assumeOnSkip) {
 				move.prepareInternal(0, false);
 				while(true) {
-					State s = new State();
+					State s = curGb.newState();
 					boolean ret = move.doMove();
-					s.restore();
+					curGb.restore(s);
 					if(ret)
 						break;
 					move.prepareInternal(1, true);
@@ -50,13 +51,13 @@ public class DelayUntil extends Move {
 				boolean ret;
 				do {
 					move.prepareInternal(1, true);
-					State s = new State();
+					State s = curGb.newState();
 					ret = move.doMove();
-					s.restore();
+					curGb.restore(s);
 				} while(!ret);
 			}
 		} else {
-			State init = new State();
+			State init = curGb.newState();
 			int delay = -1;
 			do {
 				boolean ret;
@@ -64,7 +65,7 @@ public class DelayUntil extends Move {
 					++delay;
 					move.prepareInternal(delay, false);
 					ret = move.doMove();
-					init.restore();
+					curGb.restore(init);
 				} while(!ret);
 			}
 			while(skips-- > 0);

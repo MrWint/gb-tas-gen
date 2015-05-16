@@ -10,22 +10,21 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.rom.RomInfo;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.State.InputNode;
 import mrwint.gbtasgen.util.Util;
 
 public class BizhawkMovie {
-	public static void saveMovie(State s, String filename) {
+	public static void saveMovie(Gameboy gb, State s, String filename) {
 		try {
-			String path = "movies/" + filename + RomInfo.rom.fileNameSuffix + ".bkm";
+			String path = "movies/" + filename + gb.rom.fileNameSuffix + ".bkm";
 
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path)));
 
-			writeHeader(s,out);
-			writeInputs(s,out);
+			writeHeader(gb, s, out);
+			writeInputs(s, out);
 
 			out.close();
 		} catch (IOException e) {
@@ -61,20 +60,20 @@ public class BizhawkMovie {
 		out.println("|");
 	}
 
-	private static void writeHeader(State s, PrintWriter out) throws IOException {
+	private static void writeHeader(Gameboy gb, State s, PrintWriter out) throws IOException {
 		out.println("emuVersion Version 1.5.3");
 		out.println("MovieVersion BizHawk v0.0.1");
-		out.println("Platform "+RomInfo.rom.platform);
-		out.println("GameName "+RomInfo.rom.romName);
+		out.println("Platform "+gb.rom.platform);
+		out.println("GameName "+gb.rom.romName);
 		out.println("Author MrWint");
-		out.println("rerecordCount "+State.rerecordCount);
+		out.println("rerecordCount "+gb.rerecordCount);
 		out.println("GUID 552d8b87-2740-497f-b946-b49f2623599d");
-		out.println("SHA1 "+RomInfo.rom.romSHA1);
+		out.println("SHA1 "+gb.rom.romSHA1);
 		out.println("Force_DMG_Mode False");
 		out.println("GBA_In_CGB False");
 	}
 
-	public static State loadMovie(String filename) {
+	public static State loadMovie(Gameboy gb, String filename) {
 		try {
 			String path = "movies/" + filename;
 			DataInputStream dis = new DataInputStream(new FileInputStream(path));
@@ -83,21 +82,21 @@ public class BizhawkMovie {
 			int inputAddress = Integer.reverseBytes(dis.readInt());
 			dis.skip(inputAddress - 0x40);
 
-			State.root.restore();
+			gb.restore(gb.root);
 
 			try{
 				while(true) {
 					int input = Short.reverseBytes(dis.readShort()) & 0xFF;
-					State.step(input);
+					gb.step(input);
 					Thread.sleep(1);
 					//System.out.println(Util.toHex(Gb.readMemory(0xffe1),2)+" "+Util.toHex(Gb.readMemory(0xffe2),2)+" : "+Util.toHex(Gb.readMemory(0xd464),2));
-					System.out.println(Util.toHex(Gb.readMemory(0xff91),2)+" "+Util.toHex(Gb.readMemory(0xff90),2)+" "+Util.toHex(Gb.readMemory(0xff8f),2)+" "+Util.toHex(Gb.readMemory(0xff8e),2));
+					System.out.println(Util.toHex(gb.readMemory(0xff91),2)+" "+Util.toHex(gb.readMemory(0xff90),2)+" "+Util.toHex(gb.readMemory(0xff8f),2)+" "+Util.toHex(gb.readMemory(0xff8e),2));
 				}
 			} catch(EOFException | InterruptedException e) {}
 			dis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new State();
+		return gb.newState();
 	}
 }

@@ -1,7 +1,7 @@
 package mrwint.gbtasgen.move;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
 public class PressButton extends DelayableCachableMove {
@@ -31,7 +31,7 @@ public class PressButton extends DelayableCachableMove {
 
 	@Override
 	public boolean doMove() {
-		State.step(moves);
+	  curGb.step(moves);
 		return true;
 	}
 
@@ -43,7 +43,7 @@ public class PressButton extends DelayableCachableMove {
 			else
 				Util.runToNextInputFrame(waitKeys, waitKeys);
 		while(skips-- > 0) {
-			State.step(waitKeys);
+		  curGb.step(waitKeys);
 			if (metric != null)
 				Util.runToFirstDifference(waitKeys, moves, metric);
 			else

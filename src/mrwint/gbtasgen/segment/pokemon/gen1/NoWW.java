@@ -4,6 +4,7 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
 import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.noww.BrockToEliteFour;
 import mrwint.gbtasgen.segment.pokemon.gen1.noww.BrockToEliteFourTM;
 import mrwint.gbtasgen.segment.pokemon.gen1.noww.BrockToTM12;
@@ -17,9 +18,9 @@ import mrwint.gbtasgen.segment.pokemon.gen1.noww.PewterNormal;
 import mrwint.gbtasgen.segment.pokemon.gen1.noww.RivalFight;
 import mrwint.gbtasgen.segment.pokemon.gen1.noww.ViridianForestNidoking;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
-public class NoWW extends SeqSegment {
+public class NoWW extends SingleGbSegment {
 
 	@Override
 	protected void execute() {
@@ -29,15 +30,15 @@ public class NoWW extends SeqSegment {
 //		load("intro100");
 //		seq(new OakSpeech());
 //		save("oakSpeech100");
-		
+
 //		load("oakSpeech100");
 //		seq(new ChooseStarter());
 //		save("chooseStarter100a");
-		
+
 //		load("chooseStarter100a");
 //		seq(new RivalFight());
 //		save("rivalFightLose50");
-		
+
 //		load("rivalFightLose50");
 //		seq(new OaksParcel());
 //		save("oaksParcel50");
@@ -70,10 +71,8 @@ public class NoWW extends SeqSegment {
 		seq(new EliteFour());
 		save("eliteFour100");
 	}
-	
+
 	public static void main(String[] args) {
-		RomInfo.pokemon = new RedRomInfo();
-		
-		Runner.run(new NoWW());
+    SingleGbRunner.run(new RedRomInfo(), new NoWW());
 	}
 }

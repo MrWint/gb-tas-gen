@@ -1,10 +1,9 @@
 package mrwint.gbtasgen.util.pokemon.map;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import java.util.Arrays;
 
-import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.rom.RomInfo;
-import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.util.Util;
 
 public class Gen2Map extends Map {
@@ -17,11 +16,11 @@ public class Gen2Map extends Map {
 	public boolean isPassable(int x, int y) {
 		if(mapStepCollisionOverride[x][y])
 			return false;
-		if((rom[RomInfo.pokemon.tileCollisionTableAddress + mapStepCollision[x][y]] & 0xF) == 0)
+		if((rom[curGb.pokemon.tileCollisionTableAddress + mapStepCollision[x][y]] & 0xF) == 0)
 			return true;
 		return false;
 	}
-	
+
 	public Integer[][] forbiddenEntryDir = {
 			{0xb2,0xb6,0xb7,0xc2,0xc6,0xc7}, // down
 			{0xb1,0xb5,0xb7,0xc1,0xc5,0xc7}, // right
@@ -42,13 +41,13 @@ public class Gen2Map extends Map {
 	public boolean isInversePassable(int fromx, int fromy, int tox, int toy, int dir) {
 		return isPassable(fromx,fromy) && canGoDir(tox,toy,dir);
 	}
-	
+
 	private int mapHeaderBank;
-	
+
 	private int[][] mapBlocks; // in blocks; including 3 border blocks in each direction
 	private int[][] mapStepCollision; // in steps; including 3 border blocks in each direction
 	private boolean[][] mapStepCollisionOverride; // in steps; including 3 border blocks in each direction
-	
+
 	private int[] rom;
 	private int[] memory;
 
@@ -62,42 +61,44 @@ public class Gen2Map extends Map {
 	private int mapHeight; // in blocks
 	private int mapWidth;
 	//private int blockDataAddress;
-	
+
 	private int curMapTileset;
 	private int tileSetCollisionDataAddress;
 
-	public int getStepWidth() {
+	@Override
+  public int getStepWidth() {
 		return (mapWidth+6)*2;
 	}
-	public int getStepHeight() {
+	@Override
+  public int getStepHeight() {
 		return (mapHeight+6)*2;
 	}
-	
+
 	public Gen2Map() {
-		this.rom = State.getROM();
-		this.memory = State.getCurrentMemory();
-		
-		this.curMapGroup = memory[RomInfo.pokemon.curMapGroupAddress];
-		this.curMapID = memory[RomInfo.pokemon.curMapIDAddress];
+		this.rom = curGb.getROM();
+		this.memory = curGb.getCurrentMemory();
+
+		this.curMapGroup = memory[curGb.pokemon.curMapGroupAddress];
+		this.curMapID = memory[curGb.pokemon.curMapIDAddress];
 
 		loadMap();
 	}
-	
+
 	public Gen2Map(int curMapGroup, int curMapID) {
-		this.rom = State.getROM();
-		this.memory = State.getCurrentMemory();
-		
+		this.rom = curGb.getROM();
+		this.memory = curGb.getCurrentMemory();
+
 		this.curMapGroup = curMapGroup;
 		this.curMapID = curMapID;
 
 		loadMap();
 	}
-	
+
 	private void loadMap() {
 		System.out.println("Loading map "+Util.toHex(curMapGroup)+":"+Util.toHex(curMapID)+"...");
 
-		mapHeaderBank = RomInfo.pokemon.mapGroupPointersAddress / 0x4000;
-		curMapHeaderAddress = Util.getRomWordLE(RomInfo.pokemon.mapGroupPointersAddress+2*(curMapGroup-1)) +
+		mapHeaderBank = curGb.pokemon.mapGroupPointersAddress / 0x4000;
+		curMapHeaderAddress = Util.getRomWordLE(curGb.pokemon.mapGroupPointersAddress+2*(curMapGroup-1)) +
 				(curMapID-1) * 9 + // each header is 9 bytes long; 1-indexed
 				(mapHeaderBank-1)*0x4000; // adjust bank
 
@@ -116,22 +117,22 @@ public class Gen2Map extends Map {
 
 		//blockDataAddress = rom[curMapSecondHeaderAddress+4] + (rom[curMapSecondHeaderAddress+5]<<8) +
 		//		(rom[curMapSecondHeaderAddress+3]-1)*0x4000; // adjust bank
-		
+
 		mapBlocks = new int[mapWidth+6][mapHeight+6];
 		//for(int i=0;i<mapWidth+6;i++)
 		//	for(int j=0;j<mapHeight+6;j++)
 		//		mapBlocks[i][j] = borderBlock;
-		int curAddress = RomInfo.pokemon.curBlockDataAddress; //blockDataAddress;
+		int curAddress = curGb.pokemon.curBlockDataAddress; //blockDataAddress;
 		for(int j=0;j<mapHeight+6;j++)
 			for(int i=0;i<mapWidth+6;i++)
 				mapBlocks[i][j] = memory[curAddress++];
-		
+
 		curMapTileset = rom[curMapHeaderAddress+1];
-		
-		tileSetCollisionDataAddress = Util.getRomWordLE(RomInfo.pokemon.tilesetsAddress + 0xf*curMapTileset + 7) +
-				(rom[RomInfo.pokemon.tilesetsAddress + 0xf*curMapTileset + 6]-1)*0x4000; // adjust bank
-				
-		
+
+		tileSetCollisionDataAddress = Util.getRomWordLE(curGb.pokemon.tilesetsAddress + 0xf*curMapTileset + 7) +
+				(rom[curGb.pokemon.tilesetsAddress + 0xf*curMapTileset + 6]-1)*0x4000; // adjust bank
+
+
 		mapStepCollision = new int[(mapWidth+6)*2][(mapHeight+6)*2];
 		mapStepCollisionOverride = new boolean[(mapWidth+6)*2][(mapHeight+6)*2];
 		for(int i=0;i<mapWidth+6;i++)
@@ -141,14 +142,14 @@ public class Gen2Map extends Map {
 				mapStepCollision[2*i  ][2*j+1] = mapBlocks[i][j] == 0 ? 0xFF : rom[tileSetCollisionDataAddress + 4*mapBlocks[i][j] + 2];
 				mapStepCollision[2*i+1][2*j+1] = mapBlocks[i][j] == 0 ? 0xFF : rom[tileSetCollisionDataAddress + 4*mapBlocks[i][j] + 3];
 			}
-		
-		
+
+
 		// parse map objects
 		int mapEventHeaderAddress = rom[curMapSecondHeaderAddress+9] +
-				(rom[curMapSecondHeaderAddress+10]<<8) + 
+				(rom[curMapSecondHeaderAddress+10]<<8) +
 				(rom[curMapSecondHeaderAddress+6]-1)*0x4000; // adjust bank
-		
-		
+
+
 		curAddress = mapEventHeaderAddress + 2; // skip filler
 		int numWarps = rom[curAddress++];
 		curAddress += numWarps * 5; // skip warps
@@ -156,10 +157,10 @@ public class Gen2Map extends Map {
 		curAddress += numTriggers * 8; // skip triggers
 		int numSigns = rom[curAddress++];
 		curAddress += numSigns * 5; // skip signs
-		
+
 		int numSprites = rom[curAddress++];
 		System.out.println("map contains "+numWarps+" warps, "+numTriggers+" triggers, "+numSigns+" signs and "+numSprites+" sprites");
-		
+
 		int numMovingSprites = 0;
 		for(int i=0;i<numSprites;i++) {
 			curAddress++; // skip sprite ID
@@ -175,9 +176,9 @@ public class Gen2Map extends Map {
 			curAddress+=2;
 			int bitIndex = rom[curAddress] + (rom[curAddress+1]<<8);
 			curAddress+=2;
-			
+
 			System.out.println("found object at "+(x-6)+":"+(y-6)+" (raw "+x+":"+y+") movement "+movement);
-			
+
 			if(movement == 0 /*|| (facingDirection >= 3 && facingDirection <= 9)*/) {
 				if(!isEventFlagSet(bitIndex)) {
 					mapStepCollisionOverride[x][y] = true; // stationary sprite blocks step
@@ -187,11 +188,11 @@ public class Gen2Map extends Map {
 					System.out.println("sprite "+(i+1)+" is hidden");
 			} else
 				numMovingSprites++;
-			
+
 			if((colorFunction & 0xF) == 2) { // trainer
-				
+
 				int trainerBit = rom[scriptPointer] + (rom[scriptPointer+1]<<8);
-				
+
 				boolean alreadFought = isEventFlagSet(trainerBit);
 				if(alreadFought)
 					System.out.println("trainer already fought!");
@@ -233,11 +234,11 @@ public class Gen2Map extends Map {
 		if(numMovingSprites > 0)
 			System.out.println("map contains "+numMovingSprites+" moving sprites");
 	}
-	
+
 	private boolean isEventFlagSet(int bitIndex) {
-		return (Gb.readMemory(RomInfo.pokemon.eventFlagsAddress + bitIndex/8) & (1<<(bitIndex%8))) != 0;
+		return (curGb.readMemory(curGb.pokemon.eventFlagsAddress + bitIndex/8) & (1<<(bitIndex%8))) != 0;
 	}
-		
+
 	public void printBlockMap() {
 		for(int y=0;y<mapBlocks[0].length;y++) {
 			for(int x=0;x<mapBlocks.length;x++)
@@ -255,7 +256,7 @@ public class Gen2Map extends Map {
 		}
 		System.out.println();
 	}
-	
+
 	@Override
 	public void printMap() {
 		printCollisionMap2();

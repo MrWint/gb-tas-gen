@@ -2,6 +2,7 @@ package mrwint.gbtasgen.segment.pokemon.gen1;
 
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.RedRomInfo;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.MtMoonNido;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.MtMoonSquirtle;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.NuggetBridgeNido;
@@ -16,9 +17,9 @@ import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.SurgeNido;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.ViridianForestNido;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.ViridianForestSquirtle;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
-public class GlitchlessRed extends SeqSegment {
+public class GlitchlessRed extends SingleGbSegment {
 
 	@Override
 	protected void execute() {
@@ -102,8 +103,6 @@ public class GlitchlessRed extends SeqSegment {
 	}
 
 	public static void main(String[] args) {
-		RomInfo.setRom(new RedRomInfo());
-
-		Runner.run(new GlitchlessRed());
+    SingleGbRunner.run(new RedRomInfo(), new GlitchlessRed());
 	}
 }

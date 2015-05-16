@@ -1,11 +1,11 @@
 package mrwint.gbtasgen.move;
 
-import mrwint.gbtasgen.state.State;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 
 public class Wait extends Move {
 
 	private int numSkip;
-	
+
 	public Wait() {
 		this(1);
 	}
@@ -16,7 +16,7 @@ public class Wait extends Move {
 
 	@Override
 	public boolean doMove() {
-		State.steps(numSkip);
+	  curGb.steps(numSkip);
 		return true;
 	}
 

@@ -1,12 +1,12 @@
 package mrwint.gbtasgen.move;
 
-import mrwint.gbtasgen.state.State;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.util.Util;
 
 public class SkipInput extends Move {
 
 	private int numSkip;
-	
+
 	public SkipInput() {
 		this(1);
 	}
@@ -23,11 +23,11 @@ public class SkipInput extends Move {
 		}
 		for(int i=0;i<numSkip;i++) {
 			Util.runToNextInputFrame();
-			State.step();
+			curGb.step();
 		}
 		return true;
 	}
-	
+
 	@Override
 	public int getInitialKey() {
 		return 0;

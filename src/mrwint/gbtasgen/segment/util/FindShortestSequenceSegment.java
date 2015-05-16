@@ -1,13 +1,15 @@
 package mrwint.gbtasgen.segment.util;
 
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class FindShortestSequenceSegment extends Segment {
-	
+
 	private Move[] moves;
 	private Metric metric;
 	private boolean onlyOneStateNeeded;
@@ -26,13 +28,13 @@ public class FindShortestSequenceSegment extends Segment {
 		if(lastDelayableMove == -1)
 			throw new RuntimeException("no delayable move found");
 	}
-	
+
 	public FindShortestSequenceSegment(Move[] moves, Metric metric, boolean onlyOneStateNeeded) {
 		this.moves = moves;
 		this.metric = metric;
 		this.onlyOneStateNeeded = onlyOneStateNeeded;
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		StateBuffer out = new StateBuffer();
@@ -41,7 +43,7 @@ public class FindShortestSequenceSegment extends Segment {
 			sumDelay++;
 			System.out.println("FindShortestSequenceSegment: testing delay "+sumDelay+" size="+out.size());
 			for(State s : in.getStates()) {
-				s.restore();
+			  curGb.restore(s);
 				rec(s,0,sumDelay,out);
 			}
 		}
@@ -54,19 +56,19 @@ public class FindShortestSequenceSegment extends Segment {
 		if(i == moves.length-1) {
 			moves[i].execute(remDelay);
 			if(metric.getMetric() != 0)
-				out.addState(State.createState(true));
+				out.addState(Gameboy.curGb.createState(true));
 		} else if (!moves[i].isDelayable()) {
 			moves[i].execute(0);
-			rec(new State(),i+1,remDelay,out);
+			rec(curGb.newState(),i+1,remDelay,out);
 		} else if (i == lastDelayableMove) {
 			moves[i].execute(remDelay);
-			rec(new State(),i+1,0,out);
+			rec(curGb.newState(),i+1,0,out);
 		} else {
 			for(int stepDelay=0;stepDelay<=remDelay;stepDelay++) {
-				s.restore();
+			  curGb.restore(s);
 				moves[i].prepare(stepDelay, true);
 				moves[i].doMove();
-				rec(new State(),i+1,remDelay-stepDelay,out);
+				rec(curGb.newState(),i+1,remDelay-stepDelay,out);
 			}
 		}
 	}

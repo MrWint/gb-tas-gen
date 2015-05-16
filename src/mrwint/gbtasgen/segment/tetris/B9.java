@@ -1,26 +1,17 @@
 package mrwint.gbtasgen.segment.tetris;
 
 import static mrwint.gbtasgen.tools.tetris.TetrisUtil.reverseBoardBits;
-
-import java.util.ArrayList;
-
-import mrwint.gbtasgen.move.Wait;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.tetris.TetrisRomInfo;
-import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.tetris.b9.Intro;
-import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.segment.util.SleepSegment;
-import mrwint.gbtasgen.state.State;
-import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.tools.tetris.LockPiece;
 import mrwint.gbtasgen.tools.tetris.heuristic.CompositeHeuristic;
 import mrwint.gbtasgen.tools.tetris.heuristic.FieldEmptyHeuristic;
 import mrwint.gbtasgen.tools.tetris.heuristic.Heuristic;
 import mrwint.gbtasgen.tools.tetris.heuristic.NoOverhangHeuristic;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
-public class B9 extends SeqSegment {
+public class B9 extends SingleGbSegment {
 
   @Override
   protected void execute() {
@@ -174,8 +165,6 @@ public class B9 extends SeqSegment {
   }
 
   public static void main(String[] args) {
-    RomInfo.setRom(new TetrisRomInfo());
-
-    Runner.run(new B9());
+    SingleGbRunner.run(new TetrisRomInfo(), new B9());
   }
 }

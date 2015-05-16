@@ -2,6 +2,7 @@ package mrwint.gbtasgen.segment.pokemon.gen1;
 
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.rom.pokemon.gen1.BlueRomInfo;
+import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.ChooseStarterSquirtle;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.EliteFourSquirtle;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.Intro;
@@ -24,17 +25,19 @@ import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.TowerSquirtle;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.VictoryRoadSquirtle;
 import mrwint.gbtasgen.segment.pokemon.gen1.glitchless.ViridianForestSquirtle;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.Runner;
+import mrwint.gbtasgen.state.Gameboy;
+import mrwint.gbtasgen.state.SingleGbState;
+import mrwint.gbtasgen.util.SingleGbRunner;
 
-public class GlitchlessBlue extends SeqSegment {
+public class GlitchlessBlue extends SingleGbSegment {
 
-	@Override
+  @Override
 	protected void execute() {
-//		seq(new Intro());
+		seq(new Intro());
 //    save("intro1");
 //
 //    load("intro1");
-//    seq(new OakSpeech());
+    seq(new OakSpeech());
 //    save("oakSpeech");
 //
 //    load("oakSpeech");
@@ -93,10 +96,10 @@ public class GlitchlessBlue extends SeqSegment {
 //      seq(new RockTunnelSquirtleAlt());
 //      save("RockTunnelSquirtleAlt");
 
-      load("RockTunnelSquirtleAlt");
+//      load("RockTunnelSquirtleAlt");
     }
 
-    seq(new TowerSquirtle());
+//    seq(new TowerSquirtle());
 //    save("TowerSquirtle");
 
 //    load("TowerSquirtle");
@@ -116,9 +119,7 @@ public class GlitchlessBlue extends SeqSegment {
 //    save("EliteFourSquirtle");
 	}
 
-	public static void main(String[] args) {
-		RomInfo.setRom(new BlueRomInfo());
-
-		Runner.run(new GlitchlessBlue());
+	public static void main(String[] args) throws Exception {
+    SingleGbRunner.run(new BlueRomInfo(), new GlitchlessBlue());
 	}
 }

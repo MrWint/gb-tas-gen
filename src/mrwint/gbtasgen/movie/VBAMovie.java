@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.State.InputNode;
 
@@ -18,11 +19,11 @@ public class VBAMovie {
 		try {
 			String path = "movies/" + filename;
 			DataOutputStream dos = new DataOutputStream(new FileOutputStream(path));
-			
+
 			writeHeader(s,dos);
 			writeAuthorInfo(dos);
 			writeInputs(s,dos);
-			
+
 			dos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -52,7 +53,7 @@ public class VBAMovie {
 		dos.writeInt(Integer.reverseBytes(1)); // major version
 		dos.writeInt(Integer.reverseBytes((int)(System.currentTimeMillis()/1000))); // time stamp
 		dos.writeInt(Integer.reverseBytes(s.stepCount));
-		dos.writeInt(Integer.reverseBytes((int)State.rerecordCount));
+		dos.writeInt(Integer.reverseBytes(0)); // re-record count
 		dos.write(0); // no save state
 		dos.write(1); // controller 1 in use
 		dos.write(4); // SGB
@@ -68,28 +69,28 @@ public class VBAMovie {
 		dos.writeInt(Integer.reverseBytes(0)); // save state offset (unused)
 		dos.writeInt(Integer.reverseBytes(0x100)); // input data offset
 	}
-	
-	public static State loadMovie(String filename) {
+
+	public static State loadMovie(Gameboy gb, String filename) {
 		try {
 			String path = "movies/" + filename;
 			DataInputStream dis = new DataInputStream(new FileInputStream(path));
-			
+
 			dis.skip(0x3C); // skip to input offset
 			int inputAddress = Integer.reverseBytes(dis.readInt());
 			dis.skip(inputAddress - 0x40);
-			
-			State.root.restore();
-			
+
+			gb.restore(gb.root);
+
 			try{
 				while(true) {
 					int input = Short.reverseBytes(dis.readShort()) & 0xFF;
-					State.step(input);
+					gb.step(input);
 				}
 			} catch(EOFException e) {}
 			dis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new State();
+		return gb.newState();
 	}
 }

@@ -1,13 +1,12 @@
 package mrwint.gbtasgen.move;
 
-import mrwint.gbtasgen.state.State;
-import mrwint.gbtasgen.util.Util;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 
 public class HardResetMove extends Move {
 
 	@Override
 	public boolean doMove() {
-		State.step(Move.RESET);
+	  curGb.step(Move.RESET);
 		return true;
 	}
 
