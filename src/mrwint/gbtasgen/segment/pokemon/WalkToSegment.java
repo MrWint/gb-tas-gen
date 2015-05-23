@@ -17,7 +17,7 @@ import mrwint.gbtasgen.util.Util;
 import mrwint.gbtasgen.util.pokemon.map.Map;
 import mrwint.gbtasgen.util.pokemon.map.Map.MapFactory;
 
-public class WalkToSegment extends Segment {
+public class WalkToSegment implements Segment {
 
 	public static class Pos {
 		int x,y;

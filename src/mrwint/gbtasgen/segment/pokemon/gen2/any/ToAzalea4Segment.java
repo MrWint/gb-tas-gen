@@ -12,13 +12,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class ToAzalea4Segment extends Segment {
+public class ToAzalea4Segment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public ToAzalea4Segment() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		segments.add(new WalkToSegment(17, 30));				// align
 		segments.add(new WalkToSegment(17, 32, false));			// union cave -> route33
 
@@ -32,10 +32,10 @@ public class ToAzalea4Segment extends Segment {
 		segments.add(new WalkToSegment(3, 8, false));			// leave kurt's house
 		segments.add(new MoveSegment(new SkipInput(2)));
 		segments.add(new WalkToSegment(31, 7, false));			// enter slowpoke well
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

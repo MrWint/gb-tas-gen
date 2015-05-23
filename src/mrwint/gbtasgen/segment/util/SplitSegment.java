@@ -4,7 +4,7 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class SplitSegment extends Segment {
+public class SplitSegment implements Segment {
 
 	private Segment segment;
 	private int bufferSize;
@@ -12,12 +12,12 @@ public class SplitSegment extends Segment {
 	public SplitSegment(Segment segment) {
 		this(segment, StateBuffer.MAX_BUFFER_SIZE);
 	}
-	
+
 	public SplitSegment(Segment segment, int bufferSize) {
 		this.segment = segment;
 		this.bufferSize = bufferSize;
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		StateBuffer out = new StateBuffer(bufferSize);

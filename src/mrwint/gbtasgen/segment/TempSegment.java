@@ -9,10 +9,10 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class TempSegment extends Segment {
+public class TempSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public TempSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -30,7 +30,7 @@ public class TempSegment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

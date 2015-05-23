@@ -15,7 +15,7 @@ import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
 
-public class OakSpeechSegment extends Segment {
+public class OakSpeechSegment implements Segment {
 
 	SequenceSegment sequence;
 

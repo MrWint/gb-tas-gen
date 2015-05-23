@@ -22,10 +22,10 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class ToAzalea21Segment extends Segment {
+public class ToAzalea21Segment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public ToAzalea21Segment() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -34,7 +34,7 @@ public class ToAzalea21Segment extends Segment {
 		segments.add(new DelayMoveSegment(
 				new PressButtonFactory(Move.DOWN),
 				new CheckMetricSegment(new CheckEncounterMetric(19 /*rattata*/, 8).withStartMove(Move.DOWN))));
-		
+
 		segments.add(new SkipTextsSegment(2));
 		segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // pack
 		segments.add(new MoveSegment(new PressButton(Move.A))); // pack
@@ -43,7 +43,7 @@ public class ToAzalea21Segment extends Segment {
 		segments.add(new MoveSegment(new SkipInput(2))); // use
 		segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // use
 		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new Segment() {
-			
+
 			@Override
 			public StateBuffer execute(StateBuffer in) {
 				in = new TextSegment(Move.A, false, 0).execute(in);
@@ -56,10 +56,10 @@ public class ToAzalea21Segment extends Segment {
 		segments.add(new MoveSegment(new PressButton(Move.A))); // dex
 		segments.add(new MoveSegment(new PressButton(Move.B))); // dex
 		segments.add(new SkipTextsSegment(1));					// no nick
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

@@ -24,7 +24,7 @@ import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
 
-public class SlowpokeWellRocket2 extends Segment {
+public class SlowpokeWellRocket2 implements Segment {
 
 	SequenceSegment sequence;
 

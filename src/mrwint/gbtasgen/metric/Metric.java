@@ -8,7 +8,7 @@ public interface Metric {
 
 	static final Metric TRUE = () -> {return 1;};
 
-	static final Metric RESEASED_JOY = () -> {return curGb.readMemory(curGb.rom.hJoypadReleasedAddress);};
+	static final Metric RELEASED_JOY = () -> {return curGb.readMemory(curGb.rom.hJoypadReleasedAddress);};
 	static final Metric PRESSED_JOY = () -> {return curGb.readMemory(curGb.rom.hJoypadPressedAddress);};
 	static final Metric DOWN_JOY = () -> {return curGb.readMemory(curGb.rom.hJoypadDownAddress);};
 	static final Metric MENU_JOY = () -> {return curGb.readMemory(curGb.rom.hJoypadMenuAddress);};

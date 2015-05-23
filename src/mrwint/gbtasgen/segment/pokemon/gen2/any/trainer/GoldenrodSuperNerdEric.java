@@ -13,10 +13,10 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class GoldenrodSuperNerdEric extends Segment {
+public class GoldenrodSuperNerdEric implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public GoldenrodSuperNerdEric() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -42,7 +42,7 @@ public class GoldenrodSuperNerdEric extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

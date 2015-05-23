@@ -8,7 +8,7 @@ import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class FindShortestSequenceSegment extends Segment {
+public class FindShortestSequenceSegment implements Segment {
 
 	private Move[] moves;
 	private Metric metric;

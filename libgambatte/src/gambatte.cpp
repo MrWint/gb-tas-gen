@@ -168,22 +168,6 @@ bool GB::saveState(const gambatte::uint_least32_t *const videoBuf, const int pit
 	return false;
 }
 
-
-void GB::saveState(std::vector<char>& data) {
-	if (p_->cpu.loaded()) {
-		loadsave_save l;
-		p_->cpu.loadOrSave(l);
-		data = l.get();
-	}
-}
-
-void GB::loadState(const std::vector<char>& data) {
-	if (p_->cpu.loaded()) {
-		loadsave_load l(data);
-		p_->cpu.loadOrSave(l);
-	}
-}
-
 void GB::selectState(int n) {
 	n -= (n / 10) * 10;
 	p_->stateNo = n < 0 ? n + 10 : n;

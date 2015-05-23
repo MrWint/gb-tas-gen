@@ -25,7 +25,7 @@ public class Gameboy {
 	public int currentStepCount = 0;
 	public int currentDelayStepCount = 0;
 	public int currentOcdCount = 0;
-	public int currentOcdLastMove = -1;
+	public int lastMove = 0;
 	public InputNode currentInputNode = null;
 	public Map<String,Object> currentAttributes = new HashMap<String, Object>();
 
@@ -41,7 +41,7 @@ public class Gameboy {
   public TetrisRomInfo tetris;
   public Sml2RomInfo sml2;
 
-	public Gameboy(RomInfo rom, int screen) {
+	public Gameboy(RomInfo rom, int screen, boolean equalLengthFrames) {
     this.rom = rom;
 
     if (rom instanceof PokemonRomInfo)
@@ -51,7 +51,7 @@ public class Gameboy {
     if (rom instanceof Sml2RomInfo)
       sml2 = (Sml2RomInfo)rom;
 
-    this.gb = new Gb(screen);
+    this.gb = new Gb(screen, equalLengthFrames);
     this.gb.startEmulator(rom.romFileName);
     this.root = newState();
 
@@ -69,10 +69,10 @@ public class Gameboy {
 	}
 
 	public State newState() {
-    if (!onFrameBoundaries)
-      System.err.println("WARNING: creating State while not on frame boundaries!");
+//    if (!onFrameBoundaries)
+//      System.err.println("WARNING: creating State while not on frame boundaries!");
 	  return new State(gb.saveState(), currentStepCount, currentDelayStepCount, -1 /* rngState */,
-	      new HashMap<String, Object>(currentAttributes), currentOcdCount, currentOcdLastMove, currentInputNode);
+	      new HashMap<String, Object>(currentAttributes), currentOcdCount, lastMove, currentInputNode, onFrameBoundaries);
 	}
 
 	public State createState() {
@@ -90,15 +90,16 @@ public class Gameboy {
 	}
 
 	public int restore(State s) {
-		if (!onFrameBoundaries)
-			step(); // get to next frame boundary
+//		if (!onFrameBoundaries)
+//			step(); // get to next frame boundary
 		gb.loadState(s.bb);
 		currentInputNode = s.inputs;
 		currentStepCount = s.stepCount;
 		currentDelayStepCount = s.delayStepCount;
 		currentOcdCount = s.ocdCount;
-		currentOcdLastMove = s.lastMove;
+		lastMove = s.lastMove;
 		currentAttributes = new HashMap<String, Object>(s.attributes);
+		onFrameBoundaries = s.onFrameBoundaries;
 		clearCache();
 		rerecordCount++;
 		return s.stepCount;
@@ -108,12 +109,13 @@ public class Gameboy {
 		if (!onFrameBoundaries)
 			return;
 		currentInputNode = new InputNode(moves, currentInputNode);
+    currentStepCount++;
+    lastMove = moves;
 	}
 
 	public void step() {
-		gb.step(0);
+		gb.step(onFrameBoundaries ? 0 : lastMove);
 		logInput(0);
-		currentStepCount++;
 		onFrameBoundaries = true;
 		clearCache();
 	}
@@ -130,16 +132,14 @@ public class Gameboy {
 	public int step(int moves, int... addresses) {
 		if(moves != 0) {
 			currentOcdCount += 2;
-			if(currentOcdLastMove != moves)
+			if(lastMove != moves)
 				currentOcdCount++;
-			currentOcdLastMove = moves;
+			lastMove = moves;
 		}
 
-		int ret = gb.step(moves, addresses);
+		int ret = gb.step(onFrameBoundaries ? moves : lastMove, addresses);
 		logInput(moves);
 		onFrameBoundaries = (ret == 0);
-		if(onFrameBoundaries)
-			currentStepCount++;
 		clearCache();
 		return ret;
 	}

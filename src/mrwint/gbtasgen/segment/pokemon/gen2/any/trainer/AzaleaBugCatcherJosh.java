@@ -15,13 +15,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 // around 400 frames faster than Al
-public class AzaleaBugCatcherJosh extends Segment {
+public class AzaleaBugCatcherJosh implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public AzaleaBugCatcherJosh() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		// segments.add(new MoveSegment(new Wait(500))); // used for testing to avoid getting captured after the fight
 
 		segments.add(new WalkToSegment(0, 5, false));	// engage bug catcher josh
@@ -37,13 +37,13 @@ public class AzaleaBugCatcherJosh extends Segment {
 			segments.add(kems);
 		}
 		segments.add(new EndFightSegment(1));
-		
+
 		segments.add(new WalkToSegment(4, 7));					// face leader
 		segments.add(new MoveSegment(new OverworldInteract()));	// engage leader
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

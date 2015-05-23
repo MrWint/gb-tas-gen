@@ -8,7 +8,7 @@ public class SkipTextsSegment extends SeqSegment {
 
 	int numTexts;
 	boolean confirmWithA;
-	
+
 	public SkipTextsSegment(int numTexts) {
 		this(numTexts,false);
 	}
@@ -17,7 +17,7 @@ public class SkipTextsSegment extends SeqSegment {
 		this.numTexts = numTexts;
 		this.confirmWithA = confirmWithA;
 	}
-	
+
 	@Override
 	protected void execute() {
 		for(int i=0;i<numTexts;i++) {

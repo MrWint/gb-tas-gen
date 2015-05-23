@@ -15,7 +15,7 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
-public class GetStarter1Segment extends Segment {
+public class GetStarter1Segment implements Segment {
 
 	SequenceSegment sequence;
 

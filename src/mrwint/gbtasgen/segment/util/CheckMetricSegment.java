@@ -8,7 +8,7 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class CheckMetricSegment extends Segment {
+public class CheckMetricSegment implements Segment {
 
 	private Metric metric;
 	private Comparator comp;

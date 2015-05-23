@@ -118,7 +118,7 @@ public class CooltrainerMapPositionTest extends SeqSegment {
     Gb.loadGambatte(1);
 
 		// select ROM to use
-    curGb = new Gameboy(new RedRomInfo(), 0);
+    curGb = new Gameboy(new RedRomInfo(), 0, false);
 //    curGb = new Gameboy(new BlueRomInfo());
 
 		StateBuffer in = StateBuffer.load("test_1", "");

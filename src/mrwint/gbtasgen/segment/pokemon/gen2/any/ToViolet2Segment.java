@@ -12,7 +12,7 @@ import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
 
-public class ToViolet2Segment extends Segment {
+public class ToViolet2Segment implements Segment {
 
 	SequenceSegment sequence;
 

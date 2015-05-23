@@ -15,14 +15,14 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class AzaleaRivalSegment extends Segment {
+public class AzaleaRivalSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public AzaleaRivalSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
 
-		segments.add(new WalkToSegment(5, 11, false)); // engage rival		
+		segments.add(new WalkToSegment(5, 11, false)); // engage rival
 
 		segments.add(new InitFightSegment(7));
 		{
@@ -59,7 +59,7 @@ public class AzaleaRivalSegment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

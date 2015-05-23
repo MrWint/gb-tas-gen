@@ -2,45 +2,10 @@ package mrwint.gbtasgen.segment.pokemon.gen1.glitchless;
 
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.B;
-import static mrwint.gbtasgen.move.Move.START;
-import mrwint.gbtasgen.Gb;
-import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.metric.comparator.Comparator;
-import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckConfusionEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckPoisonEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckSleepEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckSwitchAndTeleportEffectUsed;
-import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.move.SkipInput;
-import mrwint.gbtasgen.move.WriteMemory;
-import mrwint.gbtasgen.move.pokemon.gen1.OverworldInteract;
-import mrwint.gbtasgen.move.pokemon.gen1.WalkStep;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.pokemon.BallSuccessSegment;
-import mrwint.gbtasgen.segment.pokemon.CatchMonSegment;
-import mrwint.gbtasgen.segment.pokemon.PokecenterSegment;
-import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.EndFightSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.InitFightSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.KillEnemyMonSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.NewEnemyMonSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.KillEnemyMonSegment.EnemyMoveDesc;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.CancelMoveLearnSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.EncounterAndCatchSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.SwapWithSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.UseBikeSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.util.Util;
-import mrwint.gbtasgen.util.pokemon.map.Gen1Map;
 
 public class EliteFourSquirtle extends SeqSegment {
 
@@ -54,18 +19,18 @@ public class EliteFourSquirtle extends SeqSegment {
       seq(new SkipTextsSegment(1)); // turned on PC
       seqButton(A); // Bills PC
       seq(new SkipTextsSegment(2)); // access Bills PC
-      seq(scrollAF(1)); // deposit
+      seq(Segment.scrollAF(1)); // deposit
       seqSkipInput(1);
-      seq(scrollAF(1)); // spearow
-      seq(repress(A)); // deposit
+      seq(Segment.scrollAF(1)); // spearow
+      seq(Segment.repress(A)); // deposit
       seq(new SkipTextsSegment(1)); // deposited
-      seq(menu(A)); // deposit
+      seq(Segment.menu(A)); // deposit
       seqSkipInput(1);
-      seq(scrollAF(1)); // sandshrew
-      seq(repress(A)); // deposit
+      seq(Segment.scrollAF(1)); // sandshrew
+      seq(Segment.repress(A)); // deposit
       seq(new SkipTextsSegment(1)); // deposited
-      seq(menu(B)); // exit
-      seq(menu(B)); // exit
+      seq(Segment.menu(B)); // exit
+      seq(Segment.menu(B)); // exit
 	  }
 
     seq(new WalkToSegment(8, 0)); // enter elite four

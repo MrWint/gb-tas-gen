@@ -14,7 +14,7 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
-public class NewEnemyMonSegment extends Segment {
+public class NewEnemyMonSegment implements Segment {
 
 	SequenceSegment sequence;
 

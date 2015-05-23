@@ -10,10 +10,10 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class ResetAndContinueSegment extends Segment {
+public class ResetAndContinueSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public ResetAndContinueSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
 		segments.add(new MoveSegment(new SoftResetMove())); // reset GB
@@ -25,7 +25,7 @@ public class ResetAndContinueSegment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

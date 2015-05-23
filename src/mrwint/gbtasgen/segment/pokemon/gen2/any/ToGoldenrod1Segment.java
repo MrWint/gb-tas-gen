@@ -21,7 +21,7 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class ToGoldenrod1Segment extends Segment {
+public class ToGoldenrod1Segment implements Segment {
 
 	SequenceSegment sequence;
 

@@ -7,7 +7,7 @@ import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.Util;
 
-public class TextSegment extends Segment {
+public class TextSegment implements Segment {
 
 	private int skipMove;
 	private boolean finishLastFrame;

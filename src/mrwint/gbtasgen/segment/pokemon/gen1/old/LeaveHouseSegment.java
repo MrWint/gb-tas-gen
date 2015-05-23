@@ -10,10 +10,10 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class LeaveHouseSegment extends Segment {
+public class LeaveHouseSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public LeaveHouseSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
 		segments.add(new MoveSegment(ChangeOptionsMove.get(false))); // set options
@@ -24,7 +24,7 @@ public class LeaveHouseSegment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

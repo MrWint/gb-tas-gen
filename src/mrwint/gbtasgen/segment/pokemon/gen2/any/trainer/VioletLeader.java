@@ -15,10 +15,10 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class VioletLeader extends Segment {
+public class VioletLeader implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public VioletLeader() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -50,13 +50,13 @@ public class VioletLeader extends Segment {
 		}
 
 		segments.add(new EndFightSegment(5));
-		
+
 		segments.add(new TextSegment());
 		segments.add(new SkipTextsSegment(17));
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

@@ -33,11 +33,11 @@ public class GlitchlessBlue extends SingleGbSegment {
 
   @Override
 	protected void execute() {
-		seq(new Intro());
+//		seq(new Intro());
 //    save("intro1");
 //
 //    load("intro1");
-    seq(new OakSpeech());
+//    seq(new OakSpeech());
 //    save("oakSpeech");
 //
 //    load("oakSpeech");

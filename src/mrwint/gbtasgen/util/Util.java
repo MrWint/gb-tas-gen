@@ -66,7 +66,7 @@ public class Util {
 		State cur = curGb.newState();
 		int startSteps = curGb.currentStepCount;
 		runToAddressNoLimit(baseKeys, startKeys, addresses);
-		int steps = curGb.currentStepCount - startSteps;
+		int steps = curGb.currentStepCount - startSteps - 1;
 		curGb.restore(cur);
 		runFor(steps, baseKeys, startKeys);
 	}

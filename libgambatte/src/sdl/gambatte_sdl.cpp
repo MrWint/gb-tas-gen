@@ -102,14 +102,15 @@ public:
 	GetInput inputGetter;
 	std::map<SDLKey,unsigned> keyMap;
 	
-	unsigned samples;
+	unsigned overflowSamples;
 	bool init(const char* romName);
 	int screen;
+	bool equalLengthFrames;
 	
-	GambatteSdl(int screen_) : inBuf((35112 + 2064) * 2),samples(0),screen(screen_) {}
+	GambatteSdl(int screen_, bool equalLengthFrames_) : inBuf((35112 + 2064) * 2),overflowSamples(0),screen(screen_),equalLengthFrames(equalLengthFrames_) {}
 	void step();
-	void step2();
-	void step3();
+	void saveState(std::vector<char>& data);
+	void loadState(const std::vector<char>& data);
 	void handleInput();
 
 	bool keepRunning;
@@ -224,21 +225,49 @@ const unsigned SAMPLES_PER_FRAME = 35112;
 
 void GambatteSdl::step() {
 	const BlitterWrapper::Buf &vbuf = sdl.blitter.inBuf(screen);
-	unsigned emusamples = SAMPLES_PER_FRAME - samples;
 
+	while (true) {
+		unsigned emusamples = SAMPLES_PER_FRAME - overflowSamples;
+		if (gambatte.runFor(vbuf.pixels, vbuf.pitch,
+				reinterpret_cast<gambatte::uint_least32_t*>(inBuf.get()), emusamples) >= 0) {
+			sdl.blitter.draw();
+			sdl.blitter.present();
+		}
 
-	const int ret = gambatte.runFor(vbuf.pixels, vbuf.pitch,
-			reinterpret_cast<gambatte::uint_least32_t*>(inBuf.get()), emusamples);
-	if(gambatte.p_->cpu.hitInterruptAddress != 0) // went into frame
-		samples += emusamples;
-	else {
-		samples = 0; // completed frame
-		gambatte.p_->cpu.numFrames++;
+		overflowSamples += emusamples;
+
+		if(gambatte.p_->cpu.hitInterruptAddress != 0) { // go into frame
+			break;
+		}
+
+		if(!equalLengthFrames) { // old frame timing
+			overflowSamples = 0; // completed frame
+			gambatte.p_->cpu.numFrames++;
+			break;
+		}
+
+		if (overflowSamples >= SAMPLES_PER_FRAME) { // new frame timing
+			overflowSamples -= SAMPLES_PER_FRAME;
+			gambatte.p_->cpu.numFrames++;
+			break;
+		}
 	}
-	
-	if (ret >= 0) {
-		sdl.blitter.draw();
-		sdl.blitter.present();
+}
+
+void GambatteSdl::saveState(std::vector<char>& data) {
+	if (gambatte.p_->cpu.loaded()) {
+		loadsave_save l;
+		gambatte.p_->cpu.loadOrSave(l);
+		l(overflowSamples);
+		data = l.get();
+	}
+}
+
+void GambatteSdl::loadState(const std::vector<char>& data) {
+	if (gambatte.p_->cpu.loaded()) {
+		loadsave_load l(data);
+		gambatte.p_->cpu.loadOrSave(l);
+		l(overflowSamples);
 	}
 }
 } // anon namespace
@@ -259,10 +288,10 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_initSdl
 
 // createGb
 JNIEXPORT jlong JNICALL Java_mrwint_gbtasgen_Gb_createGb
-    (JNIEnv *env, jclass clazz, jint screen) {
+    (JNIEnv *env, jclass clazz, jint screen, jboolean equalLengthFrames) {
   UNUSED(env);UNUSED(clazz);
 
-  GambatteSdl* gb = new GambatteSdl(screen);
+  GambatteSdl* gb = new GambatteSdl(screen, equalLengthFrames);
   return (jlong)gb;
 }
 
@@ -324,7 +353,7 @@ JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_saveState
 
   char* buffer_address = ((char*) env->GetDirectBufferAddress(buffer));
   std::vector<char> data;
-  ((GambatteSdl*)gb)->gambatte.saveState(data);
+  ((GambatteSdl*)gb)->saveState(data);
 
   if((int)data.size() > size)
     std::cout << "too big! " << data.size() << " vs. " << size << std::endl;
@@ -343,7 +372,7 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_loadState
 
   std::vector<char> data(buffer_address,buffer_address+size);
 
-  ((GambatteSdl*)gb)->gambatte.loadState(data);
+  ((GambatteSdl*)gb)->loadState(data);
 }
 
 
@@ -392,7 +421,8 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_getMemory
   jint *mem_store = env->GetIntArrayElements(arr, 0);
   int cc = ((GambatteSdl*)gb)->gambatte.p_->cpu.cycleCounter_;
   for(int i=0;i<0x10000;i++)
-    mem_store[i] = ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.read(i,cc);
+    mem_store[i] = Java_mrwint_gbtasgen_Gb_readMemory(env, clazz, gb, i);
+//    mem_store[i] = ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.read(i,cc);
   env->ReleaseIntArrayElements(arr, mem_store, 0);
 }
 
@@ -401,7 +431,30 @@ JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_readMemory
     (JNIEnv *env, jclass clazz, jlong gb, jint address){
   UNUSED(env);UNUSED(clazz);
 
-  return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.read(address,((GambatteSdl*)gb)->gambatte.p_->cpu.cycleCounter_);
+  {
+	const unsigned P = address;
+	if (P < 0x8000)
+		return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.romdata(P >> 14)[P];
+
+	if (P < 0xA000)
+		return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.vrambankptr()[P];
+
+	if (P < 0xC000) {
+		if (((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.rsrambankptr())
+			return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.rsrambankptr()[P];
+		else {
+			std::printf("error: cart.rsrambankptr() not present");
+			return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.rtcRead();
+		}
+	}
+
+	if (P < 0xFE00)
+		return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.cart.wramdata(P >> 12 & 1)[P & 0xFFF];
+
+	return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.ioamhram[P - 0xFE00];
+  }
+
+//  return ((GambatteSdl*)gb)->gambatte.p_->cpu.memory.read(address,((GambatteSdl*)gb)->gambatte.p_->cpu.cycleCounter_);
 }
 
 // writeMemory

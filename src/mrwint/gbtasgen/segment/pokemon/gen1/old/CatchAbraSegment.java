@@ -14,10 +14,10 @@ import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class CatchAbraSegment extends Segment {
+public class CatchAbraSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public CatchAbraSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -25,10 +25,10 @@ public class CatchAbraSegment extends Segment {
 
 		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.DOWN), new CheckMetricSegment(new CheckEncounterMetric(148, 0))));
 		segments.add(new CatchMonSegment(0)); // ball in 1st slot
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

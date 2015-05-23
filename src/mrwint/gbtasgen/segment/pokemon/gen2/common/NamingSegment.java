@@ -10,8 +10,8 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class NamingSegment extends Segment {
-	
+public class NamingSegment implements Segment {
+
 	public static String[] CHAR_MAP = {
 		"ABCDEFGHI",
 		"abcdefghi",
@@ -51,7 +51,7 @@ public class NamingSegment extends Segment {
 		this.numRows = charMap.length/2;
 		this.numCols = charMap[0].length();
 		generateMoveList();
-		
+
 		debugPrintMoveList();
 	}
 
@@ -83,28 +83,28 @@ public class NamingSegment extends Segment {
 		}
 		System.out.println();
 	}
-	
+
 	private int getCharX(char c) {
 		for(int i=0;i<charMap.length;i++)
 			if(charMap[i].contains(""+c))
 				return charMap[i].indexOf(c);
 		return -1;
 	}
-	
+
 	private int getCharY(char c) {
 		for(int i=0;i<charMap.length;i++)
 			if(charMap[i].contains(""+c))
 				return i/2;
 		return -1;
 	}
-	
+
 	private boolean isLowerCase(char c) {
 		for(int i=0;i<charMap.length;i++)
 			if(charMap[i].contains(""+c))
 				return (i%2) != 0;
 		return false;
 	}
-	
+
 	private List<Integer> generateMovesFromTo(int curX,int curY,int newX,int newY) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 		int dx = (newX + numCols - curX)%numCols;
@@ -138,7 +138,7 @@ public class NamingSegment extends Segment {
 		}
 		return ret;
 	}
-	
+
 	/*private List<Integer> generateMovesToCaseSwitch(int curX,int curY,int goalY) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 		if(curY < 2 || (curY == 2 && goalY >= 2))
@@ -149,7 +149,7 @@ public class NamingSegment extends Segment {
 				ret.add(Integer.valueOf(Move.DOWN));
 		return ret;
 	}
-	
+
 	private List<Integer> generateMovesFromCaseSwitch(int newX,int newY,int pastY) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 		if(newY < 2 || (newY == 2 && pastY < 2)) {
@@ -162,7 +162,7 @@ public class NamingSegment extends Segment {
 		}
 		return ret;
 	}*/
-	
+
 	private int calcCost(List<Integer> moves, boolean caseSwitchNeeded) {
 		int cost = 0;
 		for(int i=0;i<moves.size()-1;i++)
@@ -172,19 +172,19 @@ public class NamingSegment extends Segment {
 			cost++;
 		return cost + moves.size();
 	}
-	
+
 	private void generateMoves(int curX,int curY,int newX,int newY,boolean caseSwitchNeeded) {
 		//ArrayList<Integer> caseSwitch = new ArrayList<Integer>();
 		//caseSwitch.addAll(generateMovesToCaseSwitch(curX, curY,newY));
 		//caseSwitch.addAll(generateMovesFromCaseSwitch(newX, newY,curY));
-		
+
 		ArrayList<Integer> direct = new ArrayList<Integer>();
 		direct.addAll(generateMovesFromTo(curX, curY, newX, newY));
 		int directCosts = calcCost(direct, caseSwitchNeeded);
-		
+
 		List<Integer> minRoute = direct;
 		int minCosts = directCosts;
-		
+
 		for(int i=0;i<9;i++) {
 			for(int j=0;j<3;j++) {
 				if(i/3 == j)
@@ -218,7 +218,7 @@ public class NamingSegment extends Segment {
 		if(caseSwitchNeeded)
 			moveList.add(Move.SELECT);
 	}
-	
+
 	private void generateMoveList() {
 		moveList = new ArrayList<Integer>();
 		int curX = 0, curY = 0;

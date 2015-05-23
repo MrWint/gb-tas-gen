@@ -16,10 +16,10 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 // SLOWER, use Josh instead
-public class AzaleaBugCatcherAl extends Segment {
+public class AzaleaBugCatcherAl implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public AzaleaBugCatcherAl() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -46,13 +46,13 @@ public class AzaleaBugCatcherAl extends Segment {
 			segments.add(kems);
 		}
 		segments.add(new EndFightSegment(1));
-		
+
 		segments.add(new WalkToSegment(4, 7));					// face leader
 		segments.add(new MoveSegment(new OverworldInteract()));	// engage leader
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

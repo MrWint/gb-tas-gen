@@ -12,10 +12,10 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class NuggetBridgeSegment_7 extends Segment {
+public class NuggetBridgeSegment_7 implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public NuggetBridgeSegment_7() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -38,10 +38,10 @@ public class NuggetBridgeSegment_7 extends Segment {
 		segments.add(new EndFightSegment(1)); // player defeated enemy
 
 		segments.add(new SkipTextsSegment(3)); // after rocket battle texts
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

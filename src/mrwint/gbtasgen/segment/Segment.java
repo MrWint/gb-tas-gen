@@ -10,11 +10,13 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public abstract class Segment {
+public interface Segment {
 
-	public abstract StateBuffer execute(StateBuffer in);
+	StateBuffer execute(StateBuffer in);
 
-	
+	public static final Segment NULL = (in) -> in;
+
+
 	public static MoveSegment press(int move) {
 		return new MoveSegment(new PressButton(move, Metric.DOWN_JOY));
 	}

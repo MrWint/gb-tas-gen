@@ -17,10 +17,10 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class GetCoincase2Segment extends Segment {
+public class GetCoincase2Segment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public GetCoincase2Segment() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -38,7 +38,7 @@ public class GetCoincase2Segment extends Segment {
 //			segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY)));		// leave
 //			segments.add(new MoveSegment(new PressButton(Move.START, Metric.PRESSED_JOY)));		// leave
 //		}
-//		
+//
 		segments.add(new WalkToSegment(6, 25));	// face coin case
 		segments.add(new MoveSegment(new OverworldInteract()));	// grab coin case
 		segments.add(new TextSegment());		// found coin case
@@ -101,7 +101,7 @@ public class GetCoincase2Segment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

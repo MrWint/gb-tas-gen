@@ -3,6 +3,7 @@ package mrwint.gbtasgen.segment.util;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
+import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PrepMove;
 import mrwint.gbtasgen.move.PressButton;
@@ -11,8 +12,9 @@ import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayableMoveFactory;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
-public abstract class SeqSegment extends Segment {
+public abstract class SeqSegment implements Segment {
 
 	private StateBuffer in;
 	private StateBuffer save;
@@ -34,6 +36,18 @@ public abstract class SeqSegment extends Segment {
   }
   public void seqButtonNoDelay(int move) {
     seqMoveNoDelay(new PressButton(move));
+  }
+  public void seqEflButton(int move) {
+    seqMove(new EflPressButton(move));
+  }
+  public void seqEflButton(int move, PressMetric metric) {
+    seqMove(new EflPressButton(move, metric));
+  }
+  public void seqEflButtonUnbounded(int move) {
+    seqMoveUnbounded(new EflPressButton(move));
+  }
+  public void seqEflButtonUnbounded(int move, PressMetric metric) {
+    seqMoveUnbounded(new EflPressButton(move, metric));
   }
   public void seqWait(int frames) {
     seqMove(new Wait(frames));
@@ -76,14 +90,14 @@ public abstract class SeqSegment extends Segment {
 		seqMove(new PrepMove(m));
 	}
 
-	public void delay(Segment s) {
-		seq(new DelayMoveSegment(s));
-	}
+  public void delayEfl(Segment s) {
+    seq(new EflDelayMoveSegment(s));
+  }
+  public void delay(Segment s) {
+    seq(new DelayMoveSegment(s));
+  }
 	public void delay(DelayableMoveFactory m, Segment s) {
 		seq(new DelayMoveSegment(m, s, true));
-	}
-	public void delayMetric(Metric m) {
-		seq(new DelayMoveSegment(new CheckMetricSegment(m)));
 	}
 
 	public void load(StateBuffer sb) {

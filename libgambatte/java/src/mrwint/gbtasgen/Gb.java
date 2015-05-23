@@ -6,13 +6,13 @@ import java.nio.ByteOrder;
 public class Gb {
 
   private final long gb;
-	public Gb(int screen) {
-	  gb = createGb(screen);
+	public Gb(int screen, boolean equalLengthFrames) {
+	  gb = createGb(screen, equalLengthFrames);
 	}
 
 	private static native void initSdl(int numScreens);
 
-	private static native long createGb(int screen);
+	private static native long createGb(int screen, boolean equalLengthFrames);
 
 	private static native void startEmulator(long gb, String rom);
 	public void startEmulator(String rom) {
@@ -40,7 +40,7 @@ public class Gb {
 //  public static final int MAX_SAVE_SIZE = 211243;
 //  public static final int MAX_SAVE_SIZE = 153894; // Tetris
 //  public static final int MAX_SAVE_SIZE = 162092; // Sml2_10
-  private static final int MAX_SAVE_SIZE = 186666; // PokeRed
+  private static final int MAX_SAVE_SIZE = 186671; // PokeRed
 	public static final ByteBuffer TMP_SAVE_BUFFER = createDirectByteBuffer(MAX_SAVE_SIZE);
 
 	public ByteBuffer saveState() {

@@ -6,7 +6,7 @@ import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.state.tetris.TetrisStateBuffer;
 
-public class TetrisWrapperSegment extends Segment {
+public class TetrisWrapperSegment implements Segment {
 
   private TetrisSegment segment;
 

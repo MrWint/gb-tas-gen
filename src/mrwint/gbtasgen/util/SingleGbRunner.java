@@ -13,11 +13,14 @@ import mrwint.gbtasgen.state.StateBuffer;
 public class SingleGbRunner {
 
   public static void run(RomInfo rom, SingleGbSegment segment) {
+    run(rom, segment, false);
+  }
+  public static void run(RomInfo rom, SingleGbSegment segment, boolean equalLengthFrames) {
 
-    Gb.loadGambatte(2);
+    Gb.loadGambatte(1);
 
     // load rom
-    Gameboy gb = new Gameboy(rom, 0);
+    Gameboy gb = new Gameboy(rom, 0, equalLengthFrames);
 
     // init inital state
     StateBuffer initalBuffer = new StateBuffer();

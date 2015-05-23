@@ -56,7 +56,7 @@ public class ChooseStarter extends SeqSegment {
 //		seq(new SkipTextsSegment(1)); // do you want?
 //		seq(new SkipTextsSegment(1, true)); // want!
 //		seq(new SkipTextsSegment(1)); // energetic
-//		
+//
 //		save("cs2");
 		load("cs2");
 
@@ -70,7 +70,7 @@ public class ChooseStarter extends SeqSegment {
 //				seq(new SkipTextsSegment(1, true)); // to charmander (yes)
 				seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY), 0, 0)); // "A"
 //				seq(Segment.press(Move.START)); // name it "A"
-				seq(new DelayMoveSegment(new PressButtonFactory(Move.START), new CheckMetricSegment(new Gen1CheckDVMetric(0, 0, 0, 0, 0, 15, 0x1024))).withMaxDelay(90));
+				seq(new DelayMoveSegment(new PressButtonFactory(Move.START), new CheckMetricSegment(new Gen1CheckDVMetric(0, 0, 0, 0, 15, 0x1024))).withMaxDelay(90));
 			}
 		}));
 

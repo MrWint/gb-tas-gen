@@ -10,7 +10,7 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class DelayMoveSegment extends Segment {
+public class DelayMoveSegment implements Segment {
 
 	public static interface DelayableMoveFactory {
 		Move create();

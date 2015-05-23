@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.state.Register;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.Util;
 
 public class Gen1CheckDVMetric implements StateResettingMetric {
-	private int initialMove;
 	private int minAtkDV;
 	private int minDefDV;
 	private int minSpdDV;
@@ -17,8 +17,7 @@ public class Gen1CheckDVMetric implements StateResettingMetric {
 	private int maxHPDV;
 	private Integer[] whitelist;
 
-	public Gen1CheckDVMetric(int initialMove, int minAtkDV, int minDefDV, int minSpdDV, int minSpcDV, int maxHPDV, Integer... whitelist) {
-		this.initialMove = initialMove;
+	public Gen1CheckDVMetric(int minAtkDV, int minDefDV, int minSpdDV, int minSpcDV, int maxHPDV, Integer... whitelist) {
 		this.minAtkDV = minAtkDV;
 		this.minDefDV = minDefDV;
 		this.minSpdDV = minSpdDV;
@@ -29,9 +28,7 @@ public class Gen1CheckDVMetric implements StateResettingMetric {
 
 	@Override
 	public int getMetricInternal() {
-		if(initialMove != 0)
-			Util.runToNextInputFrame();
-		Util.runToAddressNoLimit(0, initialMove, curGb.pokemon.afterDVGenerationAddress);
+		EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.afterDVGenerationAddress);
 		int a = curGb.getRegister(Register.AF) >> 8;
 		int b = curGb.getRegister(Register.BC) >> 8;
 		int ab = ((a & 0xFF) << 8) | (b & 0xFF);

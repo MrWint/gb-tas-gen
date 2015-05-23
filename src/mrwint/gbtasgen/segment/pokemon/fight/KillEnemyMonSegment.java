@@ -34,7 +34,7 @@ import mrwint.gbtasgen.util.pokemon.fight.DamageCalc;
 
 
 
-public class KillEnemyMonSegment extends Segment {
+public class KillEnemyMonSegment implements Segment {
 
 	public static final int MAX_SKIPS = -1;
 

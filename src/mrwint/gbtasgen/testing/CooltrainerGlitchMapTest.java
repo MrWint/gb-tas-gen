@@ -37,8 +37,7 @@ public class CooltrainerGlitchMapTest {
 	  Gb.loadGambatte(1);
 
     // select ROM to use
-	  curGb = new Gameboy(new RedRomInfo(), 0);
-
+	  curGb = new Gameboy(new RedRomInfo(), 0, false);
 		int[] rom = curGb.getROM();
 
 		int mapHeaderBanks = 0xc23d;

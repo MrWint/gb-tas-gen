@@ -13,13 +13,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class Route30YoungsterSegment extends Segment {
+public class Route30YoungsterSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public Route30YoungsterSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		segments.add(new InitFightSegment(2)); // any move
 		{
 			KillEnemyMonSegment kems = new KillEnemyMonSegment();
@@ -44,10 +44,10 @@ public class Route30YoungsterSegment extends Segment {
 			segments.add(kems);
 		}
 		segments.add(new EndFightSegment(1));
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

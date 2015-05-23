@@ -17,10 +17,10 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class AzaleaLeader extends Segment {
+public class AzaleaLeader implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public AzaleaLeader() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -63,11 +63,11 @@ public class AzaleaLeader extends Segment {
 		segments.add(new EvolutionSegment());
 		segments.add(new TextSegment());		// I received badge
 		segments.add(new SkipTextsSegment(16));
-		segments.add(new WalkToSegment(4, 16, false)); // leave arena		
+		segments.add(new WalkToSegment(4, 16, false)); // leave arena
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

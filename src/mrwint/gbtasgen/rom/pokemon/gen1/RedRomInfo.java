@@ -14,7 +14,13 @@ public class RedRomInfo extends GenIRomInfo {
 
 			rngAddress = 0xFFD3;
 
+      readJoypadInputHi = 0x016f; // last line that pings the joypad directional keys
+      readJoypadInputLo = 0x018d; // last line that pings the joypad button keys
 			readJoypadAddress = 0xc000; // line that reads hJoypadDown
+      readJoypadEndAddressReleased = new int[]{ 0xc026, 0xc033, 0xc03b }; // after hJoypadDownAddress, hJoypadPressedAddress and hJoypadReleasedAddress are determined
+      readJoypadEndAddressPressed = new int[]{ 0xc026, 0xc033, 0xc03b }; // after hJoypadDownAddress, hJoypadPressedAddress and hJoypadReleasedAddress are determined
+      readJoypadEndAddressDown = new int[]{ 0xc026, 0xc033, 0xc03b }; // after hJoypadDownAddress, hJoypadPressedAddress and hJoypadReleasedAddress are determined
+      readJoypadEndAddressMenu = new int[]{ 0x3848, 0x3851, 0x3864 }; // ret's of JoypadLowSensitivity
 			hJoypadReleasedAddress = 0xffb2;
 			hJoypadPressedAddress = 0xffb3;
 			hJoypadDownAddress = 0xffb4;
@@ -48,6 +54,7 @@ public class RedRomInfo extends GenIRomInfo {
 			afterTrainerIDGenerationAddress = 0xf860;
 			trainerIDAddress = 0xd359;
 //
+			overworldJoypadCallAddress = 0x0417; // call of JoypadOverworld
 			doPlayerMovementFuncAddress = 0x51d; // .handleDirectionButtonPress
 //			doPlayerMovementFuncEndAddress = 0x10016;
 			playerMovingIndicatorAddress = 0xcc4b;

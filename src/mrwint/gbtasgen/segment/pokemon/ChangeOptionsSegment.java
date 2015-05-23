@@ -11,13 +11,13 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class ChangeOptionsSegment extends Segment{
-	
+public class ChangeOptionsSegment implements Segment{
+
 	SequenceSegment sequence;
 
 	public ChangeOptionsSegment(boolean inMainMenu, int maxDelay) {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		if(inMainMenu) {
 			segments.add(new MoveSegment(new PressButton(Move.DOWN,Metric.PRESSED_JOY), maxDelay));
 			segments.add(new MoveSegment(new PressButton(Move.A,Metric.PRESSED_JOY), maxDelay)); // options
@@ -44,10 +44,10 @@ public class ChangeOptionsSegment extends Segment{
 			segments.add(new MoveSegment(new PressButton(Move.B,Metric.PRESSED_JOY), maxDelay));
 			segments.add(new MoveSegment(new PressButton(Move.START,Metric.PRESSED_JOY), maxDelay));
 		}
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

@@ -13,10 +13,10 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class AzaleaTwinsAmyMay extends Segment {
+public class AzaleaTwinsAmyMay implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public AzaleaTwinsAmyMay() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -44,7 +44,7 @@ public class AzaleaTwinsAmyMay extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

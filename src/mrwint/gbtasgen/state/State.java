@@ -19,11 +19,12 @@ public class State {
 	public int lastMove;
 	public InputNode inputs;
 	public Map<String,Object> attributes;
+  public boolean onFrameBoundaries;
 	// state only
 	public ByteBuffer bb;
 	public int rngState;
 
-	State(ByteBuffer bb, int stepCount, int delayStepCount, int rngState, Map<String, Object> attributes,int ocdCount,int lastMove,InputNode inputs) {
+	State(ByteBuffer bb, int stepCount, int delayStepCount, int rngState, Map<String, Object> attributes,int ocdCount,int lastMove,InputNode inputs, boolean onFrameBoundaries) {
 		this.bb = bb;
 		this.stepCount = stepCount;
 		this.delayStepCount = delayStepCount;
@@ -32,6 +33,7 @@ public class State {
 		this.rngState = rngState;
 		this.inputs = inputs;
 		this.attributes = attributes;
+		this.onFrameBoundaries = onFrameBoundaries;
 	}
 
   public int getAttributeInt(String name) {
@@ -55,7 +57,8 @@ public class State {
 			oos.writeInt(rngState);
 			oos.writeObject(attributes);
 			oos.writeInt(ocdCount);
-			oos.writeInt(lastMove);
+      oos.writeInt(lastMove);
+      oos.writeBoolean(onFrameBoundaries);
 			oos.writeInt(len);
 			oos.write(buf);
 			saveInputs(oos);
@@ -85,6 +88,7 @@ public class State {
 			Map<String,Object> attributes = (Map<String, Object>) ois.readObject();
 			int ocdCount = ois.readInt();
 			int lastMove = ois.readInt();
+			boolean onFrameBoundaries = ois.readBoolean();
 			int len = ois.readInt();
 			byte[] buf = new byte[len];
 			ois.readFully(buf);
@@ -93,7 +97,7 @@ public class State {
 			ByteBuffer bb = Gb.createDirectByteBuffer(len);
 			bb.put(buf);
 			bb.flip();
-			return new State(bb,stepCount,delayStepCount,rngState,attributes,ocdCount,lastMove,inputs);
+      return new State(bb,stepCount,delayStepCount,rngState,attributes,ocdCount,lastMove,inputs,onFrameBoundaries);
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			return null;

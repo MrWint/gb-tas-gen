@@ -6,7 +6,7 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class MoveSegment extends Segment {
+public class MoveSegment implements Segment {
 
 	public static final int MAX_DELAY = 4;
 

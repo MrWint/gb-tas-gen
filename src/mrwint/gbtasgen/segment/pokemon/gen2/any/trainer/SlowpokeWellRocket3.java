@@ -14,10 +14,10 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class SlowpokeWellRocket3 extends Segment {
+public class SlowpokeWellRocket3 implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public SlowpokeWellRocket3() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -54,10 +54,10 @@ public class SlowpokeWellRocket3 extends Segment {
 		segments.add(new EndFightSegment(1));
 		segments.add(new WalkToSegment(5, 4));			// align
 		segments.add(new WalkToSegment(5, 3, false));	// engage rocket 4
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

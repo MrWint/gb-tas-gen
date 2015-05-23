@@ -10,7 +10,7 @@ import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
 
-public class ToAzalea3Segment extends Segment {
+public class ToAzalea3Segment implements Segment {
 
 	SequenceSegment sequence;
 

@@ -125,13 +125,6 @@ public:
 	  */
 	bool loadState(const std::string &filepath);
 
-	/** Save savestate to given buffer.
-	  */
-	void saveState(std::vector<char>& data);
-	/** Load savestate from given buffer.
-	  */
-	void loadState(const std::vector<char>& data);
-	
 	/** Selects which state slot to save state to or load state from.
 	  * There are 10 such slots, numbered from 0 to 9 (periodically extended for all n).
 	  */

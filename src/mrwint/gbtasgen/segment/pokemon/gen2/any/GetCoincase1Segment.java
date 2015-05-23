@@ -10,10 +10,10 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class GetCoincase1Segment extends Segment {
+public class GetCoincase1Segment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public GetCoincase1Segment() {
 		List<Segment> segments = new ArrayList<Segment>();
 
@@ -23,10 +23,10 @@ public class GetCoincase1Segment extends Segment {
 		segments.add(new WalkToSegment(5, 33));					// align
 		segments.add(new WalkToSegment(5, 32));					// face super nerd eric
 		segments.add(new MoveSegment(new OverworldInteract()));	// engage super nerd eric
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

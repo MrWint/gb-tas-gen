@@ -62,7 +62,8 @@ public abstract class PokemonRomInfo extends RomInfo {
 	public int trainerIDAddress;
 
 	//walking
-	public int doPlayerMovementFuncAddress;
+  public int overworldJoypadCallAddress;
+  public int doPlayerMovementFuncAddress;
 	public int doPlayerMovementFuncEndAddress;
 	public int playerMovingIndicatorAddress;
 	public int playerDirectionAddress;

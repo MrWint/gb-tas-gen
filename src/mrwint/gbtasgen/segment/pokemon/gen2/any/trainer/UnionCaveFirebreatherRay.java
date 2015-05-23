@@ -12,13 +12,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class UnionCaveFirebreatherRay extends Segment {
+public class UnionCaveFirebreatherRay implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public UnionCaveFirebreatherRay() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		segments.add(new InitFightSegment(3)); // any move
 		{
 			KillEnemyMonSegment kems = new KillEnemyMonSegment();
@@ -30,10 +30,10 @@ public class UnionCaveFirebreatherRay extends Segment {
 		}
 
 		segments.add(new EndFightSegment(1));
-		
+
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

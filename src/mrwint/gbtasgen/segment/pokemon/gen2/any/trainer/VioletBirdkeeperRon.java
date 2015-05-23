@@ -16,13 +16,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class VioletBirdkeeperRon extends Segment {
+public class VioletBirdkeeperRon implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public VioletBirdkeeperRon() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		segments.add(new InitFightSegment(4, 33));
 		{
 			KillEnemyMonSegment kems = new KillEnemyMonSegment(); // pidgey
@@ -56,7 +56,7 @@ public class VioletBirdkeeperRon extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

@@ -4,19 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrwint.gbtasgen.metric.Metric;
+import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.util.SeqSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class NamingSegment extends SeqSegment {
-	
+
 	private String name;
 	private List<Integer> moveList;
-	
-	public NamingSegment(String name) {
+	private boolean efl;
+
+  public NamingSegment(String name) {
+    this(name, false);
+  }
+    public NamingSegment(String name, boolean efl) {
 		this.name = name;
+		this.efl = efl;
 		generateMoveList();
-		
+
 		debugPrintMoveList();
 	}
 
@@ -48,7 +55,7 @@ public class NamingSegment extends SeqSegment {
 		}
 		System.out.println();
 	}
-	
+
 	String[] charMap = {
 			"ABCDEFGHI",
 			"abcdefghi",
@@ -60,21 +67,21 @@ public class NamingSegment extends SeqSegment {
 			"*():;[]π ",
 			"-?!´♀/., ",
 			"-?! ♀/., "};
-	
+
 	private int getCharX(char c) {
 		for(int i=0;i<charMap.length;i++)
 			if(charMap[i].contains(""+c))
 				return charMap[i].indexOf(c);
 		return -1;
 	}
-	
+
 	private int getCharY(char c) {
 		for(int i=0;i<charMap.length;i++)
 			if(charMap[i].contains(""+c))
 				return i/2;
 		return -1;
 	}
-	
+
 	private List<Integer> generateMovesFromTo(int curX,int curY,int newX,int newY) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 		int dx = (newX + 9 - curX)%9;
@@ -107,7 +114,7 @@ public class NamingSegment extends SeqSegment {
 		}
 		return ret;
 	}
-	
+
 	private List<Integer> generateMovesToCaseSwitch(int curX,int curY,int goalY) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 		if(curY < 2 || (curY == 2 && goalY >= 2))
@@ -118,7 +125,7 @@ public class NamingSegment extends SeqSegment {
 				ret.add(Integer.valueOf(Move.DOWN));
 		return ret;
 	}
-	
+
 	private List<Integer> generateMovesFromCaseSwitch(int newX,int newY,int pastY) {
 		ArrayList<Integer> ret = new ArrayList<Integer>();
 		if(newY < 2 || (newY == 2 && pastY < 2)) {
@@ -131,15 +138,15 @@ public class NamingSegment extends SeqSegment {
 		}
 		return ret;
 	}
-	
+
 	private void generateMoves(int curX,int curY,int newX,int newY,boolean caseSwitchNeeded) {
 		ArrayList<Integer> caseSwitch = new ArrayList<Integer>();
 		caseSwitch.addAll(generateMovesToCaseSwitch(curX, curY,newY));
 		caseSwitch.addAll(generateMovesFromCaseSwitch(newX, newY,curY));
-		
+
 		ArrayList<Integer> direct = new ArrayList<Integer>();
 		direct.addAll(generateMovesFromTo(curX, curY, newX, newY));
-		
+
 		int caseSwitchPenalty = 0;
 		for(int i=0;i<caseSwitch.size()-1;i++)
 			if(caseSwitch.get(i) == caseSwitch.get(i+1))
@@ -153,10 +160,10 @@ public class NamingSegment extends SeqSegment {
 				directPenalty++;
 		if(caseSwitchNeeded && directPenalty == 0)
 			directPenalty++;
-		
+
 		if(caseSwitch.size() + caseSwitchPenalty < direct.size() + directPenalty)
 			direct = caseSwitch;
-		
+
 		int lastMove = -1;
 		//System.out.println("Naming Movement from ("+curX+","+curY+") to ("+newX+","+newY+"):");
 		for(Integer move : direct) {
@@ -172,7 +179,7 @@ public class NamingSegment extends SeqSegment {
 		if (caseSwitchNeeded)
 			moveList.add(Move.SELECT);
 	}
-	
+
 	private void generateMoveList() {
 		moveList = new ArrayList<Integer>();
 		int curX = 0, curY = 0;
@@ -196,6 +203,6 @@ public class NamingSegment extends SeqSegment {
 	@Override
 	public void execute() {
 		for(Integer i : moveList)
-			seqMove(new PressButton(i, Metric.PRESSED_JOY), 0);
+			seqMove(efl ? new EflPressButton(i, EflUtil.PressMetric.PRESSED) : new PressButton(i, Metric.PRESSED_JOY), 0);
 	}
 }

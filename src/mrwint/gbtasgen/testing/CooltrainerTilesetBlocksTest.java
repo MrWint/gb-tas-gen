@@ -24,7 +24,7 @@ public class CooltrainerTilesetBlocksTest {
     Gb.loadGambatte(1);
 
 		// select ROM to use
-    curGb = new Gameboy(new RedRomInfo(), 0);
+    curGb = new Gameboy(new RedRomInfo(), 0, false);
 
 		Map<Integer, Set<String>> m = new TreeMap<Integer, Set<String>>();
 

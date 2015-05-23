@@ -12,13 +12,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-public class CherrygroveRivalSegment extends Segment {
+public class CherrygroveRivalSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public CherrygroveRivalSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		segments.add(new InitFightSegment(7, 33 /*GROWL*/));
 		{
 			KillEnemyMonSegment kems = new KillEnemyMonSegment();
@@ -43,7 +43,7 @@ public class CherrygroveRivalSegment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

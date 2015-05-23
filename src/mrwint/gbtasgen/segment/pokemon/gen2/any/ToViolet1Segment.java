@@ -16,13 +16,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class ToViolet1Segment extends Segment {
+public class ToViolet1Segment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public ToViolet1Segment() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		segments.add(new SkipTextsSegment(5));			// rival speech
 		segments.add(new WalkToSegment(40, 7));			// cherrygrove -> route 29
 		segments.add(new WalkToSegment(14, 13, false));	// jump ledge
@@ -39,7 +39,7 @@ public class ToViolet1Segment extends Segment {
 		segments.add(new MoveSegment(new PressButton(Move.UP))); // face elm
 		segments.add(new MoveSegment(new OverworldInteract())); // talk to elm
 		segments.add(new SkipTextsSegment(27));			// elm speech
-		
+
 		segments.add(new WalkToSegment(4, 7));			// align for cutscene
 		segments.add(new WalkToSegment(4, 8, false));	// trigger cutscene
 		segments.add(new SkipTextsSegment(2));			// assistant speech
@@ -59,7 +59,7 @@ public class ToViolet1Segment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

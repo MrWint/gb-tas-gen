@@ -21,7 +21,7 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
-public class ToAzalea1Segment extends Segment {
+public class ToAzalea1Segment implements Segment {
 
 	SequenceSegment sequence;
 

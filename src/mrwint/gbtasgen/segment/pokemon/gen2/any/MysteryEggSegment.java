@@ -12,13 +12,13 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
-public class MysteryEggSegment extends Segment {
+public class MysteryEggSegment implements Segment {
 
 	SequenceSegment sequence;
-	
+
 	public MysteryEggSegment() {
 		List<Segment> segments = new ArrayList<Segment>();
-		
+
 		segments.add(new MoveSegment(new SkipInput(2)));
 		segments.add(new WalkToSegment(-1, 8));						// New Bark -> route 29
 		segments.add(new WalkToSegment(8, 6, false));				// jump ledge //go to ledge
@@ -26,7 +26,7 @@ public class MysteryEggSegment extends Segment {
 		segments.add(new WalkToSegment(-1, 6));						// route 29 -> cherrygrove
 		segments.add(new WalkToSegment(17, -1));					// cherrygrove -> route 30
 		segments.add(new WalkToSegment(17, 5, false));				// enter lab
-		
+
 		segments.add(new SkipTextsSegment(4));
 		segments.add(new TextSegment()); // mystery egg
 		segments.add(new SkipTextsSegment(35));
@@ -42,7 +42,7 @@ public class MysteryEggSegment extends Segment {
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}
-	
+
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		return sequence.execute(in);

@@ -49,7 +49,7 @@ public class ChooseStarter extends SeqSegment {
 //		seq(new SkipTextsSegment(1, true)); // to charmander (yes)
 		seq(Segment.press(Move.A, 0)); // "A"
 //		seq(Segment.press(Move.START)); // name it "A"
-		seq(new DelayMoveSegment(new PressButtonFactory(Move.START), new CheckMetricSegment(new Gen1CheckDVMetric(0, 14, 0, 15, 14, 15))));
+		seq(new DelayMoveSegment(new PressButtonFactory(Move.START), new CheckMetricSegment(new Gen1CheckDVMetric(14, 0, 15, 14, 15))));
 
 		seq(new SkipTextsSegment(2)); // rival choose mon
 		seq(new WalkToSegment(5, 6)); // try leaving
