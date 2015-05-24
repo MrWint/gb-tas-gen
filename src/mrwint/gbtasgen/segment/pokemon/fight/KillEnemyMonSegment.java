@@ -26,6 +26,7 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.PII;
 import mrwint.gbtasgen.util.Util;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
@@ -311,7 +312,11 @@ public class KillEnemyMonSegment implements Segment {
 	private StateBuffer goalBuf;
 	private int numTurns;
 
-	@SuppressWarnings("unchecked")
+  public KillEnemyMonSegment() {
+    EflUtil.assertNoEfl();
+  }
+
+  @SuppressWarnings("unchecked")
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		printInfo(in);

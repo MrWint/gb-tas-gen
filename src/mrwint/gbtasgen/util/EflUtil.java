@@ -1,12 +1,21 @@
 package mrwint.gbtasgen.util;
 
-import static mrwint.gbtasgen.metric.comparator.Comparator.UNEQUAL;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.state.State;
 
 public class EflUtil {
+
+  public static void assertEfl() {
+    if (!curGb.equalLengthFrames)
+      throw new RuntimeException("used efl in non-efl environment");
+  }
+
+  public static void assertNoEfl() {
+    if (curGb.equalLengthFrames)
+      throw new RuntimeException("used non-efl in efl environment");
+  }
 
   // returns address or 0
   public static int runToAddressLimit(int baseKeys, int startKeys,
@@ -56,8 +65,8 @@ public class EflUtil {
     runFor(steps, keys, keys);
   }
 
-  public static int runToFrameBeforeAddressLimit(int baseKeys, int startKeys,
-      int stepLimit, int... addresses) {
+  /** returns address that triggered first, or 0 if limit reached. */
+  public static int runToFrameBeforeAddressLimit(int baseKeys, int startKeys, int stepLimit, int... addresses) {
     if (!curGb.onFrameBoundaries)
       curGb.step(); // end unfinished frame
     State cur = curGb.newState();
@@ -75,80 +84,154 @@ public class EflUtil {
     return runToFrameBeforeAddressLimit(baseKeys, startKeys, Integer.MAX_VALUE, addresses);
   }
 
-  private static void runToNextInputFrameHiOrLo(int joypadInputAdd) {
-    runToFrameBeforeAddressNoLimit(0, 0, joypadInputAdd);
 
+  /** returns frame of vblank, or 0 if limit reached. */
+  private static int runToInputHiOrLoLimit(int joypadInputAdd, int limit) {
+    int initialSteps = curGb.currentStepCount;
+    int lastVframe;
+
+    int add = runToAddressLimit(0, 0, limit, joypadInputAdd);
     while (true) {
-      State initial = curGb.newState();
-      curGb.step(0, joypadInputAdd); // will always exist
-      int add = curGb.step(0, curGb.rom.readJoypadAddress);
-      if (add != 0) {
-        curGb.restore(initial);
-        return;
-      }
-      add = runToFrameBeforeAddressNoLimit(0, 0, joypadInputAdd, curGb.rom.readJoypadAddress);
-      if (add == curGb.rom.readJoypadAddress) {
-        curGb.restore(initial);
-        return;
-      }
+      if (add == 0 || curGb.currentStepCount - initialSteps > limit)
+        return 0;
+      lastVframe = curGb.currentStepCount - 1; // subtract started frame
+      add = curGb.step(0, curGb.rom.readJoypadAddress);
+      if (add != 0)
+        break;
+      add = runToAddressLimit(0, 0, limit, joypadInputAdd, curGb.rom.readJoypadAddress);
+      if (add == curGb.rom.readJoypadAddress)
+        break;
     }
+    return lastVframe;
   }
-  public static void runToNextInputFrameHi() {
-    runToNextInputFrameHiOrLo(curGb.rom.readJoypadInputHi);
+
+  /** returns true if input frame was found. */
+  private static boolean runToNextInputFrameHiOrLoLimit(int joypadInputAdd, int limit) {
+    if (!curGb.onFrameBoundaries)
+      curGb.step(); // end unfinished frame
+
+    State initial = curGb.newState();
+    int initialSteps = curGb.currentStepCount;
+    int lastVframe = runToInputHiOrLoLimit(joypadInputAdd, limit);
+    if (lastVframe == 0)
+      return false;
+    curGb.restore(initial);
+    runFor(lastVframe - initialSteps, 0, 0);
+    return true;
   }
-  public static void runToNextInputFrameLo() {
-    runToNextInputFrameHiOrLo(curGb.rom.readJoypadInputLo);
+
+  public static boolean runToNextInputFrameHiLimit(int limit) {
+    return runToNextInputFrameHiOrLoLimit(curGb.rom.readJoypadInputHi, limit);
+  }
+  public static boolean runToNextInputFrameLoLimit(int limit) {
+    return runToNextInputFrameHiOrLoLimit(curGb.rom.readJoypadInputLo, limit);
+  }
+  public static void runToNextInputFrameHiNoLimit() {
+    runToNextInputFrameHiLimit(Integer.MAX_VALUE);
+  }
+  public static void runToNextInputFrameLoNoLimit() {
+    runToNextInputFrameLoLimit(Integer.MAX_VALUE);
   }
 
 
-  // returns true if button needs to be held for two frames (hi and lo as separated by a frame boundary)
-  public static boolean runToNextInputFrameHiLo() {
+  // return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
+  private static int runToNextInputFrameHiLoLimit(int limit) {
     int joypadInputFirst = Math.min(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
     int joypadInputLast = Math.max(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
 
-    runToFrameBeforeAddressNoLimit(0, 0, joypadInputFirst);
+    if (!curGb.onFrameBoundaries)
+      curGb.step(); // end unfinished frame
+
+    State initial = curGb.newState();
+    int initialSteps = curGb.currentStepCount;
+    int lastVframe;
+    int ret;
+
+    int add = runToAddressLimit(0, 0, limit, joypadInputFirst);
     while (true) {
-      boolean ret;
-      State initial = curGb.newState();
-      curGb.step(0, joypadInputFirst); // will always exist
+      if (add == 0 || curGb.currentStepCount - initialSteps > limit)
+        return 0;
+      lastVframe = curGb.currentStepCount - 1; // subtract started frame
       if (curGb.step(0, joypadInputLast) == 0) { // Assumption: joypadInputLast will come before curGb.rom.readJoypadAddress
         System.out.println("WARNING: joypadInputFirst not is same frame as joypadInputLast! Need two-frame press.");
-        ret = true;
+        ret = 2;
       } else {
-        ret = false;
-        int add = curGb.step(0, curGb.rom.readJoypadAddress);
-        if (add != 0) {
-          curGb.restore(initial);
-          return ret;
-        }
+        ret = 1;
+        add = curGb.step(0, curGb.rom.readJoypadAddress);
+        if (add != 0)
+          break;
       }
-
-      int add = runToFrameBeforeAddressNoLimit(0, 0, joypadInputFirst, curGb.rom.readJoypadAddress);
-      if (add == curGb.rom.readJoypadAddress) {
-        curGb.restore(initial);
-        return ret;
-      }
+      add = runToAddressLimit(0, 0, limit, joypadInputFirst, curGb.rom.readJoypadAddress);
+      if (add == curGb.rom.readJoypadAddress)
+        break;
     }
+
+    curGb.restore(initial);
+    runFor(lastVframe - initialSteps, 0, 0);
+    return ret;
   }
 
-  // returns true if button needs to be held for two frames (hi and lo are separated by a frame boundary)
-  public static boolean runToNextInputFrame(int move) {
+//  // return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
+//  public static int runToNextInputFrameHiLoLimitOld(int limit) {
+//    int joypadInputFirst = Math.min(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
+//    int joypadInputLast = Math.max(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
+//
+//    int initialSteps = curGb.currentStepCount;
+//    int add = runToFrameBeforeAddressLimit(0, 0, limit, joypadInputFirst);
+//    if (add == 0)
+//      return 0;
+//
+//    while (true) {
+//      if (curGb.currentStepCount - initialSteps > limit)
+//        return 0;
+//
+//      int ret;
+//      State initial = curGb.newState();
+//      curGb.step(0, joypadInputFirst); // will always exist
+//      if (curGb.step(0, joypadInputLast) == 0) { // Assumption: joypadInputLast will come before curGb.rom.readJoypadAddress
+//        System.out.println("WARNING: joypadInputFirst not is same frame as joypadInputLast! Need two-frame press.");
+//        ret = 2;
+//      } else {
+//        ret = 1;
+//        add = curGb.step(0, curGb.rom.readJoypadAddress);
+//        if (add != 0) {
+//          curGb.restore(initial);
+//          return ret;
+//        }
+//      }
+//
+//      add = runToFrameBeforeAddressLimit(0, 0, limit, joypadInputFirst, curGb.rom.readJoypadAddress);
+//      if (add == curGb.rom.readJoypadAddress) {
+//        curGb.restore(initial);
+//        return ret;
+//      }
+//    }
+//  }
+
+  // return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
+  public static int runToNextInputFrameNoLimit(int move) {
+    return runToNextInputFrameLimit(move, Integer.MAX_VALUE);
+  }
+  // return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
+  public static int runToNextInputFrameLimit(int move, int limit) {
     if ((move & 0b00001111) == 0) {
-      runToNextInputFrameHi();
-      return false;
+      return runToNextInputFrameHiLimit(limit) ? 1 : 0;
     } else if ((move & 0b11110000) == 0) {
-      runToNextInputFrameLo();
-      return false;
+      return runToNextInputFrameLoLimit(limit) ? 1 : 0;
     } else {
-      return runToNextInputFrameHiLo();
+      return runToNextInputFrameHiLoLimit(limit);
     }
   }
-
-  // returns 0 if stopped on input frame, or address it stopped on
-  public static int runToAddressOrNextInputFrame(int move, int... addresses) {
+  /** returns 0 if stopped on input frame, or address it stopped on */
+  public static int runToAddressOrNextInputFrameNoLimit(int move, int... addresses) {
+    return runToAddressOrNextInputFrameLimit(move, Integer.MAX_VALUE, addresses);
+  }
+  // returns -1 if limit reached, 0 if stopped on input frame, or address it stopped on
+  public static int runToAddressOrNextInputFrameLimit(int move, int limit, int... addresses) {
     int initialSteps = curGb.currentStepCount;
     State initial = curGb.newState();
-    runToNextInputFrame(move);
+    if (runToNextInputFrameLimit(move, limit) == 0)
+      return -1;
     int inputSteps = curGb.currentStepCount;
 
     curGb.restore(initial);
@@ -169,31 +252,34 @@ public class EflUtil {
     }
   }
   // returns true if button needs to be held for two frames (hi and lo are separated by a frame boundary)
-  public static boolean runToNextInputFrameForMetric(int move, PressMetric pressMetric) {
+  public static int runToNextInputFrameForMetricNoLimit(int move, PressMetric pressMetric) {
     while (true) {
-      boolean twoFrames = runToNextInputFrame(move);
+      int ret = runToNextInputFrameNoLimit(move);
       State cur = curGb.newState();
-      runToAddressNoLimit(0, move, pressMetric.add);
+      curGb.step(move, curGb.rom.readJoypadInputHi); // doesn't matter which, since hi and lo together
+      runToAddressNoLimit(0, 0, curGb.rom.readJoypadAddress);
+      runToAddressNoLimit(0, 0, pressMetric.add);
+      runToAddressNoLimit(0, 0, curGb.rom.readJoypadInputHi); // deal with any overwriting that happens later this frame
       int metric = pressMetric.m.getMetric();
       curGb.restore(cur);
       if (metric == move)
-        return twoFrames;
+        return ret;
       curGb.step(); // skip this input frame
     }
   }
 
   // finds first input frame after a specific address has been passed
-  private static void runToFirstInputFrameAfterAddressHiOrLo(int move, int joypadInputAdd, int addressToPass) {
-    while (true) {
-      State initial = curGb.newState();
-//      System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps1: " + curGb.currentStepCount);
-      runToAddressNoLimit(0, 0, addressToPass);
-//      System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps2: " + curGb.currentStepCount);
-      int stepsToAddress = curGb.currentStepCount;
+  private static void runToFirstInputFrameAfterAddressHiOrLoNoLimit(int move, int joypadInputAdd, int addressToPass) {
+    State initial = curGb.newState();
+//    System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps1: " + curGb.currentStepCount);
+    runToAddressNoLimit(0, 0, addressToPass);
+//    System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps2: " + curGb.currentStepCount);
+    int stepsToAddress = curGb.currentStepCount;
+    curGb.restore(initial);
 
-      curGb.restore(initial);
-//      System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps1: " + curGb.currentStepCount);
-      runToNextInputFrameHiOrLo(joypadInputAdd);
+    while (true) {
+      //      System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps1: " + curGb.currentStepCount);
+      runToNextInputFrameHiOrLoLimit(joypadInputAdd, Integer.MAX_VALUE);
 //      System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps3: " + curGb.currentStepCount);
       if (curGb.currentStepCount >= stepsToAddress) // address occurred before this input frame already
         return;
@@ -221,12 +307,12 @@ public class EflUtil {
       return;
     }
   }
-  public static void runToFirstInputFrameAfterAddress(int move, int addressToPass) {
+  public static void runToFirstInputFrameAfterAddressNoLimit(int move, int addressToPass) {
     if ((move & 0b00001111) == 0) {
-      runToFirstInputFrameAfterAddressHiOrLo(move, curGb.rom.readJoypadInputHi, addressToPass);
+      runToFirstInputFrameAfterAddressHiOrLoNoLimit(move, curGb.rom.readJoypadInputHi, addressToPass);
       return;
     } else if ((move & 0b11110000) == 0) {
-      runToFirstInputFrameAfterAddressHiOrLo(move, curGb.rom.readJoypadInputLo, addressToPass);
+      runToFirstInputFrameAfterAddressHiOrLoNoLimit(move, curGb.rom.readJoypadInputLo, addressToPass);
       return;
     } else {
       throw new RuntimeException("Unsupported mixed inputs in runToFirstInputFrameAfterAddress");
@@ -235,14 +321,14 @@ public class EflUtil {
 
   // runs until joypad action move won't affect execution before addressToPass anymore. Won't run past addressToPass.
   // returns 0 if on next input frame, or addressToPass if at addressToPass.
-  private static int runInputPastAddressHiOrLo(int move, int joypadInputAdd, int addressToPass) {
+  private static int runInputPastAddressHiOrLoNoLimit(int move, int joypadInputAdd, int addressToPass) {
     while (true) {
       State initial = curGb.newState();
       runToAddressNoLimit(0, 0, addressToPass);
       int stepsToAddress = curGb.currentStepCount;
 
       curGb.restore(initial);
-      runToNextInputFrameHiOrLo(joypadInputAdd);
+      runToNextInputFrameHiOrLoLimit(joypadInputAdd, Integer.MAX_VALUE);
       if (curGb.currentStepCount >= stepsToAddress) { // address occurred before this input frame already
         System.out.println("runInputPastAddressHiOrLo: "+curGb.currentStepCount+" >= "+stepsToAddress);
         curGb.restore(initial);
@@ -268,11 +354,11 @@ public class EflUtil {
         return addressToPass;
     }
   }
-  public static int runInputPastAddress(int move, int addressToPass) {
+  public static int runInputPastAddressNoLimit(int move, int addressToPass) {
     if ((move & 0b00001111) == 0) {
-      return runInputPastAddressHiOrLo(move, curGb.rom.readJoypadInputHi, addressToPass);
+      return runInputPastAddressHiOrLoNoLimit(move, curGb.rom.readJoypadInputHi, addressToPass);
     } else if ((move & 0b11110000) == 0) {
-      return runInputPastAddressHiOrLo(move, curGb.rom.readJoypadInputLo, addressToPass);
+      return runInputPastAddressHiOrLoNoLimit(move, curGb.rom.readJoypadInputLo, addressToPass);
     } else {
       throw new RuntimeException("Unsupported mixed inputs in runInputPastAddress");
     }

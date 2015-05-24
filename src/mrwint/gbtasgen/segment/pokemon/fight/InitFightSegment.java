@@ -9,6 +9,7 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
 public class InitFightSegment extends SeqSegment {
@@ -17,7 +18,9 @@ public class InitFightSegment extends SeqSegment {
 	int[] enemyInitialMove;
 
 	public InitFightSegment(int numPreBattleTexts, int... enemyInitialMove) {
-	  this.numPreBattleTexts = numPreBattleTexts;
+    EflUtil.assertNoEfl();
+
+    this.numPreBattleTexts = numPreBattleTexts;
 	  this.enemyInitialMove = enemyInitialMove;
 	}
   @Override

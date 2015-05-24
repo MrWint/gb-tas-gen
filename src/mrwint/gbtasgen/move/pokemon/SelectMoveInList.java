@@ -4,6 +4,7 @@ import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class SelectMoveInList extends Move {
 
@@ -11,7 +12,9 @@ public class SelectMoveInList extends Move {
 	int numOwnMoves;
 
 	public SelectMoveInList(int goalIndex, int numOwnMoves) {
-		this.goalIndex = goalIndex;
+    EflUtil.assertNoEfl();
+
+    this.goalIndex = goalIndex;
 		this.numOwnMoves = numOwnMoves;
 	}
 

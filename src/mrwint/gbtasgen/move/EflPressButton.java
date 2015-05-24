@@ -15,6 +15,8 @@ public class EflPressButton extends DelayableCachableMove {
 	}
 
 	public EflPressButton(int move, PressMetric metric) {
+	  EflUtil.assertEfl();
+
 		this.move = move;
 		this.metric = metric;
 		this.isCachable = (move & 0b00001111) == 0 || (move & 0b11110000) == 0; // mixed moves not cachable
@@ -32,26 +34,27 @@ public class EflPressButton extends DelayableCachableMove {
 
 	@Override
 	public boolean doMove() {
-    if (twoFrames)
+    if (twoFrames > 1)
       curGb.step(move);
-	  curGb.step(move, curGb.rom.readJoypadAddress); // run until joypad input is registered or frame ended (whichever comes first)
+    if (curGb.step(move, curGb.rom.readJoypadInputHi) != 0); // doesn't matter which
+      curGb.step(0, curGb.rom.readJoypadAddress); // run until joypad input is registered or frame ended (whichever comes first)
 		return true;
 	}
 
-  boolean twoFrames;
+  int twoFrames;
 	@Override
 	public void prepareInternal(int skips, boolean assumeOnSkip) {
 		if(!assumeOnSkip)
 			if (metric != null)
-			  twoFrames = EflUtil.runToNextInputFrameForMetric(move, metric);
+			  twoFrames = EflUtil.runToNextInputFrameForMetricNoLimit(move, metric);
 			else
-			  twoFrames = EflUtil.runToNextInputFrame(move);
+			  twoFrames = EflUtil.runToNextInputFrameNoLimit(move);
 		while(skips-- > 0) {
 		  curGb.step();
       if (metric != null)
-        twoFrames = EflUtil.runToNextInputFrameForMetric(move, metric);
+        twoFrames = EflUtil.runToNextInputFrameForMetricNoLimit(move, metric);
       else
-        twoFrames = EflUtil.runToNextInputFrame(move);
+        twoFrames = EflUtil.runToNextInputFrameNoLimit(move);
 		}
 	}
 }

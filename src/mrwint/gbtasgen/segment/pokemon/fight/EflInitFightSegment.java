@@ -3,13 +3,16 @@ package mrwint.gbtasgen.segment.pokemon.fight;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class EflInitFightSegment extends SeqSegment {
 
 	int numPreBattleTexts;
 
 	public EflInitFightSegment(int numPreBattleTexts) {
-	  this.numPreBattleTexts = numPreBattleTexts;
+    EflUtil.assertEfl();
+
+    this.numPreBattleTexts = numPreBattleTexts;
 	}
   @Override
   protected void execute() {

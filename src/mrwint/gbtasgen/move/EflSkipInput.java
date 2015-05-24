@@ -2,30 +2,29 @@ package mrwint.gbtasgen.move;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.util.EflUtil;
-import mrwint.gbtasgen.util.Util;
 
-public class SkipInput extends Move {
+public class EflSkipInput extends Move {
 
 	private int numSkip;
 
-	public SkipInput() {
+	public EflSkipInput() {
 		this(1);
 	}
 
-	public SkipInput(int numSkip) {
-	  EflUtil.assertNoEfl();
+	public EflSkipInput(int numSkip) {
+	  EflUtil.assertEfl();
 
-	  this.numSkip = numSkip;
+		this.numSkip = numSkip;
 	}
 
 	@Override
 	public boolean doMove() {
 		if(numSkip <= 0) {
-			Util.runToNextInputFrame();
+			EflUtil.runToNextInputFrameNoLimit(0b11111111);
 			return true;
 		}
 		for(int i=0;i<numSkip;i++) {
-			Util.runToNextInputFrame();
+      EflUtil.runToNextInputFrameNoLimit(0b11111111);
 			curGb.step();
 		}
 		return true;

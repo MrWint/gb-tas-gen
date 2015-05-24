@@ -5,6 +5,7 @@ import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
+import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflCheckMoveDamage;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
@@ -46,7 +47,7 @@ public class EflHitMetricSegment extends EflAttackActionSegment {
 		  return new SeqSegment() {
         @Override
         protected void execute() {
-          seqEflButton(Move.B);
+          seqEflButtonUnboundedNoDelay(Move.B);
           seqMetric(new EflKillEnemyMonSegment.EflCheckAdditionalTexts());
         }
       };
@@ -55,12 +56,13 @@ public class EflHitMetricSegment extends EflAttackActionSegment {
 	@Override
 	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
 		sb = new EflTextSegment(Move.A, 0).execute(sb); // player mon uses attack
+//    System.out.println("EflHitMetricSegment: size=" + sb.size());
 		sb = new CheckMetricSegment(new EflCheckMoveDamage(isCrit, effectMiss, numEndTexts == 0, false, !player, ignoreDamage, thrashAdditionalTurns),GREATER_EQUAL,ignoreDamage ? 0 : minValue,player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE).execute(sb);
 //		sb = new MoveSegment(new Wait(1), 0, 0).execute(sb); // skip last frame of text box
 
     sb = new EflSkipTextsSegment(numEndTexts - 1).execute(sb); // skip critical hit! messages
 		if(numEndTexts > 0) // skip last message if any
-			sb = new TextSegment().execute(sb); // critical hit! or very/not effective message
+			sb = new EflTextSegment().execute(sb); // critical hit! or very/not effective message
 
 		return sb;
 	}

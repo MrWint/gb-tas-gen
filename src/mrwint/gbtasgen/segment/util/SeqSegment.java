@@ -4,12 +4,14 @@ import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.move.EflPressButton;
+import mrwint.gbtasgen.move.EflSkipInput;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PrepMove;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SkipInput;
 import mrwint.gbtasgen.move.Wait;
 import mrwint.gbtasgen.segment.Segment;
+import mrwint.gbtasgen.segment.pokemon.EflScroll;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayableMoveFactory;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
@@ -43,11 +45,43 @@ public abstract class SeqSegment implements Segment {
   public void seqEflButton(int move, PressMetric metric) {
     seqMove(new EflPressButton(move, metric));
   }
+  public void seqEflButtonNoDelay(int move) {
+    seqMoveNoDelay(new EflPressButton(move));
+  }
+  public void seqEflButtonNoDelay(int move, PressMetric metric) {
+    seqMoveNoDelay(new EflPressButton(move, metric));
+  }
   public void seqEflButtonUnbounded(int move) {
     seqMoveUnbounded(new EflPressButton(move));
   }
   public void seqEflButtonUnbounded(int move, PressMetric metric) {
     seqMoveUnbounded(new EflPressButton(move, metric));
+  }
+  public void seqEflButtonUnboundedNoDelay(int move) {
+    seqMoveUnboundedNoDelay(new EflPressButton(move));
+  }
+  public void seqEflButtonUnboundedNoDelay(int move, PressMetric metric) {
+    seqMoveUnboundedNoDelay(new EflPressButton(move, metric));
+  }
+  public void seqEflScroll(int num) {
+    seq(new EflScroll(false, num, 0));
+  }
+  public void seqEflScrollA(int num) {
+    seq(new EflScroll(false, num, 0));
+    seqEflButtonNoDelay(Move.A);
+  }
+  public void seqEflScrollAF(int num) {
+    seq(new EflScroll(false, num, Move.A));
+  }
+  public void seqEflScrollFast(int num) {
+    seq(new EflScroll(true, num, 0));
+  }
+  public void seqEflScrollFastA(int num) {
+    seq(new EflScroll(true, num, 0));
+    seqEflButtonNoDelay(Move.A);
+  }
+  public void seqEflScrollFastAF(int num) {
+    seq(new EflScroll(true, num, Move.A));
   }
   public void seqWait(int frames) {
     seqMove(new Wait(frames));
@@ -61,6 +95,12 @@ public abstract class SeqSegment implements Segment {
   public void seqSkipInputUnbounded(int skips) {
     seq(new MoveSegment(new SkipInput(skips), 0, 0));
   }
+  public void seqEflSkipInput(int skips) {
+    seqMove(new EflSkipInput(skips));
+  }
+  public void seqEflSkipInputUnbounded(int skips) {
+    seqMoveUnboundedNoDelay(new EflSkipInput(skips));
+  }
   public void seqFunc(Runnable func) {
     seqMetric(() -> {func.run(); return 1;});
   }
@@ -69,6 +109,9 @@ public abstract class SeqSegment implements Segment {
   }
   public void seqMoveUnbounded(Move m) {
     seq(new MoveSegment(m, MoveSegment.MAX_DELAY, 0));
+  }
+  public void seqMoveUnboundedNoDelay(Move m) {
+    seq(new MoveSegment(m, 0, 0));
   }
   public void seqMoveNoDelay(Move m) {
     seqMove(m, 0);

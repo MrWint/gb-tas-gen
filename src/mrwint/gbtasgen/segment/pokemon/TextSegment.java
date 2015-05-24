@@ -5,6 +5,7 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.Util;
 
 public class TextSegment implements Segment {
@@ -25,7 +26,9 @@ public class TextSegment implements Segment {
 	}
 
 	public TextSegment(int skipMove, boolean finishLastFrame, int bufferSize) {
-		this.skipMove = skipMove;
+    EflUtil.assertNoEfl();
+
+    this.skipMove = skipMove;
 		this.finishLastFrame = finishLastFrame;
 		this.bufferSize = bufferSize;
 	}

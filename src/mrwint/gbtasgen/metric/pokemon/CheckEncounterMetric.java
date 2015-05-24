@@ -2,6 +2,7 @@ package mrwint.gbtasgen.metric.pokemon;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.StateResettingMetric;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.Util;
 import mrwint.gbtasgen.util.pokemon.fight.DamageCalc;
 
@@ -68,11 +69,11 @@ public class CheckEncounterMetric implements StateResettingMetric {
 
 	@Override
 	public int getMetricInternal() {
-		if(Util.runToAddressLimit(0, startMove, 500, curGb.pokemon.encounterPreCheckAddresses) == 0) {
+		if(EflUtil.runToAddressLimit(0, startMove, 500, curGb.pokemon.encounterPreCheckAddresses) == 0) {
 			System.out.println("Warning: couldn't find encounterPreCheckAddresses call for 500 steps, assuming no encounter!");
 			return 0;
 		}
-		int add = Util.runToAddressNoLimit(0,0, curGb.pokemon.encounterPostCheckAddresses);
+		int add = EflUtil.runToAddressNoLimit(0,0, curGb.pokemon.encounterPostCheckAddresses);
 		int curMon = curGb.readMemory(curGb.pokemon.encounterMonSpeciesAddress);
 		int curLvl = curGb.readMemory(curGb.pokemon.encounterMonLevelAddress);
 
@@ -85,35 +86,35 @@ public class CheckEncounterMetric implements StateResettingMetric {
 		if(add != curGb.pokemon.encounterCheckMainFuncEncounterAddress || (lvl != null && !Util.arrayContains(lvl, curLvl)) || (mon > 0 && mon != curMon) || minDSum > dsum || maxDSum < dsum)
 			return 0;
 		if(specialDefStat != null) {
-			Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+		  EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
 			if(!Util.arrayContains(specialDefStat, DamageCalc.getStat(false, DamageCalc.STAT_SPCDEF, false)))
 				return 0;
 		}
     if(atkDV != null) {
-      Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+      EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
       int curAtkDV = (curGb.readMemory(curGb.pokemon.fightEnemyDVsAddress) & 0xF0) >> 4;
       if(!Util.arrayContains(atkDV, curAtkDV))
         return 0;
     }
     if(spdDV != null) {
-      Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+      EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
       int curSpdDV = (curGb.readMemory(curGb.pokemon.fightEnemyDVsAddress + 1) & 0xF0) >> 4;
       if(!Util.arrayContains(spdDV, curSpdDV))
         return 0;
     }
     if(specialDV != null) {
-      Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+      EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
       int curSpcDV = curGb.readMemory(curGb.pokemon.fightEnemyDVsAddress + 1) & 0xF;
       if(!Util.arrayContains(specialDV, curSpcDV))
         return 0;
     }
 		if(defStat != null) {
-			Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+		  EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
 			if(!Util.arrayContains(defStat, DamageCalc.getStat(false, DamageCalc.STAT_DEF, false)))
 				return 0;
 		}
 		if(hpStat != null) {
-			Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+		  EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
 			if(!Util.arrayContains(hpStat, Util.getMemoryWordBE(curGb.pokemon.fightEnemyMonHPAddress)))
 				return 0;
 		}

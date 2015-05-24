@@ -117,8 +117,8 @@ public class Gen1Map extends Map {
 
 //		System.out.println("Map dimensions "+mapWidth+"x"+mapHeight);
 
-    System.out.println(Util.toHex(curGb.pokemon.blockTilesPointerAddress) + ": " + memory[curGb.pokemon.blockTilesPointerAddress]);
-    System.out.println(Util.toHex(0xff46) + ": " + memory[0xff46]);
+//    System.out.println(Util.toHex(curGb.pokemon.blockTilesPointerAddress) + ": " + memory[curGb.pokemon.blockTilesPointerAddress]);
+//    System.out.println(Util.toHex(0xff46) + ": " + memory[0xff46]);
 		blockTilesAddress = Util.getMemoryWordLE(curGb.pokemon.blockTilesPointerAddress+1) + (memory[curGb.pokemon.blockTilesPointerAddress]-1)*0x4000;
 		grassTile = memory[curGb.pokemon.grassTileAddress];
 

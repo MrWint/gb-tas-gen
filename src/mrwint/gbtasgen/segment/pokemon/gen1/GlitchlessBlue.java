@@ -48,17 +48,17 @@ public class GlitchlessBlue extends SingleGbSegment {
 //    seq(new Rival1FightSquirtle());
 //    save("Rival1FightSquirtle");
 
-//    load("Rival1FightSquirtle");
-//    seq(new OaksParcel());
-//    save("OaksParcelSquirtle");
+    load("Rival1FightSquirtle");
+    seq(new OaksParcel());
+    save("OaksParcelSquirtle");
 
 //    load("OaksParcelSquirtle");
-//    seq(new ViridianForestSquirtle());
-//    save("ViridianForestSquirtle");
+    seq(new ViridianForestSquirtle());
+    save("ViridianForestSquirtle");
 
 //    load("ViridianForestSquirtle");
-//    seq(new PewterSquirtle());
-//    save("PewterSquirtle");
+    seq(new PewterSquirtle());
+    save("PewterSquirtle");
 
 //    load("PewterSquirtle");
 //    seq(new Route3Squirtle());

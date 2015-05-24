@@ -7,9 +7,12 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SequenceMove;
 import mrwint.gbtasgen.move.SkipInput;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class Scroll {
 	public static SequenceMove slow(int num, int withMove) {
+    EflUtil.assertNoEfl();
+
 		List<Move> moves = new ArrayList<Move>();
 		int move = num > 0 ? Move.DOWN: Move.UP;
 		if (num < 0)
@@ -24,6 +27,8 @@ public class Scroll {
 	}
 
 	public static SequenceMove fast(int num, int withMove) {
+    EflUtil.assertNoEfl();
+
 		List<Move> moves = new ArrayList<Move>();
 		int move = num > 0 ? Move.DOWN: Move.UP;
 		if (num < 0)

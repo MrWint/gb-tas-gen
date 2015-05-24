@@ -9,6 +9,7 @@ import mrwint.gbtasgen.move.WithMetric;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class DelayMoveSegment implements Segment {
 
@@ -61,23 +62,31 @@ public class DelayMoveSegment implements Segment {
 	boolean metricBeforeExecution = false;
 
 	public DelayMoveSegment(Segment verificationSegment) {
-		this.factory = new PressButtonFactory(0, null);
+    EflUtil.assertNoEfl();
+
+    this.factory = new PressButtonFactory(0, null);
 		this.verificationSegment = verificationSegment;
 		this.metricBeforeExecution = true;
 	}
 
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment) {
+    EflUtil.assertNoEfl();
+
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
 	}
 
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, boolean metricBeforeExecution) {
+    EflUtil.assertNoEfl();
+
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
 		this.metricBeforeExecution = metricBeforeExecution;
 	}
 
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, int fullCutoffDelay, int nonemptyCutoffDelay) {
+    EflUtil.assertNoEfl();
+
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
 		this.fullCutoffDelay = fullCutoffDelay;
@@ -85,6 +94,8 @@ public class DelayMoveSegment implements Segment {
 	}
 
 	public DelayMoveSegment(DelayableMoveFactory factory, Segment verificationSegment, int fullCutoffDelay, int nonemptyCutoffDelay, boolean metricBeforeExecution) {
+    EflUtil.assertNoEfl();
+
 		this.factory = factory;
 		this.verificationSegment = verificationSegment;
 		this.fullCutoffDelay = fullCutoffDelay;

@@ -3,6 +3,7 @@ package mrwint.gbtasgen.move;
 import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class EflWithMetric extends Move {
 
@@ -16,7 +17,9 @@ public class EflWithMetric extends Move {
 	}
 
 	public EflWithMetric(Move move, Metric metric, Comparator comp, int value) {
-		this.move = move;
+    EflUtil.assertEfl();
+
+    this.move = move;
 		this.metric = metric;
 		this.comp = comp;
 		this.value = value;

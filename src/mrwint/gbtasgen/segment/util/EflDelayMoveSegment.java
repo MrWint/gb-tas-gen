@@ -19,7 +19,9 @@ public class EflDelayMoveSegment implements Segment {
 	}
 
 	public EflDelayMoveSegment(Segment segment) {
-		this.segment = segment;
+    EflUtil.assertEfl();
+
+    this.segment = segment;
 	}
 
 	@Override
@@ -38,7 +40,7 @@ public class EflDelayMoveSegment implements Segment {
 			//for(cs=0;cs<in.size();cs++) {
 			for(State s : in.getStates()) {
 				curGb.restore(s);
-				EflUtil.runToNextInputFrame(0b11111111); // for any input
+				EflUtil.runToNextInputFrameNoLimit(0b11111111); // for any input
 				int curActiveFrame = curGb.currentStepCount;
 
 				if(skips > maxSkips) {

@@ -38,7 +38,7 @@ public class EflEnemyFlinchSegment extends EflAttackActionSegment {
 
 	@Override
 	public Segment getFinishSegment() {
-		return new MoveSegment(new EflPressButton(Move.B));
+		return new MoveSegment(new EflPressButton(Move.B), 0, 0);
 	}
 
 }

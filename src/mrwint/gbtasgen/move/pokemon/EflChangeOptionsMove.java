@@ -5,11 +5,14 @@ import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.SequenceMove;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class EflChangeOptionsMove {
 	public static SequenceMove get(boolean inMainMenu) {
-		if(inMainMenu)
+    EflUtil.assertEfl();
+
+    if(inMainMenu)
 			return new SequenceMove(
 				new EflPressButton(Move.DOWN,PressMetric.PRESSED),
 				new EflPressButton(Move.A,PressMetric.PRESSED), // options

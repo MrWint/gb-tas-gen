@@ -12,17 +12,14 @@ import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckNoAIMove;
 import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.move.pokemon.EflSelectMoveInList;
 import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.pokemon.TextSegment;
+import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.EflDelayMoveSegment;
+import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
@@ -151,6 +148,7 @@ public class EflKillEnemyMonSegment implements Segment {
 			EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.fightBattleCommand0a);
 			int crit = curGb.readMemory(curGb.pokemon.fightCriticalHitAddress);
 			int missed = curGb.readMemory(curGb.pokemon.fightAttackMissedAddress);
+//			System.out.println("EflCheckMoveDamage crit: " + crit + " missed: " + missed);
 			boolean failure = missed != 0 || criticalHit != (crit != 0);
 			if (thrashAdditionalTurns > 0 && curGb.readMemory(curGb.pokemon.thrashNumTurnsAddress) < thrashAdditionalTurns) {
 				failure = true;
@@ -163,6 +161,7 @@ public class EflKillEnemyMonSegment implements Segment {
 			if(failure)
 				return Integer.MIN_VALUE;
 			int dmg = Util.getMemoryWordBE(curGb.pokemon.fightCurDamageAddress);
+//      System.out.println("EflCheckMoveDamage dmg: " + dmg);
 			if(dmg > 0 && cat != null)
 				if(cat.getMetric() == (expectAdditionalTexts ? 1 : 0)) // found additional texts
 					return Integer.MIN_VALUE;
@@ -298,6 +297,10 @@ public class EflKillEnemyMonSegment implements Segment {
 	private HashMap<FightState, StateBuffer>[] bufs;
 	private StateBuffer goalBuf;
 	private int numTurns;
+
+	public EflKillEnemyMonSegment() {
+    EflUtil.assertEfl();
+  }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -447,8 +450,8 @@ public class EflKillEnemyMonSegment implements Segment {
 							if(fs.spareDamage >= 0) {
 								StateBuffer sb = e.getValue();
 								if(!skipFirstMainBattleMenu || n != numAttacks-1) {
-									sb = new MoveSegment(new EflPressButton(Move.A, PressMetric.PRESSED)).execute(sb); // select "FIGHT"
-									sb = new MoveSegment(new EflSelectMoveInList(ai,numOwnMoves)).execute(sb);
+									sb = new MoveSegment(new EflPressButton(Move.A, PressMetric.PRESSED), 0).execute(sb); // select "FIGHT"
+									sb = new MoveSegment(new EflSelectMoveInList(ai,numOwnMoves), 0).execute(sb);
 								}
 								executeTurn(fs,sb, n, ai, ac);
 							}
@@ -563,7 +566,7 @@ public class EflKillEnemyMonSegment implements Segment {
 		Segment initialSegment = new SeqSegment() {
       @Override
       protected void execute() {
-        seqEflButtonUnbounded(Move.A, PressMetric.PRESSED);
+        seqEflButtonUnboundedNoDelay(Move.A, PressMetric.PRESSED);
         seqMetric(new CheckMoveOrderMetric(faster,curEnemyMove,Move.A));
       }
     };
@@ -619,33 +622,41 @@ public class EflKillEnemyMonSegment implements Segment {
 			StateBuffer sb = e.getValue();
 			if(moveSegment != null)
 				sb = moveSegment.execute(sb);
-			sb = new SkipTextsSegment(numExpGainers).execute(sb); // enemy mon fainted + mon gained xp (-1)
-			sb = new TextSegment(Move.A).execute(sb);
+			sb = new EflSkipTextsSegment(numExpGainers).execute(sb); // enemy mon fainted + mon gained xp (-1)
+			sb = new EflTextSegment(Move.A).execute(sb);
 			if (thrashNumAdditionalTurns == 0) {
-				sb = new DelayMoveSegment(new PressButtonFactory(Move.B), new CheckMetricSegment(new Metric() {
-					@Override
-					public int getMetric() { // check for next mon
-						if(nextMonSpecies > 0 || nextMonLevel > 0) {
-							State s = curGb.newState();
-							Util.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
-							int mon = curGb.readMemory(curGb.pokemon.fightEnemyMonSpeciesAddress);
-							int level = curGb.readMemory(curGb.pokemon.fightEnemyMonLevelAddress);
-							curGb.restore(s);
-							if(nextMonSpecies > 0 && nextMonSpecies != mon)
-								return 0;
-							if(nextMonLevel > 0 && nextMonLevel != level)
-								return 0;
-						}
-						return 1;
-					}
-				})).execute(sb);
+			  sb = new EflDelayMoveSegment(new SeqSegment() {
+          @Override
+          protected void execute() {
+            seqEflButton(Move.B);
+            seqMetric(new Metric() {
+              @Override
+              public int getMetric() { // check for next mon
+                if(nextMonSpecies > 0 || nextMonLevel > 0) {
+                  State s = curGb.newState();
+                  EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress);
+                  int mon = curGb.readMemory(curGb.pokemon.fightEnemyMonSpeciesAddress);
+                  int level = curGb.readMemory(curGb.pokemon.fightEnemyMonLevelAddress);
+                  curGb.restore(s);
+                  if(nextMonSpecies > 0 && nextMonSpecies != mon)
+                    return 0;
+                  if(nextMonLevel > 0 && nextMonLevel != level)
+                    return 0;
+                }
+                return 1;
+              }
+            });
+          }
+        }).execute(sb);
 			}
 			goalBuf.addAll(sb);
 			return;
 		}
 
 		// sort resulting states in respective buckets
+		Segment tmpSegment = moveSegment;
 		for(Entry<PII, StateBuffer> e : im.entrySet()) {
+		  moveSegment = tmpSegment;
 			int playerDamage = e.getKey().a;
 			int enemyDamage = e.getKey().b;
 			StateBuffer imm = e.getValue();
@@ -654,19 +665,19 @@ public class EflKillEnemyMonSegment implements Segment {
 			if(getNumEndOfTurnTexts(curTurn) > 0) {
 				System.out.println("executing "+getNumEndOfTurnTexts(curTurn)+" end of turn texts!");
 				if(moveSegment != null)
-					imm = moveSegment.execute(imm);
-				imm = new TextSegment().execute(imm);
+					imm = new EflDelayMoveSegment(moveSegment).execute(imm);
+				imm = new EflTextSegment().execute(imm);
 				for(int i=1;i <getNumEndOfTurnTexts(curTurn); i++) {
-					imm = new MoveSegment(new PressButton(Move.B)).execute(imm);
-					imm = new TextSegment().execute(imm);
+					imm = new MoveSegment(new EflPressButton(Move.B)).execute(imm);
+					imm = new EflTextSegment().execute(imm);
 				}
-				moveSegment = new MoveSegment(new EflPressButton(Move.B));
+				moveSegment = new MoveSegment(new EflPressButton(Move.B), 0, 0);
 			}
 
 			// handle remaining finishing move, ensuring next enemy move
 			if(moveSegment != null) {
 				if (PokemonUtil.isGen1()) {
-					imm = moveSegment.execute(imm);
+					imm = new EflDelayMoveSegment(moveSegment).execute(imm);
 				} else {
 	        final Segment tmpMoveSegment = moveSegment;
 				  imm = new EflDelayMoveSegment(new SeqSegment() {
@@ -679,6 +690,9 @@ public class EflKillEnemyMonSegment implements Segment {
 				}
 			}
 
+      if (imm.size() == 0)
+        throw new RuntimeException();
+
 			// save states to buffer
 			int newSpareDamage = fs.spareDamage - (maxPlayerDamage - playerDamage);
 			int newSpareEnemyDamage = fs.spareEnemyDamage - ((-curEnemyMoveMinDamage) - enemyDamage);
@@ -687,25 +701,29 @@ public class EflKillEnemyMonSegment implements Segment {
 	}
 
 	private void setAppendEnemyMoveMetric(EflAttackActionSegment aas, int curTurn, boolean set) {
-		if (set && !PokemonUtil.isGen1())
+		if (set && !PokemonUtil.isGen1()) {
+      final Segment curSuffixSegment = aas.suffixSegment;
 		  aas.suffixSegment = new SeqSegment() {
         @Override
         protected void execute() {
-          seq(aas.suffixSegment);
+          seq(curSuffixSegment);
           seq(new CheckMetricSegment(CheckEnemyMoveMetric.noKeys(getEnemyMove(curTurn+1))));
         }
       };
+		}
 	}
 
 	private void setAppendNoAIMoveMetric(EflAttackActionSegment aas, boolean set) {
-		if (set && PokemonUtil.isGen1())
+		if (set && PokemonUtil.isGen1()) {
+		  final Segment curSuffixSegment = aas.suffixSegment;
       aas.suffixSegment = new SeqSegment() {
-      @Override
-      protected void execute() {
-        seq(aas.suffixSegment);
-        seq(new CheckMetricSegment(new CheckNoAIMove(0)));
-      }
-    };
+        @Override
+        protected void execute() {
+          seq(curSuffixSegment);
+          seq(new CheckMetricSegment(new CheckNoAIMove(0)));
+        }
+      };
+		}
 	}
 
 	public void printInfo(StateBuffer in) {
@@ -785,7 +803,7 @@ public class EflKillEnemyMonSegment implements Segment {
 				}
 
 				curGb.restore(s);
-        EflUtil.runToNextInputFrame(0b11111111); // for any input
+        EflUtil.runToNextInputFrameNoLimit(0b11111111); // for any input
 
 				int curActiveFrame = curGb.currentStepCount;
 

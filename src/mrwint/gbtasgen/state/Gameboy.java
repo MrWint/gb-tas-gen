@@ -9,6 +9,7 @@ import mrwint.gbtasgen.rom.pokemon.PokemonRomInfo;
 import mrwint.gbtasgen.rom.sml2.Sml2RomInfo;
 import mrwint.gbtasgen.rom.tetris.TetrisRomInfo;
 import mrwint.gbtasgen.state.State.InputNode;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class Gameboy {
 
@@ -36,6 +37,7 @@ public class Gameboy {
 	private int[] ROM = null;
 	private boolean ROMValid = false;
 
+	public final boolean equalLengthFrames;
   public final RomInfo rom;
   public PokemonRomInfo pokemon;
   public TetrisRomInfo tetris;
@@ -43,6 +45,7 @@ public class Gameboy {
 
 	public Gameboy(RomInfo rom, int screen, boolean equalLengthFrames) {
     this.rom = rom;
+    this.equalLengthFrames = equalLengthFrames;
 
     if (rom instanceof PokemonRomInfo)
       pokemon = (PokemonRomInfo)rom;
@@ -81,7 +84,12 @@ public class Gameboy {
 
 	public State createState(boolean noRestore) {
 	  State ret = newState();
+	  if (!onFrameBoundaries)
+	    step();
 		step(); // finish current frame, forces random to reflect the inputs
+//	  while (step(0, 0x40) == 0);  // vblank interrupt
+//	  step();
+//    while (step(0, 0x40) == 0);  // vblank interrupt
 		int rngState = rom.getRngState(gb);
 		if (!noRestore)
 			restore(ret);

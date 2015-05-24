@@ -2,6 +2,7 @@ package mrwint.gbtasgen.move;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.Util;
 
 public class PressButton extends DelayableCachableMove {
@@ -19,7 +20,9 @@ public class PressButton extends DelayableCachableMove {
 	}
 
 	public PressButton(int moves, Metric metric, int waitKeys) {
-		this.moves = moves;
+    EflUtil.assertNoEfl();
+
+    this.moves = moves;
 		this.metric = metric;
 		this.waitKeys = waitKeys;
 	}

@@ -4,6 +4,7 @@ import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.state.State;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.Util;
 
 public class WalkStep extends Move {
@@ -23,7 +24,9 @@ public class WalkStep extends Move {
 	}
 
 	public WalkStep(int dir, boolean check, boolean skipStandStillTest) {
-		this.dir = dir;
+    EflUtil.assertNoEfl();
+
+    this.dir = dir;
 		this.check = check;
 		this.skipStandStillTest = skipStandStillTest;
 	}
@@ -33,6 +36,7 @@ public class WalkStep extends Move {
 		// forward to first possible input frame
 		while(true) {
       Util.runToFirstDifference(0, Move.UP, Metric.DOWN_JOY); // for bike road
+//      System.out.println("runToNextWalkFrame steps: " + curGb.currentStepCount);
 //      Util.runToFirstDifference(0, dir, Metric.DOWN_JOY);
 			State s = curGb.newState();
 			int add = curGb.step(dir, curGb.pokemon.doPlayerMovementFuncAddress);//, 0x700); // .handleDirectionButtonPress

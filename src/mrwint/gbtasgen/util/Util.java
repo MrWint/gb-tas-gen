@@ -98,6 +98,7 @@ public class Util {
 		curGb.restore(cur);
 		curGb.step(baseKeys);
 		int baseMetric = m.getMetric();
+//		System.out.println("isDifferencePoint: "+baseMetric+" vs "+altMetric+" at "+curGb.currentStepCount);
 		return comp.compare(baseMetric, altMetric);
 	}
 

@@ -2,6 +2,7 @@ package mrwint.gbtasgen.segment.util;
 
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class EflSkipTextsSegment extends SeqSegment {
 
@@ -13,6 +14,8 @@ public class EflSkipTextsSegment extends SeqSegment {
 	}
 
 	public EflSkipTextsSegment(int numTexts, boolean confirmWithA) {
+    EflUtil.assertEfl();
+
 		this.numTexts = numTexts;
 		this.confirmWithA = confirmWithA;
 	}

@@ -13,6 +13,7 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.Util;
 import mrwint.gbtasgen.util.pokemon.map.Map;
 import mrwint.gbtasgen.util.pokemon.map.Map.MapFactory;
@@ -87,7 +88,9 @@ public class WalkToSegment implements Segment {
 	}
 
 	public WalkToSegment(int destX, int destY, boolean checkLastStep, MapFactory mapFactory) {
-		this.destX = destX;
+    EflUtil.assertNoEfl();
+
+    this.destX = destX;
 		this.destY = destY;
 		this.checkLastStep = checkLastStep;
 		this.maxBufferSize = StateBuffer.MAX_BUFFER_SIZE;

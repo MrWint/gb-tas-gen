@@ -13,6 +13,7 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
+import mrwint.gbtasgen.util.EflUtil.PressMetric;
 import mrwint.gbtasgen.util.pokemon.map.Map;
 import mrwint.gbtasgen.util.pokemon.map.Map.MapFactory;
 
@@ -86,7 +87,9 @@ public class EflWalkToSegment implements Segment {
 	}
 
 	public EflWalkToSegment(int destX, int destY, boolean checkLastStep, MapFactory mapFactory) {
-		this.destX = destX;
+    EflUtil.assertEfl();
+
+    this.destX = destX;
 		this.destY = destY;
 		this.checkLastStep = checkLastStep;
 		this.maxBufferSize = StateBuffer.MAX_BUFFER_SIZE;
@@ -114,8 +117,7 @@ public class EflWalkToSegment implements Segment {
 
 		State s = in.getStates().iterator().next();
 		curGb.restore(s);
-//		Util.runToFirstDifference(0, Move.UP, Metric.DOWN_JOY);
-		EflUtil.runToAddressNoLimit(Move.UP, Move.UP, curGb.pokemon.doPlayerMovementFuncAddress); // .handleDirectionButtonPress
+    EflUtil.runToNextInputFrameForMetricNoLimit(Move.UP, PressMetric.DOWN);
 
     int playerX = (curGb.getCurrentMemory()[curGb.pokemon.curPositionXAddress]+curGb.pokemon.curPositionOffset)+6;
     int playerY = (curGb.getCurrentMemory()[curGb.pokemon.curPositionYAddress]+curGb.pokemon.curPositionOffset)+6;

@@ -3,6 +3,7 @@ package mrwint.gbtasgen.segment.util;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class SkipTextsSegment extends SeqSegment {
 
@@ -14,6 +15,8 @@ public class SkipTextsSegment extends SeqSegment {
 	}
 
 	public SkipTextsSegment(int numTexts, boolean confirmWithA) {
+    EflUtil.assertNoEfl();
+
 		this.numTexts = numTexts;
 		this.confirmWithA = confirmWithA;
 	}

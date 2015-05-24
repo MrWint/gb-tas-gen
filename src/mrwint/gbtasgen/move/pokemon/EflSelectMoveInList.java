@@ -3,6 +3,7 @@ package mrwint.gbtasgen.move.pokemon;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class EflSelectMoveInList extends Move {
@@ -11,7 +12,9 @@ public class EflSelectMoveInList extends Move {
 	int numOwnMoves;
 
 	public EflSelectMoveInList(int goalIndex, int numOwnMoves) {
-		this.goalIndex = goalIndex;
+    EflUtil.assertEfl();
+
+    this.goalIndex = goalIndex;
 		this.numOwnMoves = numOwnMoves;
 	}
 
