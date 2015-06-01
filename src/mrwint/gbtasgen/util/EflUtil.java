@@ -2,7 +2,6 @@ package mrwint.gbtasgen.util;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.state.State;
 
 public class EflUtil {
@@ -17,7 +16,11 @@ public class EflUtil {
       throw new RuntimeException("used non-efl in efl environment");
   }
 
-  // returns address or 0
+  ////////////////////
+  // run primitives //
+  ////////////////////
+
+  /** returns address or 0 */
   public static int runToAddressLimit(int baseKeys, int startKeys,
       int stepLimit, int... addresses) {
     if (!curGb.onFrameBoundaries) {
@@ -34,8 +37,7 @@ public class EflUtil {
     }
     return 0;
   }
-
-  // returns address
+  /** returns address */
   public static int runToAddressNoLimit(int baseKeys, int startKeys,
       int... addresses) {
     return runToAddressLimit(baseKeys, startKeys, Integer.MAX_VALUE, addresses);
@@ -48,33 +50,89 @@ public class EflUtil {
       curGb.step(i == 0 ? startKeys : baseKeys);
   }
 
-  public static void runUntil(int move, Metric m, Comparator comp, int value) {
-    while (!comp.compare(m.getMetric(), value))
-      curGb.step(move);
+  /** returns frame of vblank, or 0 if limit reached. */
+  private static int runToInputHiOrLoLimit(int joypadInputAdd, int limit) {
+    int initialSteps = curGb.stepCount;
+    int lastVframe;
+
+    int add = runToAddressLimit(0, 0, limit, joypadInputAdd);
+    while (true) {
+      if (add == 0 || curGb.stepCount - initialSteps > limit)
+        return 0;
+      lastVframe = curGb.stepCount - 1; // subtract started frame
+      add = curGb.step(0, curGb.rom.readJoypadAddress);
+      if (add != 0)
+        return lastVframe;
+      add = runToAddressLimit(0, 0, limit, joypadInputAdd, curGb.rom.readJoypadAddress);
+      if (add == curGb.rom.readJoypadAddress)
+        return lastVframe;
+    }
   }
 
-  public static void runToFrameBeforeUntil(int keys, Metric m, Comparator comp,
-      int value) {
-    if (!curGb.onFrameBoundaries)
-      curGb.step(); // end unfinished frame
-    State cur = curGb.newState();
-    int startSteps = curGb.currentStepCount;
-    runUntil(keys, m, comp, value);
-    int steps = curGb.currentStepCount - startSteps - 1;
-    curGb.restore(cur);
-    runFor(steps, keys, keys);
+  /** returns frame of vblank, or 0 if address or limit reached. */
+  private static int runToAddressOrInputHiOrLoLimit(int joypadInputAdd, int limit, int... addresses) {
+    int initialSteps = curGb.stepCount;
+    int lastVframe;
+
+    int foundAdd = 0;
+
+    int add = runToAddressLimit(0, 0, limit, Util.arrayAppend(addresses, joypadInputAdd));
+//    System.out.println("runToAddressOrInputHiOrLoLimit initial add=" + Util.toHex(add));
+    while (true) {
+//      System.out.println("runToAddressOrInputHiOrLoLimit start add=" + Util.toHex(add));
+      if (add == 0 || curGb.stepCount - initialSteps > limit)
+        return 0;
+      if (add != joypadInputAdd) {
+        foundAdd = add;
+        if (curGb.step(0, joypadInputAdd) == 0)
+          return 0;
+      }
+      lastVframe = curGb.stepCount - 1; // subtract started frame
+      add = curGb.step(0, foundAdd == 0 ? Util.arrayAppend(addresses, curGb.rom.readJoypadAddress) : new int[] {curGb.rom.readJoypadAddress});
+//      System.out.println("runToAddressOrInputHiOrLoLimit readJoypadAddress step add=" + Util.toHex(add));
+      if (add == curGb.rom.readJoypadAddress)
+        return lastVframe;
+      if (add != 0) {
+        foundAdd = add;
+        if (curGb.step(0, curGb.rom.readJoypadAddress) != 0)
+          return lastVframe;
+      }
+      add = runToAddressLimit(0, 0, limit, foundAdd == 0 ? Util.arrayAppend(addresses, joypadInputAdd, curGb.rom.readJoypadAddress) : new int[] {joypadInputAdd, curGb.rom.readJoypadAddress});
+//      System.out.println("runToAddressOrInputHiOrLoLimit readJoypadAddress run add=" + Util.toHex(add));
+      if (add == curGb.rom.readJoypadAddress)
+        return lastVframe;
+      if (foundAdd != 0)
+        return 0;
+      if (add != 0 && add != joypadInputAdd) {
+        foundAdd = add;
+        add = curGb.step(0, joypadInputAdd, curGb.rom.readJoypadAddress);
+        if (add == curGb.rom.readJoypadAddress)
+          return lastVframe;
+        if (add == joypadInputAdd)
+          continue;
+        add = runToAddressLimit(0, 0, limit, joypadInputAdd, curGb.rom.readJoypadAddress);
+        if (add == curGb.rom.readJoypadAddress)
+          return lastVframe;
+        else
+          return 0;
+      }
+    }
   }
+
+  ///////////////////////////////
+  // Run to frame before event //
+  ///////////////////////////////
 
   /** returns address that triggered first, or 0 if limit reached. */
   public static int runToFrameBeforeAddressLimit(int baseKeys, int startKeys, int stepLimit, int... addresses) {
     if (!curGb.onFrameBoundaries)
       curGb.step(); // end unfinished frame
     State cur = curGb.newState();
-    int startSteps = curGb.currentStepCount;
+    int startSteps = curGb.stepCount;
     int add = runToAddressLimit(baseKeys, startKeys, stepLimit, addresses);
     if (add == 0) // didn't find address
       return 0;
-    int steps = curGb.currentStepCount - startSteps - 1;
+    int steps = curGb.stepCount - startSteps - 1;
     curGb.restore(cur);
     runFor(steps, baseKeys, startKeys);
     return add;
@@ -84,34 +142,13 @@ public class EflUtil {
     return runToFrameBeforeAddressLimit(baseKeys, startKeys, Integer.MAX_VALUE, addresses);
   }
 
-
-  /** returns frame of vblank, or 0 if limit reached. */
-  private static int runToInputHiOrLoLimit(int joypadInputAdd, int limit) {
-    int initialSteps = curGb.currentStepCount;
-    int lastVframe;
-
-    int add = runToAddressLimit(0, 0, limit, joypadInputAdd);
-    while (true) {
-      if (add == 0 || curGb.currentStepCount - initialSteps > limit)
-        return 0;
-      lastVframe = curGb.currentStepCount - 1; // subtract started frame
-      add = curGb.step(0, curGb.rom.readJoypadAddress);
-      if (add != 0)
-        break;
-      add = runToAddressLimit(0, 0, limit, joypadInputAdd, curGb.rom.readJoypadAddress);
-      if (add == curGb.rom.readJoypadAddress)
-        break;
-    }
-    return lastVframe;
-  }
-
   /** returns true if input frame was found. */
   private static boolean runToNextInputFrameHiOrLoLimit(int joypadInputAdd, int limit) {
     if (!curGb.onFrameBoundaries)
       curGb.step(); // end unfinished frame
 
     State initial = curGb.newState();
-    int initialSteps = curGb.currentStepCount;
+    int initialSteps = curGb.stepCount;
     int lastVframe = runToInputHiOrLoLimit(joypadInputAdd, limit);
     if (lastVframe == 0)
       return false;
@@ -119,7 +156,6 @@ public class EflUtil {
     runFor(lastVframe - initialSteps, 0, 0);
     return true;
   }
-
   public static boolean runToNextInputFrameHiLimit(int limit) {
     return runToNextInputFrameHiOrLoLimit(curGb.rom.readJoypadInputHi, limit);
   }
@@ -134,7 +170,7 @@ public class EflUtil {
   }
 
 
-  // return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
+  /** return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1 */
   private static int runToNextInputFrameHiLoLimit(int limit) {
     int joypadInputFirst = Math.min(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
     int joypadInputLast = Math.max(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
@@ -143,15 +179,15 @@ public class EflUtil {
       curGb.step(); // end unfinished frame
 
     State initial = curGb.newState();
-    int initialSteps = curGb.currentStepCount;
+    int initialSteps = curGb.stepCount;
     int lastVframe;
     int ret;
 
     int add = runToAddressLimit(0, 0, limit, joypadInputFirst);
     while (true) {
-      if (add == 0 || curGb.currentStepCount - initialSteps > limit)
+      if (add == 0 || curGb.stepCount - initialSteps > limit)
         return 0;
-      lastVframe = curGb.currentStepCount - 1; // subtract started frame
+      lastVframe = curGb.stepCount - 1; // subtract started frame
       if (curGb.step(0, joypadInputLast) == 0) { // Assumption: joypadInputLast will come before curGb.rom.readJoypadAddress
         System.out.println("WARNING: joypadInputFirst not is same frame as joypadInputLast! Need two-frame press.");
         ret = 2;
@@ -171,48 +207,7 @@ public class EflUtil {
     return ret;
   }
 
-//  // return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
-//  public static int runToNextInputFrameHiLoLimitOld(int limit) {
-//    int joypadInputFirst = Math.min(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
-//    int joypadInputLast = Math.max(curGb.rom.readJoypadInputHi, curGb.rom.readJoypadInputLo);
-//
-//    int initialSteps = curGb.currentStepCount;
-//    int add = runToFrameBeforeAddressLimit(0, 0, limit, joypadInputFirst);
-//    if (add == 0)
-//      return 0;
-//
-//    while (true) {
-//      if (curGb.currentStepCount - initialSteps > limit)
-//        return 0;
-//
-//      int ret;
-//      State initial = curGb.newState();
-//      curGb.step(0, joypadInputFirst); // will always exist
-//      if (curGb.step(0, joypadInputLast) == 0) { // Assumption: joypadInputLast will come before curGb.rom.readJoypadAddress
-//        System.out.println("WARNING: joypadInputFirst not is same frame as joypadInputLast! Need two-frame press.");
-//        ret = 2;
-//      } else {
-//        ret = 1;
-//        add = curGb.step(0, curGb.rom.readJoypadAddress);
-//        if (add != 0) {
-//          curGb.restore(initial);
-//          return ret;
-//        }
-//      }
-//
-//      add = runToFrameBeforeAddressLimit(0, 0, limit, joypadInputFirst, curGb.rom.readJoypadAddress);
-//      if (add == curGb.rom.readJoypadAddress) {
-//        curGb.restore(initial);
-//        return ret;
-//      }
-//    }
-//  }
-
-  // return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
-  public static int runToNextInputFrameNoLimit(int move) {
-    return runToNextInputFrameLimit(move, Integer.MAX_VALUE);
-  }
-  // return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1
+  /** return 0 if limit reached, return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1 */
   public static int runToNextInputFrameLimit(int move, int limit) {
     if ((move & 0b00001111) == 0) {
       return runToNextInputFrameHiLimit(limit) ? 1 : 0;
@@ -222,20 +217,69 @@ public class EflUtil {
       return runToNextInputFrameHiLoLimit(limit);
     }
   }
-  /** returns 0 if stopped on input frame, or address it stopped on */
-  public static int runToAddressOrNextInputFrameNoLimit(int move, int... addresses) {
-    return runToAddressOrNextInputFrameLimit(move, Integer.MAX_VALUE, addresses);
+  /** return 2 if button needs to be held for two frames (hi and lo as separated by a frame boundary), else 1 */
+  public static int runToNextInputFrameNoLimit(int move) {
+    return runToNextInputFrameLimit(move, Integer.MAX_VALUE);
   }
-  // returns -1 if limit reached, 0 if stopped on input frame, or address it stopped on
-  public static int runToAddressOrNextInputFrameLimit(int move, int limit, int... addresses) {
-    int initialSteps = curGb.currentStepCount;
-    State initial = curGb.newState();
-    if (runToNextInputFrameLimit(move, limit) == 0)
-      return -1;
-    int inputSteps = curGb.currentStepCount;
+
+
+  /** returns -1 if limit reached, 0 if stopped on input frame, or address it stopped on */
+  private static int runToAddressOrNextInputFrameHiOrLoLimit(State initial, int joypadInputAdd, int limit, int... addresses) {
+    if (!curGb.onFrameBoundaries) {
+      int add = curGb.step(0, addresses); // end unfinished frame
+      if (add != 0)
+        return add;
+    }
+
+    if (initial == null)
+      initial = curGb.newState();
+
+    int initialSteps = curGb.stepCount;
+    int lastVframe = runToAddressOrInputHiOrLoLimit(joypadInputAdd, limit, addresses);
+//    System.out.println("lastVframe=" + lastVframe);
+    if (lastVframe != 0) {
+      curGb.restore(initial);
+      runFor(lastVframe - initialSteps, 0, 0);
+      return 0;
+    }
+    curGb.restore(initial);
+    int ret = runToAddressLimit(0, 0, limit, addresses);
+//    System.out.println("ret=" + ret);
+    return ret == 0 ? -1 : ret;
+  }
+
+  /** returns 0 if stopped on input frame, or address it stopped on */
+  public static int runToAddressOrNextInputFrameNoLimit(State initial, int move, int... addresses) {
+    return runToAddressOrNextInputFrameLimit(initial, move, Integer.MAX_VALUE, addresses);
+  }
+  /** returns -1 if limit reached, 0 if stopped on input frame, or address it stopped on */
+  public static int runToAddressOrNextInputFrameLimit(State initial, int move, int limit, int... addresses) {
+    int expectedRet = -2;
+    if ((move & 0b00001111) == 0) {
+      expectedRet = runToAddressOrNextInputFrameHiOrLoLimit(initial, curGb.rom.readJoypadInputHi, limit, addresses);
+      return expectedRet;
+    } else if ((move & 0b11110000) == 0) {
+      expectedRet = runToAddressOrNextInputFrameHiOrLoLimit(initial, curGb.rom.readJoypadInputLo, limit, addresses);
+      return expectedRet;
+    }
+
+    int initialSteps = curGb.stepCount;
+    if (initial == null)
+      initial = curGb.newState();
+
+    if (runToNextInputFrameLimit(move, limit) == 0) {
+//      if (expectedRet != -2 && expectedRet != -1)
+//        throw new RuntimeException("-1 != " + Util.toHex(expectedRet));
+//      return -1;
+      return expectedRet != -2 ? expectedRet : -1;
+    }
+    int inputSteps = curGb.stepCount;
 
     curGb.restore(initial);
-    return runToAddressLimit(0, 0, inputSteps - initialSteps, addresses); // run at most to the input frame
+    int actualRet = runToAddressLimit(0, 0, inputSteps - initialSteps, addresses); // run at most to the input frame
+    if (expectedRet != -2 && actualRet != expectedRet)
+      throw new RuntimeException(Util.toHex(actualRet) + " != " + Util.toHex(expectedRet));
+    return actualRet;
   }
 
   public enum PressMetric {
@@ -274,14 +318,14 @@ public class EflUtil {
 //    System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps1: " + curGb.currentStepCount);
     runToAddressNoLimit(0, 0, addressToPass);
 //    System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps2: " + curGb.currentStepCount);
-    int stepsToAddress = curGb.currentStepCount;
+    int stepsToAddress = curGb.stepCount;
     curGb.restore(initial);
 
     while (true) {
       //      System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps1: " + curGb.currentStepCount);
       runToNextInputFrameHiOrLoLimit(joypadInputAdd, Integer.MAX_VALUE);
 //      System.out.println("runToFirstInputFrameAfterAddressHiOrLo steps3: " + curGb.currentStepCount);
-      if (curGb.currentStepCount >= stepsToAddress) // address occurred before this input frame already
+      if (curGb.stepCount >= stepsToAddress) // address occurred before this input frame already
         return;
       State cur = curGb.newState();
       int add = curGb.step(move, addressToPass);
@@ -325,12 +369,12 @@ public class EflUtil {
     while (true) {
       State initial = curGb.newState();
       runToAddressNoLimit(0, 0, addressToPass);
-      int stepsToAddress = curGb.currentStepCount;
+      int stepsToAddress = curGb.stepCount;
 
       curGb.restore(initial);
       runToNextInputFrameHiOrLoLimit(joypadInputAdd, Integer.MAX_VALUE);
-      if (curGb.currentStepCount >= stepsToAddress) { // address occurred before this input frame already
-        System.out.println("runInputPastAddressHiOrLo: "+curGb.currentStepCount+" >= "+stepsToAddress);
+      if (curGb.stepCount >= stepsToAddress) { // address occurred before this input frame already
+        System.out.println("runInputPastAddressHiOrLo: "+curGb.stepCount+" >= "+stepsToAddress);
         curGb.restore(initial);
         runToAddressNoLimit(0, 0, addressToPass);
         return addressToPass;

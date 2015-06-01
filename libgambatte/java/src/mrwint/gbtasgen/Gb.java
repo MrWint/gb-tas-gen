@@ -19,7 +19,16 @@ public class Gb {
 	  startEmulator(gb, rom);
 	}
 
-	private static native void nstep(long gb, int keymask);
+	private static native void ninitDualGb(long gbL, long gbR);
+  public static void initDualGb(Gb gbL, Gb gbR) {
+    ninitDualGb(gbL.gb, gbR.gb);
+  }
+  private static native void nstepDual(long gbL, long gbR, int keymaskL, int keymaskR);
+  public static void stepDual(Gb gbL, Gb gbR, int keymaskL, int keymaskR) {
+    nstepDual(gbL.gb, gbR.gb, keymaskL, keymaskR);
+  }
+
+  private static native void nstep(long gb, int keymask);
 	private static native int nstepUntil(long gb, int keymask, int[] addresses);
 	private static native void nreset(long gb);
 	public int step(int keymask, int... addresses){
@@ -40,7 +49,7 @@ public class Gb {
 //  public static final int MAX_SAVE_SIZE = 211243;
 //  public static final int MAX_SAVE_SIZE = 153894; // Tetris
 //  public static final int MAX_SAVE_SIZE = 162092; // Sml2_10
-  private static final int MAX_SAVE_SIZE = 186671; // PokeRed
+  private static final int MAX_SAVE_SIZE = 186675; // PokeRed
 	public static final ByteBuffer TMP_SAVE_BUFFER = createDirectByteBuffer(MAX_SAVE_SIZE);
 
 	public ByteBuffer saveState() {

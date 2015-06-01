@@ -122,18 +122,28 @@ void Memory::setEndtime(const unsigned long cycleCounter, const unsigned long in
 }
 
 void Memory::updateSerial(const unsigned long cc) {
-	if (intreq.eventTime(SERIAL) != DISABLED_TIME) {
-		if (intreq.eventTime(SERIAL) <= cc) {
-			ioamhram[0x101] = (((ioamhram[0x101] + 1) << serialCnt) - 1) & 0xFF;
-			ioamhram[0x102] &= 0x7F;
-			intreq.setEventTime<SERIAL>(DISABLED_TIME);
-			intreq.flagIrq(8);
-		} else {
-			const int targetCnt = serialCntFrom(intreq.eventTime(SERIAL) - cc, ioamhram[0x102] & isCgb() * 2);
-			ioamhram[0x101] = (((ioamhram[0x101] + 1) << (serialCnt - targetCnt)) - 1) & 0xFF;
-			serialCnt = targetCnt;
+	if (!LINKCABLE) {
+		if (intreq.eventTime(SERIAL) != DISABLED_TIME) {
+			if (intreq.eventTime(SERIAL) <= cc) {
+				ioamhram[0x101] = (((ioamhram[0x101] + 1) << serialCnt) - 1) & 0xFF;
+				ioamhram[0x102] &= 0x7F;
+				intreq.setEventTime<SERIAL>(DISABLED_TIME);
+				intreq.flagIrq(8);
+			} else {
+				const int targetCnt = serialCntFrom(intreq.eventTime(SERIAL) - cc, ioamhram[0x102] & isCgb() * 2);
+				ioamhram[0x101] = (((ioamhram[0x101] + 1) << (serialCnt - targetCnt)) - 1) & 0xFF;
+				serialCnt = targetCnt;
+			}
+		}
+	} else {
+		if (intreq.eventTime(SERIAL) != DISABLED_TIME) {
+			if (intreq.eventTime(SERIAL) <= cc) {
+				linkClockTrigger = true;
+				intreq.setEventTime<SERIAL>(DISABLED_TIME);
+			}
 		}
 	}
+
 }
 
 void Memory::updateTimaIrq(const unsigned long cc) {
@@ -1004,6 +1014,33 @@ void Memory::setDmgPaletteColor(unsigned palNum, unsigned colorNum, unsigned lon
 	display.setDmgPaletteColor(palNum, colorNum, rgb32);
 }
 
+int Memory::linkStatus(int which)
+{
+	switch (which)
+	{
+	case 256: // ClockSignaled
+		return linkClockTrigger;
+	case 257: // AckClockSignal
+		linkClockTrigger = false;
+		return 0;
+	case 258: // GetOut
+		return ioamhram[0x101] & 0xff;
+	case 259: // connect link cable
+		LINKCABLE = true;
+		return 0;
+	default: // ShiftIn
+		if (ioamhram[0x102] & 0x80) // was enabled
+		{
+			ioamhram[0x101] = which;
+			ioamhram[0x102] &= 0x7F;
+			intreq.flagIrq(8);
+		}
+		return 0;
+	}
+
+	return -1;
+}
+
 void Memory::loadOrSave(loadsave& state)
 {
 	//std::cout << "Memory::loadOrSave" << std::endl;
@@ -1030,6 +1067,8 @@ void Memory::loadOrSave(loadsave& state)
 	state(oamDmaPos);
 	state(serialCnt);
 	state(blanklcd);
+	state(LINKCABLE);
+	state(linkClockTrigger);
 	//std::cout << "h " << state.getOffset() << std::endl;
 }
 

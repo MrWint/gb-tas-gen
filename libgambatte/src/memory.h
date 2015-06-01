@@ -52,6 +52,9 @@ public:
 	unsigned char serialCnt;
 	bool blanklcd;
 
+	bool LINKCABLE;
+	bool linkClockTrigger;
+
 	void updateInput();
 	void decEventCycles(MemEventId eventId, unsigned long dec);
 
@@ -156,6 +159,8 @@ public:
 	void setRTCCallback(std::time_t (*callback)()) {
 		cart.setRTCCallback(callback);
 	}
+
+	int linkStatus(int which);
 };
 
 }

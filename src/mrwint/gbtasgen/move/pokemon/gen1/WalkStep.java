@@ -32,7 +32,7 @@ public class WalkStep extends Move {
 	}
 
 	public static void runToNextWalkFrame(int dir) {
-		int startSteps = curGb.currentStepCount;
+		int startSteps = curGb.stepCount;
 		// forward to first possible input frame
 		while(true) {
       Util.runToFirstDifference(0, Move.UP, Metric.DOWN_JOY); // for bike road
@@ -50,13 +50,14 @@ public class WalkStep extends Move {
 //				}
 				break;
 			}
-			System.out.println("INFO: WalkStep: found non-walk input frame ("+(curGb.currentStepCount - startSteps)+")");
+			System.out.println("INFO: WalkStep: found non-walk input frame ("+(curGb.stepCount - startSteps)+")");
 			curGb.step();
+			curGb.delayStepCount++;
 		}
 	}
 
 	public void prepareMovement() {
-		int startSteps = curGb.currentStepCount;
+		int startSteps = curGb.stepCount;
 		runToNextWalkFrame(dir);
 		if(!skipStandStillTest) {
 			int standStill = curGb.readMemory(curGb.pokemon.playerMovingIndicatorAddress);
@@ -89,8 +90,9 @@ public class WalkStep extends Move {
 								break;
 							}
 							curGb.restore(s);
-							System.out.println("prepareMovement: avoiding encounter ("+(curGb.currentStepCount - startSteps)+")");
+							System.out.println("prepareMovement: avoiding encounter ("+(curGb.stepCount - startSteps)+")");
 							curGb.step(); // wait one more frame
+				      curGb.delayStepCount++;
 							runToNextWalkFrame(dir); // find next walk frame
 						}
 					}
@@ -105,7 +107,7 @@ public class WalkStep extends Move {
 	@Override
 	public boolean doMove() {
 
-		int startSteps = curGb.currentStepCount;
+		int startSteps = curGb.stepCount;
 		prepareMovement();
 
 		while(true) {
@@ -116,8 +118,8 @@ public class WalkStep extends Move {
 				State s = curGb.newState();
 				int add = Util.runToAddressNoLimit(0, dir, curGb.pokemon.walkSuccessAddress, curGb.pokemon.walkFailAddress);
 				if(add != curGb.pokemon.walkSuccessAddress) { // test if we are in the walk animation
-					System.err.println("moving failed ("+(curGb.currentStepCount - startSteps)+")");
-					if((curGb.currentStepCount - startSteps) > 20) {
+					System.err.println("moving failed ("+(curGb.stepCount - startSteps)+")");
+					if((curGb.stepCount - startSteps) > 20) {
 						System.out.println("moving failed too often, giving up!");
 						return false;
 					}
@@ -136,8 +138,9 @@ public class WalkStep extends Move {
 						break;
 					}
 					curGb.restore(s);
-					System.out.println("WalkStep: avoiding encounter ("+(curGb.currentStepCount - startSteps)+")");
+					System.out.println("WalkStep: avoiding encounter ("+(curGb.stepCount - startSteps)+")");
 					curGb.step(); // wait one more frame
+		      curGb.delayStepCount++;
 					prepareMovement(); // find next walk frame
 					continue;
 				} else

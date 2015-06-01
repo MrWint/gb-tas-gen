@@ -34,7 +34,7 @@ public class WalkStep extends Move {
 	}
 
 	public void runToNextWalkFrame(int excuseFrames) throws CapturedByRotatoException {
-		int startSteps = curGb.currentStepCount;
+		int startSteps = curGb.stepCount;
 		// forward to first possible input frame
 		while(true) {
 			Util.runToFirstDifference(0, dir, Metric.DOWN_JOY);
@@ -52,13 +52,13 @@ public class WalkStep extends Move {
 				break;
 			}
 			if(excuseFrames-- <= 0)
-				System.out.println("INFO: WalkStep: found non-walk input frame ("+(curGb.currentStepCount - startSteps)+")");
+				System.out.println("INFO: WalkStep: found non-walk input frame ("+(curGb.stepCount - startSteps)+")");
 			curGb.step();
 		}
 	}
 
 	public void prepareMovement() throws CapturedByRotatoException {
-		int startSteps = curGb.currentStepCount;
+		int startSteps = curGb.stepCount;
 		runToNextWalkFrame(0);
 		if(!skipStandStillTest) {
 			int standStill = curGb.readMemory(curGb.pokemon.playerMovingIndicatorAddress) == 0 ? 1 : 0;
@@ -99,7 +99,7 @@ public class WalkStep extends Move {
 							if(add != curGb.pokemon.encounterCheckMainFuncEncounterAddress)
 								System.out.println("ERROR: didn't find 0x13916");
 							curGb.restore(s);
-							System.out.println("prepareMovement: avoiding encounter ("+(curGb.currentStepCount - startSteps)+")");
+							System.out.println("prepareMovement: avoiding encounter ("+(curGb.stepCount - startSteps)+")");
 							curGb.step(); // wait one more frame
 							runToNextWalkFrame(0); // find next walk frame
 						}
@@ -115,7 +115,7 @@ public class WalkStep extends Move {
 
 	@Override
 	public boolean doMove() {
-		int startSteps = curGb.currentStepCount;
+		int startSteps = curGb.stepCount;
 
 		try {
 			prepareMovement();
@@ -130,8 +130,8 @@ public class WalkStep extends Move {
 					int moveAni = curGb.readMemory(curGb.pokemon.movementAnimationAddress);
 
 					if((moveAni < 0x8 || moveAni > 0x13) && moveAni != 0x30) { // test if we are in the walk animation (or ledge jump)
-						System.err.println("moving failed ("+(curGb.currentStepCount - startSteps)+", moveAni = "+moveAni+")");
-						if((curGb.currentStepCount - startSteps) > 100) {
+						System.err.println("moving failed ("+(curGb.stepCount - startSteps)+", moveAni = "+moveAni+")");
+						if((curGb.stepCount - startSteps) > 100) {
 							System.out.println("moving failed too often, giving up!");
 							return false;
 						}
@@ -145,8 +145,8 @@ public class WalkStep extends Move {
 						State finished = curGb.newState();
 						add = Util.runToAddressNoLimit(0, 0, curGb.pokemon.encounterCheckMainFuncAddress, curGb.pokemon.printLetterDelayJoypadAddress);
 						if(add == curGb.pokemon.printLetterDelayJoypadAddress) {
-							System.out.println("WalkStep: ran into rotato ("+(curGb.currentStepCount - startSteps)+")");
-							if((curGb.currentStepCount - startSteps) > 100) {
+							System.out.println("WalkStep: ran into rotato ("+(curGb.stepCount - startSteps)+")");
+							if((curGb.stepCount - startSteps) > 100) {
 								System.out.println("ran into rotato too often, giving up!");
 								return false;
 							}
@@ -163,7 +163,7 @@ public class WalkStep extends Move {
 							if(add != curGb.pokemon.encounterCheckMainFuncEncounterAddress)
 								System.out.println("ERROR: didn't find 0x13916 (2)");
 							curGb.restore(s);
-							System.out.println("WalkStep: avoiding encounter ("+(curGb.currentStepCount - startSteps)+")");
+							System.out.println("WalkStep: avoiding encounter ("+(curGb.stepCount - startSteps)+")");
 							curGb.step(); // wait one more frame
 							prepareMovement(); // find next walk frame
 						}

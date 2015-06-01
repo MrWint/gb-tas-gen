@@ -9,26 +9,25 @@ import mrwint.gbtasgen.rom.pokemon.PokemonRomInfo;
 import mrwint.gbtasgen.rom.sml2.Sml2RomInfo;
 import mrwint.gbtasgen.rom.tetris.TetrisRomInfo;
 import mrwint.gbtasgen.state.State.InputNode;
-import mrwint.gbtasgen.util.EflUtil;
 
 public class Gameboy {
 
   public static Gameboy curGb;
 
 
-  private final Gb gb;
+  final Gb gb;
 
 	public boolean onFrameBoundaries = true;
 	public long rerecordCount = 0;
 
 	public State root;
 
-	public int currentStepCount = 0;
-	public int currentDelayStepCount = 0;
-	public int currentOcdCount = 0;
+	public int stepCount = 0;
+	public int delayStepCount = 0;
+	public int ocdCount = 0;
 	public int lastMove = 0;
-	public InputNode currentInputNode = null;
-	public Map<String,Object> currentAttributes = new HashMap<String, Object>();
+	public InputNode inputNode = null;
+	public Map<String,Object> attributes = new HashMap<String, Object>();
 
 	private int[] currentRegisters;
 	private boolean currentRegistersValid = false;
@@ -63,61 +62,64 @@ public class Gameboy {
 	}
 
 	public int getAttributeInt(String name) {
-		if (!currentAttributes.containsKey(name))
+		if (!attributes.containsKey(name))
 			return -1;
-		return (Integer)currentAttributes.get(name);
+		return (Integer)attributes.get(name);
 	}
 	public void setAttributeInt(String name, int value) {
-		currentAttributes.put(name, value);
+		attributes.put(name, value);
 	}
 
 	public State newState() {
 //    if (!onFrameBoundaries)
 //      System.err.println("WARNING: creating State while not on frame boundaries!");
-	  return new State(gb.saveState(), currentStepCount, currentDelayStepCount, -1 /* rngState */,
-	      new HashMap<String, Object>(currentAttributes), currentOcdCount, lastMove, currentInputNode, onFrameBoundaries);
+	  return new State(gb.saveState(), stepCount, delayStepCount, -1 /* rngState */,
+	      new HashMap<String, Object>(attributes), ocdCount, lastMove, inputNode, onFrameBoundaries, rerecordCount);
 	}
 
 	public State createState() {
 		return createState(false);
 	}
 
-	public State createState(boolean noRestore) {
-	  State ret = newState();
-	  if (!onFrameBoundaries)
-	    step();
-		step(); // finish current frame, forces random to reflect the inputs
-//	  while (step(0, 0x40) == 0);  // vblank interrupt
-//	  step();
+  public State createState(boolean noRestore) {
+    return createState(newState(), noRestore);
+  }
+
+  public State createState(State state, boolean noRestore) {
+    if (!onFrameBoundaries)
+      step();
+    step(); // finish current frame, forces random to reflect the inputs
 //    while (step(0, 0x40) == 0);  // vblank interrupt
-		int rngState = rom.getRngState(gb);
-		if (!noRestore)
-			restore(ret);
-		ret.rngState = rngState;
-		return ret;
-	}
+//    step();
+//    while (step(0, 0x40) == 0);  // vblank interrupt
+    int rngState = rom.getRngState(gb);
+    if (!noRestore)
+      restore(state);
+    state.rngState = rngState;
+    return state;
+  }
 
 	public int restore(State s) {
 //		if (!onFrameBoundaries)
 //			step(); // get to next frame boundary
 		gb.loadState(s.bb);
-		currentInputNode = s.inputs;
-		currentStepCount = s.stepCount;
-		currentDelayStepCount = s.delayStepCount;
-		currentOcdCount = s.ocdCount;
+		inputNode = s.inputs;
+		stepCount = s.stepCount;
+		delayStepCount = s.delayStepCount;
+		ocdCount = s.ocdCount;
 		lastMove = s.lastMove;
-		currentAttributes = new HashMap<String, Object>(s.attributes);
+		attributes = new HashMap<String, Object>(s.attributes);
 		onFrameBoundaries = s.onFrameBoundaries;
 		clearCache();
-		rerecordCount++;
+		rerecordCount = Math.max(rerecordCount, s.rerecordCount) + 1;
 		return s.stepCount;
 	}
 
-	private void logInput(int moves) {
+	void logInput(int moves) {
 		if (!onFrameBoundaries)
 			return;
-		currentInputNode = new InputNode(moves, currentInputNode);
-    currentStepCount++;
+		inputNode = new InputNode(moves, inputNode);
+    stepCount++;
     lastMove = moves;
 	}
 
@@ -139,9 +141,9 @@ public class Gameboy {
 
 	public int step(int moves, int... addresses) {
 		if(moves != 0) {
-			currentOcdCount += 2;
+			ocdCount += 2;
 			if(lastMove != moves)
-				currentOcdCount++;
+				ocdCount++;
 			lastMove = moves;
 		}
 

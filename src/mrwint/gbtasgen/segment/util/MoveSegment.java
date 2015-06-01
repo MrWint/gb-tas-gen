@@ -45,8 +45,11 @@ public class MoveSegment implements Segment {
 				if (!move.isCachable())
 				  curGb.restore(s);
 				move.prepare(delay,useCache);
-				if (move.doMove())
-					out.addState(curGb.createState(true));
+				if (move.doMove()) {
+				  State newS = curGb.createState(true);
+				  newS.delayStepCount += delay;
+					out.addState(newS);
+				}
 			}
 		}
 		return out;

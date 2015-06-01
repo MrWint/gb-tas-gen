@@ -273,6 +273,69 @@ void GambatteSdl::loadState(const std::vector<char>& data) {
 } // anon namespace
 
 
+void dualGbStep(GambatteSdl* gbL, GambatteSdl* gbR, bool cableconnected) {
+	const BlitterWrapper::Buf &vbufL = sdl.blitter.inBuf(gbL->screen);
+	const BlitterWrapper::Buf &vbufR = sdl.blitter.inBuf(gbR->screen);
+
+	const int step = 32; // could be 1024 for GB
+
+	unsigned nL = gbL->overflowSamples;
+	unsigned nR = gbR->overflowSamples;
+
+	// slowly step our way through the frame, while continually checking and resolving link cable status
+	for (unsigned target = 0; target < SAMPLES_PER_FRAME;)
+	{
+		target += step;
+		if (target > SAMPLES_PER_FRAME)
+			target = SAMPLES_PER_FRAME; // don't run for slightly too long depending on step
+
+		// gambatte_runfor() aborts early when a frame is produced, but we don't want that, hence the while()
+		while (nL < target)
+		{
+			unsigned emusamples = target - nL;
+			if (gbL->gambatte.runFor(vbufL.pixels, vbufL.pitch,
+					reinterpret_cast<gambatte::uint_least32_t*>(gbL->inBuf.get()), emusamples) >= 0) {
+				sdl.blitter.draw();
+				sdl.blitter.present();
+			}
+			nL += emusamples;
+		}
+		while (nR < target)
+		{
+			unsigned emusamples = target - nR;
+			if (gbR->gambatte.runFor(vbufR.pixels, vbufR.pitch,
+					reinterpret_cast<gambatte::uint_least32_t*>(gbR->inBuf.get()), emusamples) >= 0) {
+				sdl.blitter.draw();
+				sdl.blitter.present();
+			}
+			nR += emusamples;
+		}
+
+		// poll link cable statuses, but not when the cable is disconnected
+		if (!cableconnected)
+			continue;
+
+		if (gbL->gambatte.p_->cpu.memory.linkStatus(256) != 0) // ClockTrigger
+		{
+			gbL->gambatte.p_->cpu.memory.linkStatus(257); // ack
+			int lo = gbL->gambatte.p_->cpu.memory.linkStatus(258); // GetOut
+			int ro = gbR->gambatte.p_->cpu.memory.linkStatus(258);
+			gbL->gambatte.p_->cpu.memory.linkStatus(ro & 0xff); // ShiftIn
+			gbR->gambatte.p_->cpu.memory.linkStatus(lo & 0xff); // ShiftIn
+		}
+		if (gbR->gambatte.p_->cpu.memory.linkStatus(256) != 0) // ClockTrigger
+		{
+			gbR->gambatte.p_->cpu.memory.linkStatus(257); // ack
+			int lo = gbL->gambatte.p_->cpu.memory.linkStatus(258); // GetOut
+			int ro = gbR->gambatte.p_->cpu.memory.linkStatus(258);
+			gbL->gambatte.p_->cpu.memory.linkStatus(ro & 0xff); // ShiftIn
+			gbR->gambatte.p_->cpu.memory.linkStatus(lo & 0xff); // ShiftIn
+		}
+	}
+	gbL->overflowSamples = nL - SAMPLES_PER_FRAME;
+	gbR->overflowSamples = nR - SAMPLES_PER_FRAME;
+}
+
 
 #define UNUSED(x)  (void)(x)
 
@@ -297,15 +360,47 @@ JNIEXPORT jlong JNICALL Java_mrwint_gbtasgen_Gb_createGb
 
 // startEmulator
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_startEmulator
-  (JNIEnv *env, jclass clazz, jlong gb, jstring str) {
+    (JNIEnv *env, jclass clazz, jlong gb, jstring str) {
   UNUSED(clazz);
 
   ((GambatteSdl*)gb)->init(env->GetStringUTFChars(str, 0));
 }
 
+
+// ninitDualGb
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_ninitDualGb
+    (JNIEnv *env, jclass clazz, jlong gbL, jlong gbR) {
+  UNUSED(env);UNUSED(clazz);
+
+  // connect link cable
+  ((GambatteSdl*)gbL)->gambatte.p_->cpu.memory.linkStatus(259);
+  ((GambatteSdl*)gbR)->gambatte.p_->cpu.memory.linkStatus(259);
+}
+
+// nstepDual
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nstepDual
+    (JNIEnv *env, jclass clazz, jlong gbL, jlong gbR, jint keymaskL, jint keymaskR) {
+  UNUSED(env);UNUSED(clazz);
+
+  if(keymaskL == -1)
+    ((GambatteSdl*)gbL)->handleInput();
+  else
+    ((GambatteSdl*)gbL)->inputGetter.is = keymaskL;
+  ((GambatteSdl*)gbL)->gambatte.p_->cpu.numInterruptAddresses = 0; // no interrupts
+
+  if(keymaskR == -1)
+    ((GambatteSdl*)gbR)->handleInput();
+  else
+    ((GambatteSdl*)gbR)->inputGetter.is = keymaskR;
+  ((GambatteSdl*)gbR)->gambatte.p_->cpu.numInterruptAddresses = 0; // no interrupts
+
+  dualGbStep((GambatteSdl*)gbL, (GambatteSdl*)gbR, true);
+}
+
+
 // nstep
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nstep
-    (JNIEnv *env, jclass clazz, jlong gb, jint keymask){
+    (JNIEnv *env, jclass clazz, jlong gb, jint keymask) {
   UNUSED(env);UNUSED(clazz);
 
   if(keymask == -1)
@@ -340,7 +435,7 @@ JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_nstepUntil
 
 // nreset
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nreset
-    (JNIEnv *env, jclass clazz, jlong gb){
+    (JNIEnv *env, jclass clazz, jlong gb) {
   UNUSED(env);UNUSED(clazz);
 
   ((GambatteSdl*)gb)->gambatte.reset(0);

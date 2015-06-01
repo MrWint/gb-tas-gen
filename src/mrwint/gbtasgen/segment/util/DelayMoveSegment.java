@@ -135,7 +135,7 @@ public class DelayMoveSegment implements Segment {
 				if(!metricBeforeExecution)
 					dus[cs].doMove();
 
-				int curActiveFrame = curGb.currentStepCount;
+				int curActiveFrame = curGb.stepCount;
 
 				if(skips > maxDelay) {
 					System.out.println("DelayMoveSegment interrupting search (maxDelay)!");
@@ -160,6 +160,8 @@ public class DelayMoveSegment implements Segment {
 				StateBuffer sb = new StateBuffer();
 				sb.addState(curGb.createState(true));
 				sb = verificationSegment.execute(sb);
+				for (State newS : sb.getStates())
+				  newS.delayStepCount += skips;
 				ret.addAll(sb);
 				if(sb.isEmpty())
 					continue;

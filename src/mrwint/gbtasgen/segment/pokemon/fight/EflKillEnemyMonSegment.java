@@ -805,7 +805,7 @@ public class EflKillEnemyMonSegment implements Segment {
 				curGb.restore(s);
         EflUtil.runToNextInputFrameNoLimit(0b11111111); // for any input
 
-				int curActiveFrame = curGb.currentStepCount;
+				int curActiveFrame = curGb.stepCount;
 
 				StateBuffer sb = new StateBuffer();
 				sb.addState(curGb.createState(false));

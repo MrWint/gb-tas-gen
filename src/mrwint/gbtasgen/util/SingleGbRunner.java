@@ -33,7 +33,7 @@ public class SingleGbRunner {
     state = segment.execute(state);
 
     // save movie
-    BizhawkMovie.saveMovie(gb, state.stateBuffer.getStates().iterator().next(), "test");
+    BizhawkMovie.exportMovie(state, "test");
 
     printStepCounts(state);
 
@@ -58,12 +58,20 @@ public class SingleGbRunner {
 		System.out.println("size: "+state.stateBuffer.size());
 		int minStepCount = Integer.MAX_VALUE;
 		int maxStepCount = Integer.MIN_VALUE;
+    int minDelayStepCount = Integer.MAX_VALUE;
+    int maxDelayStepCount = Integer.MIN_VALUE;
 		for(State s : state.stateBuffer.getStates()) {
-			minStepCount = Math.min(minStepCount, s.stepCount);
-			maxStepCount = Math.max(maxStepCount, s.stepCount);
-			if(s.stepCount < state.gb.currentStepCount)
+      if (minStepCount > s.stepCount) {
+        minStepCount = s.stepCount;
+        minDelayStepCount = s.delayStepCount;
+      }
+      if (maxStepCount < s.stepCount) {
+        maxStepCount = s.stepCount;
+        maxDelayStepCount = s.delayStepCount;
+      }
+			if(s.stepCount < state.gb.stepCount)
 			  state.gb.restore(s);
 		}
-		System.out.println("min: " + minStepCount + ", max: " + maxStepCount);
+		System.out.println("min: " + minStepCount + "(-" + minDelayStepCount + "), max: " + maxStepCount + "(-" + maxDelayStepCount + ")");
 	}
 }

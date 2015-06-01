@@ -791,7 +791,7 @@ public class KillEnemyMonSegment implements Segment {
 				dus[cs].prepare(skips,true);
 				dus[cs].doMove();
 
-				int curActiveFrame = curGb.currentStepCount;
+				int curActiveFrame = curGb.stepCount;
 
 				StateBuffer sb = new StateBuffer();
 				sb.addState(curGb.createState());

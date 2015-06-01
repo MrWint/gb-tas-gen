@@ -20,11 +20,12 @@ public class State {
 	public InputNode inputs;
 	public Map<String,Object> attributes;
   public boolean onFrameBoundaries;
+  public long rerecordCount;
 	// state only
 	public ByteBuffer bb;
 	public int rngState;
 
-	State(ByteBuffer bb, int stepCount, int delayStepCount, int rngState, Map<String, Object> attributes,int ocdCount,int lastMove,InputNode inputs, boolean onFrameBoundaries) {
+	State(ByteBuffer bb, int stepCount, int delayStepCount, int rngState, Map<String, Object> attributes,int ocdCount,int lastMove,InputNode inputs, boolean onFrameBoundaries, long rerecordCount) {
 		this.bb = bb;
 		this.stepCount = stepCount;
 		this.delayStepCount = delayStepCount;
@@ -34,6 +35,7 @@ public class State {
 		this.inputs = inputs;
 		this.attributes = attributes;
 		this.onFrameBoundaries = onFrameBoundaries;
+		this.rerecordCount = rerecordCount;
 	}
 
   public int getAttributeInt(String name) {
@@ -59,6 +61,7 @@ public class State {
 			oos.writeInt(ocdCount);
       oos.writeInt(lastMove);
       oos.writeBoolean(onFrameBoundaries);
+      oos.writeLong(rerecordCount);
 			oos.writeInt(len);
 			oos.write(buf);
 			saveInputs(oos);
@@ -88,7 +91,8 @@ public class State {
 			Map<String,Object> attributes = (Map<String, Object>) ois.readObject();
 			int ocdCount = ois.readInt();
 			int lastMove = ois.readInt();
-			boolean onFrameBoundaries = ois.readBoolean();
+      boolean onFrameBoundaries = ois.readBoolean();
+      long rerecordCount = ois.readLong();
 			int len = ois.readInt();
 			byte[] buf = new byte[len];
 			ois.readFully(buf);
@@ -97,7 +101,7 @@ public class State {
 			ByteBuffer bb = Gb.createDirectByteBuffer(len);
 			bb.put(buf);
 			bb.flip();
-      return new State(bb,stepCount,delayStepCount,rngState,attributes,ocdCount,lastMove,inputs,onFrameBoundaries);
+      return new State(bb,stepCount,delayStepCount,rngState,attributes,ocdCount,lastMove,inputs,onFrameBoundaries,rerecordCount);
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			return null;

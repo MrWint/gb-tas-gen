@@ -55,18 +55,18 @@ public class Util {
   }
   public static void runToFrameBeforeUntil(int keys, Metric m, Comparator comp, int value) {
     State cur = curGb.newState();
-    int startSteps = curGb.currentStepCount;
+    int startSteps = curGb.stepCount;
     runUntil(keys, m, comp, value);
-    int steps = curGb.currentStepCount - startSteps - 1;
+    int steps = curGb.stepCount - startSteps - 1;
     curGb.restore(cur);
     runFor(steps, keys, keys);
   }
 
 	public static void runToFrameBeforeAddress(int baseKeys, int startKeys, int... addresses) {
 		State cur = curGb.newState();
-		int startSteps = curGb.currentStepCount;
+		int startSteps = curGb.stepCount;
 		runToAddressNoLimit(baseKeys, startKeys, addresses);
-		int steps = curGb.currentStepCount - startSteps - 1;
+		int steps = curGb.stepCount - startSteps - 1;
 		curGb.restore(cur);
 		runFor(steps, baseKeys, startKeys);
 	}
@@ -124,6 +124,13 @@ public class Util {
 				return false;
 		}
 		return true;
+	}
+	public static int[] arrayAppend(int [] a, int... b) {
+	  int[] ret = new int[a.length + b.length];
+	  int i = 0;
+    for (int e : a) ret[i++] = e;
+    for (int e : b) ret[i++] = e;
+    return ret;
 	}
 	public static void printDiff(int[] a,int[] b) {
 		for(int i=0;i<a.length;i++) {

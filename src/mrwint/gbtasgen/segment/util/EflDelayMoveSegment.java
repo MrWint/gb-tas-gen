@@ -41,7 +41,7 @@ public class EflDelayMoveSegment implements Segment {
 			for(State s : in.getStates()) {
 				curGb.restore(s);
 				EflUtil.runToNextInputFrameNoLimit(0b11111111); // for any input
-				int curActiveFrame = curGb.currentStepCount;
+				int curActiveFrame = curGb.stepCount;
 
 				if(skips > maxSkips) {
 					System.out.println("EflDelayMoveSegment interrupting search (maxDelay)!");
@@ -64,6 +64,8 @@ public class EflDelayMoveSegment implements Segment {
         next.addState(curGb.createState(true));
 
 				sb = segment.execute(sb);
+        for (State newS : sb.getStates())
+          newS.delayStepCount += skips;
 				ret.addAll(sb);
 				if(sb.isEmpty())
 					continue;

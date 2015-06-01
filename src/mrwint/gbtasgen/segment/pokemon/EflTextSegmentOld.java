@@ -78,14 +78,14 @@ public class EflTextSegmentOld implements Segment {
   // checks whether next input frame is still for print letter delay
   private boolean hasMoreText(int textSpeed) {
     State tmp = curGb.newState();
-    int initialSteps = curGb.currentStepCount;
+    int initialSteps = curGb.stepCount;
     boolean inPrintLetterDelay = true;
 
 //    System.out.println("hasMoreText steps: "+curGb.currentStepCount);
     // advance to next input frame, keeping track of whether you are in or outside the PrintLetterDelay loop
     while (true) {
-      int add = EflUtil.runToAddressOrNextInputFrameLimit(skipMove, textSpeed, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
-      if (add == -1 || curGb.currentStepCount - initialSteps > textSpeed) {
+      int add = EflUtil.runToAddressOrNextInputFrameLimit(curGb.newState(), skipMove, textSpeed, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
+      if (add == -1 || curGb.stepCount - initialSteps > textSpeed) {
 //        System.out.println("TextSegment: " + curGb.currentStepCount + " - " + initialSteps + " > " + textSpeed);
         curGb.restore(tmp);
         return false;
