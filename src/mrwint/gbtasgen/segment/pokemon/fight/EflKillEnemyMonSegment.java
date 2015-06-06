@@ -65,8 +65,8 @@ public class EflKillEnemyMonSegment implements Segment {
 	public static class CheckMoveOrderMetric implements StateResettingMetric {
 		final int[] move;
 		final int keys;
-		final boolean faster;
-		public CheckMoveOrderMetric(boolean faster,int[] move,int keys) {
+		final Boolean faster;
+		public CheckMoveOrderMetric(Boolean faster, int[] move, int keys) {
 			this.faster = faster;
 			this.move = move;
 			this.keys = keys;
@@ -82,10 +82,10 @@ public class EflKillEnemyMonSegment implements Segment {
 			if(move.length > 0 && !Util.arrayContains(move, enemyMove))
 				return 0;
 			int add = Util.runToAddressNoLimit(0,0,curGb.pokemon.fightDetermineAttackOrderPlayerFirst,curGb.pokemon.fightDetermineAttackOrderEnemyFirst);
-			if ((add == curGb.pokemon.fightDetermineAttackOrderPlayerFirst) != faster)
+			if (faster != null && (add == curGb.pokemon.fightDetermineAttackOrderPlayerFirst) != faster)
 				return 0;
 //			System.out.println("move "+enemyMove);
-			if (!faster)
+			if (faster != null && !faster)
 				add = Util.runToAddressNoLimit(0,0,curGb.pokemon.fightAIMoveCheck); // Check for AI moves (item uses etc.)
 			else
 				return 1;
@@ -98,13 +98,13 @@ public class EflKillEnemyMonSegment implements Segment {
 		public int getMetricInternal() {
 			int add = EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.fightEndTurnAddresses);
 			if(add == curGb.pokemon.printLetterDelayJoypadAddress) {
-				System.out.println("CheckAdditionalTexts: found additional PrintText!");
-//				try { Thread.sleep(2000); } catch (InterruptedException e) { }
+				System.out.println("EflCheckAdditionalTexts: found additional PrintText!");
+//				try { Thread.sleep(200); } catch (InterruptedException e) { }
 //				for(int i=0;i<40;i++) {
-//					State.step();
-//					try { Thread.sleep(100); } catch (InterruptedException e) { }
+//					curGb.step();
+//					try { Thread.sleep(10); } catch (InterruptedException e) { }
 //				}
-//				try { Thread.sleep(2000); } catch (InterruptedException e) { }
+//				try { Thread.sleep(200); } catch (InterruptedException e) { }
 				return 0;
 			}
 			return 1;

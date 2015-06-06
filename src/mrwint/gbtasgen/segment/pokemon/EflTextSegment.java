@@ -9,6 +9,7 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
+import mrwint.gbtasgen.util.Util;
 
 public class EflTextSegment implements Segment {
 
@@ -48,7 +49,7 @@ public class EflTextSegment implements Segment {
 		while(!next.isEmpty()) {
 		  Integer fewestSkips = next.firstKey();
       curBuffer = next.get(fewestSkips);
-//      System.out.println("EflTextSegment2: fewestSkips="+fewestSkips+" curBuffer="+curBuffer.size());
+//      System.out.println("EflTextSegment2: fewestSkips="+fewestSkips+" curBuffer="+curBuffer.size()+" goalBuffer="+goalBuffer.size());
 		  next.remove(fewestSkips);
 
 			for(State s : curBuffer.getStates())
@@ -164,11 +165,11 @@ public class EflTextSegment implements Segment {
   }
 
   private void progressWithNew(State initial, int usedMove, int textSpeed, int delays, TreeMap<Integer, StateBuffer> next, StateBuffer goalBuffer) {
-//    System.out.println("progress: usedMove: " + usedMove + ", delays: " + delays);
+//    System.out.println("progress: usedMove: " + usedMove + ", delays: " + delays+ ", steps: " + curGb.stepCount);
     curGb.step(usedMove, curGb.pokemon.printLetterDelayDoneAddress);
 
     // hasMoreText
-    int limit = textSpeed + 1;
+    int limit = textSpeed + 30;
 //    State initial = curGb.newState();
     int initialSteps = curGb.stepCount;
     boolean inPrintLetterDelay = true;
@@ -193,6 +194,7 @@ public class EflTextSegment implements Segment {
     findInitialPotentialInputFrame:
     while (true) {
       int add = EflUtil.runToAddressLimit(0, 0, limit, curGb.rom.readJoypadInputLo, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
+//      System.out.println("initial run add: " + Util.toHex(add));
 
       if (add == 0 || curGb.stepCount - initialSteps > limit) { // limit reached
         curGb.restore(initial);
@@ -209,6 +211,7 @@ public class EflTextSegment implements Segment {
 
         while (true) { // look for more triggers or potential input frame state
           add = curGb.step(0, curGb.rom.readJoypadInputLo, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
+//          System.out.println("initial step add: " + Util.toHex(add));
           if (add == 0) { // frame ended; no input frame -> count triggers for real; run to next address and repeat
             numDonePasses += numPotentialDonePasses;
             numPotentialDonePasses = 0;
@@ -246,6 +249,7 @@ public class EflTextSegment implements Segment {
 
       while (true) {
         int add = curGb.step(0, curGb.rom.readJoypadAddress, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
+//        System.out.println("step add: " + Util.toHex(add));
         if (add == curGb.rom.readJoypadAddress) { // input frame found
           break searchForValidInputFrame; // break out and handle result at the end
         }
@@ -265,6 +269,7 @@ public class EflTextSegment implements Segment {
 
       while (true) {
         int add = EflUtil.runToAddressLimit(0, 0, limit, curGb.rom.readJoypadInputLo, curGb.rom.readJoypadAddress, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
+//        System.out.println("run add: " + Util.toHex(add));
         if (add == curGb.rom.readJoypadAddress) { // input frame found
           break searchForValidInputFrame; // break out and handle result at the end
         }
@@ -280,6 +285,7 @@ public class EflTextSegment implements Segment {
 
           while (true) { // look for more triggers or potential input frame state
             add = curGb.step(0, curGb.rom.readJoypadInputLo, curGb.rom.readJoypadAddress, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
+//            System.out.println("step2 add: " + Util.toHex(add));
             if (add == curGb.rom.readJoypadAddress) { // input frame found
               break searchForValidInputFrame; // break out and handle result at the end
             }
@@ -309,7 +315,7 @@ public class EflTextSegment implements Segment {
       }
     }
 
-//    System.out.println("progress finished at: " + curGb.stepCount);
+//    System.out.println("progress finished at: " + curGb.stepCount + ", inPrintLetterDelay="+inPrintLetterDelay);
 
     if (inPrintLetterDelay) { // found suitable input frame
       curGb.restore(initial);

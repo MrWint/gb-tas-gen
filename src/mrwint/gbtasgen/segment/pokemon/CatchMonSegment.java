@@ -8,6 +8,7 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.NamingSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class CatchMonSegment extends SeqSegment {
 
@@ -27,6 +28,8 @@ public class CatchMonSegment extends SeqSegment {
 		this(numScrolls, name, 0, 0, 0);
 	}
 	public CatchMonSegment(int numScrolls, String name, int withCooltrainerMon, int extraBPresses, int extraBPresses2) {
+	  EflUtil.assertNoEfl();
+
 		this.numScrolls = numScrolls;
 		this.name = name;
 		this.withCooltrainerMon = withCooltrainerMon;

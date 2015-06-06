@@ -6,15 +6,18 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class PokecenterSegment extends SeqSegment {
 
 	boolean firstVisit;
-	
+
 	public PokecenterSegment(boolean firstVisit) {
-		this.firstVisit = firstVisit;
+	  EflUtil.assertNoEfl();
+
+	  this.firstVisit = firstVisit;
 	}
-	
+
 	@Override
 	public void execute() {
 		seq(new WalkToSegment(3, 3)); // walk to counter

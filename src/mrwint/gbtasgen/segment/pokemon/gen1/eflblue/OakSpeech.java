@@ -18,13 +18,13 @@ public class OakSpeech extends SeqSegment {
     seq(new EflSkipTextsSegment(13));
 
     seqEflButton(Move.A);
-    seq(new NamingSegment("I", true));
+    seq(new NamingSegment("I"));
     seqEflButton(Move.START);
 
 		seq(new EflSkipTextsSegment(5));
 
 		seqEflButton(Move.A);
-		seq(new NamingSegment("B", true));
+		seq(new NamingSegment("B"));
 		seqEflButton(Move.START);
 
 		seq(new EflSkipTextsSegment(7));

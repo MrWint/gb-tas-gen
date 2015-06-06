@@ -8,20 +8,16 @@ import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
 import mrwint.gbtasgen.segment.util.SeqSegment;
+import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.util.EflUtil;
 
 public class NamingSegment extends SeqSegment {
 
 	private String name;
 	private List<Integer> moveList;
-	private boolean efl;
 
   public NamingSegment(String name) {
-    this(name, false);
-  }
-    public NamingSegment(String name, boolean efl) {
 		this.name = name;
-		this.efl = efl;
 		generateMoveList();
 
 		debugPrintMoveList();
@@ -203,6 +199,6 @@ public class NamingSegment extends SeqSegment {
 	@Override
 	public void execute() {
 		for(Integer i : moveList)
-			seqMove(efl ? new EflPressButton(i, EflUtil.PressMetric.PRESSED) : new PressButton(i, Metric.PRESSED_JOY), 0);
+			seqMove(Gameboy.curGb.equalLengthFrames ? new EflPressButton(i, EflUtil.PressMetric.PRESSED) : new PressButton(i, Metric.PRESSED_JOY), 0);
 	}
 }

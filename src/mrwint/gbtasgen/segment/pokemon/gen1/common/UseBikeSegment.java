@@ -4,6 +4,7 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class UseBikeSegment extends SeqSegment {
 
@@ -13,6 +14,8 @@ public class UseBikeSegment extends SeqSegment {
 		this(2, 1);
 	}
 	public UseBikeSegment(int menuscroll, int itemscroll) {
+	  EflUtil.assertNoEfl();
+
 		this.menuscroll = menuscroll;
 		this.itemscroll = itemscroll;
 	}
