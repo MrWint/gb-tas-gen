@@ -29,185 +29,188 @@ public class SurgeBlue extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seq(new EflWalkToSegment(3, 0)); // leave house
-    seq(new EflWalkToSegment(30, 9)); // engage rocket
-		seq(new EflInitFightSegment(4)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[3][1] = 1; // bubblebeam crit
-      kems.numExpGainers = 2; // level up to 24
-			seq(kems); // machop
-		}
-		seq(EflNewEnemyMonSegment.any()); // next mon
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[0][1] = 1; // mega punch crit
-//      kems.attackCount[1][1] = 1; // bite crit // Wartortle
-			seq(kems); // drowzee
-		}
-		seq(new EflEndFightSegment(2)); // player defeated enemy
-
-		seq(new EflEvolutionSegment(true));
-
-		seq(new EflSkipTextsSegment(3)); // after rival battle texts
-
-    seq(new EflWalkToSegment(28, 36)); // leave cerulean
-    seq(new EflWalkToSegment(17, 27)); // enter passage
-    seq(new EflWalkToSegment(4, 4)); // enter passage
-    seq(new EflWalkToSegment(2, 41)); // walk passage
-    seq(new EflWalkToSegment(4, 8, false)); // leave passage
-    seq(new EflWalkToSegment(11, 28)); // engage trainer
-    seq(new EflWalkToSegment(11, 29)); // engage trainer
-    seqMove(new EflOverworldInteract(5)); // talk to trainer
-
-    save("su1");
-    load("su1");
-
-		seq(new EflInitFightSegment(1)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[1][1] = 1; // 1x bite crit
-			seq(kems); // pidgey
-		}
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[1][1] = 1; // 1x bite crit
-      seq(kems); // pidgey
-    }
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[1][1] = 1; // 1x bite crit
-      seq(kems); // pidgey
-    }
-		seq(new EflEndFightSegment(1)); // player defeated enemy
-
-		seq(new EflWalkToSegment(10, 31)); // walk up to trainer
-
-		seq(new EflInitFightSegment(1)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[1][1] = 1; // 1x bite crit
-			seq(kems); // spearow
-		}
-		seq(EflNewEnemyMonSegment.any()); // next mon
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-			kems.attackCount[3][1] = 1; // bubblebeam crit
-      kems.numExpGainers = 2; // level up to 25
-			seq(kems); // raticate
-		}
-		seq(new EflEndFightSegment(1)); // player defeated enemy
-
-    seq(new EflEvolutionSegment(true));
-
-    save("su2");
-    load("su2");
-
-    seq(new EflWalkToSegment(9, 36)); // enter vermilion
-
-    seq(new EflWalkToSegment(18, 30)); // ss anne
-    seq(new EflSkipTextsSegment(4)); // flash ticket
-    seq(new EflWalkToSegment(18, 32, false)); // enter ss anne
-    seq(new EflWalkToSegment(14, 3, false)); // enter ss anne
-    seq(new EflWalkToSegment(7, 7)); // stairs
-    seq(new EflWalkToSegment(2, 6)); // stairs
-    seq(new EflWalkToSegment(36, 8, false).setBlockAllWarps(true)); // engage rival
-
-		seq(new EflInitFightSegment(7)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[3][1] = 1; // bubblebeam crit
-//      kems.attackCount[0][1] = 1; // mega punch crit // Wartortle
-			seq(kems); // pidgeotto
-		}
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-      kems.attackCount[0][1] = 1; // mega punch crit
-//      kems.attackCount[1][1] = 1; // bite crit // Wartortle
-      seq(kems); // raticate
-    }
-
-    seq(EflNewEnemyMonSegment.any()); // next mon
-
-    seq(new EflSwitchPokemonSegment(-2, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50))); // switch to metapod
-    seq(new EflSwitchPokemonSegment(2, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50))); // switch to squirtle
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
-      kems.attackCount[1][1] = 1; // bite crit
-      kems.numExpGainers = 3; // metapod level up to 10
-      seq(kems); // kadabra
-    }
-
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    seq(new EflSwitchPokemonSegment(-1, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 45))); // switch to weedle
-    seq(new EflSwitchPokemonSegment(1, EflEnemyMoveDesc.missWith(22))); // switch to squirtle
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[1][1] = 2; // bite crit // Wartortle
-//      kems.attackCount[1][0] = 1; // bite // Wartortle
-//      kems.attackCount[1][1] = 1; // bite crit // Wartortle
-      kems.numExpGainers = 4; // level up to 26, weedle level up to 9
-			seq(kems); // ivysaur
-		}
-		seq(new EflEndFightSegment(3)); // player defeated enemy
-
-    seq(new EflEvolutionSegment(true)); // Squirtle evolution
-    seq(new EflEvolutionSegment()); // Metapod evolution
-    seq(new EflEvolutionSegment()); // Weedle evolution
-
-    seq(new EflSkipTextsSegment(5)); // after battle text
-    seq(new EflWalkToSegment(36, 4)); // stairs
-    seq(new EflWalkToSegment(4, 4)); // engage captain
-    seq(new EflWalkToSegment(4, 3)); // engage captain
-    seqMove(new EflOverworldInteract(1)); // talk to captain
-    seq(new EflSkipTextsSegment(4)); // captain
-    seq(new EflTextSegment()); // rub
-    seq(new EflSkipTextsSegment(9)); // captain
-    seq(new EflWalkToSegment(0, 7)); // stairs
-    seq(new EflWalkToSegment(2, 4, false).setBlockAllWarps(true)); // stairs
-    seq(new EflWalkToSegment(7, 7)); // leave ss.anne
-
-    save("su3");
+//    seq(new EflWalkToSegment(3, 0)); // leave house
+//    seq(new EflWalkToSegment(30, 9)); // engage rocket
+//		seq(new EflInitFightSegment(4)); // start fight
+//		{
+//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[3][1] = 1; // bubblebeam crit
+//      kems.numExpGainers = 2; // level up to 24
+//			seq(kems); // machop
+//		}
+//		seq(EflNewEnemyMonSegment.any()); // next mon
+//		{
+//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[0][1] = 1; // mega punch crit
+////      kems.attackCount[1][1] = 1; // bite crit // Wartortle
+//			seq(kems); // drowzee
+//		}
+//		seq(new EflEndFightSegment(2)); // player defeated enemy
+//
+//		seq(new EflEvolutionSegment(true));
+//
+//		seq(new EflSkipTextsSegment(3)); // after rival battle texts
+//
+//    seq(new EflWalkToSegment(28, 36)); // leave cerulean
+//    seq(new EflWalkToSegment(17, 27)); // enter passage
+//    seq(new EflWalkToSegment(4, 4)); // enter passage
+//    seq(new EflWalkToSegment(2, 41)); // walk passage
+//    seq(new EflWalkToSegment(4, 8, false)); // leave passage
+//    seq(new EflWalkToSegment(11, 28)); // engage trainer
+//    seq(new EflWalkToSegment(11, 29)); // engage trainer
+//    seqMove(new EflOverworldInteract(5)); // talk to trainer
+//
+//    save("su1");
+//    load("su1");
+//
+//		seq(new EflInitFightSegment(1)); // start fight
+//		{
+//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//			kems.attackCount[1][1] = 1; // 1x bite crit
+//			seq(kems); // pidgey
+//		}
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[1][1] = 1; // 1x bite crit
+//      seq(kems); // pidgey
+//    }
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[1][1] = 1; // 1x bite crit
+//      seq(kems); // pidgey
+//    }
+//		seq(new EflEndFightSegment(1)); // player defeated enemy
+//
+//		seq(new EflWalkToSegment(10, 31)); // walk up to trainer
+//
+//		seq(new EflInitFightSegment(1)); // start fight
+//		{
+//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[1][1] = 1; // 1x bite crit
+//			seq(kems); // spearow
+//		}
+//		seq(EflNewEnemyMonSegment.any()); // next mon
+//		{
+//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+//			kems.attackCount[3][1] = 1; // bubblebeam crit
+//      kems.numExpGainers = 2; // level up to 25
+//			seq(kems); // raticate
+//		}
+//		seq(new EflEndFightSegment(1)); // player defeated enemy
+//
+//    seq(new EflEvolutionSegment(true));
+//
+//    save("su2");
+//    load("su2");
+//
+//    seq(new EflWalkToSegment(9, 36)); // enter vermilion
+//
+//    seq(new EflWalkToSegment(18, 30)); // ss anne
+//    seq(new EflSkipTextsSegment(4)); // flash ticket
+//    seq(new EflWalkToSegment(18, 32, false)); // enter ss anne
+//    seq(new EflWalkToSegment(14, 3, false)); // enter ss anne
+//    seq(new EflWalkToSegment(7, 7)); // stairs
+//    seq(new EflWalkToSegment(2, 6)); // stairs
+//    seq(new EflWalkToSegment(36, 8, false).setBlockAllWarps(true)); // engage rival
+//
+//		seq(new EflInitFightSegment(7)); // start fight
+//		{
+//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[3][1] = 1; // bubblebeam crit
+////      kems.attackCount[0][1] = 1; // mega punch crit // Wartortle
+//			seq(kems); // pidgeotto
+//		}
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+//      kems.attackCount[0][1] = 1; // mega punch crit
+////      kems.attackCount[1][1] = 1; // bite crit // Wartortle
+//      seq(kems); // raticate
+//    }
+//
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//
+//    seq(new EflSwitchPokemonSegment(-2, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50))); // switch to metapod
+//    seq(new EflSwitchPokemonSegment(2, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50))); // switch to squirtle
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+//      kems.attackCount[1][1] = 1; // bite crit
+//      kems.numExpGainers = 3; // metapod level up to 10
+//      seq(kems); // kadabra
+//    }
+//
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    seq(new EflSwitchPokemonSegment(-1, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 45))); // switch to weedle
+//    seq(new EflSwitchPokemonSegment(1, EflEnemyMoveDesc.missWith(22))); // switch to squirtle
+//		{
+//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[1][1] = 2; // bite crit // Wartortle
+////      kems.attackCount[1][0] = 1; // bite // Wartortle
+////      kems.attackCount[1][1] = 1; // bite crit // Wartortle
+//      kems.numExpGainers = 4; // level up to 26, weedle level up to 9
+//			seq(kems); // ivysaur
+//		}
+//		seq(new EflEndFightSegment(3)); // player defeated enemy
+//
+//    seq(new EflEvolutionSegment(true)); // Squirtle evolution
+//    seq(new EflEvolutionSegment()); // Metapod evolution
+//    seq(new EflEvolutionSegment()); // Weedle evolution
+//
+//    seq(new EflSkipTextsSegment(5)); // after battle text
+//    seq(new EflWalkToSegment(36, 4)); // stairs
+//    seq(new EflWalkToSegment(4, 4)); // engage captain
+//    seq(new EflWalkToSegment(4, 3)); // engage captain
+//    seqMove(new EflOverworldInteract(1)); // talk to captain
+//    seq(new EflSkipTextsSegment(4)); // captain
+//    seq(new EflTextSegment()); // rub
+//    seq(new EflSkipTextsSegment(9)); // captain
+//    seq(new EflWalkToSegment(0, 7)); // stairs
+//    seq(new EflWalkToSegment(2, 4, false).setBlockAllWarps(true)); // stairs
+//    seq(new EflWalkToSegment(7, 7)); // leave ss.anne
+//
+//    save("su3");
     load("su3");
 
     seq(new EflWalkToSegment(26, -1, false).setMaxBufferSize(0)); // leave ss.anne
     seqEflSkipInputUnbounded(5); // Watch SS Anne
     seq(new EflWalkToSegment(40, 15).setMaxBufferSize(0)); // route 11
 
-    seq(new EflWalkToSegment(4, 5).setMaxBufferSize(0)); // diglett's cave
-    seq(new EflWalkToSegment(4, 4).setMaxBufferSize(0)); // diglett's cave
-    seq(new EflWalkToSegment(36, 31).setMaxBufferSize(0)); // cave
+    seq(new EflWalkToSegment(10, 6).setMaxBufferSize(0)); // grass
+    seq(new EflWalkToSegment(11, 6).setMaxBufferSize(0)); // grass
 
-    seq(new EflEncounterSegment(0x76, Move.LEFT)); // Dugtrio
+    seq(new EflEncounterSegment(0x30, Move.RIGHT)); // Drowzee
     seq(new EflCatchMonSegment(2).withBufferSize(0));
 
     save("tmp");
     load("tmp");
 
-    seq(new EflWalkToSegment(35, 32).setMaxBufferSize(0)); // cave
-    seq(new EflWalkToSegment(36, 32).setMaxBufferSize(0)); // cave
+    seq(new EflWalkToSegment(4, 5).setMaxBufferSize(0)); // diglett's cave
+    seq(new EflWalkToSegment(4, 4).setMaxBufferSize(0)); // diglett's cave
+    seq(new EflWalkToSegment(36, 31).setMaxBufferSize(0)); // cave
 
-    seq(new EflEncounterSegment(0x3b, Move.RIGHT)); // Diglett
+//    seq(new EflEncounterSegment(0x76, Move.LEFT)); // Dugtrio
+    seq(new EflEncounterSegment(0x3b, Move.LEFT)); // Diglett
     seq(new EflCatchMonSegment(2).withBufferSize(0));
 
     save("tmp2");
     load("tmp2");
 
+    seq(new EflWalkToSegment(35, 32).setMaxBufferSize(0)); // cave
+    seq(new EflWalkToSegment(36, 32).setMaxBufferSize(0)); // cave
+
+//    seq(new EflEncounterSegment(0x3b, Move.RIGHT)); // Diglett
+    seq(new EflEncounterSegment(0x76, Move.RIGHT)); // Dugtrio
+    seq(new EflCatchMonSegment(2).withBufferSize(0));
+
     seq(new EflWalkToSegment(37, 31).setMaxBufferSize(0)); // leave diglett's cave
     seq(new EflWalkToSegment(3, 8, false).setMaxBufferSize(0)); // leave diglett's cave
 
-    seq(new EflWalkToSegment(11, 6).setMaxBufferSize(0)); // grass
-
-    seq(new EflEncounterSegment(0x30, Move.RIGHT)); // Drowzee
-    seq(new EflCatchMonSegment(2));
-
-    seq(new EflWalkToSegment(-1, 6)); // enter vermilion
+    seq(new EflWalkToSegment(-1, 6).setMaxBufferSize(0)); // enter vermilion
 
     save("su4");
     load("su4");

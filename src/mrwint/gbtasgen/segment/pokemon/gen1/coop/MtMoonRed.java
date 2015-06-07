@@ -30,6 +30,11 @@ public class MtMoonRed extends SeqSegment {
     seq(new MoveSegment(new EflOverworldInteract(10))); // collect Rare Candy
     seq(new EflTextSegment()); // found Rare Candy
 
+    seq(new EflWalkToSegment(34, 23)); // Escape Rope
+    seq(new EflWalkToSegment(35, 23)); // Escape Rope
+    seq(new MoveSegment(new EflOverworldInteract(11))); // collect Escape Rope
+    seq(new EflTextSegment()); // found Escape Rope
+
 		seq(new EflWalkToSegment(17,11,false).setBlockAllWarps(true)); // l2
 		seq(new EflWalkToSegment(17,11)); // l3
 
@@ -105,7 +110,7 @@ public class MtMoonRed extends SeqSegment {
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(123)}; // smog
       kems.attackCount[3][0] = 1; // mega punch
-      kems.attackCount[3][1] = 1; // mega punch crit
+      kems.attackCount[2][1] = 1; // ember crit
 			seq(kems); // Koffing
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy

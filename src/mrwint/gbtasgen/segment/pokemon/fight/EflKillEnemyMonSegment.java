@@ -62,116 +62,6 @@ public class EflKillEnemyMonSegment implements Segment {
 		}
 	}
 
-	public static class CheckMoveOrderMetric implements StateResettingMetric {
-		final int[] move;
-		final int keys;
-		final Boolean faster;
-		public CheckMoveOrderMetric(Boolean faster, int[] move, int keys) {
-			this.faster = faster;
-			this.move = move;
-			this.keys = keys;
-		}
-		@Override
-		public int getMetricInternal() {
-			//System.out.println("runToAddress");
-			//try {Thread.sleep(2000);} catch (InterruptedException e) {}
-			Util.runToAddressNoLimit(0, keys, curGb.pokemon.fightDetermineAttackOrder);
-			//System.out.println("ranToAddress");
-			//try {Thread.sleep(2000);} catch (InterruptedException e) {}
-			int enemyMove = curGb.readMemory(curGb.pokemon.fightCurEnemyMoveAddress); // selected enemy move
-			if(move.length > 0 && !Util.arrayContains(move, enemyMove))
-				return 0;
-			int add = Util.runToAddressNoLimit(0,0,curGb.pokemon.fightDetermineAttackOrderPlayerFirst,curGb.pokemon.fightDetermineAttackOrderEnemyFirst);
-			if (faster != null && (add == curGb.pokemon.fightDetermineAttackOrderPlayerFirst) != faster)
-				return 0;
-//			System.out.println("move "+enemyMove);
-			if (faster != null && !faster)
-				add = Util.runToAddressNoLimit(0,0,curGb.pokemon.fightAIMoveCheck); // Check for AI moves (item uses etc.)
-			else
-				return 1;
-			return (add == curGb.pokemon.fightAIExecuteMove) ? 1 : 0;
-		}
-	}
-
-	public static class EflCheckAdditionalTexts implements StateResettingMetric {
-		@Override
-		public int getMetricInternal() {
-			int add = EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.fightEndTurnAddresses);
-			if(add == curGb.pokemon.printLetterDelayJoypadAddress) {
-				System.out.println("EflCheckAdditionalTexts: found additional PrintText!");
-//				try { Thread.sleep(200); } catch (InterruptedException e) { }
-//				for(int i=0;i<40;i++) {
-//					curGb.step();
-//					try { Thread.sleep(10); } catch (InterruptedException e) { }
-//				}
-//				try { Thread.sleep(200); } catch (InterruptedException e) { }
-				return 0;
-			}
-			return 1;
-		}
-	}
-
-	// returns damage dealt, or Integer.MIN_VALUE if attack missed crit status doesn't match
-	public static class EflCheckMoveDamage implements StateResettingMetric {
-		final boolean criticalHit;
-		final boolean effectMiss;
-		final EflCheckAdditionalTexts cat;
-		final boolean negateDamage;
-		final boolean ignoreDamage;
-		final boolean expectAdditionalTexts;
-		final int thrashAdditionalTurns;
-		public EflCheckMoveDamage(boolean criticalHit, boolean effectMiss, boolean checkForAdditionalTexts, boolean expectAdditionalTexts, boolean negateDamage, boolean ignoreDamage, int thrashAdditionalTurns) {
-			this.criticalHit = criticalHit;
-			this.effectMiss = effectMiss;
-			this.cat = checkForAdditionalTexts ? new EflCheckAdditionalTexts() : null;
-			this.expectAdditionalTexts = expectAdditionalTexts;
-			this.negateDamage = negateDamage;
-			this.ignoreDamage = ignoreDamage;
-			this.thrashAdditionalTurns = thrashAdditionalTurns;
-		}
-		@Override
-		public int getMetricInternal() {
-			//Util.runToAddress(0, 0, RomInfo.rom.fightDamageCalc);
-			//int atk = State.getRegister(Register.BC) >> 8;
-			//int def = State.getRegister(Register.BC) % 256;
-			//int pow = State.getRegister(Register.DE) >> 8;
-			//int lvl = State.getRegister(Register.DE) % 256;
-
-			//Util.runToAddress(0, 0, RomInfo.rom.fightDamageVariation);
-			//int maxdmg = Util.getMemoryBigEndian(RomInfo.rom.fightCurDamageAddress);
-
-//      Util.runToAddressNoLimit(0, 0, 0x3d6fc, 0x3e779);
-//      int missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
-//      Util.runToAddressNoLimit(0, 0, 0x3d702, 0x3e77f);
-//      missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
-
-			EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.fightBattleCommand0a);
-			int crit = curGb.readMemory(curGb.pokemon.fightCriticalHitAddress);
-			int missed = curGb.readMemory(curGb.pokemon.fightAttackMissedAddress);
-//			System.out.println("EflCheckMoveDamage crit: " + crit + " missed: " + missed);
-			boolean failure = missed != 0 || criticalHit != (crit != 0);
-			if (thrashAdditionalTurns > 0 && curGb.readMemory(curGb.pokemon.thrashNumTurnsAddress) < thrashAdditionalTurns) {
-				failure = true;
-				System.out.println("caught bad thrash "+ curGb.readMemory(curGb.pokemon.thrashNumTurnsAddress));
-			}
-			if (PokemonUtil.isGen2()) {
-				int effectMissed = curGb.readMemory(curGb.pokemon.fightEffectMissedAddress);
-				failure = failure || this.effectMiss != (effectMissed != 0);
-			}
-			if(failure)
-				return Integer.MIN_VALUE;
-			int dmg = Util.getMemoryWordBE(curGb.pokemon.fightCurDamageAddress);
-//      System.out.println("EflCheckMoveDamage dmg: " + dmg);
-			if(dmg > 0 && cat != null)
-				if(cat.getMetric() == (expectAdditionalTexts ? 1 : 0)) // found additional texts
-					return Integer.MIN_VALUE;
-//			System.out.println(crit+" "+missed+" "+effectMissed+" "+dmg);
-			//System.out.println("atk: "+atk+", def: "+def+", pow: "+pow+", lvl: "+lvl);
-			//System.out.println("max damage: "+maxdmg+", dmg: "+dmg);
-			return ignoreDamage ? 0 : negateDamage ? -dmg : dmg;
-		}
-	}
-
 	public static class FightState {
 		int[][] atkCnt = new int[4][2];
 		int spareDamage;
@@ -249,23 +139,14 @@ public class EflKillEnemyMonSegment implements Segment {
 			return new EflEnemyMoveDesc(new EflMissMetricSegment(false, metric), true, move);
 		}
 		public static EflEnemyMoveDesc hitWith(int move, boolean isCrit, boolean isEffective) {
-			return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, false, isEffective, false, 0, false, false), false, new int[]{move});
+			return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, false, isEffective, false, 0, false), false, new int[]{move});
 		}
-		public static EflEnemyMoveDesc hitWith(int move, boolean isCrit, boolean isEffective, int additionalTexts) {
-			return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, false, isEffective, false, additionalTexts, false, false), false, new int[]{move});
-		}
-		public static EflEnemyMoveDesc hitWith(int move, boolean isCrit, boolean isEffective, int additionalTexts, boolean ignoreDamage) {
-			return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, false, isEffective, false, additionalTexts, false, ignoreDamage), false, new int[]{move});
-		}
-		public static EflEnemyMoveDesc hitWith(int move, boolean isCrit, boolean effectMiss, boolean isEffective) {
-			return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, effectMiss,isEffective, false, 0, false, false), false, new int[]{move});
-		}
-		public static EflEnemyMoveDesc hitWith(int move, boolean isCrit, boolean effectMiss, boolean isEffective, int additionalTexts) {
-			return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, effectMiss, isEffective, false, additionalTexts, false, false), false, new int[]{move});
-		}
-		public static EflEnemyMoveDesc hitWith(int move, boolean isCrit, boolean effectMiss, boolean isEffective, int additionalTexts, boolean ignoreDamage) {
-			return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, effectMiss, isEffective, false, additionalTexts, false, ignoreDamage), false, new int[]{move});
-		}
+    public static EflEnemyMoveDesc hitWith(int move, boolean isCrit, boolean isEffective, int additionalTexts) {
+      return new EflEnemyMoveDesc(new EflHitMetricSegment(isCrit, false, isEffective, false, additionalTexts, false), false, new int[]{move});
+    }
+    public static EflEnemyMoveDesc customHitWith(int move, boolean isCrit, boolean isEffective, int minDamage, int maxDamage) {
+      return new EflEnemyMoveDesc(new EflCustomHitMetricSegment(false, isCrit, false, isEffective, minDamage, maxDamage, false), true, new int[]{move});
+    }
 	}
 	public EflEnemyMoveDesc[] enemyMoveDesc = {EflEnemyMoveDesc.missWith()};
 	public int[] numEndOfTurnTexts = new int[0];
@@ -526,7 +407,7 @@ public class EflKillEnemyMonSegment implements Segment {
 		final int[] curEnemyMove = getEnemyMove(curTurn);
 		final int curEnemyMoveMinDamage = (curEnemyMove.length  == 0) ? 0 : enemyDmg[getEnemyMoveIndex(curEnemyMove[0])][0];
 
-		final EflAttackActionSegment curPlayerMoveSegment = new EflHitMetricSegment(playerCrit, false, playerEffective, true, getNumEndOfAttackTexts(curTurn), getNumEndOfAttackTexts(curTurn) > 0, false, n == 0 ? thrashNumAdditionalTurns : 0);
+		final EflAttackActionSegment curPlayerMoveSegment = new EflHitMetricSegment(playerCrit, false, playerEffective, true, getNumEndOfAttackTexts(curTurn), getNumEndOfAttackTexts(curTurn) > 0, n == 0 ? thrashNumAdditionalTurns : 0);
 		setAppendEnemyMoveMetric(curPlayerMoveSegment, curTurn, !faster && !pauseAfterPlayerAttack && !lastTurn && getNumEndOfTurnTexts(curTurn) == 0);
 		setAppendNoAIMoveMetric(curPlayerMoveSegment, faster && !pauseAfterPlayerAttack && !lastTurn);
 
@@ -567,7 +448,7 @@ public class EflKillEnemyMonSegment implements Segment {
       @Override
       protected void execute() {
         seqEflButtonUnboundedNoDelay(Move.A, PressMetric.PRESSED);
-        seqMetric(new CheckMoveOrderMetric(faster,curEnemyMove,Move.A));
+        seqMetric(new EflCheckMoveOrderMetric(faster, curEnemyMove));
       }
     };
 

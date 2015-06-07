@@ -3,7 +3,6 @@ package mrwint.gbtasgen.segment.pokemon.fight;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.CheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -36,7 +35,7 @@ public class EflSwitchPokemonSegment extends SeqSegment {
         seqEflButton(Move.A);
         seq(new EflTextSegment()); // enough
         seq(new EflTextSegment(Move.A, 0)); // go
-        seqMetric(new CheckMoveOrderMetric(null, enemyMoveDesc.move, 0));
+        seqMetric(new EflCheckMoveOrderMetric(null, enemyMoveDesc.move));
         seq(new Segment() {
           @Override
           public StateBuffer execute(StateBuffer in) {

@@ -10,27 +10,27 @@ import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
+import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
 
-public class EflHitMetricSegment extends EflAttackActionSegment {
+public class EflCustomHitMetricSegment extends EflAttackActionSegment {
 
+  final private boolean player;
 	final private boolean isCrit;
 	final private boolean effectMiss;
-	final private boolean player;
 	final private boolean noCheckAdditionalTexts;
-	final private int numEndTexts;
-	final private int thrashAdditionalTurns;
+  final private int numEndTexts;
+  final private int minDamage;
+  final private int maxDamage;
 
-	public EflHitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts) {
-		this(isCrit, effectMiss, isEffective, player, numEndTexts, noCheckAdditionalTexts, 0);
-	}
-	public EflHitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts, int thrashAdditionalTurns) {
+	public EflCustomHitMetricSegment(boolean player, boolean isCrit, boolean effectMiss, boolean isEffective, int minDamage, int maxDamage, boolean noCheckAdditionalTexts) {
+	  this.player = player;
 		this.isCrit = isCrit;
 		this.effectMiss = effectMiss;
-    this.thrashAdditionalTurns = thrashAdditionalTurns;
-		this.numEndTexts = numEndTexts + (isCrit ? 1 : 0) + (isEffective ? 1 : 0);
-		this.player = player;
+		this.numEndTexts = (isCrit ? 1 : 0) + (isEffective ? 1 : 0);
+    this.minDamage = minDamage;
+    this.maxDamage = maxDamage;
 		this.noCheckAdditionalTexts = noCheckAdditionalTexts;
 	}
 
@@ -54,7 +54,7 @@ public class EflHitMetricSegment extends EflAttackActionSegment {
 	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
 		sb = new EflTextSegment(Move.A, 0).execute(sb); // player mon uses attack
 //    System.out.println("EflHitMetricSegment: size=" + sb.size());
-		sb = new CheckMetricSegment(new EflCheckMoveDamage(isCrit, effectMiss, thrashAdditionalTurns, minValue, Integer.MAX_VALUE, !player),GREATER_EQUAL, minValue, player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE).execute(sb);
+		sb = new CheckMetricSegment(new EflCheckMoveDamage(isCrit, effectMiss, 0, minDamage, maxDamage, false),GREATER_EQUAL, minDamage, null).execute(sb);
 		if (numEndTexts == 0 && !noCheckAdditionalTexts) // check for additional texts
 		  sb = new CheckMetricSegment(new StateResettingMetric() {
         @Override
@@ -67,6 +67,9 @@ public class EflHitMetricSegment extends EflAttackActionSegment {
     sb = new EflSkipTextsSegment(numEndTexts - 1).execute(sb); // skip critical hit! messages
 		if(numEndTexts > 0) // skip last message if any
 			sb = new EflTextSegment().execute(sb); // critical hit! or very/not effective message
+
+    for(State s : sb.getStates())
+      s.setAttributeInt(player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE, 0); // set 0 damage
 
 		return sb;
 	}

@@ -77,32 +77,32 @@ public class MtMoonBlue extends SeqSegment {
 //		seq(new EflWalkToSegment(21,17)); // go to MtMoon3
 //
 //    save("mm1");
-//    load("mm1");
-//
-//    seq(new EflWalkToSegment(32, 15).setMaxBufferSize(0)); // go to encounter
-//    seq(new EflEncounterSegment(4, Move.UP)); // Clefairy
-//    seq(new EflCatchMonSegment(2));
-//
-//		seq(new EflWalkToSegment(11, 16, false)); // go to rocket
-//		seqMove(new EflOverworldInteract(2)); // talk to rocket
-//
-//		seq(new EflInitFightSegment(3)); // start fight
-//		{
-//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-//			kems.attackCount[0][1] = 1; // 1x mega punch crit
-//			seq(kems); // Rattata
-//		}
-//		seq(EflNewEnemyMonSegment.any());
-//		{
-//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//			kems.attackCount[0][1] = 1; // 1x mega punch crit
-//			kems.numExpGainers = 2; // level up to 16
-//			seq(kems); // Zubat
-//		}
-//		seq(new EflEndFightSegment(1)); // player defeated enemy
-//
-//    save("mm2");
+    load("mm1");
+
+    seq(new EflWalkToSegment(35, 14).setMaxBufferSize(0)); // go to encounter
+    seq(new EflEncounterSegment(4, Move.RIGHT)); // Clefairy
+    seq(new EflCatchMonSegment(2));
+
+		seq(new EflWalkToSegment(11, 16, false)); // go to rocket
+		seqMove(new EflOverworldInteract(2)); // talk to rocket
+
+		seq(new EflInitFightSegment(3)); // start fight
+		{
+		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+			kems.attackCount[0][1] = 1; // 1x mega punch crit
+			seq(kems); // Rattata
+		}
+		seq(EflNewEnemyMonSegment.any());
+		{
+		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+			kems.attackCount[0][1] = 1; // 1x mega punch crit
+			kems.numExpGainers = 2; // level up to 16
+			seq(kems); // Zubat
+		}
+		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("mm2");
     load("mm2");
 
     seq(new EflEvolutionSegment(true));
@@ -148,13 +148,13 @@ public class MtMoonBlue extends SeqSegment {
 		seq(new EflSkipTextsSegment(1, true)); // grab fossil
 		seq(new EflSkipTextsSegment(1)); // got fossil
 		seq(new EflTextSegment()); // put fossil in bag
-		seq(new EflWalkToSegment(13,6).setMaxBufferSize(0)); // go upwards (avoid running into moved nerd)
+		seq(new EflWalkToSegment(13,6)); // go upwards (avoid running into moved nerd)
 
-		seq(new EflWalkToSegment(5,7).setMaxBufferSize(0)); // go to MtMoon2
-		seq(new EflWalkToSegment(27,3).setMaxBufferSize(0)); // leave MtMoon
+		seq(new EflWalkToSegment(5,7)); // go to MtMoon2
+		seq(new EflWalkToSegment(27,3)); // leave MtMoon
 
-    seq(new EflWalkToSegment(76, 9, false).setMaxBufferSize(0)); // hop into grass
+    seq(new EflWalkToSegment(76, 9, false)); // hop into grass
 
-		seq(new EflWalkToSegment(90,10).setMaxBufferSize(0)); // enter Cerulean
+		seq(new EflWalkToSegment(90,10)); // enter Cerulean
 	}
 }

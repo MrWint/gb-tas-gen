@@ -113,17 +113,7 @@ public class Route3Red extends SeqSegment {
 
 		save("r33");
 		load("r33");
-////
-////		seq(new WalkToSegment(30, 10)); // go in grass
-////		seq(new EncounterAndCatchSegment(100, Move.RIGHT)); // Jigglypuff
-////
-////		save("r35");
-////		load("r35");
-////
-////		seq(new WalkToSegment(35, 10)); // go in grass
-////		seq(new WalkToSegment(34, 11)); // go in grass
-////		seq(new EncounterAndCatchSegment(5, Move.UP)); // Spearow
-//
+
 		seq(new EflWalkToSegment(59, -1, false)); // leave route 3
 	}
 }
