@@ -42,6 +42,19 @@ public abstract class DualGbSegment {
     state = new DualGbState(state.gbL, state.gbR, sbL, sbR);
   }
 
+  public void seqDualInputs(int[] movesL, int[] movesR) {
+    state.gbL.restore(state.stateBufferL.getAnyMinState());
+    state.gbR.restore(state.stateBufferR.getAnyMinState());
+
+    DualGbHelper.executeDualGbInputs(state.gbL, state.gbR, movesL, movesR);
+
+    StateBuffer sbL = new StateBuffer();
+    sbL.addState(state.gbL.createState(true));
+    StateBuffer sbR = new StateBuffer();
+    sbR.addState(state.gbR.createState(true));
+    state = new DualGbState(state.gbL, state.gbR, sbL, sbR);
+  }
+
   public void load(String name) {
     state = DualGbState.load(state.gbL, state.gbR, name);
   }

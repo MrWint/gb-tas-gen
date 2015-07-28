@@ -259,15 +259,13 @@ void loadsave_save::tag(unsigned short _tag)
 	do_op(_tag, 18);
 }
 
-std::vector<char> loadsave_save::get()
+void loadsave_save::get(std::vector<char>& x)
 {
-	std::vector<char> x;
 	x.resize(used);
 	size_t ptr = 0;
 	for(int i = 0; i<(int)memory.size(); i++) {
 		memcpy(&x[ptr], memory[i].first, memory[i].second);
 		ptr += memory[i].second;
 	}
-	return x;
 }
 }

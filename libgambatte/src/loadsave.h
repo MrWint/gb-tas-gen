@@ -173,7 +173,7 @@ namespace gambatte {
 		void operator()(const unsigned char*& ptr, unsigned char* abase);
 		void tag(unsigned short _tag);
 		bool saving();
-		std::vector<char> get();
+		void get(std::vector<char>&);
 	};
 }
 

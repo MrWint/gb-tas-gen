@@ -259,7 +259,7 @@ void GambatteSdl::saveState(std::vector<char>& data) {
 		loadsave_save l;
 		gambatte.p_->cpu.loadOrSave(l);
 		l(overflowSamples);
-		data = l.get();
+		l.get(data);
 	}
 }
 
@@ -273,42 +273,44 @@ void GambatteSdl::loadState(const std::vector<char>& data) {
 } // anon namespace
 
 
+const int STEP = 32; // could be 1024 for GB
+unsigned dualTarget = STEP;
+
 void dualGbStep(GambatteSdl* gbL, GambatteSdl* gbR, bool cableconnected) {
 	const BlitterWrapper::Buf &vbufL = sdl.blitter.inBuf(gbL->screen);
 	const BlitterWrapper::Buf &vbufR = sdl.blitter.inBuf(gbR->screen);
 
-	const int step = 32; // could be 1024 for GB
-
-	unsigned nL = gbL->overflowSamples;
-	unsigned nR = gbR->overflowSamples;
-
 	// slowly step our way through the frame, while continually checking and resolving link cable status
-	for (unsigned target = 0; target < SAMPLES_PER_FRAME;)
+	while (true)
 	{
-		target += step;
-		if (target > SAMPLES_PER_FRAME)
-			target = SAMPLES_PER_FRAME; // don't run for slightly too long depending on step
-
 		// gambatte_runfor() aborts early when a frame is produced, but we don't want that, hence the while()
-		while (nL < target)
+		while (gbL->overflowSamples < dualTarget)
 		{
-			unsigned emusamples = target - nL;
+			unsigned emusamples = dualTarget - gbL->overflowSamples;
 			if (gbL->gambatte.runFor(vbufL.pixels, vbufL.pitch,
 					reinterpret_cast<gambatte::uint_least32_t*>(gbL->inBuf.get()), emusamples) >= 0) {
 				sdl.blitter.draw();
 				sdl.blitter.present();
 			}
-			nL += emusamples;
+			gbL->overflowSamples += emusamples;
+
+			if(gbL->gambatte.p_->cpu.hitInterruptAddress != 0) { // go into frame
+				return;
+			}
 		}
-		while (nR < target)
+		while (gbR->overflowSamples < dualTarget)
 		{
-			unsigned emusamples = target - nR;
+			unsigned emusamples = dualTarget - gbR->overflowSamples;
 			if (gbR->gambatte.runFor(vbufR.pixels, vbufR.pitch,
 					reinterpret_cast<gambatte::uint_least32_t*>(gbR->inBuf.get()), emusamples) >= 0) {
 				sdl.blitter.draw();
 				sdl.blitter.present();
 			}
-			nR += emusamples;
+			gbR->overflowSamples += emusamples;
+
+			if(gbR->gambatte.p_->cpu.hitInterruptAddress != 0) { // go into frame
+				return;
+			}
 		}
 
 		// poll link cable statuses, but not when the cable is disconnected
@@ -331,9 +333,44 @@ void dualGbStep(GambatteSdl* gbL, GambatteSdl* gbR, bool cableconnected) {
 			gbL->gambatte.p_->cpu.memory.linkStatus(ro & 0xff); // ShiftIn
 			gbR->gambatte.p_->cpu.memory.linkStatus(lo & 0xff); // ShiftIn
 		}
+
+		if (dualTarget >= SAMPLES_PER_FRAME)
+			break;
+
+		dualTarget += STEP;
+		if (dualTarget > SAMPLES_PER_FRAME)
+			dualTarget = SAMPLES_PER_FRAME; // don't run for slightly too long depending on step
 	}
-	gbL->overflowSamples = nL - SAMPLES_PER_FRAME;
-	gbR->overflowSamples = nR - SAMPLES_PER_FRAME;
+	gbL->overflowSamples = gbL->overflowSamples - SAMPLES_PER_FRAME;
+	gbR->overflowSamples = gbR->overflowSamples - SAMPLES_PER_FRAME;
+  dualTarget = STEP;
+}
+
+void saveDualState(GambatteSdl* gbL, GambatteSdl* gbR, std::vector<char>& data) {
+  loadsave_save l;
+	if (gbL->gambatte.p_->cpu.loaded()) {
+		gbL->gambatte.p_->cpu.loadOrSave(l);
+		l(gbL->overflowSamples);
+	}
+	if (gbR->gambatte.p_->cpu.loaded()) {
+		gbR->gambatte.p_->cpu.loadOrSave(l);
+		l(gbR->overflowSamples);
+	}
+  l(dualTarget);
+  l.get(data);
+}
+
+void loadDualState(GambatteSdl* gbL, GambatteSdl* gbR, const std::vector<char>& data) {
+  loadsave_load l(data);
+	if (gbL->gambatte.p_->cpu.loaded()) {
+		gbL->gambatte.p_->cpu.loadOrSave(l);
+		l(gbL->overflowSamples);
+	}
+	if (gbR->gambatte.p_->cpu.loaded()) {
+		gbR->gambatte.p_->cpu.loadOrSave(l);
+		l(gbR->overflowSamples);
+	}
+  l(dualTarget);
 }
 
 
@@ -397,6 +434,40 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nstepDual
   dualGbStep((GambatteSdl*)gbL, (GambatteSdl*)gbR, true);
 }
 
+// nstepDualUntil
+JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_nstepDualUntil
+    (JNIEnv *env, jclass clazz, jlong gbL, jlong gbR, jint keymaskL, jint keymaskR, jintArray arrL, jintArray arrR) {
+  UNUSED(env);UNUSED(clazz);
+
+  if(keymaskL == -1)
+    ((GambatteSdl*)gbL)->handleInput();
+  else
+    ((GambatteSdl*)gbL)->inputGetter.is = keymaskL;
+
+  jsize lenL = env->GetArrayLength(arrL);
+  jint* addressesL = env->GetIntArrayElements(arrL,0);
+  ((GambatteSdl*)gbL)->gambatte.p_->cpu.numInterruptAddresses = lenL; // no interrupts
+  ((GambatteSdl*)gbL)->gambatte.p_->cpu.interruptAddresses = addressesL; // set up interrupts
+
+  if(keymaskR == -1)
+    ((GambatteSdl*)gbR)->handleInput();
+  else
+    ((GambatteSdl*)gbR)->inputGetter.is = keymaskR;
+
+  jsize lenR = env->GetArrayLength(arrR);
+  jint* addressesR = env->GetIntArrayElements(arrR,0);
+  ((GambatteSdl*)gbR)->gambatte.p_->cpu.numInterruptAddresses = lenR; // no interrupts
+  ((GambatteSdl*)gbR)->gambatte.p_->cpu.interruptAddresses = addressesR; // set up interrupts
+
+  dualGbStep((GambatteSdl*)gbL, (GambatteSdl*)gbR, true);
+
+  env->ReleaseIntArrayElements(arrL,addressesL,0);
+  env->ReleaseIntArrayElements(arrR,addressesR,0);
+  if (((GambatteSdl*)gbL)->gambatte.p_->cpu.hitInterruptAddress)
+    return ((GambatteSdl*)gbL)->gambatte.p_->cpu.hitInterruptAddress;
+  return ((GambatteSdl*)gbR)->gambatte.p_->cpu.hitInterruptAddress;
+}
+
 
 // nstep
 JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nstep
@@ -414,8 +485,8 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_nstep
 
 // nstepUntil
 JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_nstepUntil
-    (JNIEnv *env, jclass clazz, jlong gb, jint keymask, jintArray arr){
-  UNUSED(env);UNUSED(clazz);UNUSED(keymask);UNUSED(arr);
+    (JNIEnv *env, jclass clazz, jlong gb, jint keymask, jintArray arr) {
+  UNUSED(env);UNUSED(clazz);
 
   if(keymask == -1)
     ((GambatteSdl*)gb)->handleInput();
@@ -468,6 +539,36 @@ JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_loadState
   std::vector<char> data(buffer_address,buffer_address+size);
 
   ((GambatteSdl*)gb)->loadState(data);
+}
+
+
+// saveDualState
+JNIEXPORT jint JNICALL Java_mrwint_gbtasgen_Gb_saveDualState
+    (JNIEnv *env, jclass clazz, jlong gbL, jlong gbR, jobject buffer, jint size) {
+  UNUSED(clazz);
+
+  char* buffer_address = ((char*) env->GetDirectBufferAddress(buffer));
+  std::vector<char> data;
+  saveDualState((GambatteSdl*)gbL, (GambatteSdl*)gbR, data);
+
+  if((int)data.size() > size)
+    std::cout << "too big! " << data.size() << " vs. " << size << std::endl;
+
+  std::copy(data.begin(), data.end(), buffer_address);
+
+  return data.size();
+}
+
+// loadDualState
+JNIEXPORT void JNICALL Java_mrwint_gbtasgen_Gb_loadDualState
+    (JNIEnv *env, jclass clazz, jlong gbL, jlong gbR, jobject buffer, jint size) {
+  UNUSED(clazz);
+
+  char* buffer_address = ((char*) env->GetDirectBufferAddress(buffer));
+
+  std::vector<char> data(buffer_address,buffer_address+size);
+
+  loadDualState((GambatteSdl*)gbL, (GambatteSdl*)gbR, data);
 }
 
 

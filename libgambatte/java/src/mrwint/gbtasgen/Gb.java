@@ -6,26 +6,21 @@ import java.nio.ByteOrder;
 public class Gb {
 
   private final long gb;
-	public Gb(int screen, boolean equalLengthFrames) {
-	  gb = createGb(screen, equalLengthFrames);
-	}
-
-	private static native void initSdl(int numScreens);
-
-	private static native long createGb(int screen, boolean equalLengthFrames);
-
-	private static native void startEmulator(long gb, String rom);
-	public void startEmulator(String rom) {
-	  startEmulator(gb, rom);
-	}
-
-	private static native void ninitDualGb(long gbL, long gbR);
+  public Gb(int screen, boolean equalLengthFrames) {
+    gb = createGb(screen, equalLengthFrames);
+  }
+  
+  private static native void initSdl(int numScreens);
+  
+  private static native long createGb(int screen, boolean equalLengthFrames);
+  
+  private static native void startEmulator(long gb, String rom);
+  public void startEmulator(String rom) {
+    startEmulator(gb, rom);
+  }
+  private static native void ninitDualGb(long gbL, long gbR);
   public static void initDualGb(Gb gbL, Gb gbR) {
     ninitDualGb(gbL.gb, gbR.gb);
-  }
-  private static native void nstepDual(long gbL, long gbR, int keymaskL, int keymaskR);
-  public static void stepDual(Gb gbL, Gb gbR, int keymaskL, int keymaskR) {
-    nstepDual(gbL.gb, gbR.gb, keymaskL, keymaskR);
   }
 
   private static native void nstep(long gb, int keymask);
@@ -43,13 +38,29 @@ public class Gb {
 		return nstepUntil(gb, keymask, addresses);
 	}
 
-	private static native int saveState(long gb, ByteBuffer buffer, int size);
-	private static native void loadState(long gb, ByteBuffer buffer, int size);
+  private static native void nstepDual(long gbL, long gbR, int keymaskL, int keymaskR);
+  private static native int nstepDualUntil(long gbL, long gbR, int keymaskL, int keymaskR, int[] addressesL, int[] addressesR);
+  public static void stepDual(Gb gbL, Gb gbR, int keymaskL, int keymaskR) {
+    nstepDual(gbL.gb, gbR.gb, keymaskL, keymaskR);
+  }
+  public static int stepDualUntilL(Gb gbL, Gb gbR, int keymaskL, int keymaskR, int... addresses) {
+    return nstepDualUntil(gbL.gb, gbR.gb, keymaskL, keymaskR, addresses, new int[0]);
+  }
+  public static int stepDualUntilR(Gb gbL, Gb gbR, int keymaskL, int keymaskR, int... addresses) {
+    return nstepDualUntil(gbL.gb, gbR.gb, keymaskL, keymaskR, new int[0], addresses);
+  }
+
+  private static native int saveState(long gb, ByteBuffer buffer, int size);
+  private static native void loadState(long gb, ByteBuffer buffer, int size);
+
+  private static native int saveDualState(long gbL, long gbR, ByteBuffer buffer, int size);
+  private static native void loadDualState(long gbL, long gbR, ByteBuffer buffer, int size);
 
 //  public static final int MAX_SAVE_SIZE = 211243;
 //  public static final int MAX_SAVE_SIZE = 153894; // Tetris
 //  public static final int MAX_SAVE_SIZE = 162092; // Sml2_10
-  private static final int MAX_SAVE_SIZE = 186675; // PokeRed
+//  private static final int MAX_SAVE_SIZE = 186675; // PokeRed
+  private static final int MAX_SAVE_SIZE = 400000; // 2* PokeRed + buffer
 	public static final ByteBuffer TMP_SAVE_BUFFER = createDirectByteBuffer(MAX_SAVE_SIZE);
 
 	public ByteBuffer saveState() {
@@ -68,9 +79,29 @@ public class Gb {
     }
 	}
 
-	public void loadState(ByteBuffer saveState){
-		loadState(gb, saveState, saveState.capacity());
-	}
+  public void loadState(ByteBuffer saveState){
+    loadState(gb, saveState, saveState.capacity());
+  }
+
+  public static ByteBuffer saveDualState(Gb gbL, Gb gbR) {
+    synchronized (TMP_SAVE_BUFFER) {
+      // read state to temporary buffer
+      TMP_SAVE_BUFFER.clear();
+      int size = saveDualState(gbL.gb, gbR.gb, TMP_SAVE_BUFFER, TMP_SAVE_BUFFER.capacity());
+
+      // copy state to new buffer with exact size
+      ByteBuffer buf = createDirectByteBuffer(size);
+      TMP_SAVE_BUFFER.rewind();
+      TMP_SAVE_BUFFER.limit(size);
+      buf.put(TMP_SAVE_BUFFER);
+      buf.rewind();
+      return buf;
+    }
+  }
+
+  public static void loadDualState(Gb gbL, Gb gbR, ByteBuffer saveState){
+    loadDualState(gbL.gb, gbR.gb, saveState, saveState.capacity());
+  }
 
 	private static native int getROMSize(long gb);
 	public int getROMSize() {

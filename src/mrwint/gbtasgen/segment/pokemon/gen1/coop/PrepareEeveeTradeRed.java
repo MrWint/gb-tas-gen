@@ -28,5 +28,7 @@ public class PrepareEeveeTradeRed extends SeqSegment {
     seq(new EflWalkToSegment(4, 0)); // house
     seq(new EflUseBikeSegment(0, 0));
     seq(new EflWalkToSegment(41, 9)); // enter center
+    seq(new EflWalkToSegment(11, 4)); // cable club
+    seq(new EflWalkToSegment(11, 3)); // cable club
 	}
 }
