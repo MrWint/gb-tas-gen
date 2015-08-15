@@ -10,7 +10,6 @@ import mrwint.gbtasgen.util.EflUtil;
 public class EflTextSegmentOld implements Segment {
 
 	private int skipMove;
-  private int bufferSize;
 
 
 	public EflTextSegmentOld() {
@@ -18,27 +17,22 @@ public class EflTextSegmentOld implements Segment {
 	}
 
 	public EflTextSegmentOld(int skipMove) {
-		this(skipMove, StateBuffer.MAX_BUFFER_SIZE);
-	}
-
-	public EflTextSegmentOld(int skipMove, int bufferSize) {
     EflUtil.assertEfl();
 
     this.skipMove = skipMove;
-		this.bufferSize = bufferSize;
 	}
 
 	@Override
 	public StateBuffer execute(StateBuffer in) {
-		StateBuffer curBuffer = new StateBuffer(bufferSize);
+		StateBuffer curBuffer = new StateBuffer();
 		for(State s : in.getStates())
 			skipToStart(curBuffer, s);
 
-		StateBuffer goalBuffer = new StateBuffer(bufferSize);
+		StateBuffer goalBuffer = new StateBuffer();
 
 		while(!curBuffer.isEmpty()) {
 		  System.out.println("EflTextSegment: curBuffer="+curBuffer.size()+" goalBuffer="+goalBuffer.size());
-			StateBuffer nextBuffer = new StateBuffer(bufferSize);
+			StateBuffer nextBuffer = new StateBuffer();
 
 			for(State s : curBuffer.getStates())
 				progress(s, nextBuffer, goalBuffer);

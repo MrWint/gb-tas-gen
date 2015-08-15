@@ -4,11 +4,14 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class DepositMonSegment extends SeqSegment {
 	
 	int monscroll;
 	public DepositMonSegment(int monscroll) {
+    EflUtil.assertNoEfl();
+
 		this.monscroll = monscroll;
 	}
 	

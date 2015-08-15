@@ -4,12 +4,15 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class BuyItemSegment extends SeqSegment {
 	
 	int scroll;
 	public BuyItemSegment(int amount) {
-		this.scroll = 1-amount;
+	  EflUtil.assertNoEfl();
+
+	  this.scroll = 1-amount;
 	}
 	
 	@Override

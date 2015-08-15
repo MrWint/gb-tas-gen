@@ -149,10 +149,10 @@ public class Route3Blue extends SeqSegment {
 		seq(new EflEndFightSegment(1)); // player defeated enemy
     save("r36");
     load("r36");
-    seq(new EflWalkToSegment(27, 9).setMaxBufferSize(0)); // go in grass
+    seqUnbounded(new EflWalkToSegment(27, 9)); // go in grass
     seq(new EflEncounterSegment(5, Move.DOWN)); // Spearow
-    seq(new EflCatchMonSegment(2));
-    seq(new EflWalkToSegment(29, 10)); // go in grass
+    seq(new EflCatchMonSegment(2).withBufferSize(0));
+    seqUnbounded(new EflWalkToSegment(29, 10)); // go in grass
     seq(new EflEncounterSegment(0x64, Move.RIGHT)); // Jigglypuff
     seq(new EflCatchMonSegment(2));
 		seq(new EflWalkToSegment(59, -1, false)); // leave route 3

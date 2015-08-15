@@ -1,19 +1,10 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.glitchless;
 
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.OverworldInteract;
-import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.pokemon.EvolutionSegment;
 import mrwint.gbtasgen.segment.pokemon.PokecenterSegment;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.EndFightSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.InitFightSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.KillEnemyMonSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.KillEnemyMonSegment.EnemyMoveDesc;
-import mrwint.gbtasgen.segment.pokemon.fight.NewEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EncounterAndCatchSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -97,23 +88,23 @@ public class MtMoonNido extends SeqSegment {
 		seq(new MoveSegment(new OverworldInteract(7))); // grab fossil
 		seq(new SkipTextsSegment(1, true)); // grab fossil
 		seq(new SkipTextsSegment(1)); // got fossil
-		seq(new TextSegment(Move.B, true, 0)); // put fossil in bag
-		seq(new WalkToSegment(13,6).setMaxBufferSize(0)); // go upwards (avoid running into moved nerd)
+		seqUnbounded(new TextSegment(Move.B, true)); // put fossil in bag
+		seqUnbounded(new WalkToSegment(13,6)); // go upwards (avoid running into moved nerd)
 
 		{
-	    seq(new WalkToSegment(6,4).setMaxBufferSize(0)); // align
+		  seqUnbounded(new WalkToSegment(6,4)); // align
 	    seq(new EncounterAndCatchSegment(109, Move.LEFT)); // paras
 		}
 
-		seq(new WalkToSegment(5,7).setMaxBufferSize(0)); // go to MtMoon2
-		seq(new WalkToSegment(27,3).setMaxBufferSize(0)); // leave MtMoon
+		seqUnbounded(new WalkToSegment(5,7)); // go to MtMoon2
+		seqUnbounded(new WalkToSegment(27,3)); // leave MtMoon
 //
 		save("mm5");
 //		load("mm5");
 
-		seq(new WalkToSegment(76,9,false).setMaxBufferSize(0));
-		seq(new WalkToSegment(90,10).setMaxBufferSize(0)); // enter Cerulean
-		seq(new WalkToSegment(19,17).setMaxBufferSize(0)); // enter Center
+		seqUnbounded(new WalkToSegment(76,9,false));
+		seqUnbounded(new WalkToSegment(90,10)); // enter Cerulean
+		seqUnbounded(new WalkToSegment(19,17)); // enter Center
 		seq(new PokecenterSegment(true)); // set warp point in center
 		seq(new WalkToSegment(30,19)); // go to gym
 	}

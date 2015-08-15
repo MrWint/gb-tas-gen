@@ -19,7 +19,6 @@ public class Rival1FightRed extends SeqSegment {
 			kems.attackCount[0][0] = 2; // 2x scratch
 			kems.attackCount[0][1] = 2; // 2x scratch crit
 			kems.numExpGainers = 2; // level up to 6
-			kems.onlyPrintInfo = false;
 			seq(kems); // Squirtle
 		}
 

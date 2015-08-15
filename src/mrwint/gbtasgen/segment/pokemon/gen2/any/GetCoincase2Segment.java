@@ -97,7 +97,7 @@ public class GetCoincase2Segment implements Segment {
 		segments.add(new WalkToSegment(9, 11));	// face red
 		segments.add(new MoveSegment(new OverworldInteract()));	// engage red
 		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY)));		// talk
-		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY), 0, 1));		// talk
+		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY)));		// talk
 
 		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
 	}

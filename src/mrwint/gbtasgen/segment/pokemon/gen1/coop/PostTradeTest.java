@@ -21,9 +21,9 @@ public class PostTradeTest extends SeqSegment {
     seqEflButton(Move.A);
 
     seq(new EflWalkToSegment(4, 8, false)); // leave center
-    seq(new EflWalkToSegment(18, -1).setMaxBufferSize(0)); // leave viridian
-    seq(new EflWalkToSegment(8, 50).setMaxBufferSize(0)); // walk up to encounter
-    seq(new EflWalkToSegment(8, 49).setMaxBufferSize(0)); // walk up to encounter
+    seqUnbounded(new EflWalkToSegment(18, -1)); // leave viridian
+    seqUnbounded(new EflWalkToSegment(8, 50)); // walk up to encounter
+    seqUnbounded(new EflWalkToSegment(8, 49)); // walk up to encounter
     delayEfl(new SeqSegment() {
       @Override
       protected void execute() {

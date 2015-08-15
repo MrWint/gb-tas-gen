@@ -22,64 +22,64 @@ public class MtMoonBlue extends SeqSegment {
 
 	@Override
 	public void execute() {
-//		seq(new EflWalkToSegment(18,5));
-//
-//    seq(new EflWalkToSegment(33, 31).setBlockAllWarps(true)); // Rare Candy
-//    seq(new EflWalkToSegment(34, 31)); // Rare Candy
-//    seq(new MoveSegment(new EflOverworldInteract(10))); // collect Rare Candy
-//    seq(new EflTextSegment()); // found Rare Candy
-//
-//		seq(new EflWalkToSegment(17,11,false).setBlockAllWarps(true)); // l2
-//		seq(new EflWalkToSegment(17,11)); // l3
-//
-//		seq(new EflWalkToSegment(29,6));
-//		seqEflButton(Move.UP); // face item
-//		seq(new MoveSegment(new EflOverworldInteract(9))); // collect TM01
-//		seq(new EflTextSegment()); // found TM01
-//
-//    seqEflSkipInput(1);
-//		seqEflButton(Move.START);
-//		seqEflScroll(2);
-//		seqEflButton(Move.A); // items
-//		{ // learn TM01
-//			seqEflScrollAF(5);
-//			seqEflSkipInput(1);
-//			seqEflButton(Move.A); // use
-//			{
-//				seq(new EflSkipTextsSegment(2)); // booted up TM, contains xyz
-//				seq(new EflSkipTextsSegment(1, true)); // learn
-//	      seqEflSkipInput(1);
-//	      seqEflButton(Move.A); // select squirtle
-//        seq(new EflSkipTextsSegment(5)); // learned TM
-//        seq(new EflSkipTextsSegment(1, true)); // yes, overwrite
-//        seq(new EflTextSegment(Move.B));
-//        seqEflButton(Move.A); // tackle
-//        seq(new EflTextSegment()); // 1,2 and
-//        seqEflButton(Move.B); // skip 30f
-//        seq(new EflTextSegment()); // poof
-//        seqEflButton(Move.A); // skip 30f
-//        seqEflButton(Move.B);
-//        seq(new EflSkipTextsSegment(2)); // learned TM
-//        seq(new EflSkipTextsSegment(1, true)); // learned TM
-//			}
-//		}
-//    seqEflButton(Move.B);
-//    seqEflButton(Move.START);
-//		seq(new EflWalkToSegment(25,9));
-//		seq(new EflWalkToSegment(25,9));
-//
-//    seq(new EflWalkToSegment(4, 2).setBlockAllWarps(true)); // Moon Stone
-//    seq(new EflWalkToSegment(3, 2)); // Moon Stone
-//    seqMove(new EflOverworldInteract(9)); // Moon Stone
-//    seq(new EflTextSegment()); // Moon Stone
-//
-//		seq(new EflWalkToSegment(5, 5)); // go to MtMoon2
-//		seq(new EflWalkToSegment(21,17)); // go to MtMoon3
-//
-//    save("mm1");
+		seq(new EflWalkToSegment(18,5));
+
+    seq(new EflWalkToSegment(33, 31).setBlockAllWarps(true)); // Rare Candy
+    seq(new EflWalkToSegment(34, 31)); // Rare Candy
+    seq(new MoveSegment(new EflOverworldInteract(10))); // collect Rare Candy
+    seq(new EflTextSegment()); // found Rare Candy
+
+		seq(new EflWalkToSegment(17,11,false).setBlockAllWarps(true)); // l2
+		seq(new EflWalkToSegment(17,11)); // l3
+
+		seq(new EflWalkToSegment(29,6));
+		seqEflButton(Move.UP); // face item
+		seq(new MoveSegment(new EflOverworldInteract(9))); // collect TM01
+		seq(new EflTextSegment()); // found TM01
+
+    seqEflSkipInput(1);
+		seqEflButton(Move.START);
+		seqEflScroll(2);
+		seqEflButton(Move.A); // items
+		{ // learn TM01
+			seqEflScrollAF(5);
+			seqEflSkipInput(1);
+			seqEflButton(Move.A); // use
+			{
+				seq(new EflSkipTextsSegment(2)); // booted up TM, contains xyz
+				seq(new EflSkipTextsSegment(1, true)); // learn
+	      seqEflSkipInput(1);
+	      seqEflButton(Move.A); // select squirtle
+        seq(new EflSkipTextsSegment(5)); // learned TM
+        seq(new EflSkipTextsSegment(1, true)); // yes, overwrite
+        seq(new EflTextSegment(Move.B));
+        seqEflButton(Move.A); // tackle
+        seq(new EflTextSegment()); // 1,2 and
+        seqEflButton(Move.B); // skip 30f
+        seq(new EflTextSegment()); // poof
+        seqEflButton(Move.A); // skip 30f
+        seqEflButton(Move.B);
+        seq(new EflSkipTextsSegment(2)); // learned TM
+        seq(new EflSkipTextsSegment(1, true)); // learned TM
+			}
+		}
+    seqEflButton(Move.B);
+    seqEflButton(Move.START);
+		seq(new EflWalkToSegment(25,9));
+		seq(new EflWalkToSegment(25,9));
+
+    seq(new EflWalkToSegment(4, 2).setBlockAllWarps(true)); // Moon Stone
+    seq(new EflWalkToSegment(3, 2)); // Moon Stone
+    seqMove(new EflOverworldInteract(9)); // Moon Stone
+    seq(new EflTextSegment()); // Moon Stone
+
+		seq(new EflWalkToSegment(5, 5)); // go to MtMoon2
+		seq(new EflWalkToSegment(21,17)); // go to MtMoon3
+
+    save("mm1");
     load("mm1");
 
-    seq(new EflWalkToSegment(35, 14).setMaxBufferSize(0)); // go to encounter
+    seqUnbounded(new EflWalkToSegment(35, 14)); // go to encounter
     seq(new EflEncounterSegment(4, Move.RIGHT)); // Clefairy
     seq(new EflCatchMonSegment(2));
 

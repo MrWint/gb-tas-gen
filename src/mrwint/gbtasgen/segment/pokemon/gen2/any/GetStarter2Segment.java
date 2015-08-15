@@ -1,8 +1,5 @@
 package mrwint.gbtasgen.segment.pokemon.gen2.any;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mrwint.gbtasgen.metric.pokemon.gen2.Gen2CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
@@ -12,22 +9,18 @@ import mrwint.gbtasgen.segment.pokemon.gen2.common.NamingSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
-import mrwint.gbtasgen.segment.util.SequenceSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
-public class GetStarter2Segment implements Segment {
+public class GetStarter2Segment extends SeqSegment {
 
-	SequenceSegment sequence;
-
-	public GetStarter2Segment() {
-		List<Segment> segments = new ArrayList<Segment>();
-
-		segments.add(new SkipTextsSegment(2));
-		segments.add(new TextSegment(Move.A, true, 0)); // 3rd text
-		//segments.add(new MoveSegment(new SkipInput(0))); // move to next input frame
-		segments.add(new DelayMoveSegment(new PressButtonFactory(Move.B), new Segment() {
+	public void execute() {
+		seq(new SkipTextsSegment(2));
+		seqUnbounded(new TextSegment(Move.A, true)); // 3rd text
+		//seq(new MoveSegment(new SkipInput(0))); // move to next input frame
+		seq(new DelayMoveSegment(new PressButtonFactory(Move.B), new Segment() {
 			@Override
 			public StateBuffer execute(StateBuffer in) {
 //				in = new TextSegment(Move.A,true,0).execute(in);
@@ -38,25 +31,18 @@ public class GetStarter2Segment implements Segment {
 				return in;
 			}
 		}, 5, 10));
-		segments.add(new SkipTextsSegment(1));
+		seq(new SkipTextsSegment(1));
 
-		segments.add(new SkipTextsSegment(1, true)); // name it
-		segments.add(new NamingSegment("I"));
+		seq(new SkipTextsSegment(1, true)); // name it
+		seq(new NamingSegment("I"));
 		if(PokemonUtil.isCrystal())
-			segments.add(new SkipTextsSegment(11));
+			seq(new SkipTextsSegment(11));
 		else
-			segments.add(new SkipTextsSegment(9));
+			seq(new SkipTextsSegment(9));
 
-		segments.add(new WalkToSegment(4, 7));
-		segments.add(new WalkToSegment(4, 8, false));
-		segments.add(new SkipTextsSegment(7)); // talk to assistant
-		segments.add(new WalkToSegment(4, 12, false));
-
-		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
-	}
-
-	@Override
-	public StateBuffer execute(StateBuffer in) {
-		return sequence.execute(in);
+		seq(new WalkToSegment(4, 7));
+		seq(new WalkToSegment(4, 8, false));
+		seq(new SkipTextsSegment(7)); // talk to assistant
+		seq(new WalkToSegment(4, 12, false));
 	}
 }

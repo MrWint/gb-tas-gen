@@ -1,14 +1,13 @@
 package mrwint.gbtasgen.segment.pokemon.fight;
 
 import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
+
 import mrwint.gbtasgen.metric.StateResettingMetric;
-import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -39,7 +38,12 @@ public class EflCustomHitMetricSegment extends EflAttackActionSegment {
 		if(numEndTexts == 0)
 			return null;
 		if(noCheckAdditionalTexts)
-	    return new MoveSegment(new EflPressButton(Move.B));
+      return new SeqSegment() {
+        @Override
+        protected void execute() {
+          seqEflButtonUnboundedNoDelay(Move.B);
+        }
+      };
 		else
 		  return new SeqSegment() {
         @Override
@@ -51,26 +55,30 @@ public class EflCustomHitMetricSegment extends EflAttackActionSegment {
 	}
 
 	@Override
-	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
-		sb = new EflTextSegment(Move.A, 0).execute(sb); // player mon uses attack
+	public void executeInternal(int minValue) {
+		seqUnbounded(new EflTextSegment(Move.A)); // player mon uses attack
 //    System.out.println("EflHitMetricSegment: size=" + sb.size());
-		sb = new CheckMetricSegment(new EflCheckMoveDamage(isCrit, effectMiss, 0, minDamage, maxDamage, false),GREATER_EQUAL, minDamage, null).execute(sb);
+		seq(new CheckMetricSegment(new EflCheckMoveDamage(isCrit, effectMiss, 0, minDamage, maxDamage, false),GREATER_EQUAL, minDamage, null));
 		if (numEndTexts == 0 && !noCheckAdditionalTexts) // check for additional texts
-		  sb = new CheckMetricSegment(new StateResettingMetric() {
+		  seqMetric(new StateResettingMetric() {
         @Override
         public int getMetricInternal() {
           EflUtil.runFor(5, 0, 0);
           return new EflCheckAdditionalTexts().getMetricInternal();
         }
-      }).execute(sb);
+      });
 
-    sb = new EflSkipTextsSegment(numEndTexts - 1).execute(sb); // skip critical hit! messages
+    seq(new EflSkipTextsSegment(numEndTexts - 1)); // skip critical hit! messages
 		if(numEndTexts > 0) // skip last message if any
-			sb = new EflTextSegment().execute(sb); // critical hit! or very/not effective message
+			seq(new EflTextSegment()); // critical hit! or very/not effective message
 
-    for(State s : sb.getStates())
-      s.setAttributeInt(player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE, 0); // set 0 damage
-
-		return sb;
+		seq(new Segment() {
+      @Override
+      public StateBuffer execute(StateBuffer sb) {
+        for(State s : sb.getStates())
+          s.setAttributeInt(player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE, 0); // set 0 damage
+        return sb;
+      }
+    });
 	}
 }

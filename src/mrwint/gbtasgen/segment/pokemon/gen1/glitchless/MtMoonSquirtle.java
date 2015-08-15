@@ -134,12 +134,12 @@ public class MtMoonSquirtle extends SeqSegment {
 		save("mm5");
 //		load("mm5");
 
-    seq(new WalkToSegment(64, 9, false).setMaxBufferSize(0)); // hop into grass
-    seq(new WalkToSegment(64, 12).setMaxBufferSize(0)); // hop into grass
+		seqUnbounded(new WalkToSegment(64, 9, false)); // hop into grass
+		seqUnbounded(new WalkToSegment(64, 12)); // hop into grass
 
     EncounterAndCatchSegment.defaultBallIndex = 2; // TODO: fix to 1
 		seq(new EncounterAndCatchSegment(96, Move.DOWN)); // sandshrew
 
-		seq(new WalkToSegment(90,11).setMaxBufferSize(0)); // enter Cerulean
+		seqUnbounded(new WalkToSegment(90,11)); // enter Cerulean
 	}
 }

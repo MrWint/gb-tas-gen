@@ -552,7 +552,12 @@ public class EflKillEnemyMonSegment implements Segment {
 					imm = new MoveSegment(new EflPressButton(Move.B)).execute(imm);
 					imm = new EflTextSegment().execute(imm);
 				}
-				moveSegment = new MoveSegment(new EflPressButton(Move.B), 0, 0);
+				moveSegment = new SeqSegment() {
+	        @Override
+	        protected void execute() {
+	          seqEflButtonUnboundedNoDelay(Move.B);
+	        }
+	      };
 			}
 
 			// handle remaining finishing move, ensuring next enemy move

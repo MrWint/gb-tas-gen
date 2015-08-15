@@ -38,7 +38,7 @@ public class ChooseStarterRed extends SeqSegment {
 		seq(new EflSkipTextsSegment(1)); // energetic
 
     seq(new EflSkipTextsSegment(2)); // received! ; want to give a nick
-		seq(new EflTextSegment(Move.B, 0)); // to Charmander?
+		seqUnbounded(new EflTextSegment(Move.B)); // to Charmander?
     seqEflButtonUnbounded(Move.A); // (yes)
     seqEflButtonUnbounded(Move.LEFT); // I
     seqEflButtonUnbounded(Move.A, PressMetric.PRESSED); // "I"

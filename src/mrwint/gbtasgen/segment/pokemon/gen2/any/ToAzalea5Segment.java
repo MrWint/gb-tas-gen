@@ -18,6 +18,7 @@ import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -44,14 +45,12 @@ public class ToAzalea5Segment implements Segment {
 			segments.add(new MoveSegment(new PressButton(Move.RIGHT, Metric.PRESSED_JOY))); // balls
 			segments.add(new MoveSegment(new SkipInput(2))); // use
 			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // use
-			segments.add(new DelayMoveSegment(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new Segment() {
-
+			segments.add(new DelayMoveSegment(new PressButtonFactory(Move.A, Metric.PRESSED_JOY), new SeqSegment() {
 				@Override
-				public StateBuffer execute(StateBuffer in) {
-					in = new TextSegment(Move.A, false, 0).execute(in);
-					in = new CheckMetricSegment(new CheckCatchMonMetric()).execute(in);
-					in = new MoveSegment(new Wait(1), 0, 0).execute(in);
-					return in;
+				public void execute() {
+					seqUnbounded(new TextSegment(Move.A, false));
+					seqMetric(new CheckCatchMonMetric());
+					seqWait(1);
 				}
 			}));
 			segments.add(new SkipTextsSegment(3));					// skip caughttext

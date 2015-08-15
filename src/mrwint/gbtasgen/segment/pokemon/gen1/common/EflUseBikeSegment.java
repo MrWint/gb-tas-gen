@@ -22,8 +22,8 @@ public class EflUseBikeSegment extends SeqSegment {
 
 	@Override
 	public void execute() {
-	  seqEflButton(Move.START, PressMetric.PRESSED);
-	  seqEflScrollA(menuscroll);
+    seqEflButton(Move.START, PressMetric.PRESSED);
+    seqEflScrollA(menuscroll);
 		if (itemscroll == 0) {
 		  seqEflSkipInput(1);
 		  seqEflButton(Move.A);

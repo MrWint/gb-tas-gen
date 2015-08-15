@@ -18,9 +18,8 @@ public class EflNewEnemyMonSegment extends SeqSegment {
       delayEfl(new SeqSegment() {
         @Override
         protected void execute() {
-          // TODO Auto-generated method stub
           seqEflButtonUnboundedNoDelay(Move.B);
-          seq(new EflTextSegment(Move.A, 0)); // mon!
+          seqUnbounded(new EflTextSegment(Move.A)); // mon!
           seqMetric(EflKillEnemyMonSegment.CheckEnemyMoveMetric.noKeys(enemyInitialMove));
         }
       });

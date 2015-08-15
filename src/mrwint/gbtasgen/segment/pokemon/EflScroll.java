@@ -29,6 +29,8 @@ public class EflScroll extends SeqSegment {
 		int scrollMove = num > 0 ? Move.DOWN: Move.UP;
 		if (num < 0)
 			num = -num;
+		if (num == 0 && withMove != 0)
+      seqEflButtonNoDelay(withMove);
 		if(num > 0)
 		  seqEflButtonNoDelay(scrollMove | (num == 1 ? withMove : 0));
 		for (int i=1; i<num; i++) {
@@ -41,6 +43,8 @@ public class EflScroll extends SeqSegment {
 		int scrollMove = num > 0 ? Move.DOWN: Move.UP;
 		if (num < 0)
 			num = -num;
+    if (num == 0 && withMove != 0)
+      seqEflButtonNoDelay(withMove);
 		if(num > 0)
 		  seqEflButtonNoDelay(scrollMove | (num == 1 ? withMove : 0));
 		for (int i=1; i<num; i++)

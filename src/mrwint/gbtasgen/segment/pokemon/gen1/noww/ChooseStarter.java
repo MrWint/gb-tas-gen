@@ -4,9 +4,6 @@ import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.pokemon.gen1.Gen1CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.move.pokemon.ChangeOptionsMove;
-import mrwint.gbtasgen.move.pokemon.gen1.OverworldInteract;
-import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
@@ -65,10 +62,10 @@ public class ChooseStarter extends SeqSegment {
 		seq(new SplitSegment(new SeqSegment() {
 			@Override
 			protected void execute() {
-				seq(new TextSegment(Move.B, true, 0)); // to charmander?
-				seq(Segment.press(Move.A, 0)); // (yes)
+				seqUnbounded(new TextSegment(Move.B, true)); // to charmander?
+				seqUnbounded(Segment.press(Move.A)); // (yes)
 //				seq(new SkipTextsSegment(1, true)); // to charmander (yes)
-				seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY), 0, 0)); // "A"
+				seqUnbounded(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY), 0)); // "A"
 //				seq(Segment.press(Move.START)); // name it "A"
 				seq(new DelayMoveSegment(new PressButtonFactory(Move.START), new CheckMetricSegment(new Gen1CheckDVMetric(0, 0, 0, 0, 15, 0x1024))).withMaxDelay(90));
 			}

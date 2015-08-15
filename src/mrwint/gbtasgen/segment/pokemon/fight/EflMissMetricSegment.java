@@ -2,12 +2,10 @@ package mrwint.gbtasgen.segment.pokemon.fight;
 
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.pokemon.CheckAttackMisses;
-import mrwint.gbtasgen.move.EflPressButton;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
-import mrwint.gbtasgen.segment.util.CheckMetricSegment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
@@ -26,21 +24,31 @@ public class EflMissMetricSegment extends EflAttackActionSegment {
 	}
 
 	@Override
-	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
-		sb = new EflTextSegment(Move.A, 0).execute(sb); // enemy uses attack (unbounded buffer)
-		sb = new CheckMetricSegment(moveMetric).execute(sb);
+	public void executeInternal(int minValue) {
+		seqUnbounded(new EflTextSegment(Move.A)); // enemy uses attack (unbounded buffer)
+		seqMetric(moveMetric);
 //		sb = new MoveSegment(new Wait(1)).execute(sb); // skip last frame of text box
-		sb = new EflTextSegment().execute(sb); // "but it misses"
+		seq(new EflTextSegment()); // "but it misses"
 
-		for(State s : sb.getStates())
-			s.setAttributeInt(player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE, 0); // set 0 damage
-
-		return sb;
+		seq(new Segment() {
+      
+      @Override
+      public StateBuffer execute(StateBuffer sb) {
+        for(State s : sb.getStates())
+          s.setAttributeInt(player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE, 0); // set 0 damage
+        return sb;
+      }
+    });
 	}
 
 	@Override
 	public Segment getFinishSegment() {
-		return new MoveSegment(new EflPressButton(Move.B), 0, 0);
+    return new SeqSegment() {
+      @Override
+      protected void execute() {
+        seqEflButtonUnboundedNoDelay(Move.B);
+      }
+    };
 	}
 
 }

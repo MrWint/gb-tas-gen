@@ -44,7 +44,7 @@ public class RivalFight extends SeqSegment {
 				protected void execute() {
 					seqMetric(new CheckMoveOrderMetric(true, new int[]{33}, Move.A));
 					seqButton(Move.A);
-					seq(new TextSegment(Move.A, false, 0));
+					seqUnbounded(new TextSegment(Move.A, false));
 					seqMetric(new Metric() {
 						@Override
 						public int getMetric() {
@@ -60,7 +60,7 @@ public class RivalFight extends SeqSegment {
 				@Override
 				protected void execute() {
 					seqButton(Move.B);
-					seq(new TextSegment(Move.A, false, 0));
+					seqUnbounded(new TextSegment(Move.A, false));
 					seqMetric(new CheckMoveDamage(false, false, true, false, false, false, 0), GREATER_EQUAL, last ? 4 : 5);
 					seqMove(new Wait(1));
 				}

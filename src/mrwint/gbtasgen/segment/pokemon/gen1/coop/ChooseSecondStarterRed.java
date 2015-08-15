@@ -4,7 +4,6 @@ import mrwint.gbtasgen.metric.pokemon.gen1.Gen1CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.EflChangeOptionsMove;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
-import mrwint.gbtasgen.move.pokemon.gen1.EflWalkStep;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
@@ -38,7 +37,7 @@ public class ChooseSecondStarterRed extends SeqSegment {
 		seq(new EflSkipTextsSegment(1)); // energetic
 
     seq(new EflSkipTextsSegment(2)); // received! ; want to give a nick
-		seq(new EflTextSegment(Move.B, 0)); // to Bulbasaur?
+		seqUnbounded(new EflTextSegment(Move.B)); // to Bulbasaur?
     seqEflButtonUnbounded(Move.A); // (yes)
     seqEflButtonUnbounded(Move.LEFT); // I
     seqEflButtonUnbounded(Move.A, PressMetric.PRESSED); // "I"

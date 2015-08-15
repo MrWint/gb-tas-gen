@@ -109,7 +109,8 @@ public abstract class PokemonRomInfo extends RomInfo {
 	// Gen 1
 	public int fightBattleMonIndex;
 	public int thrashNumTurnsAddress;
-	public int numPartyMonAddress;
+  public int numPartyMonAddress;
+  public int numItemsAddress;
 
 	public int fightEnemyMonSpeciesAddress;
 	public int fightEnemyMonLevelAddress;
@@ -142,13 +143,18 @@ public abstract class PokemonRomInfo extends RomInfo {
 	public int[] fightAIMoveCheck;
 	public int fightAIExecuteMove;
 
+  public int fightObedienceBefore;
+  public int fightObedienceAfter;
+  public int fightMonIsDisobedient;
 
 	// lists
+	public int listMonNamesAddress;
 	public int listMoveNamesAddress;
 	public int listMovesAddress;
 	public int listMovesEntryLength;
 	public int listTypeNamesAddress;
-	public int listTypeMatchupAddress;
+  public int listTypeMatchupAddress;
+  public int listItemNamesAddress;
 
 	public int rngAddress;
 }

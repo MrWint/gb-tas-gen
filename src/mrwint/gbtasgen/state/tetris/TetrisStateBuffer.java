@@ -18,15 +18,9 @@ import mrwint.gbtasgen.util.Util;
 public class TetrisStateBuffer {
 
   public Map<Short, StateBuffer> stateBufferMap;
-  public int maxBufferSize;
 
   public TetrisStateBuffer() {
-    this(StateBuffer.MAX_BUFFER_SIZE);
-  }
-
-  public TetrisStateBuffer(int maxBufferSize) {
     this.stateBufferMap = new TreeMap<Short,StateBuffer>();
-    this.maxBufferSize = maxBufferSize;
   }
 
   public static short getNextPieces(Gameboy gb, State s) {
@@ -45,7 +39,7 @@ public class TetrisStateBuffer {
 
   public boolean addState(State s, short nextPieces) {
     if (!stateBufferMap.containsKey(nextPieces))
-      stateBufferMap.put(nextPieces, new StateBuffer(maxBufferSize));
+      stateBufferMap.put(nextPieces, new StateBuffer());
     return stateBufferMap.get(nextPieces).addState(s);
   }
 
@@ -87,7 +81,6 @@ public class TetrisStateBuffer {
 
   public void save(ObjectOutputStream oos) {
     try {
-      oos.writeInt(maxBufferSize);
       oos.writeInt(stateBufferMap.size());
       for(Entry<Short, StateBuffer> e : stateBufferMap.entrySet()) {
         oos.writeShort(e.getKey());
@@ -115,8 +108,7 @@ public class TetrisStateBuffer {
 
   public static TetrisStateBuffer load(ObjectInputStream ois) {
     try {
-      int maxBufferSize = ois.readInt();
-      TetrisStateBuffer ret = new TetrisStateBuffer(maxBufferSize);
+      TetrisStateBuffer ret = new TetrisStateBuffer();
       int len = ois.readInt();
       for(int i=0;i<len;i++) {
         short nextPieces = ois.readShort();

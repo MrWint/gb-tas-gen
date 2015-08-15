@@ -39,16 +39,32 @@ public class PrepareEeveeTradeBlue extends SeqSegment {
     seq(new EflSkipTextsSegment(6));
     seq(new EflSkipTextsSegment(1, true)); // hear about mon
     seq(new EflSkipTextsSegment(25));
-    {
+//    {
+//      seqEflButton(Move.START, PressMetric.PRESSED);
+//      seqEflScrollA(1); // items
+//      seqEflScrollFastAF(2); // escape rope
+//      seqEflSkipInput(1);
+//      seqEflButton(Move.A); // use
+//    }
+//    seqEflSkipInput(2);
+    seq(new EflWalkToSegment(2, 6));
+    seq(new EflWalkToSegment(2, 8, false)); // leave house
+
+    seq(new EflWalkToSegment(11, 3)); // enter center
+//    seq(new EflWalkToSegment(19, 17)); // enter center
+    
+    { // TODO: inline
       seqEflButton(Move.START, PressMetric.PRESSED);
       seqEflScrollA(1); // items
-      seqEflScrollFastAF(2); // escape rope
+      seqEflScrollAF(4+1); // moon stone
       seqEflSkipInput(1);
       seqEflButton(Move.A); // use
+      seqEflScrollAF(-3); // clefairy
+      seq(new EflEvolutionSegment());
+      seqEflButton(Move.B); // close
+      seqEflButton(Move.START); // close
     }
-    seqEflSkipInput(2);
-
-    seq(new EflWalkToSegment(19, 17)); // enter center
+    
     seq(new EflWalkToSegment(11, 4)); // cable club
     seq(new EflWalkToSegment(11, 3)); // cable club
 	}

@@ -14,15 +14,38 @@ import java.util.TreeMap;
 
 public class StateBuffer {
 
-  public static StateMetric STATE_METRIC = StateMetric.DSum;
-  public static boolean SQUAREROOT_GROWTH = true;
-  public static Decider DECIDER = Decider.SUM;
-  public static SecondaryDecider SECONDARY_DECIDER = SecondaryDecider.OCD;
+  public static final StateMetric STATE_METRIC = StateMetric.DSum;
+  public static final boolean SQUAREROOT_GROWTH = true;
+  public static final Decider DECIDER = Decider.SUM;
+  public static final SecondaryDecider SECONDARY_DECIDER = SecondaryDecider.OCD;
 
-  public static final int MAX_BUFFER_SIZE = 1;//128;
-  public static final int MAX_BUFFER_SIZE_HARDLIMIT = 128; //128;
+  private static final int MAX_BUFFER_SIZE = 1;//128;
+  private static final int MAX_BUFFER_SIZE_HARDLIMIT = 128; //128;
   public static final boolean BOUNDED_USE_MAPS = true;
   public static final boolean UNBOUNDED_USE_MAPS = true;
+  
+  private static int curBufferSize = MAX_BUFFER_SIZE;
+  private static ArrayList<Integer> bufferSizeStack = new ArrayList<>();
+  
+  public static void pushBufferSize(int size) {
+    bufferSizeStack.add(size);
+    recalcBufferSize();
+  }
+  public static void popBufferSize() {
+    bufferSizeStack.remove(bufferSizeStack.size()-1);
+    recalcBufferSize();
+  }
+  private static void recalcBufferSize() {
+    curBufferSize = MAX_BUFFER_SIZE;
+    for (Integer minSize : bufferSizeStack) {
+      if (curBufferSize > 0) {
+        if (minSize <= 0)
+          curBufferSize = 0;
+        else
+          curBufferSize = Math.max(minSize, curBufferSize);
+      }
+    }
+  }
 
   public enum StateMetric {
     DSum,
@@ -196,7 +219,7 @@ public class StateBuffer {
   private boolean useList;
 
   public StateBuffer() {
-    this(MAX_BUFFER_SIZE);
+    this(curBufferSize);
   }
 
   public StateBuffer(int maxBufferSize) {

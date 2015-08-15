@@ -18,27 +18,25 @@ public class ViridianForestBlue extends SeqSegment {
 
 	@Override
 	public void execute() {
-//		seq(new EflWalkToSegment(18, -1).setMaxBufferSize(0)); // leave viridian
-//    seq(new EflWalkToSegment(6, 50).setMaxBufferSize(0)); // walk up to encounter
-//    seq(new EflWalkToSegment(7, 50).setMaxBufferSize(0)); // walk up to encounter
-//    delayEfl(new SeqSegment() {
-//      @Override
-//      protected void execute() {
-//        seqEflButtonUnboundedNoDelay(Move.RIGHT);
-//        seqMetric(new CheckEncounterMetric(165 /* Rattata */, 2));
-//      }
-//    });
-//    seq(new EflSkipTextsSegment(1)); // wild rattata
-//    seq(new EflTextSegment()); // go
-//    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-//      kems.attackCount[0][0] = 2; // 2x tackle
-//      kems.numExpGainers = 1; // no level up
-//      kems.onlyPrintInfo = false;
-//      seq(kems); // Rattata
-//    }
-//    save("vf1");
+		seqUnbounded(new EflWalkToSegment(18, -1)); // leave viridian
+		seqUnbounded(new EflWalkToSegment(6, 50)); // walk up to encounter
+		seqUnbounded(new EflWalkToSegment(7, 50)); // walk up to encounter
+    delayEfl(new SeqSegment() {
+      @Override
+      protected void execute() {
+        seqEflButtonUnboundedNoDelay(Move.RIGHT);
+        seqMetric(new CheckEncounterMetric(165 /* Rattata */, 2));
+      }
+    });
+    seq(new EflSkipTextsSegment(1)); // wild rattata
+    seq(new EflTextSegment()); // go
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+      kems.attackCount[0][0] = 2; // 2x tackle
+      seq(kems); // Rattata
+    }
+    save("vf1");
     load("vf1");
 
 		seq(new EflWalkToSegment(3, 43)); // enter viridian forest house

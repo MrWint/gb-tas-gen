@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.segment.pokemon;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
@@ -22,33 +23,27 @@ public class TextSegment implements Segment {
 	}
 
 	public TextSegment(int skipMove, boolean finishLastFrame) {
-		this(skipMove,finishLastFrame,StateBuffer.MAX_BUFFER_SIZE);
-	}
-
-	public TextSegment(int skipMove, boolean finishLastFrame, int bufferSize) {
     EflUtil.assertNoEfl();
 
     this.skipMove = skipMove;
 		this.finishLastFrame = finishLastFrame;
-		this.bufferSize = bufferSize;
 	}
 
 	private int textSpeed;
 	private boolean textSpeedInit = false;
-	private int bufferSize;
 
 	@Override
 	public StateBuffer execute(StateBuffer in) {
-		StateBuffer curBuffer = new StateBuffer(bufferSize);
+		StateBuffer curBuffer = new StateBuffer();
 		for(State s : in.getStates())
 			skipToStart(curBuffer, s);
 
-		StateBuffer goalBuffer = new StateBuffer(bufferSize);
+		StateBuffer goalBuffer = new StateBuffer();
 
 		boolean first = true;
 
 		while(!curBuffer.isEmpty()) {
-			StateBuffer nextBuffer = new StateBuffer(bufferSize);
+			StateBuffer nextBuffer = new StateBuffer();
 
 			for(State s : curBuffer.getStates())
 				progress(s, nextBuffer, goalBuffer, first);

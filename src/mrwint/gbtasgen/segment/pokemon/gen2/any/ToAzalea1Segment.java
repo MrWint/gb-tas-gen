@@ -1,8 +1,5 @@
 package mrwint.gbtasgen.segment.pokemon.gen2.any;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.pokemon.gen2.Gen2CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
@@ -16,104 +13,100 @@ import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.MoveSegment;
-import mrwint.gbtasgen.segment.util.SequenceSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 
-public class ToAzalea1Segment implements Segment {
+public class ToAzalea1Segment extends SeqSegment {
 
-	SequenceSegment sequence;
+	public void execute() {
+		seq(new WalkToSegment(4, 5));			// align
+		seq(new WalkToSegment(5, 16, false));	// leave arena
 
-	public ToAzalea1Segment() {
-		List<Segment> segments = new ArrayList<Segment>();
-
-		segments.add(new WalkToSegment(4, 5));			// align
-		segments.add(new WalkToSegment(5, 16, false));	// leave arena
-
-		segments.add(new SkipTextsSegment(5));			// elm phone
+		seq(new SkipTextsSegment(5));			// elm phone
 		for(int i=0;i<4;i++)
-			segments.add(new TextSegment());			// click, ..., ..., ...
+			seq(new TextSegment());			// click, ..., ..., ...
 
-		segments.add(new WalkToSegment(31, 25, false));	// enter center
+		seq(new WalkToSegment(31, 25, false));	// enter center
 //		{
-//			segments.add(new WalkToSegment(3, 3));			// align
-//			segments.add(new MoveSegment(new PressButton(Move.RIGHT)));
-//			segments.add(new MoveSegment(new PressButton(Move.RIGHT)));
-//			segments.add(new MoveSegment(new OverworldInteract()));	// talk to assistant
-//			segments.add(new SkipTextsSegment(3));
-//			segments.add(new SkipTextsSegment(1,true)); // take egg
-//			segments.add(new TextSegment()); 			// received egg
-//			segments.add(new SkipTextsSegment(8));
+//			seq(new WalkToSegment(3, 3));			// align
+//			seq(new MoveSegment(new PressButton(Move.RIGHT)));
+//			seq(new MoveSegment(new PressButton(Move.RIGHT)));
+//			seq(new MoveSegment(new OverworldInteract()));	// talk to assistant
+//			seq(new SkipTextsSegment(3));
+//			seq(new SkipTextsSegment(1,true)); // take egg
+//			seq(new TextSegment()); 			// received egg
+//			seq(new SkipTextsSegment(8));
 //		}
 
-		segments.add(new WalkToSegment(9, 3));			// align
-		segments.add(new WalkToSegment(9, 2));			// face PC
-		segments.add(new MoveSegment(new OverworldInteract()));
-		segments.add(new SkipTextsSegment(1)); // accessed pc
-		segments.add(new MoveSegment(new PressButton(Move.A)));
-		segments.add(new SkipTextsSegment(2)); // bills pc
-		segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY)));
-		segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY)));
-		segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // change box
+		seq(new WalkToSegment(9, 3));			// align
+		seq(new WalkToSegment(9, 2));			// face PC
+		seq(new MoveSegment(new OverworldInteract()));
+		seq(new SkipTextsSegment(1)); // accessed pc
+		seq(new MoveSegment(new PressButton(Move.A)));
+		seq(new SkipTextsSegment(2)); // bills pc
+		seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY)));
+		seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY)));
+		seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // change box
 		{
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 6
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 7
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 8
-			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 8
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
-			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
-			segments.add(new NamingSegment("ªe4g9µª2", true));
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 6
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 7
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 8
+			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 8
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
+			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
+			seq(new NamingSegment("ªe4g9µª2", true));
 		}
 		{
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 6
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 7
-			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 7
-			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
-			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
-			segments.add(new NamingSegment("k€72kªł*", true));
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 6
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 7
+			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 7
+			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
+			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
+			seq(new NamingSegment("k€72kªł*", true));
 		}
 //		{
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 6
-//			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 6
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
-//			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
-//			segments.add(new NamingSegment("T€22T€72", true));
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 6
+//			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 6
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
+//			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
+//			seq(new NamingSegment("T€22T€72", true));
 //		}
 //		{
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
-//			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 5
-//			segments.add(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
-//			segments.add(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
-//			segments.add(new NamingSegment("„O€12Diª", true));
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 2
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 3
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 4
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // box 5
+//			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // box 5
+//			seq(new MoveSegment(new PressButton(Move.DOWN, Metric.PRESSED_JOY))); // name
+//			seq(new MoveSegment(new PressButton(Move.A, Metric.PRESSED_JOY))); // name
+//			seq(new NamingSegment("„O€12Diª", true));
 //		}
-		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY))); // back
-		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY))); // back
-		segments.add(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY))); // back
+		seq(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY))); // back
+		seq(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY))); // back
+		seq(new MoveSegment(new PressButton(Move.B, Metric.PRESSED_JOY))); // back
 
 		{
-			segments.add(new WalkToSegment(5, 3));			// align
-			segments.add(new MoveSegment(new OverworldInteract()));	// talk to assistant
-			segments.add(new SkipTextsSegment(3));
+			seq(new WalkToSegment(5, 3));			// align
+			seq(new MoveSegment(new OverworldInteract()));	// talk to assistant
+			seq(new SkipTextsSegment(3));
 
-			segments.add(new TextSegment(Move.B, true, 0)); // 3rd text
-			//segments.add(new MoveSegment(new SkipInput(0))); // move to next input frame
-			segments.add(new DelayMoveSegment(new PressButtonFactory(Move.A), new Segment() {
+			seqUnbounded(new TextSegment(Move.B, true)); // 3rd text
+			//seq(new MoveSegment(new SkipInput(0))); // move to next input frame
+			seq(new DelayMoveSegment(new PressButtonFactory(Move.A), new Segment() {
 				@Override
 				public StateBuffer execute(StateBuffer in) {
 					in = new CheckMetricSegment(new Gen2CheckDVMetric(0/*Move.B*/, 0, 0, 0, 0,
@@ -130,26 +123,19 @@ public class ToAzalea1Segment implements Segment {
 					return in;
 				}
 			}, 5, 10));
-			segments.add(new TextSegment()); 			// received egg
-			segments.add(new SkipTextsSegment(8));
+			seq(new TextSegment()); 			// received egg
+			seq(new SkipTextsSegment(8));
 		}
 
-		segments.add(new WalkToSegment(4, 6));					// align
-		segments.add(new WalkToSegment(4, 8, false));			// exit center
+		seq(new WalkToSegment(4, 6));					// align
+		seq(new WalkToSegment(4, 8, false));			// exit center
 
-		segments.add(new WalkToSegment(14, 36));				// violet -> route32
+		seq(new WalkToSegment(14, 36));				// violet -> route32
 
 		if(!PokemonUtil.isCrystal()) {
-			segments.add(new WalkToSegment(15, 23));				// align
-			segments.add(new WalkToSegment(14, 23));				// face youngster albert
-			segments.add(new MoveSegment(new OverworldInteract()));	// engage youngster albert
+			seq(new WalkToSegment(15, 23));				// align
+			seq(new WalkToSegment(14, 23));				// face youngster albert
+			seq(new MoveSegment(new OverworldInteract()));	// engage youngster albert
 		}
-
-		sequence = new SequenceSegment(segments.toArray(new Segment[0]));
-	}
-
-	@Override
-	public StateBuffer execute(StateBuffer in) {
-		return sequence.execute(in);
 	}
 }

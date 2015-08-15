@@ -44,10 +44,10 @@ public class ChooseStarter extends SeqSegment {
 
 		seq(new TextSegment(Move.B));
 		seq(new SkipTextsSegment(1)); // want to give a nick
-		seq(new TextSegment(Move.B, true, 0)); // to charmander?
-		seq(Segment.press(Move.A, 0)); // (yes)
+		seqUnbounded(new TextSegment(Move.B, true)); // to charmander?
+		seqUnbounded(Segment.press(Move.A)); // (yes)
 //		seq(new SkipTextsSegment(1, true)); // to charmander (yes)
-		seq(Segment.press(Move.A, 0)); // "A"
+		seqUnbounded(Segment.press(Move.A)); // "A"
 //		seq(Segment.press(Move.START)); // name it "A"
 		seq(new DelayMoveSegment(new PressButtonFactory(Move.START), new CheckMetricSegment(new Gen1CheckDVMetric(14, 0, 15, 14, 15))));
 

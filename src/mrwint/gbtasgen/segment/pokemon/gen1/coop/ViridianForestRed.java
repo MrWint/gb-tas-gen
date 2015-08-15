@@ -29,7 +29,6 @@ public class ViridianForestRed extends SeqSegment {
       kems.attackCount[0][0] = 1; // 1x scratch
       kems.attackCount[0][1] = 2; // 2x scratch crit
       kems.numExpGainers = 2; // level up to 7
-      kems.onlyPrintInfo = false;
       seq(kems); // Weedle
     }
     save("tmp");
@@ -41,7 +40,6 @@ public class ViridianForestRed extends SeqSegment {
       kems.attackCount[0][0] = 1; // 1x scratch
       kems.attackCount[0][1] = 2; // 2x scratch crit
       kems.numExpGainers = 2; // level up to 8
-      kems.onlyPrintInfo = false;
       seq(kems); // Caterpie
     }
     save("tmp2");
@@ -58,7 +56,6 @@ public class ViridianForestRed extends SeqSegment {
       kems.attackCount[0][0] = 1; // 1x scratch
       kems.attackCount[0][1] = 2; // 2x scratch crit
 			kems.numExpGainers = 3; // level up to 9, learn ember
-			kems.onlyPrintInfo = false;
 			seq(kems); // Weedle
 		}
 		seq(new EflEndFightSegment(2)); // player defeated enemy

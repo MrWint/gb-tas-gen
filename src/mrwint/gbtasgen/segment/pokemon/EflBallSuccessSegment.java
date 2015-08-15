@@ -12,7 +12,7 @@ public class EflBallSuccessSegment extends EflDelayMoveSegment {
       @Override
       protected void execute() {
         seqEflButtonUnboundedNoDelay(Move.A); // use ball
-        seq(new EflTextSegment(Move.A, 0)); // used ball
+        seqUnbounded(new EflTextSegment(Move.A)); // used ball
         seqMetric(new CheckCatchMonMetric()); // check catch
       }
     });

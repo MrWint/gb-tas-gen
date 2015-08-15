@@ -19,8 +19,8 @@ public class ViridianForestSquirtle extends SeqSegment {
 	@Override
 	public void execute() {
 		seq(new WalkToSegment(18, -1)); // leave viridian
-    seq(new WalkToSegment(4, 51).setMaxBufferSize(0)); // walk up to encounter
-    seq(new WalkToSegment(6, 51).setMaxBufferSize(0)); // walk up to encounter
+		seqUnbounded(new WalkToSegment(4, 51)); // walk up to encounter
+		seqUnbounded(new WalkToSegment(6, 51)); // walk up to encounter
     delay(new SeqSegment() {
       @Override
       protected void execute() {

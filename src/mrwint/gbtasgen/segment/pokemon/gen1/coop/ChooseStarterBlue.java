@@ -36,7 +36,7 @@ public class ChooseStarterBlue extends SeqSegment {
 		seq(new EflSkipTextsSegment(1)); // energetic
 
     seq(new EflSkipTextsSegment(2)); // received! ; want to give a nick
-		seq(new EflTextSegment(Move.B, 0)); // to Squirtle?
+		seqUnbounded(new EflTextSegment(Move.B)); // to Squirtle?
 		seqEflButtonUnbounded(Move.A); // (yes)
     seqEflButtonUnbounded(Move.A, PressMetric.PRESSED); // "A"
     delayEfl(new SeqSegment() {

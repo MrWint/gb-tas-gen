@@ -40,6 +40,29 @@ public class PokemonUtil {
 	public static String getStringFromPointerList(int startAdd, int skips) {
 		return getString(Util.getRomPointerAddressLE(startAdd+2*skips));
 	}
+	
+  public static String getMoveName(int move) {
+    return getStringFromList(curGb.pokemon.listMoveNamesAddress, move-1);
+  }
+
+  public static String getMonName(int mon) {
+    int address = curGb.pokemon.listMonNamesAddress + (mon-1) * 10;
+    String ret = "";
+    for (int i = 0; i < 10; i++) {
+      char c = charConversionTable.charAt(curGb.getROM()[address++]);
+      if(c == '@') break;
+      ret += c;
+    }
+    return ret;
+  }
+
+  public static String getItemName(int item) {
+    if (item < 0xc4)
+      return getStringFromList(curGb.pokemon.listItemNamesAddress, item-1);
+    if (item < 0xc9)
+      return "HM" + (item - 0xc3);
+    return "TM" + (item - 0xc8);
+  }
 
 	public static boolean isCrystal() {
 		return curGb.pokemon.type == PokemonRomInfo.CRYSTAL;

@@ -19,7 +19,6 @@ public class Rival1FightBlue extends SeqSegment {
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 45)}; // growl
       kems.attackCount[0][0] = 4; // 4x tackle
       kems.numExpGainers = 2; // level up to 6
-      kems.onlyPrintInfo = false;
       seq(kems); // Bulbasaur
     }
 

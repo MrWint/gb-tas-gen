@@ -35,10 +35,10 @@ public class ThrashEnemyMonSegment extends SeqSegment {
 			@Override
 			protected void execute() {
 				seqButton(Move.B); // continue text
-				seq(new TextSegment(Move.A, false, 0)); // sent out new mon
+				seqUnbounded(new TextSegment(Move.A, false)); // sent out new mon
 				seqMetric(new CheckMoveOrderMetric(true, new int[0], 0));
-				seq(new MoveSegment(new Wait(1), 0, 0)); // finish text frame
-				seq(new TextSegment(Move.A, false, 0)); // thrashing about
+				seqUnbounded(new MoveSegment(new Wait(1), 0)); // finish text frame
+				seqUnbounded(new TextSegment(Move.A, false)); // thrashing about
 				seqMetric(new CheckMoveDamage(crit, false, !crit, false, false, false, 0), GREATER_EQUAL, minDmg);
 				seq(Segment.wait(1)); // finish text frame
 			}

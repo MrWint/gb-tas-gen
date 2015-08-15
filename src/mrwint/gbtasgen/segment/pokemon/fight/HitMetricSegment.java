@@ -13,6 +13,7 @@ import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayUntilFactory;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayableMoveFactory;
 import mrwint.gbtasgen.segment.util.DelayMoveSegment.PressButtonFactory;
 import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.UnboundedSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class HitMetricSegment extends AttackActionSegment {
@@ -50,9 +51,9 @@ public class HitMetricSegment extends AttackActionSegment {
 
 	@Override
 	public StateBuffer executeInternal(StateBuffer sb, int minValue) {
-		sb = new TextSegment(Move.A,false,0).execute(sb); // player mon uses attack
+		sb = new UnboundedSegment(new TextSegment(Move.A,false)).execute(sb); // player mon uses attack
 		sb = new CheckMetricSegment(new CheckMoveDamage(isCrit, effectMiss, numEndTexts == 0, false, !player, ignoreDamage, thrashAdditionalTurns),GREATER_EQUAL,ignoreDamage ? 0 : minValue,player ? KillEnemyMonSegment.PLAYER_ATTRIBUTE : KillEnemyMonSegment.ENEMY_ATTRIBUTE).execute(sb);
-		sb = new MoveSegment(new Wait(1), 0, 0).execute(sb); // skip last frame of text box
+		sb = new UnboundedSegment(new MoveSegment(new Wait(1), 0)).execute(sb); // skip last frame of text box
 
 		for(int i=0;i<numEndTexts-1;i++) { // skip messages
 			sb = new TextSegment().execute(sb); // critical hit! message

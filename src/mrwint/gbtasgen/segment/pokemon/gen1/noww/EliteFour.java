@@ -100,7 +100,7 @@ public class EliteFour extends SeqSegment {
 				@Override
 				protected void execute() {
 				  seqButton(Move.B); // continue text
-					seq(new TextSegment(Move.A, false, 0)); // sent out new mon
+					seqUnbounded(new TextSegment(Move.A, false)); // sent out new mon
 					seqMetric(new CheckMoveOrderMetric(true, new int[] {21}, 0));
 					seq(Segment.wait(1)); // finish text frame
 					seq(new TextSegment(Move.A, false)); // thrashing about
@@ -118,7 +118,7 @@ public class EliteFour extends SeqSegment {
 //					seq(new CheckNoAIMove(Move.B));
 				  seqButton(Move.B); // continue text
 //					seq(new CheckNoAIMove(0));
-					seq(new TextSegment(Move.A, false, 0)); // onix used slam
+					seqUnbounded(new TextSegment(Move.A, false)); // onix used slam
 					seqMetric(new CheckNoAIMove2());
 					seqMetric(new CheckAttackMisses());
 					seq(Segment.wait(1)); // finish text frame
@@ -130,7 +130,7 @@ public class EliteFour extends SeqSegment {
 				@Override
 				protected void execute() {
 					seqButton(Move.B); // continue text
-					seq(new TextSegment(Move.A, false, 0)); // thrashing about
+					seqUnbounded(new TextSegment(Move.A, false)); // thrashing about
 					seqMetric(new CheckMoveDamage(true, false, false, false, false, false, 0), GREATER_EQUAL, 74);
 					seq(Segment.wait(1)); // finish text frame
 				}

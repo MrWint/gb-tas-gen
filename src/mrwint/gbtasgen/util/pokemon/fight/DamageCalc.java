@@ -45,7 +45,7 @@ public class DamageCalc {
 
 		int move = getMove(player,moveNum);
 		if(debugPrint)
-			System.out.println((player?"Own":"Enemy")+" move "+(moveNum+1)+": "+(move == 0 ? "(not present)" : PokemonUtil.getStringFromList(curGb.pokemon.listMoveNamesAddress, move-1) + "("+move+")"));
+			System.out.println((player?"Own":"Enemy")+" move "+(moveNum+1)+": "+(move == 0 ? "(not present)" : PokemonUtil.getMoveName(move) + "("+move+")"));
 		if(move <= 0)
 			return -1;
 		int baseDmg = curGb.getROM()[curGb.pokemon.listMovesAddress + (move-1)*curGb.pokemon.listMovesEntryLength + 2];

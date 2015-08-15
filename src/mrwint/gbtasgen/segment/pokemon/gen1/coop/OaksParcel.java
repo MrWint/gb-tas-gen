@@ -13,7 +13,9 @@ public class OaksParcel extends SeqSegment {
 	public void execute() {
 		seq(new EflWalkToSegment(5, 12, false)); // leave oaks lab
 		seq(new EflWalkToSegment(10, -1)); // walk out of town
-		seq(new EflWalkToSegment(10, -1).setMaxBufferSize(Math.max(StateBuffer.MAX_BUFFER_SIZE, 15))); // walk out to viridian
+    StateBuffer.pushBufferSize(15);
+		seq(new EflWalkToSegment(10, -1)); // walk out to viridian
+    StateBuffer.popBufferSize();
 		seq(new EflWalkToSegment(29, 19)); // walk into mart
 		seq(new EflSkipTextsSegment(5)); // take parcel
 		seq(new EflWalkToSegment(3, 8, false)); // walk outside
@@ -32,6 +34,8 @@ public class OaksParcel extends SeqSegment {
 		seq(new EflWalkToSegment(4, 12, false)); // leave oaks lab
 		//seq(new WalkToSegment(5, 12, false)); // leave oaks lab
 		seq(new EflWalkToSegment(10, -1)); // leave pallet town
-		seq(new EflWalkToSegment(10, -1).setMaxBufferSize(Math.max(StateBuffer.MAX_BUFFER_SIZE, 15))); // enter viridian
+    StateBuffer.pushBufferSize(20);
+		seq(new EflWalkToSegment(10, -1)); // enter viridian
+    StateBuffer.popBufferSize();
 	}
 }

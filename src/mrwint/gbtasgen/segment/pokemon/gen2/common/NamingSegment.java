@@ -6,11 +6,9 @@ import java.util.List;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.PressButton;
-import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
-import mrwint.gbtasgen.state.StateBuffer;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 
-public class NamingSegment implements Segment {
+public class NamingSegment extends SeqSegment {
 
 	public static String[] CHAR_MAP = {
 		"ABCDEFGHI",
@@ -241,13 +239,12 @@ public class NamingSegment implements Segment {
 	}
 
 	@Override
-	public StateBuffer execute(StateBuffer in) {
+	public void execute() {
 		for(Integer i : moveList)
-			in = new MoveSegment(new PressButton(i,Metric.PRESSED_JOY),0,0).execute(in);
+			seqMoveUnboundedNoDelay(new PressButton(i,Metric.PRESSED_JOY));
 		if(name.length() < 8)
-			in = new MoveSegment(new PressButton(Move.START,Metric.PRESSED_JOY),0,0).execute(in);
+		  seqMoveUnboundedNoDelay(new PressButton(Move.START,Metric.PRESSED_JOY));
 //		in = new SleepSegment(10000).execute(in);
-		in = new MoveSegment(new PressButton(Move.A,Metric.PRESSED_JOY),0,0).execute(in);
-		return in;
+		seqMoveUnboundedNoDelay(new PressButton(Move.A,Metric.PRESSED_JOY));
 	}
 }

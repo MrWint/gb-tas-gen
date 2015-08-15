@@ -111,6 +111,7 @@ public class RedRomInfo extends GenIRomInfo {
 			fightCurDamageAddress = 0xD0D7;
 			thrashNumTurnsAddress = 0xd06a;
 			numPartyMonAddress = 0xd163;
+			numItemsAddress = 0xd31d;
 //
 			fightDetermineAttackOrder = 0x3c2a9;
 			fightDetermineAttackOrderPlayerFirst = 0x3c37d;
@@ -124,10 +125,16 @@ public class RedRomInfo extends GenIRomInfo {
 //			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress, 0x3c349, 0x3c39f};
 			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress/*, 0x3e6bc*/, 0x3a808};
 			fightAIExecuteMove = printLetterDelayJoypadAddress; //0x3e6bc;
+			
+      fightObedienceBefore = 0x3d694;
+      fightObedienceAfter = 0x3d697;
+      fightMonIsDisobedient = 0xcced;
 
-			listMoveNamesAddress = 0xb0000;
+      listMonNamesAddress = 0x1c21e;
+      listMoveNamesAddress = 0xb0000;
 			listMovesAddress = 0x38000;
 			listTypeNamesAddress = 0x27dae;
 			listTypeMatchupAddress = 0x3e474;
+			listItemNamesAddress = 0x472b;
 		}
 	}

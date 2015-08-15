@@ -9,7 +9,7 @@ import java.util.Queue;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflWalkStep;
 import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
@@ -52,7 +52,6 @@ public class EflWalkToSegment implements Segment {
 
 	private int destX, destY;
 	private boolean checkLastStep;
-	private int maxBufferSize;
 	private MapFactory mapFactory;
 	private boolean blockAllWarps;
 	private boolean ignoreTrainers;
@@ -64,11 +63,6 @@ public class EflWalkToSegment implements Segment {
 
 	public EflWalkToSegment setIgnoreTrainers(boolean ignoreTrainers) {
 		this.ignoreTrainers = ignoreTrainers;
-		return this;
-	}
-
-	public EflWalkToSegment setMaxBufferSize(int maxBufferSize) {
-		this.maxBufferSize = maxBufferSize;
 		return this;
 	}
 
@@ -92,28 +86,35 @@ public class EflWalkToSegment implements Segment {
     this.destX = destX;
 		this.destY = destY;
 		this.checkLastStep = checkLastStep;
-		this.maxBufferSize = StateBuffer.MAX_BUFFER_SIZE;
 		this.mapFactory = mapFactory;
 		initWalkSteps();
 	}
 
 	private void initWalkSteps() {
 		walkSegment = new Segment[4];
-		walkSegment[0] = new MoveSegment(new EflWalkStep(Move.DOWN, true, false),0,0);
-		walkSegment[1] = new MoveSegment(new EflWalkStep(Move.RIGHT,true, false),0,0);
-		walkSegment[2] = new MoveSegment(new EflWalkStep(Move.UP,true, false),0,0);
-		walkSegment[3] = new MoveSegment(new EflWalkStep(Move.LEFT,true, false),0,0);
+		walkSegment[0] = wrap(new EflWalkStep(Move.DOWN, true, false));
+		walkSegment[1] = wrap(new EflWalkStep(Move.RIGHT, true, false));
+		walkSegment[2] = wrap(new EflWalkStep(Move.UP, true, false));
+		walkSegment[3] = wrap(new EflWalkStep(Move.LEFT, true, false));
 		walkSegmentNoCheck = new Segment[4];
-		walkSegmentNoCheck[0] = new MoveSegment(new EflWalkStep(Move.DOWN,false, false),0,0);
-		walkSegmentNoCheck[1] = new MoveSegment(new EflWalkStep(Move.RIGHT,false, false),0,0);
-		walkSegmentNoCheck[2] = new MoveSegment(new EflWalkStep(Move.UP,false, false),0,0);
-		walkSegmentNoCheck[3] = new MoveSegment(new EflWalkStep(Move.LEFT,false, false),0,0);
+		walkSegmentNoCheck[0] = wrap(new EflWalkStep(Move.DOWN, false, false));
+		walkSegmentNoCheck[1] = wrap(new EflWalkStep(Move.RIGHT, false, false));
+		walkSegmentNoCheck[2] = wrap(new EflWalkStep(Move.UP, false, false));
+		walkSegmentNoCheck[3] = wrap(new EflWalkStep(Move.LEFT, false, false));
+	}
+	private SeqSegment wrap(Move m) {
+	  return new SeqSegment() {
+      @Override
+      protected void execute() {
+        seqMoveUnboundedNoDelay(m);
+      }
+    };
 	}
 
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		if(in.isEmpty())
-			return new StateBuffer(maxBufferSize);
+			return new StateBuffer();
 
 		State s = in.getStates().iterator().next();
 		curGb.restore(s);
@@ -206,7 +207,7 @@ public class EflWalkToSegment implements Segment {
 
 	private StateBuffer popBuffer(Pos p, HashMap<Pos, StateBuffer> posBuffers) {
 		if(!posBuffers.containsKey(p))
-			posBuffers.put(p, new StateBuffer(maxBufferSize));
+			posBuffers.put(p, new StateBuffer());
 		StateBuffer ret = posBuffers.get(p);
 		posBuffers.remove(p);
 		return ret;
@@ -214,7 +215,7 @@ public class EflWalkToSegment implements Segment {
 
 	private StateBuffer getBuffer(Pos p, HashMap<Pos, StateBuffer> posBuffers) {
 		if(!posBuffers.containsKey(p))
-			posBuffers.put(p, new StateBuffer(maxBufferSize));
+			posBuffers.put(p, new StateBuffer());
 		return posBuffers.get(p);
 	}
 

@@ -32,9 +32,9 @@ public class EflSwitchPokemonSegment extends SeqSegment {
     delayEfl(new SeqSegment() {
       @Override
       protected void execute() {
-        seqEflButton(Move.A);
-        seq(new EflTextSegment()); // enough
-        seq(new EflTextSegment(Move.A, 0)); // go
+        seqEflButtonUnbounded(Move.A);
+        seqUnbounded(new EflTextSegment()); // enough
+        seqUnbounded(new EflTextSegment(Move.A)); // go
         seqMetric(new EflCheckMoveOrderMetric(null, enemyMoveDesc.move));
         seq(new Segment() {
           @Override
@@ -45,6 +45,6 @@ public class EflSwitchPokemonSegment extends SeqSegment {
       }
     });
     if (enemyMoveDesc.segment.getFinishSegment() != null)
-    seq(enemyMoveDesc.segment.getFinishSegment());
+      seq(enemyMoveDesc.segment.getFinishSegment());
   }
 }

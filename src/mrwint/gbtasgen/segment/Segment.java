@@ -20,14 +20,8 @@ public interface Segment {
 	public static MoveSegment press(int move) {
 		return new MoveSegment(new PressButton(move, Metric.DOWN_JOY));
 	}
-	public static MoveSegment press(int move, int bufferSize) {
-		return new MoveSegment(new PressButton(move, Metric.DOWN_JOY), MoveSegment.MAX_DELAY, bufferSize);
-	}
 	public static MoveSegment repress(int move) {
 		return new MoveSegment(new PressButton(move, Metric.PRESSED_JOY));
-	}
-	public static MoveSegment repress(int move, int bufferSize) {
-		return new MoveSegment(new PressButton(move, Metric.PRESSED_JOY), MoveSegment.MAX_DELAY, bufferSize);
 	}
 	public static MoveSegment menu(int move) {
 		return new MoveSegment(new PressButton(move, Metric.MENU_JOY));

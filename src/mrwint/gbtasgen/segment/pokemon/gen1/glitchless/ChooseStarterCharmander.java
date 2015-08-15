@@ -2,7 +2,6 @@ package mrwint.gbtasgen.segment.pokemon.gen1.glitchless;
 
 import mrwint.gbtasgen.metric.pokemon.gen1.Gen1CheckDVMetric;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.SkipInput;
 import mrwint.gbtasgen.move.pokemon.ChangeOptionsMove;
 import mrwint.gbtasgen.move.pokemon.gen1.OverworldInteract;
 import mrwint.gbtasgen.move.pokemon.gen1.WalkStep;
@@ -45,11 +44,11 @@ public class ChooseStarterCharmander extends SeqSegment {
 
 		seq(new TextSegment(Move.B));
 		seq(new SkipTextsSegment(1)); // want to give a nick
-		seq(new TextSegment(Move.B, true, 0)); // to charmander?
-		seq(Segment.press(Move.A, 0)); // (yes)
+		seqUnbounded(new TextSegment(Move.B, true)); // to charmander?
+		seqUnbounded(Segment.press(Move.A)); // (yes)
 //		seq(new SkipTextsSegment(1, true)); // to charmander (yes)
-		seq(new MoveSegment(new SkipInput(1), 0, 0)); // wait to input "A"
-		seq(Segment.press(Move.A, 0)); // "A"
+		seqSkipInputUnbounded(1); // wait to input "A"
+		seqUnbounded(Segment.press(Move.A)); // "A"
 //		seq(Segment.press(Move.START)); // name it "A"
 		seq(new DelayMoveSegment(new PressButtonFactory(Move.START), new CheckMetricSegment(new Gen1CheckDVMetric(15, 0, 15, 15, 15))));
 

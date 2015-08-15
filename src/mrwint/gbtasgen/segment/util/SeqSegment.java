@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.segment.util;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
+
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.move.EflPressButton;
@@ -30,9 +31,14 @@ public abstract class SeqSegment implements Segment {
 		return this.in;
 	}
 
-	public void seq(Segment s) {
-		in = s.execute(in);
-	}
+  public void seq(Segment s) {
+    in = s.execute(in);
+  }
+  public void seqUnbounded(Segment s) {
+    StateBuffer.pushBufferSize(0);
+    in = s.execute(in);
+    StateBuffer.popBufferSize();
+  }
   public void seqButton(int move) {
     seqMove(new PressButton(move));
   }
@@ -84,21 +90,15 @@ public abstract class SeqSegment implements Segment {
     seq(new EflScroll(true, num, Move.A));
   }
   public void seqWait(int frames) {
-    seqMove(new Wait(frames));
-  }
-  public void seqWaitUnbounded(int frames) {
-    seq(new MoveSegment(new Wait(frames), 0, 0));
+    seqMoveUnboundedNoDelay(new Wait(frames));
   }
   public void seqSkipInput(int skips) {
     seqMove(new SkipInput(skips));
   }
   public void seqSkipInputUnbounded(int skips) {
-    seq(new MoveSegment(new SkipInput(skips), 0, 0));
+    seqMoveUnbounded(new SkipInput(skips));
   }
   public void seqEflSkipInput(int skips) {
-    seqMove(new EflSkipInput(skips));
-  }
-  public void seqEflSkipInputUnbounded(int skips) {
     seqMoveUnboundedNoDelay(new EflSkipInput(skips));
   }
   public void seqFunc(Runnable func) {
@@ -108,10 +108,10 @@ public abstract class SeqSegment implements Segment {
     seq(new MoveSegment(m));
   }
   public void seqMoveUnbounded(Move m) {
-    seq(new MoveSegment(m, MoveSegment.MAX_DELAY, 0));
+    seqUnbounded(new MoveSegment(m));
   }
   public void seqMoveUnboundedNoDelay(Move m) {
-    seq(new MoveSegment(m, 0, 0));
+    seqUnbounded(new MoveSegment(m, 0));
   }
   public void seqMoveNoDelay(Move m) {
     seqMove(m, 0);
@@ -120,7 +120,7 @@ public abstract class SeqSegment implements Segment {
     seq(new MoveSegment(m, maxDelay));
   }
   public void seqMoveUnbounded(Move m, int maxDelay) {
-    seq(new MoveSegment(m, maxDelay, 0));
+    seqUnbounded(new MoveSegment(m, maxDelay));
   }
 	public void seqMetric(Metric m) {
 		seq(new CheckMetricSegment(m));

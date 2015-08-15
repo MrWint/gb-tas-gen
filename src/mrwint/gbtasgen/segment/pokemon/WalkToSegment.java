@@ -10,7 +10,7 @@ import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.rom.pokemon.PokemonRomInfo;
 import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.util.MoveSegment;
+import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
@@ -53,7 +53,6 @@ public class WalkToSegment implements Segment {
 
 	private int destX, destY;
 	private boolean checkLastStep;
-	private int maxBufferSize;
 	private MapFactory mapFactory;
 	private boolean blockAllWarps;
 	private boolean ignoreTrainers;
@@ -65,11 +64,6 @@ public class WalkToSegment implements Segment {
 
 	public WalkToSegment setIgnoreTrainers(boolean ignoreTrainers) {
 		this.ignoreTrainers = ignoreTrainers;
-		return this;
-	}
-
-	public WalkToSegment setMaxBufferSize(int maxBufferSize) {
-		this.maxBufferSize = maxBufferSize;
 		return this;
 	}
 
@@ -93,7 +87,6 @@ public class WalkToSegment implements Segment {
     this.destX = destX;
 		this.destY = destY;
 		this.checkLastStep = checkLastStep;
-		this.maxBufferSize = StateBuffer.MAX_BUFFER_SIZE;
 		this.mapFactory = mapFactory;
 		initWalkSteps();
 	}
@@ -101,21 +94,29 @@ public class WalkToSegment implements Segment {
 	private void initWalkSteps() {
 		PokemonRomInfo pri = curGb.pokemon;
 		walkSegment = new Segment[4];
-		walkSegment[0] = new MoveSegment(pri.getWalkStep(Move.DOWN, true, false),0,0);
-		walkSegment[1] = new MoveSegment(pri.getWalkStep(Move.RIGHT,true, false),0,0);
-		walkSegment[2] = new MoveSegment(pri.getWalkStep(Move.UP,true, false),0,0);
-		walkSegment[3] = new MoveSegment(pri.getWalkStep(Move.LEFT,true, false),0,0);
+		walkSegment[0] = wrap(pri.getWalkStep(Move.DOWN, true, false));
+		walkSegment[1] = wrap(pri.getWalkStep(Move.RIGHT,true, false));
+		walkSegment[2] = wrap(pri.getWalkStep(Move.UP,true, false));
+		walkSegment[3] = wrap(pri.getWalkStep(Move.LEFT,true, false));
 		walkSegmentNoCheck = new Segment[4];
-		walkSegmentNoCheck[0] = new MoveSegment(pri.getWalkStep(Move.DOWN,false, false),0,0);
-		walkSegmentNoCheck[1] = new MoveSegment(pri.getWalkStep(Move.RIGHT,false, false),0,0);
-		walkSegmentNoCheck[2] = new MoveSegment(pri.getWalkStep(Move.UP,false, false),0,0);
-		walkSegmentNoCheck[3] = new MoveSegment(pri.getWalkStep(Move.LEFT,false, false),0,0);
+		walkSegmentNoCheck[0] = wrap(pri.getWalkStep(Move.DOWN,false, false));
+		walkSegmentNoCheck[1] = wrap(pri.getWalkStep(Move.RIGHT,false, false));
+		walkSegmentNoCheck[2] = wrap(pri.getWalkStep(Move.UP,false, false));
+		walkSegmentNoCheck[3] = wrap(pri.getWalkStep(Move.LEFT,false, false));
 	}
+  private SeqSegment wrap(Move m) {
+    return new SeqSegment() {
+      @Override
+      protected void execute() {
+        seqMoveUnboundedNoDelay(m);
+      }
+    };
+  }
 
 	@Override
 	public StateBuffer execute(StateBuffer in) {
 		if(in.isEmpty())
-			return new StateBuffer(maxBufferSize);
+			return new StateBuffer();
 
 		State s = in.getStates().iterator().next();
 		curGb.restore(s);
@@ -209,7 +210,7 @@ public class WalkToSegment implements Segment {
 
 	private StateBuffer popBuffer(Pos p, HashMap<Pos, StateBuffer> posBuffers) {
 		if(!posBuffers.containsKey(p))
-			posBuffers.put(p, new StateBuffer(maxBufferSize));
+			posBuffers.put(p, new StateBuffer());
 		StateBuffer ret = posBuffers.get(p);
 		posBuffers.remove(p);
 		return ret;
@@ -217,7 +218,7 @@ public class WalkToSegment implements Segment {
 
 	private StateBuffer getBuffer(Pos p, HashMap<Pos, StateBuffer> posBuffers) {
 		if(!posBuffers.containsKey(p))
-			posBuffers.put(p, new StateBuffer(maxBufferSize));
+			posBuffers.put(p, new StateBuffer());
 		return posBuffers.get(p);
 	}
 

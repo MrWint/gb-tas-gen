@@ -1,7 +1,8 @@
 package mrwint.gbtasgen.segment.pokemon.fight;
 
+import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.segment.Segment;
-import mrwint.gbtasgen.segment.util.DelayMoveSegment.DelayableMoveFactory;
+import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
 
@@ -14,14 +15,30 @@ public abstract class EflAttackActionSegment {
   public Segment prefixSegment = Segment.NULL;
   public Segment suffixSegment = Segment.NULL;
 
-	public abstract StateBuffer executeInternal(StateBuffer sb, int minValue);
+	public abstract void executeInternal(int minValue);
 
 	public abstract Segment getFinishSegment();
+	
+	
+	
+  private StateBuffer in;
+
+  public void seq(Segment s) {
+	  in = s.execute(in);
+	}
+  public void seqUnbounded(Segment s) {
+    StateBuffer.pushBufferSize(0);
+    in = s.execute(in);
+    StateBuffer.popBufferSize();
+  }
+  public void seqMetric(Metric m) {
+    seq(new CheckMetricSegment(m));
+  }
 
 	public StateBuffer execute(StateBuffer in, int minValue) {
-	  in = prefixSegment.execute(in);
-		StateBuffer ret = executeInternal(in, minValue);
-    in = suffixSegment.execute(in);
-		return ret;
+	  this.in = prefixSegment.execute(in);
+		executeInternal(minValue);
+    this.in = suffixSegment.execute(this.in);
+		return this.in;
 	}
 }

@@ -30,9 +30,9 @@ public class SwitchPokemonSegment extends SeqSegment {
       protected void execute() {
         seqButton(Move.A);
         seq(new TextSegment()); // enough
-        seq(new TextSegment(Move.A, false, 0)); // go
+        seqUnbounded(new TextSegment(Move.A, false)); // go
         seqMetric(new CheckMoveOrderMetric(faster, enemyMoveDesc.move, 0));
-        seqWaitUnbounded(1); // end text frame
+        seqWait(1); // end text frame
         seq(new Segment() {
           @Override
           public StateBuffer execute(StateBuffer in) {

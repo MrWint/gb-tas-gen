@@ -9,36 +9,28 @@ import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil;
-import mrwint.gbtasgen.util.Util;
 
 public class EflTextSegment implements Segment {
 
 	private int skipMove;
-  private int bufferSize;
-
 
 	public EflTextSegment() {
 		this(Move.A);
 	}
 
 	public EflTextSegment(int skipMove) {
-		this(skipMove, StateBuffer.MAX_BUFFER_SIZE);
-	}
-
-	public EflTextSegment(int skipMove, int bufferSize) {
     EflUtil.assertEfl();
 
     this.skipMove = skipMove;
-		this.bufferSize = bufferSize;
 	}
 
 	@Override
 	public StateBuffer execute(StateBuffer in) {
-		StateBuffer curBuffer = new StateBuffer(bufferSize);
+		StateBuffer curBuffer = new StateBuffer();
 		for(State s : in.getStates())
 			skipToStart(curBuffer, s);
 
-		StateBuffer goalBuffer = new StateBuffer(bufferSize);
+		StateBuffer goalBuffer = new StateBuffer();
 
 //		boolean first = true;
 
@@ -62,7 +54,7 @@ public class EflTextSegment implements Segment {
 
 	private void addNext(State s, int delays, TreeMap<Integer, StateBuffer> next) {
 	  if (!next.containsKey(delays))
-	    next.put(delays, new StateBuffer(bufferSize));
+	    next.put(delays, new StateBuffer());
     next.get(delays).addState(s);
 	}
 
@@ -71,100 +63,15 @@ public class EflTextSegment implements Segment {
     int textSpeed = curGb.readMemory(curGb.pokemon.optionsAddress) & curGb.pokemon.optionsTextSpeedMask;
 //  System.out.println("progress: textSpeed: " + textSpeed);
     if (textSpeed <= 1) {
-      progressWithNew(s, 0, textSpeed, delays, next, goalBuffer);
+      progressWith(s, 0, textSpeed, delays, next, goalBuffer);
       if (textSpeed >= 1)
         curGb.restore(s);
     }
     if (textSpeed >= 1)
-      progressWithNew(s, skipMove, textSpeed, delays, next, goalBuffer);
+      progressWith(s, skipMove, textSpeed, delays, next, goalBuffer);
   }
 
-  private void progressWith(int usedMove, int textSpeed, int delays, TreeMap<Integer, StateBuffer> next, StateBuffer goalBuffer) {
-//      System.out.println("progress: usedMove: " + usedMove);
-    curGb.step(usedMove, curGb.pokemon.printLetterDelayDoneAddress);
-
-    // hasMoreText
-    State initial = curGb.newState();
-    int initialSteps = curGb.stepCount;
-    boolean inPrintLetterDelay = true;
-
-    int numDonePasses = 0;
-
-//      System.out.println("hasMoreText steps: "+curGb.stepCount);
-    // advance to next input frame, keeping track of whether you are in or outside the PrintLetterDelay loop
-    State tmp = initial;
-    while (true) {
-      int add = EflUtil.runToAddressOrNextInputFrameLimit(tmp, skipMove, textSpeed + 1, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
-      if (add == -1 || curGb.stepCount - initialSteps > textSpeed + 1) {
-//          System.out.println("TextSegment: " + curGb.stepCount + " - " + initialSteps + " > " + textSpeed);
-        curGb.restore(initial);
-        goalBuffer.addState(curGb.createState(initial, true)); // done (no inputs)
-        return;
-      }
-      if (add == 0)
-        break;
-      if (add == curGb.pokemon.printLetterDelayJoypadAddress) {
-//          System.out.println("in");
-        inPrintLetterDelay = true;
-      }
-      if (add == curGb.pokemon.printLetterDelayDoneAddress) {
-//          System.out.println("out");
-        numDonePasses++;
-        inPrintLetterDelay = false;
-      }
-      tmp = null; // invalidate
-    }
-//      System.out.println("hasMoreText at input frame steps: " + curGb.stepCount + " inPrintLetterDelay: " + inPrintLetterDelay);
-
-    State atInput = curGb.newState();
-
-    // advance to vblank joypad read, keeping track of whether you are in or outside the PrintLetterDelay loop
-    while (true) {
-      int add = curGb.step(skipMove, curGb.rom.readJoypadInputLo, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
-      if (add == 0)
-        throw new RuntimeException("runToNextInputFrame returned invalid input frame!");
-      if (add == curGb.rom.readJoypadInputLo)
-        break;
-      if (add == curGb.pokemon.printLetterDelayJoypadAddress) {
-//          System.out.println("in");
-        inPrintLetterDelay = true;
-      }
-      if (add == curGb.pokemon.printLetterDelayDoneAddress) {
-//          System.out.println("out");
-        inPrintLetterDelay = false;
-      }
-    }
-//      System.out.println("hasMoreText at vblank steps: " + curGb.stepCount + " inPrintLetterDelay: " + inPrintLetterDelay);
-
-    // advance to read joypad, keeping track of whether you are in or outside the PrintLetterDelay loop
-    while (true) {
-      int add = EflUtil.runToAddressNoLimit(0, 0, curGb.rom.readJoypadAddress, inPrintLetterDelay ? curGb.pokemon.printLetterDelayDoneAddress : curGb.pokemon.printLetterDelayJoypadAddress);
-      if (add == curGb.rom.readJoypadAddress)
-        break;
-      if (add == curGb.pokemon.printLetterDelayJoypadAddress) {
-//          System.out.println("in");
-        inPrintLetterDelay = true;
-      }
-      if (add == curGb.pokemon.printLetterDelayDoneAddress) {
-//          System.out.println("out");
-        inPrintLetterDelay = false;
-      }
-    }
-//      System.out.println("hasMoreText at joypad steps: " + curGb.stepCount + " inPrintLetterDelay: " + inPrintLetterDelay);
-
-
-    if (inPrintLetterDelay) {
-      curGb.restore(atInput);
-      addNext(curGb.createState(atInput, true), delays + numDonePasses, next);
-      return;
-    } else {
-      curGb.restore(initial);
-      goalBuffer.addState(curGb.createState(initial, true)); // done (no inputs)
-      return;
-    }
-  }
-
-  private void progressWithNew(State initial, int usedMove, int textSpeed, int delays, TreeMap<Integer, StateBuffer> next, StateBuffer goalBuffer) {
+  private void progressWith(State initial, int usedMove, int textSpeed, int delays, TreeMap<Integer, StateBuffer> next, StateBuffer goalBuffer) {
 //    System.out.println("progress: usedMove: " + usedMove + ", delays: " + delays+ ", steps: " + curGb.stepCount);
     curGb.step(usedMove, curGb.pokemon.printLetterDelayDoneAddress);
 
