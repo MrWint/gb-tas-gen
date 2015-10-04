@@ -7,7 +7,7 @@ import mrwint.gbtasgen.segment.pokemon.gen1.common.EflUseBikeSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 
-public class PrepareEeveeTradeRed extends SeqSegment {
+public class PrepareEeveeTradeDummyRed extends SeqSegment {
 
 	@Override
 	public void execute() {

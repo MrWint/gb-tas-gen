@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import mrwint.gbtasgen.Gb;
@@ -71,18 +70,26 @@ public class State {
 	}
 
 	private void saveInputs(ObjectOutputStream oos) throws IOException {
-		List<InputNode> inputList = new ArrayList<InputNode>();
-		InputNode n = inputs;
-		while(n != null) {
-			inputList.add(n);
-			n = n.prev;
-		}
+	  ArrayList<InputNode> inputList = toArray(inputs);
 		oos.writeInt(inputList.size());
 		for(int i=inputList.size()-1;i>=0;i--)
 			oos.writeInt(inputList.get(i).input);
 	}
 
-	public static State load(ObjectInputStream ois) {
+  public static State load(ObjectInputStream ois) {
+    return load(ois, null);
+  }
+
+  private static ArrayList<InputNode> toArray(InputNode n) {
+    ArrayList<InputNode> inputList = new ArrayList<InputNode>();
+    while(n != null) {
+      inputList.add(n);
+      n = n.prev;
+    }
+    return inputList;
+  }
+
+  public static State load(ObjectInputStream ois, InputNode refInputs) {
 		try {
 			int stepCount = ois.readInt();
 			int delayStepCount = ois.readInt();
@@ -96,7 +103,7 @@ public class State {
 			int len = ois.readInt();
 			byte[] buf = new byte[len];
 			ois.readFully(buf);
-			InputNode inputs = loadInputs(ois);
+			InputNode inputs = loadInputs(ois, refInputs == null ? null : toArray(refInputs));
 
 			ByteBuffer bb = Gb.createDirectByteBuffer(len);
 			bb.put(buf);
@@ -108,17 +115,26 @@ public class State {
 		}
 	}
 
-	private static InputNode loadInputs(ObjectInputStream ois) throws IOException {
+	private static InputNode loadInputs(ObjectInputStream ois, ArrayList<InputNode> refInputs) throws IOException {
 		int len = ois.readInt();
 		InputNode ret = null;
-		for(int i=0;i<len;i++)
-			ret = new InputNode(ois.readInt(), ret);
+		for(int i=0;i<len;i++) {
+		  int input = ois.readInt();
+		  if (refInputs != null && refInputs.size()-1-i >= 0 && refInputs.get(refInputs.size()-1-i).input == input)
+		    ret = refInputs.get(refInputs.size()-1-i);
+		  else {
+//		    if (refInputs != null)
+//		      System.out.println("refInputs failed at " + i);
+		    refInputs = null;
+	      ret = new InputNode(input, ret);
+		  }
+		}
 		return ret;
 	}
 
 	public static class InputNode {
 		public int input;
-		public InputNode prev;
+    public InputNode prev;
 		public InputNode(int input, InputNode prev) {
 			this.input = input;
 			this.prev = prev;

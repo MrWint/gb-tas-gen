@@ -3,10 +3,8 @@ package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
-import mrwint.gbtasgen.segment.pokemon.EflPokecenterSegment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
-import mrwint.gbtasgen.segment.pokemon.PokecenterSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
@@ -17,13 +15,10 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
-public class PewterRed2 extends SeqSegment {
+public class PewterDummyRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seq(new EflWalkToSegment(13, 25)); // enter center
-    seq(new EflPokecenterSegment(true));
-
     seq(new EflWalkToSegment(16, 17)); // enter gym
     seq(new EflWalkToSegment(4, 3));
     seq(new EflWalkToSegment(4, 2));
@@ -33,20 +28,25 @@ public class PewterRed2 extends SeqSegment {
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
-      kems.attackCount[2][1] = 1; // 1x ember crit
-      kems.numExpGainers = 2; // boosted
+      kems.attackCount[2][1] = 5; // 5x ember crit
+      kems.numExpGainers = 2; // level up to 10
+      kems.onlyPrintInfo = false;
       seq(kems); // Geodude
     }
+    save("tmp");
+    load("tmp");
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
-      kems.attackCount[2][1] = 1; // 1x ember crit
-      kems.numExpGainers = 2; // boosted
+      kems.attackCount[2][0] = 1; // 1x ember
+      kems.attackCount[2][1] = 4; // 4x ember crit
+      kems.numExpGainers = 2; // level up to 12
+      kems.onlyPrintInfo = false;
       seq(kems); // Onix
     }
-    save("pe21");
-    load("pe21");
+    save("pd1");
+    load("pd1");
     seq(new EflEndFightSegment(10)); // player defeated enemy
     seq(new EflSkipTextsSegment(14)); // after battle talk
     seq(new EflWalkToSegment(4, 14, false)); // exit gym

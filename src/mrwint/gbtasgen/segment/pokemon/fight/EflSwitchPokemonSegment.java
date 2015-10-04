@@ -1,33 +1,28 @@
 package mrwint.gbtasgen.segment.pokemon.fight;
 
+import mrwint.gbtasgen.metric.pokemon.gen1.CheckNoAIMoveNew;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectMonSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
 public class EflSwitchPokemonSegment extends SeqSegment {
 
-	int monScrolls;
+	int mon;
 	EflEnemyMoveDesc enemyMoveDesc;
 
-	public EflSwitchPokemonSegment(int monScrolls, EflEnemyMoveDesc enemyMoveDesc) {
-	  this.monScrolls = monScrolls;
+	public EflSwitchPokemonSegment(int mon, EflEnemyMoveDesc enemyMoveDesc) {
+	  this.mon = mon;
 	  this.enemyMoveDesc = enemyMoveDesc;
 	}
   @Override
   protected void execute() {
     seqEflButton(Move.RIGHT);
     seqEflButton(Move.A);
-    if (monScrolls == 0) {
-      seqEflSkipInput(1);
-      seqEflButton(Move.A);
-    } else {
-      if (monScrolls == 1 || monScrolls == -1)
-        seqEflSkipInput(1);
-      seqEflScrollAF(monScrolls);
-    }
+    seq(new EflSelectMonSegment(mon));
     seqEflSkipInput(1);
     delayEfl(new SeqSegment() {
       @Override
@@ -36,6 +31,7 @@ public class EflSwitchPokemonSegment extends SeqSegment {
         seqUnbounded(new EflTextSegment()); // enough
         seqUnbounded(new EflTextSegment(Move.A)); // go
         seqMetric(new EflCheckMoveOrderMetric(null, enemyMoveDesc.move));
+        seqMetric(new CheckNoAIMoveNew());
         seq(new Segment() {
           @Override
           public StateBuffer execute(StateBuffer in) {

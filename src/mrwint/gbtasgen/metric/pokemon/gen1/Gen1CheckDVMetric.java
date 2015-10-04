@@ -28,7 +28,7 @@ public class Gen1CheckDVMetric implements StateResettingMetric {
 
 	@Override
 	public int getMetricInternal() {
-		EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.afterDVGenerationAddress);
+		EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.afterDVGenerationAddress, curGb.pokemon.afterWildDVGenerationAddress);
 		int a = curGb.getRegister(Register.AF) >> 8;
 		int b = curGb.getRegister(Register.BC) >> 8;
 		int ab = ((a & 0xFF) << 8) | (b & 0xFF);

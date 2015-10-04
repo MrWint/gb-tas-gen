@@ -4,6 +4,7 @@ import mrwint.gbtasgen.metric.pokemon.CheckCatchMonMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.util.EflDelayMoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
+import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class EflBallSuccessSegment extends EflDelayMoveSegment {
 
@@ -11,7 +12,7 @@ public class EflBallSuccessSegment extends EflDelayMoveSegment {
 		super(new SeqSegment() {
       @Override
       protected void execute() {
-        seqEflButtonUnboundedNoDelay(Move.A); // use ball
+        seqEflButtonUnboundedNoDelay(Move.A, PressMetric.PRESSED); // use ball
         seqUnbounded(new EflTextSegment(Move.A)); // used ball
         seqMetric(new CheckCatchMonMetric()); // check catch
       }

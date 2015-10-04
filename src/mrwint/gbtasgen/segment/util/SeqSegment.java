@@ -104,6 +104,10 @@ public abstract class SeqSegment implements Segment {
   public void seqFunc(Runnable func) {
     seqMetric(() -> {func.run(); return 1;});
   }
+  public void seqSample(Runnable func) {
+    curGb.restore(in.getAnyMinState());
+    func.run();
+  }
   public void seqMove(Move m) {
     seq(new MoveSegment(m));
   }

@@ -15,6 +15,7 @@ public class EflCatchMonSegment extends SeqSegment {
 	String name = null;
 	int extraSkips = 0;
 	int bufferSize = -1;
+	boolean noNew = false;
 
 	public EflCatchMonSegment(int numScrolls) {
     EflUtil.assertEfl();
@@ -37,6 +38,11 @@ public class EflCatchMonSegment extends SeqSegment {
     return this;
   }
 
+  public EflCatchMonSegment noNew() {
+    this.noNew = true;
+    return this;
+  }
+
 	@Override
 	public void execute() {
 		seq(new EflSkipTextsSegment(2)); // wild mon, go mon
@@ -48,9 +54,13 @@ public class EflCatchMonSegment extends SeqSegment {
 		  seqEflSkipInput(1);
 		seq(new EflBallSuccessSegment());
 
-		seq(new EflSkipTextsSegment(4)); // cought, new dex data
-    seqEflButton(Move.A); // skip dex
-    seqEflButton(Move.B); // skip dex
+		if (noNew) {
+      seq(new EflSkipTextsSegment(2)); // cought, new dex data
+		} else {
+  		seq(new EflSkipTextsSegment(4)); // cought, new dex data
+      seqEflButton(Move.A); // skip dex
+      seqEflButton(Move.B); // skip dex
+		}
     if (bufferSize >= 0 && !partyFull)
       StateBuffer.pushBufferSize(bufferSize);
 		seq(new EflTextSegment(Move.A));

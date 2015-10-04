@@ -23,10 +23,10 @@ public class StateBuffer {
   private static final int MAX_BUFFER_SIZE_HARDLIMIT = 128; //128;
   public static final boolean BOUNDED_USE_MAPS = true;
   public static final boolean UNBOUNDED_USE_MAPS = true;
-  
+
   private static int curBufferSize = MAX_BUFFER_SIZE;
   private static ArrayList<Integer> bufferSizeStack = new ArrayList<>();
-  
+
   public static void pushBufferSize(int size) {
     bufferSizeStack.add(size);
     recalcBufferSize();
@@ -339,8 +339,12 @@ public class StateBuffer {
       int maxBufferSize = ois.readInt();
       StateBuffer ret = new StateBuffer(maxBufferSize);
       int len = ois.readInt();
-      for(int i=0;i<len;i++)
-        ret.addState(State.load(ois));
+      State.InputNode lastInputs = null;
+      for(int i=0;i<len;i++) {
+        State s = State.load(ois, lastInputs);
+        ret.addState(s);
+        lastInputs = s.inputs;
+      }
       return ret;
     } catch (IOException e) {
       e.printStackTrace();

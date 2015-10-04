@@ -12,7 +12,7 @@ import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
-public class ChooseStarterRed extends SeqSegment {
+public class ChooseStarterDummyRed extends SeqSegment {
 
 	@Override
 	public void execute() {

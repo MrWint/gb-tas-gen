@@ -16,6 +16,8 @@ public class CheckNoAIMove implements StateResettingMetric {
 	public int getMetricInternal() {
 		int add = EflUtil.runToAddressNoLimit(0,initialMove,curGb.pokemon.fightAIMoveCheck); // Check for AI moves (item uses etc.)
 //		return (add == RomInfo.rom.fightAIExecuteMove) ? 1 : 0;
+		if (add != curGb.pokemon.printLetterDelayJoypadAddress)
+		  System.out.println("AI fail!");
 		return (add == curGb.pokemon.printLetterDelayJoypadAddress) ? 1 : 0;
 //		if (add == RomInfo.rom.printLetterDelayJoypadAddress)
 //			return 0;

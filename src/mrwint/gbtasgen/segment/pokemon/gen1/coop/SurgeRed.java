@@ -1,108 +1,218 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
-import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
-
-import mrwint.gbtasgen.metric.pokemon.CheckAttackMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
+import static mrwint.gbtasgen.move.Move.A;
+import static mrwint.gbtasgen.move.Move.B;
+import static mrwint.gbtasgen.move.Move.START;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
+import mrwint.gbtasgen.metric.StateResettingMetric;
+import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
+import mrwint.gbtasgen.metric.pokemon.gen1.OutputParty;
 import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.pokemon.EflSelectMoveInList;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
-import mrwint.gbtasgen.segment.pokemon.EflEvolutionSegment;
+import mrwint.gbtasgen.segment.pokemon.EflCatchMonSegment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveDamage;
-import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflBuyItemSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflEncounterSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
+import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.EflUtil.PressMetric;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class SurgeRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seq(new EflWalkToSegment(3, 0)); // leave house
-    seq(new EflWalkToSegment(30, 9)); // engage rocket
-		seq(new EflInitFightSegment(4)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[3][1] = 1; // mega punch crit
-			seq(kems); // machop
-		}
-		seq(EflNewEnemyMonSegment.any()); // next mon
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[3][1] = 1; // mega punch crit
-			seq(kems); // drowzee
-		}
-		seq(new EflEndFightSegment(2)); // player defeated enemy
+    seqEflButton(Move.A); // continue game
+    seqEflButton(Move.START);
+    seqEflButton(Move.A);
+    seqEflButton(Move.START);
+    seqEflButton(Move.A);
 
-		seq(new EflSkipTextsSegment(3)); // after rival battle texts
+    seq(new EflWalkToSegment(4, 6)); // leave center
+    seq(new EflWalkToSegment(4, 8, false)); // leave center
 
-    seq(new EflWalkToSegment(28, 36)); // leave cerulean
-    seq(new EflWalkToSegment(17, 27)); // enter passage
-    seq(new EflWalkToSegment(4, 4)); // enter passage
-    seq(new EflWalkToSegment(2, 41)); // walk passage
-    seq(new EflWalkToSegment(4, 8, false)); // leave passage
-    seq(new EflWalkToSegment(11, 28)); // engage trainer
-    seq(new EflWalkToSegment(11, 29)); // engage trainer
-    seqMove(new EflOverworldInteract(5)); // talk to trainer
+//    {
+//      seq(new EflWalkToSegment(19, 26)); // go to bush
+//      seq(new EflWalkToSegment(19, 27)); // go to bush
+//
+//      {
+//        seqEflButton(START, PRESSED);
+//        seqEflScrollA(1); // mon
+//        seqEflButton(A, PRESSED); // dux
+//        seqEflSkipInput(1);
+//        seqEflButton(A); // cut
+//        seqEflButton(B); // hacked away (to text scroll)?
+//      }
+//      seq(new EflWalkToSegment(19, 33, false)); // ledge
+//      seq(new EflWalkToSegment(19, 36)); // R5
+//      seq(new EflWalkToSegment(9, 3, false)); // ledge
+//      seq(new EflWalkToSegment(9, 7, false)); // ledge
+//      seq(new EflWalkToSegment(9, 11, false)); // ledge
+//      seq(new EflWalkToSegment(9, 15, false)); // ledge
+//      seq(new EflWalkToSegment(10, 21)); // Pension
+//      seq(new EflWalkToSegment(2, 4)); // man
+//      seqMove(new EflOverworldInteract(1)); // man
+//      seq(new EflSkipTextsSegment(2)); // raise one
+//      seq(new EflSkipTextsSegment(1, true)); // of your mon
+//      seq(new EflSkipTextsSegment(1)); // which one
+//      seqEflScrollAF(2); // Magikarp
+//      seq(new EflSkipTextsSegment(3)); // look after magikarp for a while, come back
+//      seq(new EflWalkToSegment(2, 8, false)); // leave house
+//      {
+//        seqEflButton(START, PRESSED);
+//        seqEflButton(Move.A); // mon
+//        seqEflSkipInput(1);
+//        seqEflScrollAF(-1); // Abra
+//        seqEflButton(A, PRESSED); // teleport
+//        seq(new EflTextSegment()); // teleport back
+//        seqEflSkipInput(1);
+//      }
+//    }
+
+    {
+      seqEflButton(START, PRESSED);
+      seqEflScrollA(1); // mon
+      seqEflSkipInput(1);
+      seqEflScrollAF(-1); // Abra
+      seqEflButton(A, PRESSED); // teleport
+      seq(new EflTextSegment()); // teleport back
+      seqEflSkipInput(1);
+    }
+    seq(new EflWalkToSegment(27, 4)); // bush
+    {
+      seqEflButton(START, PRESSED);
+      seqEflButton(A); // mon
+      seqEflScrollAF(-2); // Dux
+      seqEflButton(A, PRESSED); // cut
+      seqEflButton(B); // cut away
+    }
+    seq(new EflWalkToSegment(19, 5)); // enter
+    seq(new EflWalkToSegment(15, 4)); // amber
+    seq(new EflWalkToSegment(15, 3)); // amber
+    seqMove(new EflOverworldInteract(3)); // talk
+    seq(new EflSkipTextsSegment(11)); // get amber
+    seq(new EflWalkToSegment(16, 6)); // leave
+    seq(new EflWalkToSegment(16, 8, false)); // leave
 
     save("su1");
     load("su1");
 
-		seq(new EflInitFightSegment(1)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][1] = 1; // ember crit
-//      kems.attackCount[3][0] = 1; // mega punch
-			seq(kems); // pidgey
-		}
-    seq(EflNewEnemyMonSegment.any()); // next mon
+    seq(new EflWalkToSegment(19, 7, false)); // ledge
+    seq(new EflWalkToSegment(18, 36)); // route 2
+
+    seq(new EflWalkToSegment(5, 8)); // bush
+    seq(new EflWalkToSegment(5, 9)); // bush
     {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][1] = 1; // ember crit
-//      kems.attackCount[3][0] = 1; // mega punch
-      seq(kems); // pidgey
+      seqEflButton(START, PRESSED);
+      seqEflButton(A); // mon
+      seqEflButton(A, PRESSED); // Dux
+      seqEflButton(A, PRESSED); // cut
+      seqEflButton(B); // cut away
     }
-    seq(EflNewEnemyMonSegment.any()); // next mon
+
     {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][1] = 1; // ember crit
-//      kems.attackCount[3][0] = 1; // mega punch
-      seq(kems); // pidgey
+      seq(new EflWalkToSegment(15, 19)); // enter
+      seq(new EflWalkToSegment(4, 2)); // trade
+      seq(new EflWalkToSegment(4, 1, false)); // trade
+      seqMove(new EflOverworldInteract(2)); // trade
+      seq(new EflSkipTextsSegment(1));
+      seq(new EflSkipTextsSegment(1, true)); // yes
+      seqMetric(new OutputParty());
+      seqEflScrollAF(2); // abra
+      seq(new EflSkipTextsSegment(1)); // connect cables
+      seq(new EflSkipTextsSegment(3)); // traded x for y, thanks
+      seq(new EflWalkToSegment(3, 6)); // leave trade house
+      seq(new EflWalkToSegment(3, 8, false)); // leave trade house
+
     }
-		seq(new EflEndFightSegment(1)); // player defeated enemy
 
-		seq(new EflWalkToSegment(10, 31)); // walk up to trainer
+//    { // cost: 2733 f
+//      seq(new EflWalkToSegment(15, 20)); // bush
+//      seq(new EflWalkToSegment(15, 21)); // bush
+//      {
+//        seqEflButton(START, PRESSED);
+//        seqEflButton(A); // mon
+//        seqEflButton(A, PRESSED); // Dux
+//        seqEflButton(A, PRESSED); // cut
+//        seqEflButton(B); // cut away
+//      }
+//      seq(new EflWalkToSegment(16, 34)); // house
+//      seq(new EflWalkToSegment(16, 36, false)); // enter house
+//      seq(new EflWalkToSegment(4, 8, false)); // leave house
+//
+//      seq(new EflWalkToSegment(15, 54)); // Moon Stone
+//      seq(new EflWalkToSegment(14, 54)); // Moon Stone
+//      seqMove(new EflOverworldInteract(1)); // Moon Stone
+//      seq(new EflTextSegment()); // get Moon Stone
+//      seq(new EflWalkToSegment(15, 39)); // enter house
+//      seq(new EflWalkToSegment(5, 0)); // leave house
+//      seq(new EflWalkToSegment(15, 24)); // bush
+//      seq(new EflWalkToSegment(15, 23)); // bush
+//      {
+//        seqEflButton(START, PRESSED);
+//        seqEflButton(A); // mon
+//        seqEflButton(A, PRESSED); // Dux
+//        seqEflButton(A, PRESSED); // cut
+//        seqEflButton(B); // cut away
+//      }
+//    }
 
-		seq(new EflInitFightSegment(1)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[0][1] = 1; // scratch crit
-			seq(kems); // spearow
-		}
-		seq(EflNewEnemyMonSegment.any()); // next mon
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-			kems.attackCount[3][1] = 1; // mega punch crit
-      kems.numExpGainers = 2; // level up to 25
-			seq(kems); // raticate
-		}
-		seq(new EflEndFightSegment(1)); // player defeated enemy
+    seq(new EflWalkToSegment(12, 9)); // enter diglett's cave
+    seq(new EflWalkToSegment(4, 4)); // enter diglett's cave
 
-    seq(new EflEvolutionSegment(true));
+    seqUnbounded(new EflWalkToSegment(24, 31)); // align
+    seqUnbounded(new EflWalkToSegment(25, 31)); // align
+
+    seq(new EflEncounterSegment(0x76, Move.RIGHT)); // Dugtrio
+    seq(new EflCatchMonSegment(0).withBufferSize(0));
+
+    save("tmp");
+//    load("tmp");
+
+    seqUnbounded(new EflWalkToSegment(28, 31)); // align
+
+    seq(new EflEncounterSegment(0x3b, Move.RIGHT)); // Dugtrio
+    seq(new EflCatchMonSegment(0).withBufferSize(0));
+
+    save("tmp2");
+//    load("tmp2");
+
+    seqUnbounded(new EflWalkToSegment(37, 31)); // leave cave
+    seqUnbounded(new EflWalkToSegment(3, 8, false)); // leave cave
+
+    seqUnbounded(new EflWalkToSegment(11, 6)); // grass
+
+    seqUnbounded(new EflEncounterSegment(0x30, Move.RIGHT)); // Drowzee
+    seq(new EflCatchMonSegment(0));
+    seq(new EflWalkToSegment(-1, 6)); // enter vermilion
 
     save("su2");
     load("su2");
 
-    seq(new EflWalkToSegment(9, 36)); // enter vermilion
+    {
+      seq(new EflWalkToSegment(23, 13)); // enter mart
+
+      seq(new EflWalkToSegment(3, 5));
+      seq(new EflWalkToSegment(2, 5));
+      seq(new MoveSegment(new EflOverworldInteract(1)));
+      {
+        seq(new EflSkipTextsSegment(1, true)); // buy
+        seq(new EflTextSegment(B));
+        seq(new EflBuyItemSegment(0, 24, true)); // 24 balls
+        seqEflButton(B); // cancel
+        seq(new EflSkipTextsSegment(1)); // cancel
+        seq(new EflSkipTextsSegment(1)); // bye
+      }
+      seq(new EflWalkToSegment(3,8,false)); // leave mart
+    }
 
     seq(new EflWalkToSegment(9, 13)); // enter fan club
     seq(new EflWalkToSegment(2, 1)); // go to leader
@@ -110,128 +220,102 @@ public class SurgeRed extends SeqSegment {
     seq(new EflSkipTextsSegment(6));
     seq(new EflSkipTextsSegment(1, true)); // hear about mon
     seq(new EflSkipTextsSegment(25));
-    seq(new EflWalkToSegment(2, 6)); // leave
-    seq(new EflWalkToSegment(2, 8, false)); // leave
-
-    seq(new EflWalkToSegment(18, 30)); // ss anne
-    seq(new EflSkipTextsSegment(4)); // flash ticket
-    seq(new EflWalkToSegment(18, 32, false)); // enter ss anne
-    seq(new EflWalkToSegment(14, 3, false)); // enter ss anne
-    seq(new EflWalkToSegment(7, 7)); // stairs
-    seq(new EflWalkToSegment(2, 6)); // stairs
-    seq(new EflWalkToSegment(36, 8, false).setBlockAllWarps(true)); // engage rival
-
-    save("tmp");
-    load("tmp");
-
-		seq(new EflInitFightSegment(7)); // start fight
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.customHitWith(16, true, false, 20, 21)}; // gust 21 dmg
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 28)}; // sand attack
-      kems.attackCount[2][0] = 1; // ember
-      kems.attackCount[2][1] = 1; // ember crit
-			seq(kems); // pidgeotto
-		}
-    seq(EflNewEnemyMonSegment.any()); // next mon
+    seq(new EflWalkToSegment(2, 6));
+    seq(new EflWalkToSegment(2, 7, false)); // leave house
+    delayEfl(new SeqSegment() {
+      @Override
+      protected void execute() {
+        seqEflButton(Move.DOWN);
+        seqMetric(new StateResettingMetric() {
+          @Override
+          public int getMetricInternal() {
+            EflUtil.runToAddressNoLimit(0, 0, 0x197ca); // after setting first trash can
+            return curGb.readMemory(0xd743); // first trash can
+          }
+        }, Comparator.EQUAL, 8);
+      }
+    });
+    seq(new EflWalkToSegment(15, 16)); // go to bush
+    seq(new EflWalkToSegment(15, 17)); // go to bush
     {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-      kems.attackCount[2][1] = 1; // ember crit
-      seq(kems); // raticate
+      seqEflButton(START, PRESSED);
+      seqEflScrollA(1); // mon
+      seqEflScrollAF(-2); // meowth
+      seqEflSkipInput(1);
+      seqEflScrollAF(1); // switch
+      seqEflSkipInput(1);
+      seqEflScrollAF(2); // charmeleon
+      seqEflSkipInput(1);
+      seqEflScrollAF(3); // dux
+      seqEflSkipInput(1);
+      seqEflButton(A); // cut
+      seqEflButton(B); // hacked away (to text scroll)?
     }
-    seq(EflNewEnemyMonSegment.any()); // next mon
+    seq(new EflWalkToSegment(12, 19)); // enter gym
     {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
-      kems.attackCount[3][0] = 1; // mega punch
-      kems.numExpGainers = 2; // level up to 26
-      seq(kems); // kadabra
+      seq(new EflWalkToSegment(4, 11)); // go to trash can
+      seqEflButton(Move.RIGHT); // turn left
     }
-
-    save("tmp2");
-    load("tmp2");
-
-    seq(EflNewEnemyMonSegment.any()); // next mon
-		{
-		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.customHitWith(55, true, true, 37, 38)}; // water gun 37-38 dmg
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(145)}; // bubble
-      kems.attackCount[0][1] = 1; // tackle crit
-      kems.attackCount[3][1] = 1; // mega punch crit
-			seq(kems); // wartortle
-		}
-		seq(new EflEndFightSegment(3)); // player defeated enemy
-
-    seq(new EflEvolutionSegment(true)); // Charmander evolution
-
-    seq(new EflSkipTextsSegment(5)); // after battle text
-    seq(new EflWalkToSegment(36, 4)); // stairs
-    seq(new EflWalkToSegment(4, 4)); // engage captain
-    seq(new EflWalkToSegment(4, 3)); // engage captain
-    seqMove(new EflOverworldInteract(1)); // talk to captain
-    seq(new EflSkipTextsSegment(4)); // captain
-    seq(new EflTextSegment()); // rub
-    seq(new EflSkipTextsSegment(9)); // captain
-    seq(new EflWalkToSegment(0, 7)); // stairs
+    delayEfl(new SeqSegment() { // activate first can
+      @Override
+      protected void execute() {
+        seqEflButton(Move.A);
+        seqMetric(new StateResettingMetric() {
+          @Override
+          public int getMetricInternal() {
+            EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress); // after setting second trash can
+            return curGb.readMemory(0xd744); // first trash can
+          }
+        }, Comparator.EQUAL, 7);
+      }
+    });
+    seq(new EflSkipTextsSegment(4)); // opened first lock
+    {
+      seq(new EflWalkToSegment(4, 9)); // go to surge
+      seqEflButton(Move.RIGHT);
+    }
+    seqEflButton(Move.A);
+    seq(new EflSkipTextsSegment(2)); // opened second lock
+    seq(new EflWalkToSegment(5, 3)); // go to surge
+    seq(new EflWalkToSegment(5, 2)); // go to surge
+    seqMove(new EflOverworldInteract(1)); // talk to surge
 
     save("su3");
     load("su3");
 
-    seq(new EflWalkToSegment(21, 11)); // door
-    seq(new EflWalkToSegment(0, 14, false)); // door
-    seqMove(new EflOverworldInteract(3)); // trainer
-    seq(new EflInitFightSegment(2)); // start fight
+    seq(new EflInitFightSegment(10)); // start fight
     {
-      seqEflButton(Move.A, PressMetric.PRESSED); // fight
-      seqMove(new EflSelectMoveInList(1, 4)); // rage
-      delayEfl(new SeqSegment() {
-
-        @Override
-        protected void execute() {
-          seqEflButtonUnboundedNoDelay(Move.A, PressMetric.PRESSED);
-          seqMetric(new EflCheckMoveOrderMetric(true, 44)); // bite
-          seqUnbounded(new EflTextSegment(Move.A)); // use rage
-          seqMetric(new CheckAttackMisses()); // miss
-        }
-      });
-      seq(new EflTextSegment(Move.A)); // but it missed
-      delayEfl(new SeqSegment() {
-
-        @Override
-        protected void execute() {
-          seqEflButtonUnboundedNoDelay(Move.B); // close box
-          seqUnbounded(new EflTextSegment(Move.A)); // use bite
-          seqMetric(new EflCheckMoveDamage(false, false, 0, 8, Integer.MAX_VALUE, false),GREATER_EQUAL, 8); // kill
-        }
-      });
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
+      kems.attackCount[2][0] = 1; // bite
+      kems.attackCount[2][1] = 1; // bite crit
+      kems.numExpGainers = 2; // boosted
+      seq(kems); // voltorb
     }
-    save("tmp");
-    load("tmp");
+    seq(EflNewEnemyMonSegment.any()); // next mon
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(84)}; // thundershock
+      kems.attackCount[2][1] = 1; // bite crit
+      kems.numExpGainers = 2; // boosted
+      seq(kems); // pikachu
+    }
+    seq(EflNewEnemyMonSegment.any()); // next mon
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(85)}; // thunderbolt
+      kems.attackCount[2][0] = 1; // bite
+      kems.attackCount[2][1] = 2; // bite crit
+      kems.numExpGainers = 3; // boosted, lvlup to 21
+      seq(kems); // raichu
+    }
 
-    seq(new EflSkipTextsSegment(1)); // a fainted
-    seq(new EflSkipTextsSegment(2)); // no usable pokemon, black out
+    save("su4");
+    load("su4");
 
+    seq(new EflEndFightSegment(3)); // player defeated enemy
 
-//    seq(new EflWalkToSegment(2, 4, false).setBlockAllWarps(true)); // stairs
-//    seq(new EflWalkToSegment(7, 7)); // leave ss.anne
-//    seq(new EflWalkToSegment(26, -1, false).setMaxBufferSize(0)); // leave ss.anne
-//
-//    seqEflSkipInputUnbounded(5); // Watch SS Anne
-//
-//    {
-//      seqEflButton(Move.START, PressMetric.PRESSED);
-//      seqEflScrollA(2); // items
-//      seqEflScrollFastAF(8 + 1); // HM01
-//      seqEflSkipInput(1);
-//      seqEflButton(Move.A);
-//      seq(new EflSkipTextsSegment(2)); // booted up HM, contains xyz
-//      seq(new EflSkipTextsSegment(1, true)); // learn
-//      seqEflSkipInput(1);
-//      seqEflButton(Move.A); // charmander
-//      seq(new EflOverrideMoveSegment(0)); // Tackle to Cut
-//      seqEflButton(Move.B); // close menu
-//      seqEflButton(Move.START); // close menu
-//    }
+    seq(new EflSkipTextsSegment(8)); // after battle texts
+    seq(new EflWalkToSegment(5, 18, false)); // leave gym
 	}
 }

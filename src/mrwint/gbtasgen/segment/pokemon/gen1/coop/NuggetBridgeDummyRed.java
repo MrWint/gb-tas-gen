@@ -18,7 +18,7 @@ import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
-public class NuggetBridgeRed extends SeqSegment {
+public class NuggetBridgeDummyRed extends SeqSegment {
 
 	@Override
 	public void execute() {
@@ -62,8 +62,8 @@ public class NuggetBridgeRed extends SeqSegment {
 
     seq(new EflSkipTextsSegment(9)); // after battle speech
     seq(new EflWalkToSegment(5, 14, false)); // leave gym
-    save("nb1");
-    load("nb1");
+    save("nbd1");
+    load("nbd1");
 
     seq(new EflWalkToSegment(19, 17)); // enter Center
     seq(new EflPokecenterSegment(true)); // set warp point in center
@@ -123,8 +123,8 @@ public class NuggetBridgeRed extends SeqSegment {
 		seq(new EflWalkToSegment(11, 32)); // walk up to trainer
 		seqMove(new EflOverworldInteract(7)); // talk to trainer 1
 
-		save("nb2");
-		load("nb2");
+		save("nbd2");
+		load("nbd2");
 
 		seq(new EflInitFightSegment(4)); // start fight
 		{
@@ -203,8 +203,8 @@ public class NuggetBridgeRed extends SeqSegment {
 			seq(kems); // nidoF
 		}
 
-    save("nb3");
-    load("nb3");
+    save("nbd3");
+    load("nbd3");
 
     seq(new EflEndFightSegment(1)); // player defeated enemy
 
@@ -239,8 +239,8 @@ public class NuggetBridgeRed extends SeqSegment {
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
 
-		save("nb4");
-		load("nb4");
+		save("nbd4");
+		load("nbd4");
 
 		seq(new EflSkipTextsSegment(3)); // after rocket battle texts
 
@@ -323,8 +323,8 @@ public class NuggetBridgeRed extends SeqSegment {
 
     seq(new EflEvolutionSegment(true)); // cancel evolution
 
-    save("nb6");
-    load("nb6");
+    save("nbd6");
+    load("nbd6");
 
 //    seq(new EflWalkToSegment(38, 4)); // ether
 //    seqEflButton(Move.A); // ether

@@ -3,8 +3,10 @@ package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
+import mrwint.gbtasgen.segment.pokemon.EflPokecenterSegment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
+import mrwint.gbtasgen.segment.pokemon.PokecenterSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
@@ -19,6 +21,9 @@ public class PewterRed extends SeqSegment {
 
 	@Override
 	public void execute() {
+    seq(new EflWalkToSegment(13, 25)); // enter center
+    seq(new EflPokecenterSegment(true));
+
     seq(new EflWalkToSegment(16, 17)); // enter gym
     seq(new EflWalkToSegment(4, 3));
     seq(new EflWalkToSegment(4, 2));
@@ -28,21 +33,16 @@ public class PewterRed extends SeqSegment {
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
-      kems.attackCount[2][1] = 5; // 5x ember crit
-      kems.numExpGainers = 2; // level up to 10
-      kems.onlyPrintInfo = false;
+      kems.attackCount[2][1] = 1; // 1x ember crit
+      kems.numExpGainers = 2; // boosted
       seq(kems); // Geodude
     }
-    save("tmp");
-    load("tmp");
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
-      kems.attackCount[2][0] = 1; // 1x ember
-      kems.attackCount[2][1] = 4; // 4x ember crit
-      kems.numExpGainers = 2; // level up to 12
-      kems.onlyPrintInfo = false;
+      kems.attackCount[2][1] = 1; // 1x ember crit
+      kems.numExpGainers = 2; // boosted
       seq(kems); // Onix
     }
     save("pe1");

@@ -1,5 +1,9 @@
 package mrwint.gbtasgen.segment.pokemon.fight;
 
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BITE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FISSURE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HORN_DRILL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.QUICK_ATTACK;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 
 import java.util.Arrays;
@@ -15,6 +19,7 @@ import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.EflSelectMoveInList;
 import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.EflDelayMoveSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
@@ -155,7 +160,7 @@ public class EflKillEnemyMonSegment implements Segment {
 	public int numExpGainers = 1;				// number of text lines to close for XP (level ups, multi-mons etc)
 	public boolean onlyPrintInfo = false;		// only print own and enemy fighting stats
 	public int maxOwnDamage = 0;
-	public boolean skipFirstMainBattleMenu = false;
+  public boolean skipFirstMainBattleMenu = false;
 	public int thrashNumAdditionalTurns = 0;
 	public boolean nonCritsFirst = false;
 
@@ -170,7 +175,7 @@ public class EflKillEnemyMonSegment implements Segment {
 
 	private int[][] attackDmg = new int[4][2];	// max damage a noncrit/crit can do
 	private boolean[] attackEffective = new boolean[4];	// attack will display an effectivity text
-	private boolean faster;						// own mon can be faster than enemy mon
+	private boolean spdFaster;						// own mon can be faster than enemy mon
 
 	private int[][] enemyDmg = new int[4][2];	// max damage a noncrit/crit can do
 	private int[] enemyMove = new int[4];		// move ID
@@ -193,10 +198,10 @@ public class EflKillEnemyMonSegment implements Segment {
 
 		if(enemySpeed > playerSpeed) {
 			System.out.println("enemy is faster ("+playerSpeed+" to "+enemySpeed+")");
-			faster = false;
+			spdFaster = false;
 		} else {
 			System.out.println("player is faster ("+playerSpeed+" to "+enemySpeed+")");
-			faster = true;
+			spdFaster = true;
 		}
 
 		if(onlyPrintInfo)
@@ -226,7 +231,7 @@ public class EflKillEnemyMonSegment implements Segment {
 			enemyDmg[i][1] = DamageCalc.getDamage(false, i, true, true);
 			enemyMove[i] = DamageCalc.getMove(false,i);
 
-			if (DamageCalc.getMove(true, i) == 90 && faster) { // adjust for fissure
+			if (spdFaster && (DamageCalc.getMove(true, i) == FISSURE || DamageCalc.getMove(true, i) == HORN_DRILL)) { // adjust for OHKO
 			  attackDmg[i][0] = attackDmg[i][1] = enemyHP;
 			}
 
@@ -261,7 +266,7 @@ public class EflKillEnemyMonSegment implements Segment {
 		numTurns = numAttacks;
 
 		// fix enemyMoveDesc array length
-		int numEnemyAttacks = faster ? numAttacks - 1 : numAttacks;
+		int numEnemyAttacks = spdFaster ? numAttacks - 1 : numAttacks;
 		if(numEnemyAttacks > 0 && enemyMoveDesc.length > numEnemyAttacks)
 			System.out.println("WARNING: enemyMoveDesc contains more elements than used");
 
@@ -389,10 +394,11 @@ public class EflKillEnemyMonSegment implements Segment {
 		System.out.println("executeTurn "+curTurn+" using attack "+ai+":"+ac+" in FightState "+fs+" frame "+in.getStates().iterator().next().stepCount);
 
 		// determine turn type
+		final boolean faster = spdFaster || DamageCalc.getMove(true, ai) == QUICK_ATTACK;
 		final boolean playerCrit = (ac == 1);
 		final boolean playerEffective = attackEffective[ai];
 		final boolean lastTurn = (n==0);
-    final boolean makeEnemyFlinch = PokemonUtil.isGen1() && faster && DamageCalc.getMove(true, ai) == 44; // Bite
+    final boolean makeEnemyFlinch = PokemonUtil.isGen1() && faster && DamageCalc.getMove(true, ai) == BITE;
 		final boolean pauseAfterPlayerAttack = playerEffective || playerCrit;
 		final boolean pauseAfterEnemyAttack = getEnemyMoveSegment(curTurn).getFinishSegment() != null || makeEnemyFlinch;
 		final boolean separateAttacks = (faster && pauseAfterPlayerAttack) || (faster && lastTurn) || (!faster && pauseAfterEnemyAttack);

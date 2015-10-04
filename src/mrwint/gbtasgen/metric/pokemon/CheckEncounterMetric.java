@@ -4,6 +4,7 @@ import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.util.EflUtil;
 import mrwint.gbtasgen.util.Util;
+import mrwint.gbtasgen.util.pokemon.PokemonUtil;
 import mrwint.gbtasgen.util.pokemon.fight.DamageCalc;
 
 public class CheckEncounterMetric implements StateResettingMetric {
@@ -75,12 +76,13 @@ public class CheckEncounterMetric implements StateResettingMetric {
 		}
 		int add = EflUtil.runToAddressNoLimit(0,0, curGb.pokemon.encounterPostCheckAddresses);
 		int curMon = curGb.readMemory(curGb.pokemon.encounterMonSpeciesAddress);
+		String curMonName = PokemonUtil.getMonName(curMon);
 		int curLvl = curGb.readMemory(curGb.pokemon.encounterMonLevelAddress);
 
 		int dsum = (curGb.readMemory(curGb.pokemon.rngAddress) + curGb.readMemory(curGb.pokemon.rngAddress + 1)) & 0xff;
 
 		if (add == curGb.pokemon.encounterCheckMainFuncEncounterAddress) {
-			System.out.println("encounter with dsum "+Util.toHex(dsum, 2)+ " ["+curMon+":"+curLvl+"]");
+			System.out.println("encounter with dsum "+Util.toHex(dsum, 2)+ " ["+curMonName + "("+curMon+"):"+curLvl+"]");
 		}
 
 		if(add != curGb.pokemon.encounterCheckMainFuncEncounterAddress || (lvl != null && !Util.arrayContains(lvl, curLvl)) || (mon > 0 && mon != curMon) || minDSum > dsum || maxDSum < dsum)

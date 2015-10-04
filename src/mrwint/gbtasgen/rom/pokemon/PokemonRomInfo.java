@@ -58,8 +58,15 @@ public abstract class PokemonRomInfo extends RomInfo {
 
 	// stats
 	public int afterDVGenerationAddress;
+	public int afterWildDVGenerationAddress;
 	public int afterTrainerIDGenerationAddress;
 	public int trainerIDAddress;
+
+	// menus
+  public int mainMenuIndexAddress;
+  public int monMenuIndexAddress;
+  public int itemMenuPointerIndexAddress;
+  public int itemMenuScrollIndexAddress;
 
 	//walking
   public int overworldJoypadCallAddress;
@@ -142,6 +149,8 @@ public abstract class PokemonRomInfo extends RomInfo {
 	// Gen 1
 	public int[] fightAIMoveCheck;
 	public int fightAIExecuteMove;
+  public int fightTrainerAIBefore;
+  public int[] fightTrainerAIAfter;
 
   public int fightObedienceBefore;
   public int fightObedienceAfter;

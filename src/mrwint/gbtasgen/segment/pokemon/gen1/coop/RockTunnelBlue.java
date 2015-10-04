@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
 import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
+import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
@@ -27,7 +28,7 @@ public class RockTunnelBlue extends SeqSegment {
 //    seqEflButton(Move.A);
 //    seqEflButton(Move.START);
 //    seqEflButton(Move.A);
-//	  
+//
 //    seq(new EflWalkToSegment(4, 6)); // leave center
 //    seq(new EflWalkToSegment(4, 8, false)); // leave center
 //    seq(new EflUseBikeSegment(2, 0));
@@ -55,7 +56,7 @@ public class RockTunnelBlue extends SeqSegment {
 //      seq(kems); // slowpoke
 //    }
 //		seq(new EflEndFightSegment(1)); // player defeated enemy
-//		
+//
 //    seq(new EflWalkToSegment(37, 3)); // ladder
 //    seq(new EflWalkToSegment(27, 30)); // engage trainer
 //    seqMove(new EflOverworldInteract(8)); // talk to trainer
@@ -68,7 +69,7 @@ public class RockTunnelBlue extends SeqSegment {
 //      seq(kems); // slowpoke
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
-//    
+//
 //    save("rt1");
 //    load("rt1");
 //
@@ -91,7 +92,7 @@ public class RockTunnelBlue extends SeqSegment {
 //      seq(kems); // bulbasaur
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
-//    
+//
 //    seq(new EflEvolutionSegment(true));
 //
 //    seq(new EflWalkToSegment(27, 3)); // ladder
@@ -123,8 +124,6 @@ public class RockTunnelBlue extends SeqSegment {
 //      seq(kems); // graveler
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
-//
-//    seqMetric(new OutputParty());
 //
 //    save("rt2");
 //    load("rt2");
@@ -183,24 +182,47 @@ public class RockTunnelBlue extends SeqSegment {
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
 //    save("rt3");
-    load("rt3");
+//    load("rt3");
+//
+//    seq(new EflWalkToSegment(13, 3)); // enter passage
+//    seq(new EflWalkToSegment(4, 4)); // enter passage
+//
+//    seq(new EflUseBikeSegment(2, 0));
+//    {
+//      seq(new EflWalkToSegment(23, 5)); // walk passage
+//      seq(new EflWalkToSegment(22, 5)); // walk passage
+//      seqEflButton(Move.A);
+//      seq(new EflTextSegment()); // got elixer
+//    }
+//    {
+//      seq(new EflWalkToSegment(12, 4)); // walk passage
+//      seq(new EflWalkToSegment(12, 3)); // walk passage
+//      seqEflButton(Move.A);
+//      seq(new EflTextSegment()); // got nugget
+//    }
+//    seqUnbounded(new EflWalkToSegment(2, 5)); // walk passage
+//    seqUnbounded(new EflWalkToSegment(4, 8, false)); // exit passage
+//    seqUnbounded(new EflUseBikeSegment(0, 0));
+//
+//    seqUnbounded(new EflWalkToSegment(8, 6)); // grass
+//    seq(new EflEncounterSegment(0x52, Move.UP)); // Vulpix
+//    seq(new EflCatchMonSegment(2).withBufferSize(0));
+//
+//    save("tmp");
+//    load("tmp");
+//
+//  //  seqUnbounded(new EflWalkToSegment(15, 2)); // grass
+//    seqUnbounded(new EflWalkToSegment(8, 3)); // grass
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(0xBC, 22), Move.UP)); // bellsprout
+//    seq(new EflCatchMonSegment(2).withBufferSize(0));
+//
+//    save("tmp2");
+    load("tmp2");
 
-    seq(new EflWalkToSegment(13, 3)); // enter passage
-    seq(new EflWalkToSegment(4, 4)); // enter passage
-
-    seq(new EflUseBikeSegment(2, 0));
-    {
-      seq(new EflWalkToSegment(23, 5)); // walk passage
-      seq(new EflWalkToSegment(22, 5)); // walk passage
-      seqEflButton(Move.A);
-      seq(new EflTextSegment()); // got elixer
-    }
-    seqUnbounded(new EflWalkToSegment(2, 5)); // walk passage
-    seqUnbounded(new EflWalkToSegment(4, 8, false)); // exit passage
-    seqUnbounded(new EflUseBikeSegment(0, 0));
-
-    seqUnbounded(new EflWalkToSegment(8, 6)); // grass
-    seq(new EflEncounterSegment(new CheckEncounterMetric(0x4d, 20), Move.UP)); // Meowth
+//    seqUnbounded(new EflWalkToSegment(8, 4)); // grass
+    seqUnbounded(new EflWalkToSegment(9, 5)); // grass
+    seqUnbounded(new EflWalkToSegment(9, 4)); // grass
+    seq(new EflEncounterSegment(new CheckEncounterMetric(0x4d, 20).withAtkDV(13,14,15).withSpcDV(12,13,14,15), Move.DOWN)); // Meowth
     seq(new EflCatchMonSegment(2));
 
     seq(new EflWalkToSegment(-1, 3)); // enter celadon

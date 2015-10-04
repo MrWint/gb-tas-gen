@@ -51,8 +51,14 @@ public class RedRomInfo extends GenIRomInfo {
 			optionsAddress = 0xd355; // determines text speed
 //
 			afterDVGenerationAddress = 0xf3b3;
+			afterWildDVGenerationAddress = 0x3eb33;
 			afterTrainerIDGenerationAddress = 0xf860;
 			trainerIDAddress = 0xd359;
+
+			mainMenuIndexAddress = 0xcc2d;
+      monMenuIndexAddress = 0xcc2b;
+      itemMenuPointerIndexAddress = 0xcc2c;
+      itemMenuScrollIndexAddress = 0xcc36;
 //
 			overworldJoypadCallAddress = 0x0417; // call of JoypadOverworld
 			doPlayerMovementFuncAddress = 0x51d; // .handleDirectionButtonPress
@@ -125,7 +131,9 @@ public class RedRomInfo extends GenIRomInfo {
 //			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress, 0x3c349, 0x3c39f};
 			fightAIMoveCheck = new int[] {printLetterDelayJoypadAddress/*, 0x3e6bc*/, 0x3a808};
 			fightAIExecuteMove = printLetterDelayJoypadAddress; //0x3e6bc;
-			
+      fightTrainerAIBefore = 0x3a52e; // start of TrainerAI
+      fightTrainerAIAfter = new int[] {0x3c349, 0x3c39f}; // after TrainerAI calls
+
       fightObedienceBefore = 0x3d694;
       fightObedienceAfter = 0x3d697;
       fightMonIsDisobedient = 0xcced;

@@ -36,14 +36,16 @@ public class EflCheckMoveDamage implements StateResettingMetric {
 		//int maxdmg = Util.getMemoryBigEndian(RomInfo.rom.fightCurDamageAddress);
 
 //      Util.runToAddressNoLimit(0, 0, 0x3d6fc, 0x3e779);
-//      int missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
+//      int missed_ = curGb.readMemory(curGb.pokemon.fightAttackMissedAddress);
+//      System.out.println("missed: " + missed_);
 //      Util.runToAddressNoLimit(0, 0, 0x3d702, 0x3e77f);
-//      missed = Gb.readMemory(RomInfo.pokemon.fightAttackMissedAddress);
+//      missed_ = curGb.readMemory(curGb.pokemon.fightAttackMissedAddress);
+//      System.out.println("missed: " + missed_);
 
 		EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.fightBattleCommand0a);
 		int crit = curGb.readMemory(curGb.pokemon.fightCriticalHitAddress);
 		int missed = curGb.readMemory(curGb.pokemon.fightAttackMissedAddress);
-//			System.out.println("EflCheckMoveDamage crit: " + crit + " missed: " + missed);
+//		System.out.println("EflCheckMoveDamage crit: " + crit + " missed: " + missed);
 		if (missed != 0 || criticalHit != (crit != 0))
 		  return Integer.MIN_VALUE;
 		if (thrashAdditionalTurns > 0 && curGb.readMemory(curGb.pokemon.thrashNumTurnsAddress) < thrashAdditionalTurns) {
@@ -56,12 +58,12 @@ public class EflCheckMoveDamage implements StateResettingMetric {
 			  return Integer.MIN_VALUE;
 		}
 		int dmg = Util.getMemoryWordBE(curGb.pokemon.fightCurDamageAddress);
+//    System.out.println("EflCheckMoveDamage dmg: " + dmg);
 		if (dmg < minDamage || dmg > maxDamage)
       return Integer.MIN_VALUE;
-//      System.out.println("EflCheckMoveDamage dmg: " + dmg);
 //			System.out.println(crit+" "+missed+" "+effectMissed+" "+dmg);
-		//System.out.println("atk: "+atk+", def: "+def+", pow: "+pow+", lvl: "+lvl);
-		//System.out.println("max damage: "+maxdmg+", dmg: "+dmg);
+//		System.out.println("atk: "+atk+", def: "+def+", pow: "+pow+", lvl: "+lvl);
+//		System.out.println("max damage: "+maxdmg+", dmg: "+dmg);
 		return negateOutputDamage ? -dmg : dmg;
 	}
 }

@@ -9,23 +9,26 @@ import mrwint.gbtasgen.segment.pokemon.CatchMonSegment;
 import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.segment.util.SkipTextsSegment;
+import mrwint.gbtasgen.util.EflUtil;
 
 public class FishAndCatchSegment extends SeqSegment {
-	
+
 	public static int defaultBallIndex = 0;
 
 	int mon, itemOffset, mainMenuOffset;
-	
+
 	public FishAndCatchSegment(int mon, int itemOffset) {
 		this(mon, itemOffset, 2);
 	}
-	
+
 	public FishAndCatchSegment(int mon, int itemOffset, int mainMenuOffset) {
 		this.itemOffset = itemOffset;
 		this.mon = mon;
 		this.mainMenuOffset = mainMenuOffset;
+
+		EflUtil.assertNoEfl();
 	}
-	
+
 	@Override
 	public void execute() {
 		seq(Segment.repress(Move.START));

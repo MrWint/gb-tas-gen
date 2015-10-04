@@ -24,7 +24,10 @@ public class EflSkipInput extends Move {
 			return true;
 		}
 		for(int i=0;i<numSkip;i++) {
-      EflUtil.runToNextInputFrameNoLimit(0b11111111);
+      while (EflUtil.runToNextInputFrameNoLimit(0b11111111) == 2) {
+        System.out.println("EflSkipInput: skip split imput frame!");
+        curGb.step();
+      }
 			curGb.step();
 		}
 		return true;

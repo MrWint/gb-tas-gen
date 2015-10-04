@@ -8,7 +8,7 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMove
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 
-public class Rival1FightRed extends SeqSegment {
+public class Rival1FightDummyRed extends SeqSegment {
 
 	@Override
   public void execute() {
