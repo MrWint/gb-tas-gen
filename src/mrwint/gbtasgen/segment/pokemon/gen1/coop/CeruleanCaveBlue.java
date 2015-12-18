@@ -145,6 +145,7 @@ public class CeruleanCaveBlue extends SeqSegment {
 //        seq(new EflDepositMonSegment(VILEPLUME));
 //        seq(new EflWithdrawMonSegment(SHELLDER));
 //        seq(new EflWithdrawMonSegment(STARYU));
+//        seq(new EflChangeMonBoxSegment(5)); // box 6
 //        seqEflButton(B, MENU); // cancel
 //        seqEflButton(B, PRESSED); // cancel
 //      }
@@ -159,18 +160,18 @@ public class CeruleanCaveBlue extends SeqSegment {
 //      seqEflButton(B);
 //      seqEflButton(START);
 //
-//      {
-//        seqEflButton(A); // use PC
-//        seq(new EflSkipTextsSegment(1)); // turned on
-//        seqEflButton(A); // someone's PC
-//        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//        seq(new EflDepositMonSegment(CLOYSTER));
-//        seq(new EflDepositMonSegment(STARMIE));
-//        seq(new EflWithdrawMonSegment(IVYSAUR));
-//        seq(new EflChangeMonBoxSegment(4)); // box 5
-//        seqEflButton(B, MENU); // cancel
-//        seqEflButton(B, PRESSED); // cancel
-//      }
+////      {
+////        seqEflButton(A); // use PC
+////        seq(new EflSkipTextsSegment(1)); // turned on
+////        seqEflButton(A); // someone's PC
+////        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+////        seq(new EflDepositMonSegment(CLOYSTER));
+////        seq(new EflDepositMonSegment(STARMIE));
+////        seq(new EflWithdrawMonSegment(IVYSAUR));
+////        seq(new EflChangeMonBoxSegment(4)); // box 5
+////        seqEflButton(B, MENU); // cancel
+////        seqEflButton(B, PRESSED); // cancel
+////      }
 //    }
 //
 //    seq(new EflWalkToSegment(4, 6));
@@ -178,6 +179,18 @@ public class CeruleanCaveBlue extends SeqSegment {
 //
 //    save("cc0");
 //    load("cc0");
+////    seq(new EflWalkToSegment(13, 15)); // house
+////
+////    seq(new EflWalkToSegment(1, 4)); // trade
+////    seq(new EflWalkToSegment(1, 3)); // trade
+////    seqMove(new EflOverworldInteract(2));
+////    seq(new EflSkipTextsSegment(1));
+////    seq(new EflSkipTextsSegment(1, true)); // trade
+////    seq(new EflSelectMonSegment(POLIWHIRL));
+////    seq(new EflSkipTextsSegment(1)); // connect cables
+////    seq(new EflSkipTextsSegment(3)); // traded x for y, thanks
+////    seq(new EflWalkToSegment(2, 6)); // leave
+////    seq(new EflWalkToSegment(2, 8, false)); // leave
 //
 //    seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(20, -1)); // Route 24
@@ -193,84 +206,85 @@ public class CeruleanCaveBlue extends SeqSegment {
 //    seqMoveUnbounded(new EflWalkStep(LEFT, true));
 //
 //    save("tmp");
-//    load("tmp");
+////    load("tmp");
 //
 //    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //    seqUnbounded(new EflWalkToSegment(4, 11)); // enter Cerulean Cave
 //    seqUnbounded(new EflWalkToSegment(21, 15));
 //    seq(new EflEncounterSegment(RAICHU, UP));
 //    save("tmp2");
-//    load("tmp2");
+////    load("tmp2");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //    seqUnbounded(new EflWalkToSegment(21, 12));
 //    seq(new EflEncounterSegment(DODRIO, UP));
 //    save("tmp3");
-//    load("tmp3");
+////    load("tmp3");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //    seqUnbounded(new EflWalkToSegment(21, 9));
 //    seq(new EflEncounterSegment(HYPNO, UP));
 //    save("tmp4");
-//    load("tmp4");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(25, 9)); // water
-//    seqUnbounded(new EflSelectMonSegment(DRAGONAIR).fromOverworld().andSurf());
-//    for(int i=0;i<3;i++)
-//      seqMoveUnbounded(new EflWalkStep(RIGHT, true));
-//    for(int i=0;i<5;i++)
-//      seqMoveUnbounded(new EflWalkStep(UP, true));
-//    for(int i=0;i<14;i++)
-//      seqMoveUnbounded(new EflWalkStep(LEFT, true));
-//    for(int i=0;i<2;i++)
-//      seqMoveUnbounded(new EflWalkStep(DOWN, true));
-//    for(int i=0;i<5;i++)
-//      seqMoveUnbounded(new EflWalkStep(LEFT, true));
-//    for(int i=0;i<7;i++)
-//      seqMoveUnbounded(new EflWalkStep(DOWN, true));
-//    for(int i=0;i<2;i++)
-//      seqMoveUnbounded(new EflWalkStep(RIGHT, true));
-//    seqMoveUnbounded(new EflWalkStep(UP, true));
-//
-//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
-//    seq(new EflEncounterSegment(KADABRA, UP));
-//    save("tmp5");
+    load("tmp4");
+    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(40));
+    seqUnbounded(new EflWalkToSegment(25, 9)); // water
+    seqUnbounded(new EflSelectMonSegment(DRAGONAIR).fromOverworld().andSurf());
+    for(int i=0;i<3;i++)
+      seqMoveUnbounded(new EflWalkStep(RIGHT, true));
+    for(int i=0;i<5;i++)
+      seqMoveUnbounded(new EflWalkStep(UP, true));
+    for(int i=0;i<14;i++)
+      seqMoveUnbounded(new EflWalkStep(LEFT, true));
+    for(int i=0;i<2;i++)
+      seqMoveUnbounded(new EflWalkStep(DOWN, true));
+    for(int i=0;i<5;i++)
+      seqMoveUnbounded(new EflWalkStep(LEFT, true));
+    for(int i=0;i<7;i++)
+      seqMoveUnbounded(new EflWalkStep(DOWN, true));
+    for(int i=0;i<2;i++)
+      seqMoveUnbounded(new EflWalkStep(RIGHT, true));
+    seqMoveUnbounded(new EflWalkStep(UP, true));
+
+    seqUnbounded(new EflUseBikeSegment().fromOverworld());
+    seq(new EflEncounterSegment(KADABRA, UP));
+    save("tmp5");
 //    load("tmp5");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(13, 12));
-//    seq(new EflEncounterSegment(MAGNETON, RIGHT));
-//    save("tmp6");
+    seq(new EflCatchMonSegment().withBufferSize(0));
+    seqUnbounded(new EflWalkToSegment(13, 12));
+    seq(new EflEncounterSegment(MAGNETON, RIGHT));
+    save("tmp6");
 //    load("tmp6");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqEflButtonUnboundedNoDelay(UP);
-//    seqEflButtonUnboundedNoDelay(A);
-//    seqUnbounded(new EflTextSegment()); // Rare Candy
-//    seqUnbounded(new EflWalkToSegment(12, 17));
-//    seq(new EflEncounterSegment(SANDSLASH, LEFT));
-//    save("tmp");
+    seq(new EflCatchMonSegment().withBufferSize(0));
+    seqEflButtonUnboundedNoDelay(UP);
+    seqEflButtonUnboundedNoDelay(A);
+    seqUnbounded(new EflTextSegment()); // Rare Candy
+    seqUnbounded(new EflWalkToSegment(12, 17));
+    seq(new EflEncounterSegment(SANDSLASH, LEFT));
+    save("tmp");
 //    load("tmp");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(3, 11)); // 2f
-//    seqUnbounded(new EflWalkToSegment(3, 10));
-//    seq(new EflEncounterSegment(WIGGLYTUFF, UP));
-//    save("tmp2");
+    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(30));
+    seqUnbounded(new EflWalkToSegment(3, 11)); // 2f
+    seqUnbounded(new EflWalkToSegment(3, 10));
+    seq(new EflEncounterSegment(WIGGLYTUFF, UP));
+    save("tmp2");
 //    load("tmp2");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(2, 15));
-//    seq(new EflEncounterSegment(RHYDON, UP));
-//    save("tmp3");
+    seq(new EflCatchMonSegment().withBufferSize(0));
+    seqUnbounded(new EflWalkToSegment(2, 15));
+    seq(new EflEncounterSegment(RHYDON, UP));
+    save("tmp3");
 //    load("tmp3");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(0, 4));
-//    seq(new EflEncounterSegment(ELECTRODE, UP));
-//    save("tmp4");
+    seq(new EflCatchMonSegment().withBufferSize(0));
+    seqUnbounded(new EflWalkToSegment(0, 4));
+    seq(new EflEncounterSegment(ELECTRODE, UP));
+    save("tmp4");
 //    load("tmp4");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(1, 3)); // 1f
-//    seqUnbounded(new EflWalkToSegment(0, 6)); // b1f
-//    seqUnbounded(new EflWalkToSegment(9, 5));
+    seq(new EflCatchMonSegment());
+    seq(new EflWalkToSegment(1, 3)); // 1f
+    seq(new EflWalkToSegment(0, 6)); // b1f
+    seq(new EflWalkToSegment(9, 5));
+    seq(new EflWalkToSegment(8, 5));
 //    seq(new EflEncounterSegment(MAROWAK, LEFT));
 //    save("tmp5");
-    load("tmp5");
-    seq(new EflCatchMonSegment());
+//    load("tmp5");
+//    seq(new EflCatchMonSegment());
     seq(new EflWalkToSegment(13, 13)); // water
     seq(new EflFishSegment(SEADRA));
     seq(new EflCatchMonSegment());

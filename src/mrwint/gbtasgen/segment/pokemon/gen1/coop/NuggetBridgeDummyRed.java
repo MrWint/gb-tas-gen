@@ -1,5 +1,13 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BUBBLE_BEAM;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ESCAPE_ROPE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SAND_ATTACK;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SCREECH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WATER_GUN;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
@@ -14,26 +22,30 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectItemSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class NuggetBridgeDummyRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seq(new EflWalkToSegment(30, 19)); // enter gym
-    seq(new EflWalkToSegment(5, 3)); // engage
-    seq(new EflInitFightSegment(2)); // start fight
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-      kems.attackCount[3][0] = 2; // mega punch
-      kems.attackCount[3][1] = 1; // mega punch crit
-      kems.numExpGainers = 2; // level up to 18
-      seq(kems); // Goldeen
-    }
-    seq(new EflEndFightSegment(1)); // player defeated enemy
+//    seq(new EflWalkToSegment(30, 19)); // enter gym
+//    seq(new EflWalkToSegment(5, 3)); // engage
+//    seq(new EflInitFightSegment(2)); // start fight
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
+//      kems.attackCount[3][0] = 2; // mega punch
+//      kems.attackCount[3][1] = 1; // mega punch crit
+//      kems.numExpGainers = 2; // Charmander, level up to 18
+//      seq(kems); // Goldeen
+//    }
+//    seq(new EflEndFightSegment(1)); // player defeated enemy
+//
+//    save("nbd1");
+    load("nbd1");
 
     seq(new EflEvolutionSegment(true)); // cancel evolution
 
@@ -42,7 +54,7 @@ public class NuggetBridgeDummyRed extends SeqSegment {
     seq(new EflInitFightSegment(9)); // start fight
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(55)}; // water gun
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE, WATER_GUN)}; // any
       kems.attackCount[3][0] = 1; // mega punch
       kems.attackCount[3][1] = 1; // mega punch crit
       seq(kems); // staryu
@@ -50,20 +62,21 @@ public class NuggetBridgeDummyRed extends SeqSegment {
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(55)}; // water gun
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE, WATER_GUN, BUBBLE_BEAM)}; // any
       kems.attackCount[3][0] = 2; // mega punch
       kems.attackCount[3][1] = 2; // mega punch crit
-      kems.numExpGainers = 2; // level up to 19
+      kems.numExpGainers = 2; // Charmander, level up to 19
       seq(kems); // starmie
     }
     seq(new EflEndFightSegment(4)); // player defeated enemy
+
+    save("nbd2");
+    load("nbd2");
 
     seq(new EflEvolutionSegment(true)); // cancel evolution
 
     seq(new EflSkipTextsSegment(9)); // after battle speech
     seq(new EflWalkToSegment(5, 14, false)); // leave gym
-    save("nbd1");
-    load("nbd1");
 
     seq(new EflWalkToSegment(19, 17)); // enter Center
     seq(new EflPokecenterSegment(true)); // set warp point in center
@@ -81,11 +94,10 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(8)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 28)}; // sand attack
+			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SAND_ATTACK)};
       kems.attackCount[2][1] = 1; // ember crit
-//      kems.attackCount[3][0] = 1; // mega punch
       kems.attackCount[3][1] = 1; // mega punch crit
-      kems.numExpGainers = 2; // level up to 20
+      kems.numExpGainers = 2; // Charmander, level up to 20
 			seq(kems); // pidgeotto
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
@@ -93,13 +105,12 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(Metric.TRUE)}; // teleport
       kems.attackCount[3][0] = 1; // mega punch
-//      kems.attackCount[0][1] = 1; // scratch crit
 			seq(kems); // abra
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
       kems.attackCount[2][1] = 1; // ember crit
 //      kems.attackCount[3][0] = 1; // mega punch
 			seq(kems); // rattata
@@ -107,13 +118,16 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
 //      kems.attackCount[0][1] = 1; // scratch crit
       kems.attackCount[3][0] = 1; // mega punch
       kems.attackCount[3][1] = 1; // mega punch crit
 			seq(kems); // squirtle
 		}
 		seq(new EflEndFightSegment(2)); // player defeated enemy
+
+    save("nbd3");
+    load("nbd3");
 
     seq(new EflEvolutionSegment(true)); // cancel evolution
 
@@ -123,14 +137,11 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		seq(new EflWalkToSegment(11, 32)); // walk up to trainer
 		seqMove(new EflOverworldInteract(7)); // talk to trainer 1
 
-		save("nbd2");
-		load("nbd2");
-
 		seq(new EflInitFightSegment(4)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[2][0] = 1; // ember
-      kems.numExpGainers = 2; // level up to 21
+      kems.numExpGainers = 2; // Charmander, level up to 21
 			seq(kems); // caterpie
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
@@ -140,6 +151,9 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 			seq(kems); // weedle
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("nbd4");
+    load("nbd4");
 
     seq(new EflEvolutionSegment(true)); // cancel evolution
 
@@ -159,6 +173,9 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 			seq(kems); // nidoF
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("nbd5");
+    load("nbd5");
 
 		seq(new EflWalkToSegment(11, 26)); // walk up to trainer
 		seqMove(new EflOverworldInteract(5)); // talk to trainer 3
@@ -185,6 +202,9 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
 
+    save("nbd6");
+    load("nbd6");
+
 		seq(new EflWalkToSegment(10, 23)); // walk up to trainer
 		seqMove(new EflOverworldInteract(4)); // talk to trainer 4
 
@@ -192,7 +212,7 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[2][1] = 1; // ember crit
-      kems.numExpGainers = 2; // level up to 22
+      kems.numExpGainers = 2; // Charmander, level up to 22
 			seq(kems); // pidgey
 		}
     seq(new EflOverrideMoveSegment(1)); // override leer with rage
@@ -203,8 +223,8 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 			seq(kems); // nidoF
 		}
 
-    save("nbd3");
-    load("nbd3");
+    save("nbd7");
+    load("nbd7");
 
     seq(new EflEndFightSegment(1)); // player defeated enemy
 
@@ -216,11 +236,14 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(1)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 43)}; // leer
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
 			kems.attackCount[3][1] = 1; // 1x mega punch crit
 			seq(kems); // mankey
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("nbd8");
+    load("nbd8");
 
 		seq(new EflWalkToSegment(10, 15)); // walk up to rocket
 
@@ -239,8 +262,8 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
 
-		save("nbd4");
-		load("nbd4");
+		save("nbd9");
+		load("nbd9");
 
 		seq(new EflSkipTextsSegment(3)); // after rocket battle texts
 
@@ -250,12 +273,15 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(2)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
       kems.attackCount[2][1] = 2; // ember crit
-      kems.numExpGainers = 2; // level up to 23
+      kems.numExpGainers = 2; // Charmander, level up to 23
 			seq(kems); // Onix
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("nbd10");
+    load("nbd10");
 
     seq(new EflEvolutionSegment(true)); // cancel evolution
 
@@ -277,6 +303,9 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
 
+    save("nbd11");
+    load("nbd11");
+
 		seq(new EflWalkToSegment(24, 6)); // walk up to trainer 3
 
 		seq(new EflInitFightSegment(2)); // start fight
@@ -294,6 +323,9 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 			seq(kems); // ekans
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("nbd12");
+    load("nbd12");
 
 		seq(new EflWalkToSegment(35,4)); // walk up to trainer 4
 		seq(new EflWalkToSegment(36,4)); // walk up to trainer 4
@@ -316,20 +348,19 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[2][0] = 1; // 1x ember
-      kems.numExpGainers = 2; // level up to 24
+      kems.numExpGainers = 2; // Charmander, level up to 24
 			seq(kems); // oddish
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
 
     seq(new EflEvolutionSegment(true)); // cancel evolution
 
-    save("nbd6");
-    load("nbd6");
+    save("nbd13");
+    load("nbd13");
 
 //    seq(new EflWalkToSegment(38, 4)); // ether
 //    seqEflButton(Move.A); // ether
 //    seq(new EflTextSegment()); // ether
-
 
     seq(new EflWalkToSegment(45,3)); // enter bills house
 
@@ -350,22 +381,7 @@ public class NuggetBridgeDummyRed extends SeqSegment {
 		seqMove(new EflOverworldInteract(2)); // talk to bill
 		seq(new EflSkipTextsSegment(18));
 
-		seqEflButton(Move.START, PressMetric.PRESSED);
-		seqEflScrollA(2); // items
-
-//    seqEflScrollFastAF(7); // ether
-//    seqEflSkipInput(1);
-//    seqEflButton(Move.A); // use
-//    seqEflSkipInput(1);
-//    seqEflButton(Move.A); // charmander
-//    seq(new EflTextSegment(Move.B));
-//    seqEflScrollA(-1); // mega punch
-//    seq(new EflSkipTextsSegment(1)); // PP restored
-
-		seqEflScrollFastAF(2); // escape rope
-		seqEflSkipInput(1);
-		seqEflButton(Move.A);
-
+		seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
     seqEflSkipInput(2);
     seq(new EflWalkToSegment(27, 11)); // enter dig house
 	}

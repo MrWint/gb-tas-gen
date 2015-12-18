@@ -139,81 +139,77 @@ public class LickitungRed extends SeqSegment {
 	@Override
 	public void execute() {
 
-//	  seq(new EflSelectItemSegment(LEAF_STONE).fromOverworld().andUse());
-//	  seq(new EflSelectMonSegment(WEEPINBELL));
-//	  seq(new EflEvolutionSegment()); // Victreebel
-//	  seqEflButton(B);
-//	  seq(new EflSelectMonSegment(FARFETCHD).fromMainMenu().andFlyTo(3)); // Fuschia
-//    seqEflSkipInput(1);
-//
-//    seqMetric(new OutputParty());
-//    seqMetric(new OutputItems());
-//    seqMetric(new OutputBoxMons());
-//
-//    seq(new EflWalkToSegment(19, 27)); // Center
-//
-//    {
-//      seq(new EflWalkToSegment(13, 4)); // PC
-//      seq(new EflWalkToSegment(13, 3, false)); // PC
-//      {
-//        seqEflButton(A); // use PC
-//        seq(new EflSkipTextsSegment(1)); // turned on
-//        seqEflButton(A); // someone's PC
-//        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//        seq(new EflChangeMonBoxSegment(3)); // box 4
-//        seq(new EflDepositMonSegment(VICTREEBEL));
-//        seq(new EflWithdrawMonSegment(SLOWBRO));
-//        seqEflButton(B, MENU); // cancel
-//        seqEflButton(B, PRESSED); // cancel
-//      }
-//      seqMetric(new OutputBoxMons());
-//
-//      seq(new EflWalkToSegment(4, 6)); // leave center
-//      seq(new EflWalkToSegment(4, 8, false)); // leave center
-//  }
-//
-//    seq(new EflUseBikeSegment().fromOverworld());
-//    seq(new EflWalkToSegment(2, 28, false)); // ledge
-//    seq(new EflWalkToSegment(-1, 17)); // Route 18
-//
-//    save("li0");
-//    load("li0");
-//
-//    seqUnbounded(new EflWalkToSegment(39, 9, false)); // house
-//    seqUnbounded(new EflWalkToSegment(6, 8)); // stairs
-//    seqUnbounded(new EflWalkToSegment(5, 4)); // trader
-//    seqUnbounded(new EflWalkToSegment(5, 3)); // trader
-//    delayEfl(new SeqSegment() {
-//      @Override
-//      protected void execute() {
-//        seqEflButtonUnboundedNoDelay(A);
-//        seqMetric(new EflOverworldInteract.OverworldInteractMetric(1)); // trader
-//      }
-//    });
-//    seq(new EflSkipTextsSegment(1));
-//    seq(new EflSkipTextsSegment(1, true));
-//    seq(new EflSelectMonSegment(SLOWBRO));
-//    seq(new EflSkipTextsSegment(1));
-//    seq(new EflSkipTextsSegment(3));
-//    seq(new EflWalkToSegment(7, 7)); // stairs
-//    seq(new EflWalkToSegment(1, 5)); // house
-//    seq(new EflWalkToSegment(-1, 5, false)); // house
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflButton(DOWN);
-//    seqEflSkipInput(1);
-//    seq(new EflFishSegment(KRABBY));
-//    seq(new EflCatchMonSegment());
-//
-//    save("li1");
+	  seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(3)); // Fuschia
+    seqEflSkipInput(1);
+
+    seqMetric(new OutputParty());
+    seqMetric(new OutputItems());
+    seqMetric(new OutputBoxMons());
+
+    seq(new EflWalkToSegment(19, 27)); // Center
+
+    {
+      seq(new EflWalkToSegment(13, 4)); // PC
+      seq(new EflWalkToSegment(13, 3, false)); // PC
+      {
+        seqEflButton(A); // use PC
+        seq(new EflSkipTextsSegment(1)); // turned on
+        seqEflButton(A); // someone's PC
+        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+        seq(new EflChangeMonBoxSegment(3)); // box 4
+        seq(new EflDepositMonSegment(EXEGGUTOR));
+        seq(new EflWithdrawMonSegment(SLOWBRO));
+        seqEflButton(B, MENU); // cancel
+        seqEflButton(B, PRESSED); // cancel
+      }
+      seqMetric(new OutputBoxMons());
+
+      seq(new EflWalkToSegment(4, 6)); // leave center
+      seq(new EflWalkToSegment(4, 8, false)); // leave center
+  }
+
+    seq(new EflUseBikeSegment().fromOverworld());
+    seq(new EflWalkToSegment(2, 28, false)); // ledge
+    seq(new EflWalkToSegment(-1, 17)); // Route 18
+
+    save("li0");
+    load("li0");
+
+    seqUnbounded(new EflWalkToSegment(39, 9, false)); // house
+    seqUnbounded(new EflWalkToSegment(6, 8)); // stairs
+    seqUnbounded(new EflWalkToSegment(5, 4)); // trader
+    seqUnbounded(new EflWalkToSegment(5, 3)); // trader
+    delayEfl(new SeqSegment() {
+      @Override
+      protected void execute() {
+        seqEflButtonUnboundedNoDelay(A);
+        seqMetric(new EflOverworldInteract.OverworldInteractMetric(1)); // trader
+      }
+    });
+    seq(new EflSkipTextsSegment(1));
+    seq(new EflSkipTextsSegment(1, true));
+    seq(new EflSelectMonSegment(SLOWBRO));
+    seq(new EflSkipTextsSegment(1));
+    seq(new EflSkipTextsSegment(3));
+    seq(new EflWalkToSegment(7, 7)); // stairs
+    seq(new EflWalkToSegment(1, 5)); // house
+    seq(new EflWalkToSegment(-1, 5, false)); // house
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflButton(DOWN);
+    seqEflSkipInput(1);
+    seq(new EflFishSegment(KRABBY));
+    seq(new EflCatchMonSegment());
+
+    save("li1");
     load("li1");
 
     seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(4)); // Celadon
@@ -228,8 +224,8 @@ public class LickitungRed extends SeqSegment {
         seqEflButton(A); // someone's PC
         seq(new EflSkipTextsSegment(2)); // accessed, mon storage
         seq(new EflChangeMonBoxSegment(1)); // box 2
-        seq(new EflDepositMonSegment(FARFETCHD));
-        seq(new EflWithdrawMonSegment(WARTORTLE));
+//        seq(new EflDepositMonSegment(FARFETCHD));
+//        seq(new EflWithdrawMonSegment(WARTORTLE));
         seqEflButton(B, MENU); // cancel
         seqEflButton(B, PRESSED); // cancel
       }

@@ -2,7 +2,18 @@ package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.B;
+import static mrwint.gbtasgen.move.Move.DOWN;
 import static mrwint.gbtasgen.move.Move.START;
+import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CHARMELEON;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWLITHE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGIKARP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MANKEY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MEOWTH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ODDISH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM11;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM24;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
@@ -19,8 +30,12 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflBuyItemSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflCancelMoveLearnSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflEncounterSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectItemSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectMonSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSwapWithSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflUseBikeSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
@@ -31,53 +46,33 @@ public class RockTunnelRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(2); // items
-//      seqEflScrollFastAF(8+1); // TM11
-//      seqEflButton(A, PRESSED); // use
-//      seq(new EflLearnTMSegment(0, 0)); // replace Scratch with Bubblebeam
-//      seqEflScrollFastAF(5+1); // TM24
-//      seqEflButton(A, PRESSED); // use
-//      seq(new EflLearnTMSegment(0, 1)); // replace Growl with Thunderbolt
-//      seqEflButton(B); // cancel
-//      seqEflScrollA(-1); // mon
-//      seqEflScrollAF(3); // dux
-//      seqEflSkipInput(1);
-//      seqEflScrollAF(1); // fly
-//      seqEflSkipInput(1);
-//      seqEflScrollA(2); // cerulean
-//      seqEflSkipInput(1);
-//    }
+//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(2)); // Cerulean
+//    seqEflSkipInput(1);
 //
-//    seq(new EflWalkToSegment(13, 25)); // enter bike shop
-//    seq(new EflWalkToSegment(6, 3, false)); // walk to counter // TODO: fix
+//    seqUnbounded(new EflWalkToSegment(13, 25)); // enter bike shop
+//    seqUnbounded(new EflWalkToSegment(6, 5)); // walk to counter
+//    seq(new EflWalkToSegment(6, 4)); // walk to counter
 //    seqMove(new EflOverworldInteract(1)); // talk to owner
 //    seq(new EflSkipTextsSegment(5)); // get bike
 //    seq(new EflWalkToSegment(3, 8, false)); // leave shop
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(1); // items
-//      seqMetric(new OutputItems());
-//      seqEflButton(Move.DOWN);
-//      seq(new EflSwapWithSegment(5));
-//      seqEflScrollFastA(-5);
-//      seq(new EflSkipTextsSegment(1)); // got on bike
-//    }
+//
+//    seq(new EflSelectItemSegment(TM11).fromOverworld().andUse());
+//    seq(new EflLearnTMSegment(MEOWTH, 1)); // replace Scratch with Bubblebeam
+//    seqEflButton(DOWN, PRESSED); // TM34
+//    seq(new EflSwapWithSegment(5));
+//    seqEflButton(UP | A, PRESSED); // TM34
+//    seqEflButton(A, PRESSED); // use
+//    seq(new EflLearnTMSegment(MEOWTH, 0)); // replace Growl with Thunderbolt
+//    seqEflSkipInput(0);
+//    seq(new EflUseBikeSegment());
+//
 //    seq(new EflWalkToSegment(19, 26)); // go to bush
 //    seq(new EflWalkToSegment(19, 27)); // go to bush
 //
 //    save("tmp");
 //    load("tmp");
 //
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(-1); // mon
-//      seqEflButton(A, PRESSED); // dux
-//      seqEflSkipInput(1);
-//      seqEflButton(A); // cut
-//      seqEflButton(B); // hacked away (to text scroll)?
-//    }
+//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andCut());
 //
 //    {
 //      seq(new EflWalkToSegment(19, 33, false)); // ledge
@@ -92,10 +87,10 @@ public class RockTunnelRed extends SeqSegment {
 //      seq(new EflSkipTextsSegment(2)); // raise one
 //      seq(new EflSkipTextsSegment(1, true)); // of your mon
 //      seq(new EflSkipTextsSegment(1)); // which one
-//      seqEflScrollAF(-1); // Magikarp
+//      seq(new EflSelectMonSegment(MAGIKARP));
 //      seq(new EflSkipTextsSegment(3)); // look after magikarp for a while, come back
 //      seq(new EflWalkToSegment(2, 8, false)); // leave house
-//      seq(new EflUseBikeSegment(1, 0));
+//      seq(new EflUseBikeSegment().fromOverworld());
 //      seq(new EflWalkToSegment(10, 23, false)); // ledge
 //      seq(new EflWalkToSegment(15, -1)); // cerulean
 //    }
@@ -103,16 +98,7 @@ public class RockTunnelRed extends SeqSegment {
 //
 //    seq(new EflWalkToSegment(40, 17)); // leave cerulean
 //    seq(new EflWalkToSegment(4, 8)); // go to bush
-//    {
-//      seqEflButton(Move.START, PressMetric.PRESSED);
-//      seqEflScrollA(-1); // mon
-//      seqEflScrollAF(-2); // dux
-////      seqEflSkipInput(1);
-////      seqEflButton(Move.A); // dux
-//      seqEflSkipInput(1);
-//      seqEflButton(Move.A); // cut
-//      seqEflButton(Move.B); // hacked away (to text scroll)?
-//    }
+//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andCut());
 //    seq(new EflWalkToSegment(13, 8)); // go to trainer
 //    seq(new EflWalkToSegment(13, 9)); // go to trainer
 //    seqMove(new EflOverworldInteract(1)); // talk to trainer
@@ -177,6 +163,10 @@ public class RockTunnelRed extends SeqSegment {
 //      seq(kems); // venonat
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
+//
+//    save("rt2");
+//    load("rt2");
+//
 //    seq(new EflWalkToSegment(51, 5, false)); // jump ledge
 //    seq(new EflWalkToSegment(60, 8)); // route 10
 //
@@ -204,6 +194,9 @@ public class RockTunnelRed extends SeqSegment {
 //    seq(new EflCancelMoveLearnSegment()); // screech
 //		seq(new EflEndFightSegment(1)); // player defeated enemy
 //
+//    save("rt3");
+//    load("rt3");
+//
 //    seq(new EflWalkToSegment(37, 3)); // ladder
 //    seq(new EflWalkToSegment(27, 30)); // engage trainer
 //    seqMove(new EflOverworldInteract(8)); // talk to trainer
@@ -218,8 +211,8 @@ public class RockTunnelRed extends SeqSegment {
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("rt2");
-//    load("rt2");
+//    save("rt4");
+//    load("rt4");
 //
 //    seq(new EflWalkToSegment(14, 30)); // engage trainer
 //    seq(new EflWalkToSegment(14, 29)); // engage trainer
@@ -241,6 +234,9 @@ public class RockTunnelRed extends SeqSegment {
 //      seq(kems); // bulbasaur
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
+//
+//    save("rt5");
+//    load("rt5");
 //
 //    seq(new EflWalkToSegment(27, 3)); // ladder
 //
@@ -275,8 +271,8 @@ public class RockTunnelRed extends SeqSegment {
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("rt3");
-//    load("rt3");
+//    save("rt6");
+//    load("rt6");
 //
 //    seq(new EflWalkToSegment(3, 3)); // ladder
 //    seq(new EflWalkToSegment(24, 24)); // engage trainer
@@ -309,24 +305,33 @@ public class RockTunnelRed extends SeqSegment {
 //
 //    seq(new EflWalkToSegment(15, 33)); // leave rock tunnel
 //
+//    save("rt7");
+//    load("rt7");
+//
 //    seq(new EflWalkToSegment(15, 61, false)); // jump ledge
 //    seq(new EflWalkToSegment(9, 72)); // enter lavender
+//    {
+//      seq(new EflWalkToSegment(15, 13)); // enter mart
+//      seq(new EflWalkToSegment(3, 5)); // shopkeep
+//      seq(new EflWalkToSegment(2, 5)); // shopkeep
+//      seqMove(new EflOverworldInteract(1));
+//      {
+//        seq(new EflSkipTextsSegment(1, true)); // buy
+//        seq(new EflTextSegment(Move.B));
+//        seq(new EflBuyItemSegment(3, 8, true)); // Escape Rope x8
+//        seqEflButton(Move.B); // cancel
+//        seq(new EflSkipTextsSegment(2)); // cancel + bye
+//      }
+//      seq(new EflWalkToSegment(3, 6)); // leave mart
+//      seq(new EflWalkToSegment(3, 8, false)); // leave mart
+//      seq(new EflUseBikeSegment().fromOverworld());
+//    }
 //    seq(new EflWalkToSegment(-1, 8)); // leave lavender
 //    seq(new EflWalkToSegment(47, 13)); // engage trainer
 //
-//    save("rt4");
-//    load("rt4");
-//
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(1); // mon
-//      seqEflButton(A, PRESSED); // meowth
-//      seqEflSkipInput(1);
-//      seqEflScrollAF(1); // switch
-//      seqEflScrollAF(-2); // charmeleon
-//      seqEflButton(B);
-//      seqEflButton(START);
-//    }
+//    seq(new EflSelectMonSegment(MEOWTH).fromOverworld().andSwitchWith(CHARMELEON));
+//    seqEflButton(B);
+//    seqEflButton(START);
 //
 //    seqMove(new EflOverworldInteract(8)); // talk to trainer
 //    seq(new EflInitFightSegment(1)); // start fight
@@ -345,13 +350,13 @@ public class RockTunnelRed extends SeqSegment {
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("rt5");
-//    load("rt5");
+//    save("rt8");
+//    load("rt8");
 //
 //    seq(new EflWalkToSegment(13, 3)); // enter passage
 //    seq(new EflWalkToSegment(4, 4)); // enter passage
 //
-//    seq(new EflUseBikeSegment(2, 1));
+//    seq(new EflUseBikeSegment().fromOverworld());
 //    {
 //      seq(new EflWalkToSegment(23, 5)); // walk passage
 //      seq(new EflWalkToSegment(22, 5)); // walk passage
@@ -366,24 +371,26 @@ public class RockTunnelRed extends SeqSegment {
 //    }
 //    seqUnbounded(new EflWalkToSegment(2, 5)); // walk passage
 //    seqUnbounded(new EflWalkToSegment(4, 8, false)); // exit passage
-//    seqUnbounded(new EflUseBikeSegment(0, 0));
-//
-//    seqUnbounded(new EflWalkToSegment(8, 6)); // grass
-//    seq(new EflEncounterSegment(0x21, Move.UP)); // Growlithe
+//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //    save("tmp");
-////    load("tmp");
-//    seq(new EflCatchMonSegment(0).withBufferSize(0).withExtraSkips(30));
-//
-////    seqUnbounded(new EflWalkToSegment(15, 2)); // grass
-//    seqUnbounded(new EflWalkToSegment(8, 3)); // grass
-//    seq(new EflEncounterSegment(new CheckEncounterMetric(0xb9, 22), Move.UP)); // Oddish
-//    save("tmp2");
+    load("tmp");
+
+    seqUnbounded(new EflWalkToSegment(9, 6)); // grass
+    seq(new EflEncounterSegment(new CheckEncounterMetric(MANKEY, 20).withAtkDV(15), UP));
+    save("tmp2");
     load("tmp2");
-    seq(new EflCatchMonSegment(0).withBufferSize(0).withExtraSkips(20));
+    seq(new EflCatchMonSegment().withBufferSize(0));
+
+//    seqUnbounded(new EflWalkToSegment(15, 2)); // grass
+    seqUnbounded(new EflWalkToSegment(9, 3)); // grass
+    seq(new EflEncounterSegment(new CheckEncounterMetric(ODDISH, 22), UP));
+    save("tmp3");
+    load("tmp3");
+    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(0));
 
     seqUnbounded(new EflWalkToSegment(8, 4)); // grass
-    seq(new EflEncounterSegment(new CheckEncounterMetric(0x39, 20).withAtkDV(15), Move.DOWN)); // Mankey
-    seq(new EflCatchMonSegment(0));
+    seq(new EflEncounterSegment(GROWLITHE, DOWN));
+    seq(new EflCatchMonSegment());
 
     seq(new EflWalkToSegment(-1, 3)); // enter celadon
 	}

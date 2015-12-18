@@ -1,5 +1,7 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SCREECH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
@@ -12,6 +14,7 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -32,17 +35,17 @@ public class PewterRed extends SeqSegment {
     seq(new EflInitFightSegment(9)); // start fight
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
-      kems.attackCount[2][1] = 1; // 1x ember crit
-      kems.numExpGainers = 2; // boosted
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
+      kems.attackCount[2][1] = 1; // ember crit
+      kems.numExpGainers = 2; // Charmander, boosted
       seq(kems); // Geodude
     }
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
-      kems.attackCount[2][1] = 1; // 1x ember crit
-      kems.numExpGainers = 2; // boosted
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
+      kems.attackCount[2][1] = 1; // ember crit
+      kems.numExpGainers = 2; // Charmander, boosted
       seq(kems); // Onix
     }
     save("pe1");

@@ -16,7 +16,8 @@ public class EflEnemyFlinchSegment extends EflAttackActionSegment {
   private class EnemyFlinchMetric implements StateResettingMetric {
     @Override
     public int getMetricInternal() {
-      EflUtil.runToAddressNoLimit(0, 0, 0x3e8e7); // run to start of flinch check
+      if (EflUtil.runToAddressLimit(0, 0, 500, 0x3e8e7) == 0) // run to start of flinch check
+        return 0;
       int enemyStatus = curGb.readMemory(0xd067); // W_ENEMYBATTSTATUS1
       if ((enemyStatus & 0b1000) != 0)
         return 1;

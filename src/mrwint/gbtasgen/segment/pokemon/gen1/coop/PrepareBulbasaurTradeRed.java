@@ -7,8 +7,9 @@ public class PrepareBulbasaurTradeRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seq(new EflWalkToSegment(23, 25)); // enter center
-//    seq(new EflWalkToSegment(11, 4)); // cable club
-    seq(new EflWalkToSegment(11, 2, false)); // cable club // TODO: fix bump
+    seqUnbounded(new EflWalkToSegment(23, 25)); // enter center
+    seqUnbounded(new EflWalkToSegment(11, 4)); // cable club
+    seq(new EflWalkToSegment(11, 3)); // cable club
+//    seq(new EflWalkToSegment(11, 2, false)); // cable club // TODO: fix bump
 	}
 }

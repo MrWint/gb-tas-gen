@@ -1,5 +1,7 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.common;
 
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PC_MON_WITHDRAW;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -8,30 +10,37 @@ import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class EflWithdrawMonSegment extends SeqSegment {
 
-	int monscroll;
-	int opscroll;
+  int mon;
+	int monGoalPosition = -1;
 
-	public EflWithdrawMonSegment(int opscroll, int monscroll) {
+	public EflWithdrawMonSegment(int mon) {
     EflUtil.assertEfl();
 
-    this.opscroll = opscroll;
-		this.monscroll = monscroll;
+		this.mon = mon;
 	}
 
 	@Override
 	public void execute() {
-	  if (opscroll == 0)
-      seqEflButton(Move.A, PressMetric.MENU); // withdraw
-    else if  (opscroll == -1)
-      seqEflButton(Move.UP | Move.A, PressMetric.MENU); // withdraw
-    else if  (opscroll == 1)
-      seqEflButton(Move.DOWN | Move.A, PressMetric.MENU); // withdraw
-	  else
-      seqEflScrollAF(opscroll);
+    seq(new EflSelectPcMonOperationSegment(PC_MON_WITHDRAW));
 
-		if (monscroll <= 1 && monscroll >= -1)
-		  seqEflSkipInput(1);
-		seqEflScrollFastAF(monscroll);
+    seqSample(() -> {
+      int numMons = curGb.readMemory(0xDA80);
+      for (int i = 0; i < numMons; i++) {
+        int curMon = curGb.readMemory(0xDA80 + i + 1);
+        if (curMon == mon) {
+          monGoalPosition = i;
+          break;
+        }
+      }
+      if (monGoalPosition == -1)
+        throw new IllegalStateException("Mon " + mon + " not found.");
+    });
+
+
+    if (monGoalPosition <= 2)
+      seqEflScrollFastAF(monGoalPosition);
+    else
+      seqEflScrollFastA(monGoalPosition);
 		seqEflButton(Move.A, PressMetric.PRESSED); // withdraw
 		seq(new EflSkipTextsSegment(2)); // taken out, got
 	}

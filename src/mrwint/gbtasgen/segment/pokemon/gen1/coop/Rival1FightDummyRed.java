@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
@@ -15,10 +16,10 @@ public class Rival1FightDummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(0));
 		{
 			EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-			kems.attackCount[0][0] = 2; // 2x scratch
-			kems.attackCount[0][1] = 2; // 2x scratch crit
-			kems.numExpGainers = 2; // level up to 6
+			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
+			kems.attackCount[0][0] = 2; // scratch
+			kems.attackCount[0][1] = 2; // scratch crit
+			kems.numExpGainers = 2; // Charmander, level up to 6
 			seq(kems); // Squirtle
 		}
 

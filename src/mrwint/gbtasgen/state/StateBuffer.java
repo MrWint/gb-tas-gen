@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.state;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class StateBuffer {
 
@@ -298,8 +301,11 @@ public class StateBuffer {
   public void save(String filename, String suffix) {
     try {
       String path = "saves/" + filename + suffix;
-      ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
+      String compressedPath = "saves/" + filename + suffix + ".gz";
+      ObjectOutputStream oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(compressedPath)));
+//      ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
       save(oos);
+      oos.flush();
       oos.close();
     } catch (IOException e) {
       e.printStackTrace();
@@ -323,10 +329,25 @@ public class StateBuffer {
   public static StateBuffer load(String filename, String suffix) {
     try {
       String path = "saves/" + filename + suffix;
+      String compressedPath = "saves/" + filename + suffix + ".gz";
 
-      ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+      boolean isCompressed = new File(compressedPath).exists();
+
+      ObjectInputStream ois;
+      if (isCompressed) {
+        System.out.println("using compressed input");
+        ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(compressedPath)));
+      } else {
+        ois = new ObjectInputStream(new FileInputStream(path));
+      }
       StateBuffer ret = load(ois);
       ois.close();
+
+      if (!isCompressed) {
+        System.out.println("input not compressed, recompress.");
+        ret.save(filename, suffix);
+      }
+
       return ret;
     } catch (IOException e) {
       e.printStackTrace();

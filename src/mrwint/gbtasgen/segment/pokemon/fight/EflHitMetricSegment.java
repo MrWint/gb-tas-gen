@@ -1,7 +1,6 @@
 package mrwint.gbtasgen.segment.pokemon.fight;
 
 import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
-
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.Segment;
@@ -17,19 +16,21 @@ public class EflHitMetricSegment extends EflAttackActionSegment {
 	final private boolean effectMiss;
 	final private boolean player;
 	final private boolean noCheckAdditionalTexts;
+	final private boolean noCheckObedience;
 	final private int numEndTexts;
 	final private int thrashAdditionalTurns;
 
-	public EflHitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts) {
-		this(isCrit, effectMiss, isEffective, player, numEndTexts, noCheckAdditionalTexts, 0);
+	public EflHitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts, boolean noCheckObedience) {
+		this(isCrit, effectMiss, isEffective, player, numEndTexts, noCheckAdditionalTexts, noCheckObedience, 0);
 	}
-	public EflHitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts, int thrashAdditionalTurns) {
+	public EflHitMetricSegment(boolean isCrit, boolean effectMiss, boolean isEffective, boolean player, int numEndTexts, boolean noCheckAdditionalTexts, boolean noCheckObedience, int thrashAdditionalTurns) {
 		this.isCrit = isCrit;
 		this.effectMiss = effectMiss;
     this.thrashAdditionalTurns = thrashAdditionalTurns;
 		this.numEndTexts = numEndTexts + (isCrit ? 1 : 0) + (isEffective ? 1 : 0);
 		this.player = player;
 		this.noCheckAdditionalTexts = noCheckAdditionalTexts;
+		this.noCheckObedience = noCheckObedience;
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class EflHitMetricSegment extends EflAttackActionSegment {
 
 	@Override
 	public void executeInternal(int minValue) {
-	  if (player)
+	  if (player && !noCheckObedience)
 	    seqMetric(new EflCheckObedience());
 		seqUnbounded(new EflTextSegment(Move.A)); // player mon uses attack
 //    System.out.println("EflHitMetricSegment: size=" + sb.size());

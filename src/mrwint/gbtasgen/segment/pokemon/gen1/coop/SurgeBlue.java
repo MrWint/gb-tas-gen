@@ -1,14 +1,42 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
+import static mrwint.gbtasgen.move.Move.A;
+import static mrwint.gbtasgen.move.Move.B;
+import static mrwint.gbtasgen.move.Move.DOWN;
+import static mrwint.gbtasgen.move.Move.RIGHT;
+import static mrwint.gbtasgen.move.Move.START;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ABRA;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLEFABLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DISABLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EMBER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM01;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.JIGGLYPUFF;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KAKUNA;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGIKARP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.METAPOD;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SCREECH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SQUIRTLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.THUNDERBOLT;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.THUNDER_SHOCK;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VINE_WHIP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WEEDLE;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
-
+import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
+import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.metric.StateResettingMetric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
+import mrwint.gbtasgen.metric.pokemon.gen1.OutputBoxMons;
+import mrwint.gbtasgen.metric.pokemon.gen1.OutputParty;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflEvolutionSegment;
+import mrwint.gbtasgen.segment.pokemon.EflLearnTMSegment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
@@ -17,6 +45,12 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflSwitchPokemonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflChangeMonBoxSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflDepositMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectItemSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflWithdrawMonSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil;
@@ -26,23 +60,52 @@ public class SurgeBlue extends SeqSegment {
 
 	@Override
 	public void execute() {
+//    {
+//      seq(new EflWalkToSegment(19, 17)); // center
+//      seq(new EflWalkToSegment(13, 4)); // PC // TODO
+//      seq(new EflWalkToSegment(13, 3, false)); // PC
+//
+//      seqMetric(new OutputParty());
+//      seqMetric(new OutputBoxMons());
+//
+//      {
+//        seqEflButton(A); // use PC
+//        seq(new EflSkipTextsSegment(1)); // turned on
+//        seqEflButton(A); // someone's PC
+//        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+//        seq(new EflDepositMonSegment(JIGGLYPUFF));
+//        seq(new EflDepositMonSegment(MAGIKARP));
+//        seq(new EflDepositMonSegment(CLEFABLE));
+//        seq(new EflWithdrawMonSegment(WEEDLE));
+//        seq(new EflWithdrawMonSegment(METAPOD));
+//        seq(new EflWithdrawMonSegment(ABRA));
+//        seqEflButton(B, MENU); // cancel
+//        seqEflButton(B, PRESSED); // cancel
+//      }
+//      seq(new EflWalkToSegment(4, 6));
+//      seq(new EflWalkToSegment(4, 8, false));
+//    }
+
+    seq(new EflWalkToSegment(27, 11)); // enter dig house
     seq(new EflWalkToSegment(3, 0)); // leave house
     seq(new EflWalkToSegment(30, 9)); // engage rocket
 		seq(new EflInitFightSegment(4)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[3][1] = 1; // bubblebeam crit
-      kems.numExpGainers = 2; // level up to 24
+      kems.numExpGainers = 2; // Squirtle, level up to 24
 			seq(kems); // machop
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[0][1] = 1; // mega punch crit
-//      kems.attackCount[1][1] = 1; // bite crit // Wartortle
 			seq(kems); // drowzee
 		}
 		seq(new EflEndFightSegment(2)); // player defeated enemy
+
+    save("su1");
+    load("su1");
 
 		seq(new EflEvolutionSegment(true));
 
@@ -57,28 +120,28 @@ public class SurgeBlue extends SeqSegment {
     seq(new EflWalkToSegment(11, 29)); // engage trainer
     seqMove(new EflOverworldInteract(5)); // talk to trainer
 
-    save("su1");
-    load("su1");
-
 		seq(new EflInitFightSegment(1)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[1][1] = 1; // 1x bite crit
+			kems.attackCount[1][1] = 1; // bite crit
 			seq(kems); // pidgey
 		}
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[1][1] = 1; // 1x bite crit
+      kems.attackCount[1][1] = 1; // bite crit
       seq(kems); // pidgey
     }
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[1][1] = 1; // 1x bite crit
+      kems.attackCount[1][1] = 1; // bite crit
       seq(kems); // pidgey
     }
 		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("su2");
+    load("su2");
 
 		seq(new EflWalkToSegment(10, 31)); // walk up to trainer
 
@@ -91,17 +154,17 @@ public class SurgeBlue extends SeqSegment {
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
 			kems.attackCount[3][1] = 1; // bubblebeam crit
-      kems.numExpGainers = 2; // level up to 25
+      kems.numExpGainers = 2; // Squirtle, level up to 25
 			seq(kems); // raticate
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
 
-    seq(new EflEvolutionSegment(true));
+    save("su3");
+    load("su3");
 
-    save("su2");
-    load("su2");
+    seq(new EflEvolutionSegment(true));
 
     seq(new EflWalkToSegment(9, 36)); // enter vermilion
 
@@ -124,38 +187,36 @@ public class SurgeBlue extends SeqSegment {
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
       kems.attackCount[0][1] = 1; // mega punch crit
 //      kems.attackCount[1][1] = 1; // bite crit // Wartortle
 //      kems.numExpGainers = 2; // level up to 26
       seq(kems); // raticate
     }
-
     seq(EflNewEnemyMonSegment.any()); // next mon
-
-    seq(new EflSwitchPokemonSegment(-2, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50))); // switch to metapod
-    seq(new EflSwitchPokemonSegment(2, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50))); // switch to squirtle
+    seq(new EflSwitchPokemonSegment(METAPOD, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)));
+    seq(new EflSwitchPokemonSegment(SQUIRTLE, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)));
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
       kems.attackCount[1][1] = 1; // bite crit
-      kems.numExpGainers = 3; // metapod level up to 10
+      kems.numExpGainers = 3; // Squirtle, Metapod, level up to 10
       seq(kems); // kadabra
     }
-
     seq(EflNewEnemyMonSegment.any()); // next mon
-    seq(new EflSwitchPokemonSegment(-1, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 45))); // switch to weedle
-    seq(new EflSwitchPokemonSegment(1, EflEnemyMoveDesc.missWith(22))); // switch to squirtle
+    seq(new EflSwitchPokemonSegment(WEEDLE, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), GROWL)));
+    seq(new EflSwitchPokemonSegment(SQUIRTLE, EflEnemyMoveDesc.missWith(VINE_WHIP)));
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[1][1] = 2; // bite crit
-//      kems.attackCount[1][0] = 1; // bite // Wartortle
-//      kems.attackCount[1][1] = 1; // bite crit // Wartortle
 //      kems.numExpGainers = 3; // weedle level up to 9
-      kems.numExpGainers = 4; // level up to 26, weedle level up to 9
+      kems.numExpGainers = 4; // Squirtle, level up to 26, Weedle, level up to 9
 			seq(kems); // ivysaur
 		}
 		seq(new EflEndFightSegment(3)); // player defeated enemy
+
+    save("su4");
+    load("su4");
 
     seq(new EflEvolutionSegment(true)); // Squirtle evolution
     seq(new EflEvolutionSegment()); // Metapod evolution
@@ -171,35 +232,40 @@ public class SurgeBlue extends SeqSegment {
     seq(new EflSkipTextsSegment(9)); // captain
     seq(new EflWalkToSegment(0, 7)); // stairs
 
-    seq(new EflWalkToSegment(21, 11, false).setBlockAllWarps(true)); // enter rare candy room
-    seq(new EflWalkToSegment(0, 14, false)); // go to gentleman
-    seqMove(new EflOverworldInteract(3)); // engage gentleman
-    seq(new EflInitFightSegment(2)); // start fight
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][1] = 1; // bubble crit
-      seq(kems); // growlithe
-    }
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(52)}; // ember
-      kems.attackCount[3][0] = 1; // bubblebeam
-      seq(kems); // ponyta
-    }
-    seq(new EflEndFightSegment(1)); // player defeated enemy
+//    {
+//      seq(new EflWalkToSegment(21, 11, false).setBlockAllWarps(true)); // enter rare candy room
+//      seq(new EflWalkToSegment(0, 14, false)); // go to gentleman
+//      seqMove(new EflOverworldInteract(3)); // engage gentleman
+//      seq(new EflInitFightSegment(2)); // start fight
+//      {
+//        EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//        kems.attackCount[2][1] = 1; // bubble crit
+//        seq(kems); // growlithe
+//      }
+//      seq(EflNewEnemyMonSegment.any()); // next mon
+//      {
+//        EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//        kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(EMBER)};
+//        kems.attackCount[3][0] = 1; // bubblebeam
+//        seq(kems); // ponyta
+//      }
+//      seq(new EflEndFightSegment(1)); // player defeated enemy
+//
+//      save("su5");
+//      load("su5");
+//
+//      seq(new EflWalkToSegment(0, 12, false)); // go to rare candy
+//      seqMove(new EflOverworldInteract(9)); // collect rare candy
+//      seq(new EflTextSegment()); // found rare candy
+//      seq(new EflWalkToSegment(2, 16, false)); // leave rare candy room
+//    }
 
-    seq(new EflWalkToSegment(0, 12, false)); // go to rare candy
-    seqMove(new EflOverworldInteract(9)); // collect rare candy
-    seq(new EflTextSegment()); // found rare candy
-    seq(new EflWalkToSegment(2, 16, false)); // leave rare candy room
-    
     seq(new EflWalkToSegment(2, 4, false).setBlockAllWarps(true)); // stairs
     seq(new EflWalkToSegment(7, 7)); // leave ss.anne
 
-    save("su3b");
-    load("su3b");
-//
+    save("su6");
+    load("su6");
+
     seq(new EflWalkToSegment(26, -1, false)); // leave ss.anne
     seqEflSkipInput(5); // Watch SS Anne
 
@@ -218,7 +284,7 @@ public class SurgeBlue extends SeqSegment {
     delayEfl(new SeqSegment() {
       @Override
       protected void execute() {
-        seqEflButton(Move.DOWN);
+        seqEflButton(DOWN);
         seqMetric(new StateResettingMetric() {
           @Override
           public int getMetricInternal() {
@@ -229,38 +295,14 @@ public class SurgeBlue extends SeqSegment {
       }
     });
 
-    {
-      seqEflButton(Move.START, PressMetric.PRESSED);
-      {
-        seqEflScrollA(1); // mon
-        seqEflSkipInput(1);
-        seqEflScrollAF(-1); // squirtle
-        seqEflSkipInput(1);
-        seqEflScrollAF(1); // switch
-        seqEflScrollAF(-2); // kakuna
-        seqEflButton(Move.B); // close menu
-      }
-      seqEflScrollA(1); // items
-      seqEflScrollFastAF(9 + 1); // HM01
-      seqEflSkipInput(1);
-      seqEflButton(Move.A);
-      seq(new EflSkipTextsSegment(2)); // booted up HM, contains xyz
-      seq(new EflSkipTextsSegment(1, true)); // learn
-      seqEflSkipInput(1);
-      seqEflScrollAF(1); // dux
-      seq(new EflSkipTextsSegment(1, true)); // learned HM
-      seqEflButton(Move.B); // close menu
-      seqEflButton(Move.START); // close menu
-    }
     seq(new EflWalkToSegment(15, 17)); // go to bush
     {
-      seqEflButton(Move.START, PressMetric.PRESSED);
-      seqEflScrollA(-1); // mon
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // dux
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // cut
-      seqEflButton(Move.B); // hacked away (to text scroll)?
+      seq(new EflSelectMonSegment(SQUIRTLE).fromOverworld().andSwitchWith(KAKUNA));
+      seqEflButton(Move.B); // close menu
+      seq(new EflSelectItemSegment(HM01).fromMainMenu().andUse());
+      seq(new EflLearnTMSegment(FARFETCHD));
+      seqEflButton(Move.B); // close menu
+      seq(new EflSelectMonSegment(FARFETCHD).fromMainMenu().andCut());
     }
     seq(new EflWalkToSegment(12, 19)); // enter gym
 //    {
@@ -269,19 +311,19 @@ public class SurgeBlue extends SeqSegment {
 //    }
     {
       seq(new EflWalkToSegment(4, 11)); // go to trash can
-      seqEflButton(Move.RIGHT); // turn left
+      seqEflButton(RIGHT); // turn left
     }
     delayEfl(new SeqSegment() { // activate first can
       @Override
       protected void execute() {
-        seqEflButton(Move.A);
+        seqEflButton(A);
         seqMetric(new StateResettingMetric() {
           @Override
           public int getMetricInternal() {
             EflUtil.runToAddressNoLimit(0, 0, curGb.pokemon.printLetterDelayJoypadAddress); // after setting second trash can
             return curGb.readMemory(0xd744); // first trash can
           }
-        }, Comparator.EQUAL, 7);
+        }, EQUAL, 7);
       }
     });
     seq(new EflSkipTextsSegment(4)); // opened first lock
@@ -291,9 +333,9 @@ public class SurgeBlue extends SeqSegment {
 //    }
     {
       seq(new EflWalkToSegment(4, 9)); // go to surge
-      seqEflButton(Move.RIGHT);
+      seqEflButton(RIGHT);
     }
-    seqEflButton(Move.A);
+    seqEflButton(A);
     seq(new EflSkipTextsSegment(2)); // opened second lock
     seq(new EflWalkToSegment(5, 3)); // go to surge
     seq(new EflWalkToSegment(5, 2)); // go to surge
@@ -303,38 +345,39 @@ public class SurgeBlue extends SeqSegment {
     load("tmp");
 
 		seq(new EflInitFightSegment(10)); // start fight
-    seq(new EflSwitchPokemonSegment(-2, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103))); // switch to Kakuna
-//    seq(new EflSwitchPokemonSegment(2, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103))); // switch to squirtle
+    seq(new EflSwitchPokemonSegment(SQUIRTLE, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)));
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
 //      kems.attackCount[3][1] = 1; // bubblebeam crit
 			kems.attackCount[0][1] = 1; // mega punch crit
-      kems.numExpGainers = 3; // kakuna level up to 10
+      kems.numExpGainers = 3; // Squirtle, Kakuna, level up to 10
 			seq(kems); // voltorb
 		}
+    save("tmp2");
+    load("tmp2");
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(84)}; // thundershock
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(THUNDER_SHOCK)};
       kems.attackCount[1][1] = 1; // bite crit
-//      kems.attackCount[1][0] = 1; // bite // Wartortle
       seq(kems); // pikachu
     }
+    save("tmp3");
+    load("tmp3");
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(85)}; // thunderbolt
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(THUNDERBOLT)};
       kems.attackCount[3][1] = 1; // bubblebeam crit // TODO: speed fall
       kems.attackCount[1][1] = 1; // bite crit
-//      kems.attackCount[1][0] = 1; // bite // Wartortle
-      kems.numExpGainers = 2; // lvlup to 27
+//      kems.numExpGainers = 2; // Squirtle, lvlup to 27
       seq(kems); // raichu
     }
 		seq(new EflEndFightSegment(3)); // player defeated enemy
 
-    seq(new EflEvolutionSegment()); // Kakuna
-    seq(new EflEvolutionSegment(true)); // Squirtle
+    seq(new EflEvolutionSegment()); // Beedrill
+//    seq(new EflEvolutionSegment(true)); // Squirtle
 
     seq(new EflSkipTextsSegment(8)); // after battle texts
     seq(new EflWalkToSegment(5, 18, false)); // leave gym

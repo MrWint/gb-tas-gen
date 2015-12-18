@@ -1,38 +1,46 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.common;
 
-import mrwint.gbtasgen.move.Move;
+import static mrwint.gbtasgen.move.Move.A;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PC_MON_DEPOSIT;
+import static mrwint.gbtasgen.state.Gameboy.curGb;
+import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil;
-import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class EflDepositMonSegment extends SeqSegment {
 
-	int monscroll;
-	int opscroll;
+  int mon;
+	int monGoalPosition = -1;
 
-	public EflDepositMonSegment(int opscroll, int monscroll) {
+	public EflDepositMonSegment(int mon) {
     EflUtil.assertEfl();
 
-    this.opscroll = opscroll;
-		this.monscroll = monscroll;
+    this.mon = mon;
 	}
 
 	@Override
 	public void execute() {
-	  if (opscroll == 0)
-      seqEflButton(Move.A, PressMetric.MENU); // deposit
-    else if  (opscroll == -1)
-      seqEflButton(Move.UP | Move.A, PressMetric.MENU); // withdraw
-    else if  (opscroll == 1)
-      seqEflButton(Move.DOWN | Move.A, PressMetric.MENU); // withdraw
-	  else
-      seqEflScrollAF(opscroll);
+	  seq(new EflSelectPcMonOperationSegment(PC_MON_DEPOSIT));
 
-		if (monscroll <= 1 && monscroll >= -1)
-		  seqEflSkipInput(1);
-		seqEflScrollFastAF(monscroll);
-		seqEflButton(Move.A, PressMetric.PRESSED); // deposit
+	  seqSample(() -> {
+      int numMons = curGb.readMemory(curGb.pokemon.numPartyMonAddress);
+      for (int i = 0; i < numMons; i++) {
+        int curMon = curGb.readMemory(curGb.pokemon.numPartyMonAddress + i + 1);
+        if (curMon == mon) {
+          monGoalPosition = i;
+          break;
+        }
+      }
+      if (monGoalPosition == -1)
+        throw new IllegalStateException("Mon " + mon + " not found.");
+    });
+
+    if (monGoalPosition <= 2)
+      seqEflScrollFastAF(monGoalPosition);
+    else
+      seqEflScrollFastA(monGoalPosition);
+		seqEflButton(A, PRESSED); // deposit
 		seq(new EflSkipTextsSegment(1)); // stored in box
 	}
 }

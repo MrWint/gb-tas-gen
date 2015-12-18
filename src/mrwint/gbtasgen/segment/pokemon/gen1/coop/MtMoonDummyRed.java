@@ -1,8 +1,15 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.move.Move.B;
+import static mrwint.gbtasgen.move.Move.START;
+import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CHARMANDER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DISABLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SCREECH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM01;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
-import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflEvolutionSegment;
 import mrwint.gbtasgen.segment.pokemon.EflLearnTMSegment;
@@ -13,6 +20,7 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectItemSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -25,34 +33,27 @@ public class MtMoonDummyRed extends SeqSegment {
 
     seq(new EflWalkToSegment(33, 31, false).setBlockAllWarps(true)); // Rare Candy
     seq(new EflWalkToSegment(34, 31)); // Rare Candy
-    seq(new MoveSegment(new EflOverworldInteract(10))); // collect Rare Candy
+    seqMove(new EflOverworldInteract(10)); // collect Rare Candy
     seq(new EflTextSegment()); // found Rare Candy
 
     seq(new EflWalkToSegment(34, 23)); // Escape Rope
     seq(new EflWalkToSegment(35, 23)); // Escape Rope
-    seq(new MoveSegment(new EflOverworldInteract(11))); // collect Escape Rope
+    seqMove(new EflOverworldInteract(11)); // collect Escape Rope
     seq(new EflTextSegment()); // found Escape Rope
 
 		seq(new EflWalkToSegment(17,11,false).setBlockAllWarps(true)); // l2
 		seq(new EflWalkToSegment(17,11)); // l3
 
 		seq(new EflWalkToSegment(29,6));
-		seqEflButton(Move.UP); // face item
+		seqEflButton(UP); // face item
 		seq(new MoveSegment(new EflOverworldInteract(9))); // collect TM01
 		seq(new EflTextSegment()); // found TM01
 
     seqEflSkipInput(1);
-		seqEflButton(Move.START);
-		seqEflScroll(2);
-		seqEflButton(Move.A); // items
-		{ // learn TM01
-			seqEflScrollAF(4);
-			seqEflSkipInput(1);
-			seqEflButton(Move.A); // use
-			seq(new EflLearnTMSegment(0, 3)); // leer for mega punch
-		}
-    seqEflButton(Move.B);
-    seqEflButton(Move.START);
+    seq(new EflSelectItemSegment(TM01).fromOverworld().andUse());
+    seq(new EflLearnTMSegment(CHARMANDER, 3)); // leer -> mega punch
+    seqEflButton(B);
+    seqEflButton(START);
 		seq(new EflWalkToSegment(25,9));
 		seq(new EflWalkToSegment(25,9));
 
@@ -68,15 +69,15 @@ public class MtMoonDummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(3)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-			kems.attackCount[2][1] = 1; // 1x ember crit
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
+			kems.attackCount[2][1] = 1; // ember crit
 			seq(kems); // Rattata
 		}
 		seq(EflNewEnemyMonSegment.any());
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[3][1] = 1; // 1x mega punch crit
-			kems.numExpGainers = 2; // level up to 16
+			kems.attackCount[3][1] = 1; // mega punch crit
+			kems.numExpGainers = 2; // Charmander, level up to 16
 			seq(kems); // Zubat
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -90,17 +91,16 @@ public class MtMoonDummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(3)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//			kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(1)}; // pound
-			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
       kems.attackCount[3][0] = 2; // mega punch
 			seq(kems); // Grimer
 		}
 		seq(EflNewEnemyMonSegment.any());
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
-			kems.attackCount[3][1] = 1; // 1x mega punch crit
-      kems.numExpGainers = 2; // level up to 17
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
+			kems.attackCount[3][1] = 1; // mega punch crit
+      kems.numExpGainers = 2; // Charmander, level up to 17
 			seq(kems); // Voltorb
 		}
 		seq(EflNewEnemyMonSegment.any());
@@ -119,17 +119,17 @@ public class MtMoonDummyRed extends SeqSegment {
     seq(new EflEvolutionSegment(true));
 
 		seq(new EflWalkToSegment(13,7)); // go to fossil
-		seq(new MoveSegment(new EflOverworldInteract(7))); // grab fossil
+		seqMove(new EflOverworldInteract(7)); // grab fossil
 		seq(new EflSkipTextsSegment(1, true)); // grab fossil
 		seq(new EflSkipTextsSegment(1)); // got fossil
 		seq(new EflTextSegment()); // put fossil in bag
-		seq(new EflWalkToSegment(13,6)); // go upwards (avoid running into moved nerd)
+		seq(new EflWalkToSegment(13, 6)); // go upwards (avoid running into moved nerd)
 
-		seq(new EflWalkToSegment(5,7)); // go to MtMoon2
-		seq(new EflWalkToSegment(27,3)); // leave MtMoon
+		seq(new EflWalkToSegment(5, 7)); // go to MtMoon2
+		seq(new EflWalkToSegment(27, 3)); // leave MtMoon
 
     seq(new EflWalkToSegment(76, 9, false)); // hop into grass
 
-		seq(new EflWalkToSegment(90,10)); // enter Cerulean
+		seq(new EflWalkToSegment(90, 10)); // enter Cerulean
 	}
 }

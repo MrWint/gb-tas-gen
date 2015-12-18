@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
@@ -16,9 +17,9 @@ public class Rival1FightBlue extends SeqSegment {
 	  seq(new EflInitFightSegment(0));
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 45)}; // growl
-      kems.attackCount[0][0] = 4; // 4x tackle
-      kems.numExpGainers = 2; // level up to 6
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), GROWL)};
+      kems.attackCount[0][0] = 4; // tackle
+      kems.numExpGainers = 2; // Squirtle, level up to 6
       seq(kems); // Bulbasaur
     }
 

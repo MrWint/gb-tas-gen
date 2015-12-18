@@ -1,5 +1,16 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.move.Move.A;
+import static mrwint.gbtasgen.move.Move.DOWN;
+import static mrwint.gbtasgen.move.Move.START;
+import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BELLSPROUT;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BONE_CLUB;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DISABLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MEOWTH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VULPIX;
 import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
@@ -14,6 +25,8 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflCancelMoveLearnSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflEncounterSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflUseBikeSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
@@ -23,15 +36,15 @@ public class RockTunnelBlue extends SeqSegment {
 	@Override
 	public void execute() {
 
-//    seqEflButton(Move.A); // continue game
-//    seqEflButton(Move.START);
-//    seqEflButton(Move.A);
-//    seqEflButton(Move.START);
-//    seqEflButton(Move.A);
+//    seqEflButton(A); // continue game
+//    seqEflButton(START);
+//    seqEflButton(A);
+//    seqEflButton(START);
+//    seqEflButton(A);
 //
 //    seq(new EflWalkToSegment(4, 6)); // leave center
 //    seq(new EflWalkToSegment(4, 8, false)); // leave center
-//    seq(new EflUseBikeSegment(2, 0));
+//    seq(new EflUseBikeSegment().fromOverworld());
 //
 //    seq(new EflWalkToSegment(8, 17)); // enter rock tunnel
 //    seq(new EflWalkToSegment(23, 6)); // engage trainer
@@ -41,21 +54,30 @@ public class RockTunnelBlue extends SeqSegment {
 //		seq(new EflInitFightSegment(1)); // start fight
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(125)}; // bone club
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(BONE_CLUB)};
 //      kems.attackCount[1][0] = 1; // bite
 //      kems.attackCount[2][1] = 1; // bubble crit
+//      kems.lastAttack = 2;
 ////      kems.attackCount[3][0] = 1; // bubblebeam // no pp
 //			seq(kems); // cubone
 //		}
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
-//      kems.attackCount[1][1] = 1; // bite crit
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
+////      kems.attackCount[1][1] = 1; // bite crit
 //      kems.attackCount[0][1] = 1; // mega punch crit
+//      kems.attackCount[3][1] = 1; // bubblebeam crit
+//      kems.numExpGainers = 2; // Squirtle, lvlup to 28
 //      seq(kems); // slowpoke
 //    }
+//    seq(new EflCancelMoveLearnSegment()); // Withdraw
 //		seq(new EflEndFightSegment(1)); // player defeated enemy
+//
+//    save("rt1");
+//    load("rt1");
+//
+//    seq(new EflEvolutionSegment(true));
 //
 //    seq(new EflWalkToSegment(37, 3)); // ladder
 //    seq(new EflWalkToSegment(27, 30)); // engage trainer
@@ -64,14 +86,14 @@ public class RockTunnelBlue extends SeqSegment {
 //    seq(new EflInitFightSegment(1)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.attackCount[0][1] = 2; // mega punch crit
 //      seq(kems); // slowpoke
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("rt1");
-//    load("rt1");
+//    save("rt2");
+//    load("rt2");
 //
 //    seq(new EflWalkToSegment(14, 30)); // engage trainer
 //    seq(new EflWalkToSegment(14, 29)); // engage trainer
@@ -88,12 +110,12 @@ public class RockTunnelBlue extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.attackCount[0][1] = 1; // mega punch crit
-//      kems.numExpGainers = 2; // lvlup to 29
 //      seq(kems); // bulbasaur
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    seq(new EflEvolutionSegment(true));
+//    save("rt3");
+//    load("rt3");
 //
 //    seq(new EflWalkToSegment(27, 3)); // ladder
 //
@@ -105,28 +127,31 @@ public class RockTunnelBlue extends SeqSegment {
 //    seq(new EflInitFightSegment(1)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
 //      kems.attackCount[2][0] = 1; // bubble
 //      seq(kems); // geodude
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
 //      kems.attackCount[2][0] = 1; // bubble
+//      kems.numExpGainers = 2; // lvlup to 29
 //      seq(kems); // geodude
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
 //      kems.attackCount[2][0] = 1; // bubble
 //      seq(kems); // graveler
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("rt2");
-//    load("rt2");
+//    save("rt4");
+//    load("rt4");
+//
+//    seq(new EflEvolutionSegment(true));
 //
 //    seq(new EflWalkToSegment(3, 3)); // ladder
 //    seq(new EflWalkToSegment(24, 24)); // engage trainer
@@ -136,7 +161,7 @@ public class RockTunnelBlue extends SeqSegment {
 //    seq(new EflInitFightSegment(1)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 45)}; // growl
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), GROWL)};
 //      kems.attackCount[1][1] = 1; // bite crit
 //      seq(kems); // meowth
 //    }
@@ -151,12 +176,15 @@ public class RockTunnelBlue extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.attackCount[1][1] = 1; // bite crit
-//      kems.numExpGainers = 2; // level up to 30
+////      kems.numExpGainers = 2; // level up to 30
 //      seq(kems); // pidgey
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    seq(new EflEvolutionSegment(true));
+//    save("rt5");
+//    load("rt5");
+////
+////    seq(new EflEvolutionSegment(true));
 //
 //    seq(new EflWalkToSegment(15, 33)); // leave rock tunnel
 //
@@ -169,25 +197,27 @@ public class RockTunnelBlue extends SeqSegment {
 //    seq(new EflInitFightSegment(1)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[0][1] = 1; // mega punch crit
+//      kems.attackCount[1][0] = 1; // bite
+//      kems.attackCount[1][1] = 1; // bite
+////      kems.attackCount[0][1] = 1; // mega punch crit
 //      seq(kems); // growlithe
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[1][0] = 2; // bite
-////      kems.attackCount[0][1] = 1; // mega punch crit // no PP
+////      kems.attackCount[1][0] = 2; // bite
+//      kems.attackCount[0][1] = 1; // mega punch crit // no PP
 //      seq(kems); // vulpix
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("rt3");
-//    load("rt3");
+//    save("rt6");
+//    load("rt6");
 //
 //    seq(new EflWalkToSegment(13, 3)); // enter passage
 //    seq(new EflWalkToSegment(4, 4)); // enter passage
 //
-//    seq(new EflUseBikeSegment(2, 0));
+//    seq(new EflUseBikeSegment().fromOverworld());
 //    {
 //      seq(new EflWalkToSegment(23, 5)); // walk passage
 //      seq(new EflWalkToSegment(22, 5)); // walk passage
@@ -202,28 +232,26 @@ public class RockTunnelBlue extends SeqSegment {
 //    }
 //    seqUnbounded(new EflWalkToSegment(2, 5)); // walk passage
 //    seqUnbounded(new EflWalkToSegment(4, 8, false)); // exit passage
-//    seqUnbounded(new EflUseBikeSegment(0, 0));
+//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //
 //    seqUnbounded(new EflWalkToSegment(8, 6)); // grass
-//    seq(new EflEncounterSegment(0x52, Move.UP)); // Vulpix
-//    seq(new EflCatchMonSegment(2).withBufferSize(0));
-//
+//    seq(new EflEncounterSegment(VULPIX, UP));
 //    save("tmp");
 //    load("tmp");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
 //
 //  //  seqUnbounded(new EflWalkToSegment(15, 2)); // grass
 //    seqUnbounded(new EflWalkToSegment(8, 3)); // grass
-//    seq(new EflEncounterSegment(new CheckEncounterMetric(0xBC, 22), Move.UP)); // bellsprout
-//    seq(new EflCatchMonSegment(2).withBufferSize(0));
-//
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(BELLSPROUT, 22), UP));
 //    save("tmp2");
     load("tmp2");
+    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(20));
 
-//    seqUnbounded(new EflWalkToSegment(8, 4)); // grass
-    seqUnbounded(new EflWalkToSegment(9, 5)); // grass
-    seqUnbounded(new EflWalkToSegment(9, 4)); // grass
-    seq(new EflEncounterSegment(new CheckEncounterMetric(0x4d, 20).withAtkDV(13,14,15).withSpcDV(12,13,14,15), Move.DOWN)); // Meowth
-    seq(new EflCatchMonSegment(2));
+    seqUnbounded(new EflWalkToSegment(8, 4)); // grass
+//    seqUnbounded(new EflWalkToSegment(9, 3)); // grass
+//    seqUnbounded(new EflWalkToSegment(9, 4)); // grass
+    seq(new EflEncounterSegment(new CheckEncounterMetric(MEOWTH, 20).withAtkDV(13,14,15).withSpcDV(12,13,14,15), DOWN));
+    seq(new EflCatchMonSegment());
 
     seq(new EflWalkToSegment(-1, 3)); // enter celadon
 	}

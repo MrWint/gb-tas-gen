@@ -8,23 +8,29 @@ import static mrwint.gbtasgen.move.Move.RIGHT;
 import static mrwint.gbtasgen.move.Move.SELECT;
 import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.AERODACTYL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.AGILITY;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRAGONAIR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EKANS;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ESCAPE_ROPE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EXEGGCUTE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EXEGGUTOR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GRIMER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWLITHE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM03;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.JOLTEON;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.JYNX;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KABUTO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KOFFING;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEAF_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGMAR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MANKEY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MOON_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MUK;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDOQUEEN;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.OMANYTE;
@@ -34,10 +40,13 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PINSIR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWHIRL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWRATH;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PONYTA;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RATICATE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ROAR;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SANDSHREW;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TANGELA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TENTACOOL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM21;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WARTORTLE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WATER_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WEEZING;
@@ -87,6 +96,84 @@ public class CinnabarRed extends SeqSegment {
 //    seqMetric(new OutputItems());
 //    seqMetric(new OutputBoxMons());
 //
+//    seq(new EflWalkToSegment(13, 25)); // enter center
+//    {
+//      seq(new EflWalkToSegment(13, 5)); // PC
+//      seq(new EflWalkToSegment(13, 4)); // PC
+//      seqMetric(new OutputItems());
+//      seqMetric(new OutputParty());
+//      seqMetric(new OutputBoxMons());
+//      {
+//        seqEflButton(A); // use PC
+//        seq(new EflSkipTextsSegment(1)); // turned on
+//        seqEflButton(A); // someone's PC
+//        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+//        seq(new EflDepositMonSegment(SANDSHREW));
+//        seq(new EflWithdrawMonSegment(NIDORINA));
+//        seq(new EflDepositMonSegment(PINSIR));
+//        seq(new EflWithdrawMonSegment(NIDORINO));
+//        seq(new EflDepositMonSegment(MAGMAR));
+//        seq(new EflWithdrawMonSegment(EXEGGCUTE));
+//        seq(new EflDepositMonSegment(JOLTEON));
+//        seq(new EflWithdrawMonSegment(POLIWHIRL));
+//        seq(new EflChangeMonBoxSegment(2)); // box 3
+//        seqEflButton(B, MENU); // cancel
+//        seqEflButton(B, MENU); // cancel
+//      }
+//      seq(new EflWalkToSegment(4, 6)); // leave center
+//      seq(new EflWalkToSegment(4, 8, false)); // leave center
+//    }
+//
+//    {
+//      seq(new EflSelectItemSegment(MOON_STONE).fromOverworld().andUse());
+//      seq(new EflSelectMonSegment(NIDORINA));
+//      seq(new EflEvolutionSegment()); // Nidoqueen
+//      seqEflSkipInput(0);
+//      seq(new EflUseBikeSegment());
+//      seq(new EflWalkToSegment(23, 17)); // mart
+//      seq(new EflWalkToSegment(3, 5)); // shopkeep
+//      seq(new EflWalkToSegment(2, 5)); // shopkeep
+//      seqMove(new EflOverworldInteract(1));
+//      {
+//        seq(new EflSkipTextsSegment(1, true)); // buy
+//        seq(new EflTextSegment(Move.B));
+//        seq(new EflBuyItemSegment(0, -14, true)); // Poke Ball x85
+//        seqEflButton(Move.B); // cancel
+//        seq(new EflSkipTextsSegment(2)); // cancel + bye
+//        seqMetric(new OutputItems());
+//      }
+//      seq(new EflWalkToSegment(3, 6)); // leave mart
+//      seq(new EflWalkToSegment(3, 8, false)); // leave mart
+//      seq(new EflUseBikeSegment().fromOverworld());
+//      seq(new EflWalkToSegment(27, 4)); // bush
+//      seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andCut());
+//      seq(new EflWalkToSegment(19, 5)); // enter
+//      seq(new EflWalkToSegment(15, 4)); // amber
+//      seq(new EflWalkToSegment(15, 3)); // amber
+//      seqMove(new EflOverworldInteract(3)); // talk
+//      seq(new EflSkipTextsSegment(11)); // get amber
+//      seq(new EflWalkToSegment(16, 6)); // leave
+//      seq(new EflWalkToSegment(16, 8, false)); // leave
+//    }
+//
+//    save("ci0");
+//    load("ci0");
+//
+//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(-3)); // Cerulean
+//    seqEflSkipInput(1);
+//
+//    seq(new EflWalkToSegment(13, 15)); // house
+//    seq(new EflWalkToSegment(1, 4)); // trade
+//    seq(new EflWalkToSegment(1, 3)); // trade
+//    seqMove(new EflOverworldInteract(2));
+//    seq(new EflSkipTextsSegment(1));
+//    seq(new EflSkipTextsSegment(1, true)); // trade
+//    seq(new EflSelectMonSegment(POLIWHIRL));
+//    seq(new EflSkipTextsSegment(1)); // connect cables
+//    seq(new EflSkipTextsSegment(3)); // traded x for y, thanks
+//    seq(new EflWalkToSegment(2, 6)); // leave
+//    seq(new EflWalkToSegment(2, 8, false)); // leave
+//
 //    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(0)); // Pallet
 //    seqEflSkipInput(1);
 //
@@ -98,32 +185,38 @@ public class CinnabarRed extends SeqSegment {
 //      seqMoveUnbounded(new EflWalkStep(Move.DOWN, true));
 //    seqMoveUnbounded(new EflWalkStep(Move.RIGHT, true));
 //
+//    save("tmp");
+//    //load("tmp");
 //    seqUnbounded(new EflWalkToSegment(8, 3));
-//    seq(new EflEncounterSegment(TANGELA, DOWN));
+//    seq(new EflEncounterSegment(PIDGEOTTO, DOWN));
 //    save("tmp2");
-//    load("tmp2");
-//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(60));
+//    //load("tmp2");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(8, 6));
-//    seq(new EflEncounterSegment(PIDGEOTTO, DOWN));
-////    save("tmp2");
-//////    load("tmp2");
+//    seq(new EflEncounterSegment(RATICATE, DOWN));
+//    save("tmp3");
+//    //load("tmp3");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//
+//    seqUnbounded(new EflWalkToSegment(9, 7));
+//    seqUnbounded(new EflWalkToSegment(9, 8));
+//    seq(new EflEncounterSegment(TANGELA, DOWN));
 //    seq(new EflCatchMonSegment());
 //
 //    save("ci1");
 //    load("ci1");
 //
-//    seqUnbounded(new EflWalkToSegment(8, 9));
 //    seqUnbounded(new EflSelectMonSegment(OMANYTE).fromOverworld().andSurf());
 //    for(int i=0;i<10;i++)
 //      seqMoveUnbounded(new EflWalkStep(DOWN, true));
-//    for(int i=0;i<5;i++)
+//    for(int i=0;i<6;i++)
 //      seqMoveUnbounded(new EflWalkStep(LEFT, true));
-//    for(int i=0;i<14;i++)
+//    for(int i=0;i<19;i++)
 //      seqMoveUnbounded(new EflWalkStep(DOWN, true));
 //    seq(new EflEncounterSegment(new CheckEncounterMetric(TENTACOOL, 30).withSpcDV(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), DOWN));
 //    seq(new EflCatchMonSegment());
-//    for(int i=0;i<65;i++)
+//    for(int i=0;i<60;i++)
 //      seqMove(new EflWalkStep(DOWN, true));
 //    seqMove(new EflWalkStep(RIGHT, true));
 //
@@ -163,12 +256,13 @@ public class CinnabarRed extends SeqSegment {
 //      @Override
 //      protected void execute() {
 //        seqEflButtonUnbounded(B); // yes
-//        seqMetric(new Gen1CheckDVMetric(0, 0, 12, 15, 15));
+//        seqMetric(new Gen1CheckDVMetric(15, 0, 12, 15, 15));
 //      }
 //    });
 //    seq(new EflTextSegment()); // got Kabuto
 //    seq(new EflSkipTextsSegment(2)); // no nick
-//    seq(new EflSkipTextsSegment(4)); // no room
+//    seq(new EflSkipTextsSegment(3)); // no room
+//    seqUnbounded(new EflSkipTextsSegment(1)); // no room
 //    delayEfl(new SeqSegment() {
 //      @Override
 //      protected void execute() {
@@ -206,11 +300,6 @@ public class CinnabarRed extends SeqSegment {
 //    seqUnbounded(new EflWalkToSegment(11, 11));
 //    seqUnbounded(new EflWalkToSegment(13, 5));
 //    seq(new EflWalkToSegment(13, 4));
-//    seq(new EflSelectItemSegment(WATER_STONE).fromOverworld().andUse());
-//    seq(new EflSelectMonSegment(POLIWHIRL));
-//    seq(new EflEvolutionSegment()); // Poliwrath
-//    seqEflButton(B);
-//    seqEflButton(START);
 //    {
 //      seqMetric(new OutputParty());
 //      seqMetric(new OutputItems());
@@ -219,20 +308,14 @@ public class CinnabarRed extends SeqSegment {
 //      seq(new EflSkipTextsSegment(1)); // turned on
 //      seqEflButton(A); // someone's PC
 //      seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//      seq(new EflReleaseMonSegment(TANGELA));
-//      seq(new EflDepositMonSegment(WARTORTLE));
-//      seq(new EflWithdrawMonSegment(KABUTO));
-//      seq(new EflDepositMonSegment(POLIWRATH));
-//      seq(new EflWithdrawMonSegment(TENTACOOL));
-//      seq(new EflDepositMonSegment(PINSIR));
-//      seq(new EflWithdrawMonSegment(EXEGGCUTE));
-//      seq(new EflChangeMonBoxSegment(2)); // Box 3
-//      seqEflButton(B, MENU); // cancel
-//      seqEflButton(B, MENU); // cancel
+//      seq(new EflDepositMonSegment(NIDOQUEEN));
+//      seqUnbounded(new EflWithdrawMonSegment(KABUTO));
+//      seqEflButtonUnboundedNoDelay(B, MENU); // cancel
+//      seqEflButtonUnboundedNoDelay(B, MENU); // cancel
 //      seqMetric(new OutputBoxMons());
 //    }
-//    seq(new EflWalkToSegment(4, 6));
-//    seq(new EflWalkToSegment(4, 8, false));
+//    seqUnbounded(new EflWalkToSegment(4, 6));
+//    seqUnbounded(new EflWalkToSegment(4, 8, false));
 //
 //    save("ci4");
 //    load("ci4");
@@ -241,18 +324,25 @@ public class CinnabarRed extends SeqSegment {
 //    seqUnbounded(new EflWalkToSegment(17, 5)); // enter mansion
 //    seqUnbounded(new EflWalkToSegment(6, 3)); // enter mansion
 //    save("tmp");
-//    load("tmp");
+////    load("tmp");
 //
-//    seqUnbounded(new EflWalkToSegment(5, 22)); // align
-//    seq(new EflEncounterSegment(KOFFING, UP));
+//    seqUnbounded(new EflWalkToSegment(5, 26)); // align
+//    seq(new EflEncounterSegment(MUK, UP));
+////    seq(new EflEncounterSegment(WEEZING, UP));
 //    save("tmp2");
-//    load("tmp2");
+////    load("tmp2");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //
-//    seqUnbounded(new EflWalkToSegment(5, 18)); // align
-//    seq(new EflEncounterSegment(MUK, UP));
+//    seqUnbounded(new EflWalkToSegment(5, 23)); // align
+//    seq(new EflEncounterSegment(KOFFING, UP));
 //    save("tmp3");
-//    load("tmp3");
+////    load("tmp3");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//
+//    seqUnbounded(new EflWalkToSegment(5, 20)); // align
+//    seq(new EflEncounterSegment(WEEZING, UP));
+//    save("tmp4");
+////    load("tmp4");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(5, 16)); // align
@@ -262,8 +352,8 @@ public class CinnabarRed extends SeqSegment {
 //    seqUnbounded(new EflTextSegment()); // Moon Stone
 //
 //    seq(new EflEncounterSegment(GRIMER, UP));
-//    save("tmp4");
-//    load("tmp4");
+//    save("tmp5");
+////    load("tmp5");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(5, 10)); // l2
@@ -273,8 +363,8 @@ public class CinnabarRed extends SeqSegment {
 //
 //    seqUnbounded(new EflWalkToSegment(8, 1).setBlockAllWarps(true)); // align
 //    seq(new EflEncounterSegment(GROWLITHE, LEFT));
-//    save("tmp5");
-//    load("tmp5");
+//    save("tmp6");
+//    load("tmp6");
 //    seq(new EflCatchMonSegment().noNew().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(6, 1)); // l3
@@ -290,7 +380,7 @@ public class CinnabarRed extends SeqSegment {
 //    seqUnbounded(new EflWalkToSegment(8, 2)); // align
 ////    seqUnbounded(new EflWalkToSegment(13, 10)); // align
 ////    seqUnbounded(new EflWalkToSegment(14, 10)); // align
-//    seq(new EflEncounterSegment(new CheckEncounterMetric(PONYTA, 36).withSpdDV(15), RIGHT)); // .withAtkDV(11, 12, 13, 14, 15) for -1 turn
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(PONYTA, 36).withSpdDV(15), RIGHT)); // .withAtkDV(11, 12, 13, 14, 15) // for -1 turn
 //    save("tmp");
 //    load("tmp");
 //    seq(new EflCatchMonSegment());
@@ -308,14 +398,14 @@ public class CinnabarRed extends SeqSegment {
 //    seq(new EflSkipTextsSegment(1));
 //    seq(new EflSkipTextsSegment(1, true)); // press button
 //    seq(new EflSkipTextsSegment(1));
-//    {
-//      seqUnbounded(new EflWalkToSegment(24, 7)); // align
-//      seqUnbounded(new EflWalkToSegment(24, 6)); // align
-//      seq(new EflEncounterSegment(WEEZING, UP));
-//      save("tmp2");
-//      load("tmp2");
-//      seq(new EflCatchMonSegment());
-//    }
+////    {
+////      seqUnbounded(new EflWalkToSegment(24, 7)); // align
+////      seqUnbounded(new EflWalkToSegment(24, 6)); // align
+////      seq(new EflEncounterSegment(WEEZING, UP));
+////      save("tmp2");
+//////      load("tmp2");
+////      seq(new EflCatchMonSegment());
+////    }
 //    seq(new EflWalkToSegment(20, 4)); // button
 //    seq(new EflWalkToSegment(20, 3, false).setBlockAllWarps(true)); // button
 //    seqEflButton(Move.A);
@@ -346,10 +436,7 @@ public class CinnabarRed extends SeqSegment {
 //    load("ci6");
 //
 //    seqMetric(new OutputParty());
-//    seq(new EflSelectItemSegment(LEAF_STONE).fromOverworld().andUse());
-//    seq(new EflSelectMonSegment(EXEGGCUTE));
-//    seq(new EflEvolutionSegment()); // Exeggutor
-//    seq(new EflSelectItemSegment(HM03).andUse());
+//    seq(new EflSelectItemSegment(HM03).fromOverworld().andUse());
 //    seq(new EflLearnTMSegment(KABUTO));
 //    seqEflButton(B);
 //    seq(new EflSelectMonSegment(KABUTO).fromMainMenu().andSwitchWith(OMANYTE));
@@ -430,32 +517,44 @@ public class CinnabarRed extends SeqSegment {
 //      seq(kems); // ponyta
 //    }
 //    save("tmp3");
-    load("tmp3");
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    seq(new EflSwitchPokemonSegment(TENTACOOL, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP, GROWL)));
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment(); // TODO: consider blaine super potion
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP, GROWL)};
-      kems.attackCount[2][1] = 2; // Water Gun crit
-      kems.numExpGainers = 3; // Kabuto, lvlup to 31, Tentacool
-      seq(kems); // rapidash
-    }
-    save("tmp4");
-    load("tmp4");
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckSwitchAndTeleportEffectUsed(), ROAR)};
-      kems.attackCount[2][1] = 3; // Water Gun crit
-      seq(kems); // arcanine
-    }
-    seq(new EflEndFightSegment(2)); // player defeated enemy
-    seq(new EflSkipTextsSegment(6+4)); // after battle texts (with room)
-
-    save("ci7");
+//    load("tmp3");
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+////    seq(new EflSwitchPokemonSegment(TENTACOOL, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP, GROWL)));
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment(); // TODO: consider blaine super potion
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP, GROWL)};
+//      kems.attackCount[2][0] = 1; // surf
+//      kems.attackCount[2][1] = 1; // surf crit
+//      kems.numExpGainers = 2; // Kabuto, lvlup to 31
+//      seq(kems); // rapidash
+//    }
+//    save("tmp4");
+//    load("tmp4");
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckSwitchAndTeleportEffectUsed(), ROAR)};
+//      kems.attackCount[2][1] = 2; // surf crit
+//      kems.numExpGainers = 2; // Kabuto, lvlup to 32
+//      seq(kems); // arcanine
+//    }
+//    seq(new EflEndFightSegment(2)); // player defeated enemy
+//
+//    save("ci7");
     load("ci7");
 
-    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
+    seq(new EflSkipTextsSegment(6)); // after battle texts (no room)
+//    seq(new EflSkipTextsSegment(6+4)); // after battle texts (with room)
+
+    seq(new EflSelectItemSegment(LEAF_STONE).fromOverworld().andUse());
+    seq(new EflSelectMonSegment(EXEGGCUTE));
+    seq(new EflEvolutionSegment()); // EXEGGUTOR
+    seqEflSkipInput(0);
+    seq(new EflSelectItemSegment(MOON_STONE).andUse());
+    seq(new EflSelectMonSegment(NIDORINO));
+    seq(new EflEvolutionSegment()); // Nidoking
+    seqEflSkipInput(0);
+    seq(new EflSelectItemSegment(ESCAPE_ROPE).andUse());
     seqEflSkipInput(2);
   }
 }

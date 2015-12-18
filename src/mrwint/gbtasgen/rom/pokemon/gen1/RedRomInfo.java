@@ -57,10 +57,13 @@ public class RedRomInfo extends GenIRomInfo {
 
 			mainMenuIndexAddress = 0xcc2d;
       monMenuIndexAddress = 0xcc2b;
+      menuCurPointerIndexAddress = 0xcc2a;
       itemMenuPointerIndexAddress = 0xcc2c;
       itemMenuScrollIndexAddress = 0xcc36;
-//
-			overworldJoypadCallAddress = 0x0417; // call of JoypadOverworld
+      pcMonOperationIndexAddress = 0xccd3;
+      curMonBoxAddress = 0xd5a0;
+
+      overworldJoypadCallAddress = 0x0417; // call of JoypadOverworld
 			doPlayerMovementFuncAddress = 0x51d; // .handleDirectionButtonPress
 //			doPlayerMovementFuncEndAddress = 0x10016;
 			playerMovingIndicatorAddress = 0xcc4b;

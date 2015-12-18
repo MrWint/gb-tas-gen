@@ -7,6 +7,13 @@ import static mrwint.gbtasgen.move.Move.LEFT;
 import static mrwint.gbtasgen.move.Move.RIGHT;
 import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BELLSPROUT;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BUTTERFREE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CUBONE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GASTLY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.METAPOD;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ODDISH;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
@@ -32,8 +39,10 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflSwitchPokemonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflBuyItemSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflCancelMoveLearnSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflChangeMonBoxSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflDepositMonSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflEncounterSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflFishSegment;
@@ -48,6 +57,43 @@ public class CyclingRoadRed extends SeqSegment {
 
 	@Override
 	public void execute() {
+    seq(new EflWalkToSegment(3, 5)); // enter center
+
+    seqMetric(new OutputParty());
+    seqMetric(new OutputBoxMons());
+    seq(new EflWalkToSegment(13, 5));
+    seq(new EflWalkToSegment(13, 4)); // TODO: optimize
+    {
+      seqEflButton(A); // PC
+      seq(new EflSkipTextsSegment(1)); // turned on
+      seqEflButton(A); // someone's PC
+      seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+      seqMetric(new OutputParty());
+      seqMetric(new OutputBoxMons());
+//      seq(new EflDepositMonSegment(FARFETCHD));
+      seq(new EflDepositMonSegment(BELLSPROUT));
+      seq(new EflDepositMonSegment(METAPOD));
+      seq(new EflWithdrawMonSegment(CUBONE));
+//      seq(new EflWithdrawMonSegment(GASTLY));
+      seq(new EflWithdrawMonSegment(ODDISH));
+      seqEflButtonUnboundedNoDelay(B, MENU); // cancel
+      seqEflButtonUnboundedNoDelay(B, MENU); // cancel
+      seqMetric(new OutputParty());
+      seqMetric(new OutputBoxMons());
+      seqMetric(new OutputItems());
+    }
+//    seqEflSkipInput(1);
+//    seq(new EflSelectItemSegment(THUNDER_STONE).fromOverworld().andUse());
+//    seq(new EflSelectMonSegment(EEVEE));
+//    seq(new EflEvolutionSegment()); // Jolteon
+//    seq(new EflSelectItemSegment(HM03).andUse());
+//    seq(new EflLearnTMSegment(OMANYTE));
+//    seqEflButton(B);
+//    seqEflButton(START);
+    seq(new EflWalkToSegment(11, 4)); // cable club
+    seq(new EflWalkToSegment(11, 3)); // cable club
+
+
 //    seq(new EflWalkToSegment(15, 13)); // enter mart
 //    seq(new EflWalkToSegment(3, 5)); // shopkeep
 //    seq(new EflWalkToSegment(2, 5)); // shopkeep

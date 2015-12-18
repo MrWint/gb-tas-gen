@@ -3,10 +3,10 @@ package mrwint.gbtasgen.segment.pokemon.gen1.common;
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.DOWN;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
-
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil;
+import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class EflSellItemSegment extends SeqSegment {
 
@@ -37,7 +37,7 @@ public class EflSellItemSegment extends SeqSegment {
 	  if (scroll == 0)
 	    seqEflButton(A, PRESSED);
 	  else
-	    seqEflScrollA(scroll);
+	    seqEflScrollA(scroll, PressMetric.DOWN);
 		seq(new EflSkipTextsSegment(1, true)); //ok?
 //		seq(new EflSkipTextsSegment(1, endWithA)); // thank you
 	}

@@ -1,17 +1,19 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.B;
 import static mrwint.gbtasgen.move.Move.DOWN;
 import static mrwint.gbtasgen.move.Move.LEFT;
 import static mrwint.gbtasgen.move.Move.RIGHT;
-import static mrwint.gbtasgen.move.Move.SELECT;
 import static mrwint.gbtasgen.move.Move.START;
-import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BLASTOISE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CHARMELEON;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.COMET_PUNCH;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CONFUSION;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CUBONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DISABLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DITTO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DOUBLE_KICK;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DOUBLE_SLAP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRAGONAIR;
@@ -20,22 +22,38 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ELIXER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ESCAPE_ROPE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FIRE_PUNCH;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FURY_ATTACK;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM02;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM04;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.IVYSAUR;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.JYNX;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MANKEY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MOON_STONE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDOKING;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDOQUEEN;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINA;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINO;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ODDISH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PERSIAN;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEOTTO;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POISON_GAS;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POISON_POWDER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWHIRL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PSYBEAM;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.REFLECT;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ROAR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ROLLING_KICK;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SAND_ATTACK;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TENTACOOL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WARTORTLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WEEPINBELL;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.metric.Metric;
-import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckNoAIMoveNew;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckPoisonEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckSwitchAndTeleportEffectUsed;
 import mrwint.gbtasgen.metric.pokemon.gen1.OutputBoxMons;
@@ -44,104 +62,71 @@ import mrwint.gbtasgen.metric.pokemon.gen1.OutputParty;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.move.pokemon.gen1.EflWalkStep;
-import mrwint.gbtasgen.move.pokemon.gen1.OverworldInteract;
-import mrwint.gbtasgen.segment.Segment;
 import mrwint.gbtasgen.segment.pokemon.EflCatchMonSegment;
-import mrwint.gbtasgen.segment.pokemon.EflCatchSafariMonSegment;
 import mrwint.gbtasgen.segment.pokemon.EflEvolutionSegment;
 import mrwint.gbtasgen.segment.pokemon.EflLearnTMSegment;
-import mrwint.gbtasgen.segment.pokemon.EflOverrideMoveSegment;
-import mrwint.gbtasgen.segment.pokemon.EflPokecenterSegment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
-import mrwint.gbtasgen.segment.pokemon.TextSegment;
-import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
+import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveDamage;
 import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.EndFightSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.InitFightSegment;
+import mrwint.gbtasgen.segment.pokemon.fight.EnemyFlinchSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.KillEnemyMonSegment;
-import mrwint.gbtasgen.segment.pokemon.fight.NewEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
-import mrwint.gbtasgen.segment.pokemon.fight.KillEnemyMonSegment.EnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflSwitchPokemonSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.CancelMoveLearnSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflBuyItemSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflCancelMoveLearnSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflChangeMonBoxSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflDepositMonSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflEncounterSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflFishSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectItemSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectMonSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSellItemSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.EflUseBike2Segment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflUseBikeSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflWithdrawMonSegment;
-import mrwint.gbtasgen.segment.pokemon.gen1.common.UseBikeSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.segment.util.SkipTextsSegment;
-import mrwint.gbtasgen.state.StateBuffer;
-import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class SilphCoBlue extends SeqSegment {
 
 	@Override
 	public void execute() {
 
-//    seqEflButton(Move.A); // continue game
-//    seqEflButton(Move.START);
-//    seqEflButton(Move.A);
-//    seqEflButton(Move.START);
-//    seqEflButton(Move.A);
+//    seqEflButton(A); // continue game
+//    seqEflButton(START);
+//    seqEflButton(A);
+//    seqEflButton(START);
+//    seqEflButton(A);
 //
 //    {
 //      seq(new EflWalkToSegment(13, 4)); // PC
 //      seq(new EflWalkToSegment(13, 3, false)); // PC
-//      {
-//        seqMetric(new OutputItems());
-//        seqMetric(new OutputParty());
-//        seqEflButton(START, PRESSED);
-//        seqEflScrollA(2); // items
-//        seqEflScrollFastAF(3+1); // Moon Stone
-//        seqEflButton(A, PRESSED); // use
-//        seqEflSkipInput(1);
-//        seqEflScrollAF(1); // Nidorino
-//        seq(new EflEvolutionSegment()); // Nidoking
-//        seqEflButton(A, PRESSED); // Moon Stone
-//        seqEflButton(A, PRESSED); // use
-//        seqEflSkipInput(1);
-//        seqEflScrollAF(1); // Nidorina
-//        seq(new EflEvolutionSegment()); // Nidoqueen
-//        seqEflButton(B);
-//        seqEflButton(START);
-//      }
+//      seq(new EflSelectItemSegment(MOON_STONE).fromOverworld().andUse());
+//      seq(new EflSelectMonSegment(NIDORINA));
+//      seq(new EflEvolutionSegment()); // Nidoqueen
+//      seqEflButton(B);
+//      seqEflButton(START);
+//
 //      {
 //        seqEflButton(A); // use PC
 //        seq(new EflSkipTextsSegment(1)); // turned on
 //        seqEflButton(A); // someone's PC
 //        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//        seq(new EflDepositMonSegment(1, 1)); // Nidoking
-//        seq(new EflDepositMonSegment(0, 1)); // Nidoqueen
-//        seq(new EflDepositMonSegment(0, 2)); // Persian
-//        seq(new EflDepositMonSegment(0, 2)); // Jynx
-//        seqEflButton(DOWN, MENU);
-//        seqEflSkipInput(1);
-//        seqEflButton(DOWN | A); // change box
-//        seq(new EflSkipTextsSegment(2)); // save game
-//        seq(new EflSkipTextsSegment(1, true)); // yes
-//        seqEflButton(DOWN | A, MENU); // change box to 3
-//        seqEflButton(UP, MENU);
-//        seqEflSkipInput(1);
-//        seqMetric(new OutputBoxMons());
-//        seq(new EflWithdrawMonSegment(-2, 6+1)); // Mankey
-//        seq(new EflWithdrawMonSegment(0, 6+1)); // Dragonair
-//        seq(new EflWithdrawMonSegment(0, 7+1)); // Tentacool
-//        seq(new EflWithdrawMonSegment(0, 7+1)); // Pidgeotto
+//        seq(new EflDepositMonSegment(NIDOQUEEN));
+//        seq(new EflDepositMonSegment(PERSIAN));
+//        seq(new EflDepositMonSegment(CUBONE));
+//        seq(new EflChangeMonBoxSegment(1)); // box 2
+//        seq(new EflWithdrawMonSegment(TENTACOOL));
+//        seq(new EflWithdrawMonSegment(PIDGEOTTO));
+//        seq(new EflChangeMonBoxSegment(2)); // box 3
+//        seq(new EflDepositMonSegment(ODDISH));
+//        seq(new EflWithdrawMonSegment(DRAGONAIR));
+//        seq(new EflWithdrawMonSegment(IVYSAUR));
 //        seqEflButton(B, MENU); // cancel
 //        seqEflButton(B, PRESSED); // cancel
 //      }
@@ -152,15 +137,13 @@ public class SilphCoBlue extends SeqSegment {
 //    seqUnbounded(new EflWalkToSegment(4, 6)); // leave center
 //    seq(new EflWalkToSegment(4, 8, false)); // leave center
 //
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(-1); // mon
-//      seqEflSkipInput(1);
-//      seqEflScrollAF(-1); // Pidgey
-//      seqEflButton(A, PRESSED); // Fly
-//      seqEflScrollA(1); // Cinnabar
-//      seqEflSkipInput(1);
-//    }
+//    seq(new EflSelectItemSegment(HM02).fromOverworld().andUse());
+//    seq(new EflLearnTMSegment(PIDGEOTTO, 0)); // sand-attack -> Fly
+//    seqEflButton(B); // cancel
+//    seq(new EflSelectMonSegment(IVYSAUR).fromMainMenu().andSwitchWith(CHARMELEON));
+//    seqEflSkipInput(0);
+//    seq(new EflSelectMonSegment(PIDGEOTTO).andFlyTo(1)); // Cinnabar
+//    seqEflSkipInput(1);
 //    seq(new EflWalkToSegment(18, 3)); // enter gym
 //
 //    seq(new EflWalkToSegment(15, 9));
@@ -212,10 +195,10 @@ public class SilphCoBlue extends SeqSegment {
 //    save("tmp");
 //    load("tmp");
 //    seqMetric(new OutputParty());
-//    seq(new EflSwitchPokemonSegment(3, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 43))); // Dragonair
+//    seq(new EflSwitchPokemonSegment(WARTORTLE, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)));
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][1] = 1; // surf crit
+//      kems.attackCount[3][1] = 1; // Bubblebeam crit
 //      kems.numExpGainers = 4; // Bulbasaur boosted, lvlup to 17
 //      seq(kems); // growlithe
 //    }
@@ -224,19 +207,19 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39, 45)}; // tail whip, growl
-//      kems.attackCount[2][1] = 1; // surf crit
-//      seq(kems); // ponita
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP, GROWL)};
+//      kems.attackCount[3][1] = 1; // Bubblebeam crit
+//      seq(kems); // ponyta
 //    }
 //    save("tmp3");
 //    load("tmp3");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
-//    seq(new EflSwitchPokemonSegment(1, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39, 45))); // Tentacool
+//    seq(new EflSwitchPokemonSegment(TENTACOOL, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP, GROWL)));
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment(); // TODO: consider blaine super potion
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39, 45)}; // tail whip, growl
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP, GROWL)};
 //      kems.attackCount[2][1] = 2; // Water Gun crit
-//      kems.numExpGainers = 2; // Dragonair, Tentacool
+//      kems.numExpGainers = 2; // Wartortle, Tentacool
 //      seq(kems); // rapidash
 //    }
 //    save("tmp4");
@@ -244,7 +227,7 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckSwitchAndTeleportEffectUsed(), 46)}; // roar
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckSwitchAndTeleportEffectUsed(), ROAR)};
 //      kems.attackCount[2][1] = 3; // Water Gun crit
 //      seq(kems); // arcanine
 //    }
@@ -253,39 +236,16 @@ public class SilphCoBlue extends SeqSegment {
 //
 //    save("si0");
 //    load("si0");
-//    {
-//      seqEflSkipInput(1);
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(2); // items
-//      seqMetric(new OutputItems());
-//      seqMetric(new OutputParty());
-//      seqEflSkipInput(1);
-//      seqEflScrollFastAF(3+1); // escape rope
-//      seqEflButton(A, PRESSED); // use
-//      seqEflSkipInput(2);
-//    }
-//	  {
-//	    seqEflButton(START, PRESSED);
-//	    seqEflScrollA(-1); // mon
-//      seqEflSkipInput(1);
-//	    seqEflScrollAF(-1); // Pidgeotto
-//	    seqEflButton(A, PRESSED); // Fly
-//	    seqEflScrollA(-4); // Lavender
-//	    seqEflSkipInput(1);
-//	  }
-//	  seq(new EflUseBikeSegment(1, -4-1));
+//    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
+//    seqEflSkipInput(2);
+//    seq(new EflSelectMonSegment(PIDGEOTTO).fromOverworld().andFlyTo(-4)); // Lavender
+//    seqEflSkipInput(1);
+//	  seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(9, 18)); // leave
 //    seq(new EflWalkToSegment(10, 16, false)); // house
 //    seq(new EflWalkToSegment(4, 8, false)); // leave house
 //    seq(new EflWalkToSegment(11, 22)); // water
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(-1); // mon
-//      seqMetric(new OutputParty());
-//      seqEflScrollAF(-2); // Dragonair
-//      seqEflButton(A, PRESSED); // Surf
-//      seq(new EflSkipTextsSegment(1)); // got on
-//    }
+//    seq(new EflSelectMonSegment(DRAGONAIR).fromOverworld().andSurf());
 //    for(int i = 0; i < 4; i++)
 //      seqMove(new EflWalkStep(RIGHT, true));
 //    for(int i = 0; i < 56; i++)
@@ -298,19 +258,13 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(new EflSkipTextsSegment(1, true)); // I like to fish
 //    seq(new EflSkipTextsSegment(7)); // got super rod
 //    seq(new EflWalkToSegment(2, 8, false)); // leave
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflButton(A); // mon
-//      seqEflScrollAF(2); // Pidgeotto
-//      seqEflButton(A, PRESSED); // Fly
-//      seqEflScrollA(3); // Celadon
-//      seqEflSkipInput(1);
-//    }
+//    seq(new EflSelectMonSegment(PIDGEOTTO).fromOverworld().andFlyTo(3)); // Celadon
+//    seqEflSkipInput(1);
 //
 //    save("si1");
 //    load("si1");
 //
-//    seq(new EflUseBikeSegment(1, 0));
+//    seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(10, 13)); // enter mart
 //    seq(new EflWalkToSegment(12, 1)); // 2nd floor
 //    seq(new EflWalkToSegment(16, 1)); // 3rd floor
@@ -342,10 +296,9 @@ public class SilphCoBlue extends SeqSegment {
 //        seq(new EflTextSegment(B)); // what to sell
 //
 //        seqMetric(new OutputItems());
-//        seq(new EflSellItemSegment(4, 0)); // TM34
-//        seq(new EflSellItemSegment(8, 0)); // TM06
 //        seq(new EflSellItemSegment(10, 0)); // Nugget
-//        seq(new EflSellItemSegment(11, 0)); // TM38
+//        seq(new EflSellItemSegment(10, 0)); // TM06
+//        seq(new EflSellItemSegment(13, 0)); // TM38
 //        seqEflButton(B);
 //      }
 //
@@ -354,7 +307,7 @@ public class SilphCoBlue extends SeqSegment {
 //      seq(new EflTextSegment(B));
 //      {
 //        seq(new EflBuyItemSegment(4, 3)); // Leaf Stone x3
-//        seq(new EflBuyItemSegment(0, 2)); // Thunder Stone x2
+////        seq(new EflBuyItemSegment(0, 2)); // Thunder Stone x2
 //        seq(new EflBuyItemSegment(1, 4)); // Water Stone x4
 //        seq(new EflBuyItemSegment(-1, 2, true)); // Fire Stone x2
 //      }
@@ -378,47 +331,34 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(new EflWalkToSegment(12,1)); // 1st
 //    seq(new EflWalkToSegment(16,8,false)); // out
 //
+//    seqMetric(new OutputItems());
+//
 //    save("si2");
 //    load("si2");
 //
-//    seq(new EflUseBikeSegment(0, 0));
+//    seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(21, 21, false)); // water
 //
 //    {
 //      seqMetric(new OutputItems());
-//      seq(new EflFishSegment(0x6E, 11+1, 0)); // Poliwhirl
-//      seq(new EflCatchMonSegment(2));
+//      seq(new EflFishSegment(POLIWHIRL)); // Poliwhirl
+//      seq(new EflCatchMonSegment());
 //    }
 //
 //    seq(new EflWalkToSegment(35, 30)); // bush
 //    seq(new EflWalkToSegment(35, 31)); // bush
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(1); // mon
-//      seqEflButton(A, PRESSED); // Ivysaur
-//      seqEflButton(A, PRESSED); // cut
-//      seqEflButton(Move.B); // hacked away (no text scroll)?
-//    }
+//    seq(new EflSelectMonSegment(IVYSAUR).fromOverworld().andCut());
 //    seq(new EflWalkToSegment(12, 27)); // enter gym
 //    seq(new EflWalkToSegment(1, 4)); // bush
-//    {
-//      seqMetric(new OutputParty());
-//      seqEflButton(START, PRESSED);
-//      seqEflButton(A, PRESSED); // mon
-//      seqEflButton(A, PRESSED); // ivysaur
-//      seqEflScrollAF(2); // switch
-//      seqEflSkipInput(1);
-//      seqEflScrollAF(3); // dragonair
-//      seqEflButton(A, PRESSED); // ivysaur
-//      seqEflButton(A, PRESSED); // cut
-//      seqEflButton(Move.B); // hacked away (no text scroll)?
-//    }
+//    seqMetric(new OutputParty());
+//    seq(new EflSelectMonSegment(IVYSAUR).fromOverworld().andSwitchWith(DRAGONAIR));
+//    seq(new EflSelectMonSegment(IVYSAUR).andCut());
 //    seq(new EflWalkToSegment(3, 4)); // engage
 //    seq(new EflInitFightSegment(2)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.attackCount[1][0] = 1; // ice beam
-//      kems.numExpGainers = 2; // dragonair lvlup to 33
+////      kems.numExpGainers = 2; // dragonair lvlup to 33
 //      seq(kems); // exeggcute
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -426,25 +366,18 @@ public class SilphCoBlue extends SeqSegment {
 //    save("si3");
 //    load("si3");
 //
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(1); // mon
-//      seqEflButton(A, PRESSED); // dragonair
-//      seqEflScrollAF(2); // Switch
-//      seqEflSkipInput(1);
-//      seqEflScrollAF(-1); // Pidgeotto
-//      seqEflButton(B); // cancel
-//      seqEflButton(START); // cancel
-//    }
+//    seq(new EflSelectMonSegment(DRAGONAIR).fromOverworld().andSwitchWith(PIDGEOTTO));
+//    seqEflButton(B); // cancel
+//    seqEflButton(START); // cancel
 //
 //    seq(new EflWalkToSegment(4, 3, false)); // engage erika
 //    seqMove(new EflOverworldInteract(1)); // engage erika
 //    seq(new EflInitFightSegment(13)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), 77)}; // Poisonpowder
-//      kems.attackCount[3][0] = 1; // wing attack
-//      kems.attackCount[3][1] = 1; // wing attack crit
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_POWDER)};
+//      kems.attackCount[0][1] = 1; // fly crit
+//      kems.keepLastEnemyAttack = true;
 //      seq(kems); // victreebel
 //    }
 //    save("tmp");
@@ -453,8 +386,8 @@ public class SilphCoBlue extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(20)}; // Bind
-//      kems.attackCount[3][0] = 1; // wing attack
-//      kems.attackCount[3][1] = 1; // wing attack crit
+//      kems.attackCount[0][1] = 1; // fly crit
+//      kems.keepLastEnemyAttack = true;
 //      seq(kems); // tangela
 //    }
 //    save("tmp2");
@@ -462,9 +395,9 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), 77)}; // Poisonpowder
-////      kems.attackCount[3][0] = 1; // wing attack // TODO: Atk DV 15
-//      kems.attackCount[3][1] = 2; // wing attack crit
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_POWDER)};
+//      kems.attackCount[0][1] = 1; // fly crit
+//      kems.keepLastEnemyAttack = true;
 //      kems.numExpGainers = 2; // L33
 //      seq(kems); // vileplume
 //    }
@@ -473,49 +406,27 @@ public class SilphCoBlue extends SeqSegment {
 //    save("si4");
 //    load("si4");
 //
-//    seq(new EflSkipTextsSegment(11)); // after battle texts
+//    seqMetric(new OutputParty());
+//
+//    seq(new EflSkipTextsSegment(7)); // after battle texts (no room)
+////    seq(new EflSkipTextsSegment(11)); // after battle texts
 //    seq(new EflWalkToSegment(5, 5)); // bush
 //    seq(new EflWalkToSegment(5, 6)); // bush
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(1); // mon
-//      seqEflScrollAF(3); // Ivysaur
-//      seqEflButton(A, PRESSED); // cut
-//      seqEflButton(B); // hacked away (no text scroll)?
-//    }
+//    seq(new EflSelectMonSegment(IVYSAUR).fromOverworld().andCut());
 //    seq(new EflWalkToSegment(5, 18, false)); // leave gym
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflButton(A, PRESSED); // mon
-//      seqEflScrollAF(-3); // Pidgey
-//      seqEflButton(A, PRESSED); // Fly
-//      seqEflScrollA(2); // Fuchsia
-//      seqEflSkipInput(1);
-//    }
-//    seq(new EflUseBikeSegment(1, 0));
+//    seq(new EflSelectMonSegment(PIDGEOTTO).fromOverworld().andFlyTo(2)); // Fuchsia
+//    seqEflSkipInput(1);
+//    seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(23, 28, false)); // ledge
 //    seq(new EflWalkToSegment(27, 27)); // warden house
 //    seq(new EflWalkToSegment(2, 5)); // warden
 //    seq(new EflWalkToSegment(2, 4)); // warden
 //    seqMove(new EflOverworldInteract(1)); //warden
 //    seq(new EflSkipTextsSegment(11)); // get HM04
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflButton(A, PRESSED); // item
-//      seqMetric(new OutputItems());
-//      seqMetric(new OutputParty());
-//      seqEflScrollFastAF(19+1); // HM04
-//      seqEflButton(A, PRESSED); // use
-//      seq(new EflLearnTMSegment(1, 1)); // Charmeleon Slash -> Strength
-//      seqEflButton(B); // cancel
-//      seqEflScrollA(-1); // mon
-//      seqEflButton(A, PRESSED); // Charmeleon
-//      seqEflSkipInput(1);
-//      seqEflScrollAF(1); // Strength
-//      seq(new EflTextSegment());
-//      seq(new EflSkipTextsSegment(1)); // move boulders
-//    }
-////    seq(new EflWalkToSegment(7, 4)); // boulder
+//    seq(new EflSelectItemSegment(HM04).fromOverworld().andUse());
+//    seq(new EflLearnTMSegment(CHARMELEON, 3)); // Charmeleon Mega Punch -> Strength
+//    seqEflButton(B); // cancel
+//    seq(new EflSelectMonSegment(CHARMELEON).fromMainMenu().andStrength());
 //    seq(new EflWalkToSegment(8, 4, false)); // boulder
 //    seq(new EflWalkToSegment(8, 4, false)); // boulder
 //    seq(new EflWalkToSegment(8, 3, false)); // boulder
@@ -527,35 +438,31 @@ public class SilphCoBlue extends SeqSegment {
 //    save("si5");
 //    load("si5");
 //
-//    seqUnbounded(new EflUseBikeSegment(1, -19-1));
+//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //    seqUnbounded(new EflWalkToSegment(40, 17)); // leave fuchsia
 //    seqUnbounded(new EflWalkToSegment(8, 9, false)); // enter house
 //    seqUnbounded(new EflWalkToSegment(8, 5, false)); // leave house
-//    seqUnbounded(new EflWalkToSegment(17, 9)); // grass
-//    seq(new EflEncounterSegment(0x4C, RIGHT)); // Ditto
 //    save("tmp");
-////    load("tmp");
-//    seq(new EflCatchMonSegment(2).withBufferSize(0));
+//    load("tmp");
+//    seqUnbounded(new EflWalkToSegment(17, 9)); // grass
+//    seq(new EflEncounterSegment(WEEPINBELL, RIGHT));
+//    save("tmp2");
+////    load("tmp2");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(20, 9)); // grass
-//    seq(new EflEncounterSegment(0xBD, RIGHT)); // Weepinbell
-//    save("tmp2");
-//    load("tmp2");
-//    seq(new EflCatchMonSegment(2));
+//    seq(new EflEncounterSegment(DITTO, RIGHT));
+//    save("tmp3");
+////    load("tmp3");
+//    seq(new EflCatchMonSegment());
 //
-//    {
-//      seqEflButton(START, PRESSED);
-//      seqEflScrollA(1); // mon
-//      seqEflButton(A, PRESSED); // Pidgeotto
-//      seqEflButton(A, PRESSED); // Fly
-//      seqEflScrollA(3); // Celadon
-//      seqEflSkipInput(1);
-//    }
+//    seq(new EflSelectMonSegment(PIDGEOTTO).fromOverworld().andFlyTo(3)); // Celadon
+//    seqEflSkipInput(1);
 //
 //    save("si6");
 //    load("si6");
 //
-//    seq(new EflUseBike2Segment());
+//    seq(new EflUseBikeSegment().fromOverworld());
 //    {
 //      seq(new EflWalkToSegment(25, 4, false)); // house
 //      seq(new EflWalkToSegment(2, 1)); // house
@@ -573,7 +480,7 @@ public class SilphCoBlue extends SeqSegment {
 //      seq(new EflWalkToSegment(4, 1)); // house
 //      seq(new EflWalkToSegment(2, 1)); // house
 //      seq(new EflWalkToSegment(4, 0)); // house
-//      seq(new EflUseBike2Segment());
+//      seq(new EflUseBikeSegment().fromOverworld());
 //    }
 //    seq(new EflWalkToSegment(50, 10)); // leave celadon
 //    seq(new EflWalkToSegment(12, 10, false)); // enter house
@@ -581,49 +488,56 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(new EflWalkToSegment(3, 4)); // talk to guard
 //    seq(new EflSkipTextsSegment(15)); // give water
 //    seq(new EflWalkToSegment(6, 4, false)); // leave house
-//    seq(new EflUseBike2Segment());
+//    seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(20, 10)); // enter saffron
 //    seq(new EflWalkToSegment(18, 21)); // enter silph co
 //
 //    save("si7");
 //    load("si7");
 //
-//    seq(new EflWalkToSegment(20, 0)); // elevator
-//    seq(new EflWalkToSegment(3, 2)); // elevator
-//    seq(new EflWalkToSegment(3, 1)); // elevator
-//    seqMove(new EflOverworldInteract(1));
-//    seq(new EflTextSegment());
-//    seqEflScrollFastA(9); // 10F
-//    seq(new EflWalkToSegment(2, 2)); // elevator
-//    seq(new EflWalkToSegment(2, 4, false)); // elevator
-//
-//    seq(new EflWalkToSegment(4, 9)); // rocket
-//
-//    seq(new EflInitFightSegment(2)); // start fight
 //    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), Constants.MOVE_LEER)};
-//      kems.attackCount[3][1] = 2; // wing attack crit
-//      seq(kems); // machoke
+//      seq(new EflWalkToSegment(26, 0)); // 2f
+//      seq(new EflWalkToSegment(26, 0)); // 3f
+//      seq(new EflWalkToSegment(24, 0)); // 4f
+//      seq(new EflWalkToSegment(26, 0)); // 5f
 //    }
-//    seq(new EflEndFightSegment(1)); // player defeated enemy
-//
-//    save("si8");
-//    load("si8");
-//
-//    seq(new EflSelectMonSegment(PIDGEOTTO).fromOverworld().andSwitchWith(IVYSAUR));
-//    seqEflButton(B);
-//    seqEflButton(START);
-//
-//    seq(new EflWalkToSegment(4, 14, false)); // rare candy
-//    seqMove(new EflOverworldInteract(5)); // rare candy
-//    seq(new EflTextSegment()); // rare candy
-//
-//    seq(new EflWalkToSegment(8, 0)); // 9f
-//    seq(new EflWalkToSegment(16, 0)); // 8f
-//    seq(new EflWalkToSegment(14, 0)); // 7f
-//    seq(new EflWalkToSegment(22, 0)); // 6f
-//    seq(new EflWalkToSegment(14, 0)); // 5f
+////    seq(new EflWalkToSegment(20, 0)); // elevator
+////    seq(new EflWalkToSegment(3, 2)); // elevator
+////    seq(new EflWalkToSegment(3, 1)); // elevator
+////    seqMove(new EflOverworldInteract(1));
+////    seq(new EflTextSegment());
+////    seqEflScrollFastA(9); // 10F
+////    seq(new EflWalkToSegment(2, 2)); // elevator
+////    seq(new EflWalkToSegment(2, 4, false)); // elevator
+////
+////    seq(new EflWalkToSegment(4, 9)); // rocket
+////
+////    seq(new EflInitFightSegment(2)); // start fight
+////    {
+////      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+////      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
+////      kems.attackCount[0][1] = 1; // fly crit
+////      kems.keepLastEnemyAttack = true;
+////      seq(kems); // machoke
+////    }
+////    seq(new EflEndFightSegment(1)); // player defeated enemy
+////
+//////    save("si8a");
+//////    load("si8a");
+////
+////    seq(new EflSelectMonSegment(PIDGEOTTO).fromOverworld().andSwitchWith(IVYSAUR));
+////    seqEflButton(B);
+////    seqEflButton(START);
+////
+////    seq(new EflWalkToSegment(4, 14, false)); // rare candy
+////    seqMove(new EflOverworldInteract(5)); // rare candy
+////    seq(new EflTextSegment()); // rare candy
+////
+////    seq(new EflWalkToSegment(8, 0)); // 9f
+////    seq(new EflWalkToSegment(16, 0)); // 8f
+////    seq(new EflWalkToSegment(14, 0)); // 7f
+////    seq(new EflWalkToSegment(22, 0)); // 6f
+////    seq(new EflWalkToSegment(14, 0)); // 5f
 //    {
 //      seq(new EflWalkToSegment(14, 3)); // elixer
 //      seq(new EflWalkToSegment(13, 3)); // elixer
@@ -633,13 +547,14 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(new EflWalkToSegment(8, 15).setBlockAllWarps(true));
 //    seqMove(new EflOverworldInteract(2));
 //    seq(new EflInitFightSegment(1)); // start fight
-//    seq(new EflSwitchPokemonSegment(DRAGONAIR, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER))); // dragonair
+////    seq(new EflSwitchPokemonSegment(DRAGONAIR, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER))); // dragonair
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
-//      kems.attackCount[2][0] = 1; // surf
-//      kems.attackCount[2][1] = 1; // surf crit
-//      kems.numExpGainers = 4; // ivysaur boosted, lvlup
+//      kems.attackCount[0][1] = 1; // Fly crit
+//      kems.attackCount[3][1] = 1; // Wing Attack crit
+//      kems.keepLastEnemyAttack = true;
+////      kems.numExpGainers = 4; // ivysaur boosted, lvlup
 //      seq(kems); // arbok
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -652,6 +567,11 @@ public class SilphCoBlue extends SeqSegment {
 //
 //    save("si9");
 //    load("si9");
+//
+//    seqEflSkipInput(1);
+//    seq(new EflSelectMonSegment(PIDGEOTTO).fromOverworld().andSwitchWith(IVYSAUR));
+//    seqEflButton(B);
+//    seqEflButton(START);
 //
 //    seq(new EflWalkToSegment(9, 15)); // warp
 //    seq(new EflWalkToSegment(16, 15));
@@ -676,7 +596,8 @@ public class SilphCoBlue extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SAND_ATTACK)};
-//      kems.attackCount[1][1] = 1; // ice beam crit
+//      kems.attackCount[0][0] = 1; // slam crit
+//      kems.attackCount[3][1] = 1; // thunderbolt crit
 //      kems.numExpGainers = 4; // ivysaur boosted, lvlup to 19
 //      seq(kems); // pidgeot
 //    }
@@ -689,7 +610,7 @@ public class SilphCoBlue extends SeqSegment {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(DRAGON_RAGE)};
 //      kems.attackCount[3][1] = 1; // thunderbolt crit
-//      kems.numExpGainers = 4; // ivysaur boosted, lvlup 20
+//      kems.numExpGainers = 4; // ivysaur, boosted, lvlup 20, dragonair
 //      seq(kems); // gyarados
 //    }
 //    save("tmp2");
@@ -697,7 +618,8 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // surf
+//      kems.attackCount[2][1] = 1; // surf crit
+//      kems.numExpGainers = 2; // Dragonair, lvlup to 31
 //      seq(kems); // growlithe
 //    }
 //    save("tmp3");
@@ -707,7 +629,8 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(new EflSwitchPokemonSegment(DRAGONAIR, EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)));
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[0][0] = 2; // slam
+//      kems.attackCount[0][0] = 1; // slam
+//      kems.attackCount[0][1] = 1; // slam crit
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.numExpGainers = 4; // ivysaur boosted, lvlup to 21
 //      seq(kems); // alakazam
@@ -720,22 +643,21 @@ public class SilphCoBlue extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_POWDER)};
-//      kems.attackCount[1][0] = 1; // ice beam
-//      kems.attackCount[1][1] = 1; // ice beam crit
-//      kems.numExpGainers = 5; // lvlup to 34, ivysaur boosted, lvlup to 23
+//      kems.attackCount[1][1] = 2; // ice beam crit
+//      kems.numExpGainers = 3; // ivysaur, boosted, lvlup to 22
 //      seq(kems); // venusaur
 //    }
-//    seq(new EflEndFightSegment(2)); // player defeated enemy
-//    seq(new EflSkipTextsSegment(14)); // after battle texts
 //
 //    save("si10");
 //    load("si10");
+//    seq(new EflCancelMoveLearnSegment()); //
+//    seq(new EflSkipTextsSegment(1)); // dragonair exp
+//    seq(new EflEndFightSegment(2)); // player defeated enemy
+//    seq(new EflSkipTextsSegment(14)); // after battle texts
 //
-//    seq(new EflSelectItemSegment(ELIXER).fromOverworld().andUse());
-//    seq(new EflSelectMonSegment(DRAGONAIR));
-//    seq(new EflSkipTextsSegment(1, true)); // PP restored
-//    seqEflButton(Move.B);
-//    seq(new EflSelectMonSegment(DRAGONAIR).fromMainMenu().andSwitchWith(IVYSAUR));
+//    seqMetric(new OutputParty());
+//
+//    seq(new EflSelectMonSegment(IVYSAUR).fromOverworld().andSwitchWith(WARTORTLE));
 //    seqEflButton(B);
 //    seqEflButton(START);
 //
@@ -753,13 +675,32 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(new EflInitFightSegment(1)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[1][0] = 1; // ice beam
+//      kems.attackCount[3][0] = 1; // Bubblebeam
 //      seq(kems); // cubone
 //    }
+//    save("tmp");
+//    load("tmp");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
+//      seqEflButton(A, PRESSED); // fight
+//      seqEflScroll(-2); // bite
+//      delayEfl(new SeqSegment() {
+//        @Override
+//        protected void execute() {
+//          seqEflButtonUnboundedNoDelay(A); // use move
+//          seqMetric(new EflCheckMoveOrderMetric(true));
+//          seqUnbounded(new EflTextSegment()); // used bite
+//          seqMetric(new EflCheckMoveDamage(false, false, 0, 38, Integer.MAX_VALUE, false),GREATER_EQUAL, 38);
+//          seqMetric(new EnemyFlinchSegment.EnemyFlinchMetric());
+//        }
+//      });
+//      seq(new EflSkipTextsSegment(1)); // enemy flinched
+//    }
+//    seq(new EflSwitchPokemonSegment(DRAGONAIR, EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_GAS)));
+//    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[0][1] = 1; // slam crit
+//      kems.attackCount[0][0] = 1; // slam
+//      kems.numExpGainers = 3; // wartortle, lvlup to 36, dragonair
 //      seq(kems); // drowzee
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
@@ -769,11 +710,12 @@ public class SilphCoBlue extends SeqSegment {
 //      seq(kems); // marowak
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
+//    seq(new EflEvolutionSegment()); // Blastoise
 //
 //    save("si11");
 //    load("si11");
 //
-//    seq(new EflSelectMonSegment(DRAGONAIR).fromOverworld().andSwitchWith(IVYSAUR));
+//    seq(new EflSelectMonSegment(BLASTOISE).fromOverworld().andSwitchWith(IVYSAUR));
 //    seqEflButton(B);
 //    seqEflButton(START);
 //
@@ -790,11 +732,12 @@ public class SilphCoBlue extends SeqSegment {
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(FURY_ATTACK)};
 //      kems.attackCount[3][0] = 1; // thunderbolt
 //      kems.attackCount[3][1] = 1; // thunderbolt crit
-//      kems.numExpGainers = 3; // ivysaur boosted
+//      kems.numExpGainers = 3; // dragonair, ivysaur boosted
 //      seq(kems); // nidorino
 //    }
 //    save("tmp");
 //    load("tmp");
+//    seqMetric(new OutputParty());
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    seq(new EflSwitchPokemonSegment(IVYSAUR, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
 //    seq(new EflSwitchPokemonSegment(DRAGONAIR, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
@@ -803,7 +746,7 @@ public class SilphCoBlue extends SeqSegment {
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
 //      kems.attackCount[3][0] = 1; // thunderbolt
 //      kems.attackCount[3][1] = 1; // thunderbolt crit
-//      kems.numExpGainers = 4; // ivysaur boosted, lvlup
+//      kems.numExpGainers = 5; // ivysaur, boosted, lvlup, dragonair, lvlup to 32
 //      seq(kems); // kangaskhan
 //    }
 //    save("tmp2");
@@ -815,7 +758,7 @@ public class SilphCoBlue extends SeqSegment {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
 //      kems.attackCount[3][1] = 1; // vine whip crit
-//      kems.numExpGainers = 3; // boosted, dragonair
+//      kems.numExpGainers = 4; // ivysaur, boosted, lvlup to 24, dragonair
 //      seq(kems); // rhyhorn
 //    }
 //    save("tmp3");
@@ -828,7 +771,7 @@ public class SilphCoBlue extends SeqSegment {
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
 //      kems.attackCount[1][0] = 1; // ice beam
 //      kems.attackCount[1][1] = 1; // ice beam crit
-//      kems.numExpGainers = 5; // lvlup to 35, ivysaur boosted, lvlup to 25
+//      kems.numExpGainers = 4; // ivysaur, boosted, lvlup to 25, dragonair
 //      seq(kems); // nidoqueen
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -841,9 +784,10 @@ public class SilphCoBlue extends SeqSegment {
 //    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
 //    seqEflSkipInput(2);
 //    seq(new EflSelectMonSegment(IVYSAUR).fromOverworld().andSwitchWith(PIDGEOTTO));
+//    seqEflSkipInput(0);
 //    seq(new EflSelectMonSegment(PIDGEOTTO).andFlyTo(1)); // Saffron
 //    seqEflSkipInput(1);
-//    seq(new EflUseBike2Segment().fromOverworld());
+//    seq(new EflUseBikeSegment().fromOverworld());
 //
 //    seq(new EflWalkToSegment(26, 3)); // dojo
 //    seq(new EflWalkToSegment(2, 4)); // blackbelt
@@ -865,7 +809,7 @@ public class SilphCoBlue extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
-//      kems.attackCount[3][0] = 2; // wing attack
+//      kems.attackCount[0][1] = 1; // fly crit
 //      kems.numExpGainers = 2; // lvlup to 34
 //      seq(kems); // primeape
 //    }
@@ -879,93 +823,91 @@ public class SilphCoBlue extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(DOUBLE_KICK, ROLLING_KICK)};
-//      kems.attackCount[1][0] = 1; // quick attack
-//      kems.attackCount[3][1] = 1; // wing attack crit
-//      kems.lastAttack = 1; // quick attack
+//      kems.attackCount[0][1] = 1; // fly crit
 //      seq(kems); // hitmonlee
 //    }
-//    save("tmp");
-//    load("tmp");
+//    save("tmp2");
+//    load("tmp2");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(COMET_PUNCH, FIRE_PUNCH)};
-//      kems.attackCount[3][1] = 2; // wing attack crit
+//      kems.attackCount[0][1] = 1; // fly crit
+//      kems.keepLastEnemyAttack = true;
 //      seq(kems); // hitmonchan
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //
 //    save("si14");
-    load("si14");
-
-    seq(new EflSkipTextsSegment(7)); // after battle texts
-    seq(new EflWalkToSegment(4, 2)); // hitmonchan
-    seqMove(new EflOverworldInteract(6)); // hitmonlee
-    seqEflButton(B); // skip dex
-    seqEflButton(A); // skip dex
-    seq(new EflSkipTextsSegment(1)); // do you want?
-    seq(new EflSkipTextsSegment(1, true)); // want!
-    seq(new EflTextSegment()); // got hitmonlee
-    seq(new EflSkipTextsSegment(6)); // no nickname, no room
-    seq(new EflWalkToSegment(4, 12, false)); // leave
-
-    seq(new EflWalkToSegment(34, 3)); // gym
-    seq(new EflWalkToSegment(11, 15)); // warp
-    seq(new EflWalkToSegment(15, 15)); // warp
-    seq(new EflWalkToSegment(15, 5)); // warp
-    seq(new EflWalkToSegment(1, 5)); // warp
-    seq(new EflWalkToSegment(9, 10));
-    seq(new EflWalkToSegment(9, 9));
-    seqMove(new EflOverworldInteract(1)); // talk to sabrina
-
-    seq(new EflInitFightSegment(8)); // start fight
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
-      kems.attackCount[1][0] = 1; // quick attack
-      kems.attackCount[1][1] = 1; // quick attack
-      kems.numExpGainers = 2; // lvlup to 35
-      seq(kems); // kadabra
-    }
-    save("tmp");
-    load("tmp");
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    seq(new EflSwitchPokemonSegment(DRAGONAIR, EflEnemyMoveDesc.missWith(CONFUSION, DOUBLE_SLAP)));
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(CONFUSION, DOUBLE_SLAP)};
-      kems.attackCount[3][1] = 2; // thunderbolt crit
-      kems.numExpGainers = 2; // pidgeotto
-      seq(kems); // mr.mime
-    }
-    save("tmp2");
-    load("tmp2");
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_POWDER)};
-      kems.attackCount[0][1] = 1; // slam crit
-      kems.attackCount[3][1] = 1; // thunderbolt crit
-      seq(kems); // venomoth
-    }
-    save("tmp3");
-    load("tmp3");
-    seq(EflNewEnemyMonSegment.any()); // next mon
-    seqMetric(new OutputParty());
-    seq(new EflSwitchPokemonSegment(IVYSAUR, EflEnemyMoveDesc.missWith(Metric.TRUE, REFLECT)));
-    seq(new EflSwitchPokemonSegment(CHARMELEON, EflEnemyMoveDesc.missWith(Metric.TRUE, REFLECT)));
-    {
-      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(Metric.TRUE, REFLECT)};
-      kems.attackCount[1][1] = 2; // strength crit
-      kems.numExpGainers = 7; // dragonair, ivysaur, boosted, lvlup to 26, charmeleon, boosted, lvlup to 36
-      seq(kems); // alakazam
-    }
-    save("tmp4");
+//    load("si14");
+//
+//    seq(new EflSkipTextsSegment(7)); // after battle texts
+//    seq(new EflWalkToSegment(4, 2)); // hitmonchan
+//    seqMove(new EflOverworldInteract(6)); // hitmonlee
+//    seqEflButton(B); // skip dex
+//    seqEflButton(A); // skip dex
+//    seq(new EflSkipTextsSegment(1)); // do you want?
+//    seq(new EflSkipTextsSegment(1, true)); // want!
+//    seq(new EflTextSegment()); // got hitmonlee
+//    seq(new EflSkipTextsSegment(6)); // no nickname, no room
+//    seq(new EflWalkToSegment(4, 12, false)); // leave
+//
+//    seq(new EflWalkToSegment(34, 3)); // gym
+//    seq(new EflWalkToSegment(11, 15)); // warp
+//    seq(new EflWalkToSegment(15, 15)); // warp
+//    seq(new EflWalkToSegment(15, 5)); // warp
+//    seq(new EflWalkToSegment(1, 5)); // warp
+//    seq(new EflWalkToSegment(9, 10));
+//    seq(new EflWalkToSegment(9, 9));
+//    seqMove(new EflOverworldInteract(1)); // talk to sabrina
+//
+//    seq(new EflInitFightSegment(8)); // start fight
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
+//      kems.attackCount[0][1] = 1; // fly crit
+//      kems.numExpGainers = 2; // lvlup to 35
+//      seq(kems); // kadabra
+//    }
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    save("tmp1");
+//    load("tmp1");
+//    seqMetric(new OutputParty());
+//    seq(new EflSwitchPokemonSegment(DRAGONAIR, EflEnemyMoveDesc.missWith(CONFUSION, DOUBLE_SLAP)));
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(CONFUSION, DOUBLE_SLAP)};
+//      kems.attackCount[0][1] = 1; // slam crit
+//      kems.attackCount[3][1] = 1; // thunderbolt crit
+//      kems.numExpGainers = 2; // pidgeotto
+//      seq(kems); // mr.mime
+//    }
+//    save("tmp2");
+//    load("tmp2");
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_POWDER)};
+//      kems.attackCount[0][1] = 2; // slam crit
+//      seq(kems); // venomoth
+//    }
+//    save("tmp3");
+//    load("tmp3");
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    seqMetric(new OutputParty());
+//    seq(new EflSwitchPokemonSegment(IVYSAUR, EflEnemyMoveDesc.missWith(Metric.TRUE, REFLECT)));
+//    seq(new EflSwitchPokemonSegment(CHARMELEON, EflEnemyMoveDesc.missWith(Metric.TRUE, REFLECT)));
+//    {
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(Metric.TRUE, REFLECT)};
+//      kems.attackCount[1][1] = 2; // slash crit
+//      kems.numExpGainers = 7; // dragonair, lvlup, ivysaur, boosted, charmeleon, boosted, lvlup to 36
+//      seq(kems); // alakazam
+//    }
+//    save("tmp4");
     load("tmp4");
     seq(new EflEndFightSegment(6)); // player defeated enemy
     seq(new EflEvolutionSegment()); // Charizard
-    seq(new EflCancelMoveLearnSegment()); // Slash
     seq(new EflSkipTextsSegment(9)); // after battle texts (no room)
 
     save("si15");
@@ -975,5 +917,6 @@ public class SilphCoBlue extends SeqSegment {
 
     seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
     seqEflSkipInput(2);
+    seqMetric(new OutputBoxMons());
   }
 }

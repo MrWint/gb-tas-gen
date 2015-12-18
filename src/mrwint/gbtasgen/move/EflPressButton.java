@@ -36,7 +36,7 @@ public class EflPressButton extends DelayableCachableMove {
 	public boolean doMove() {
     if (twoFrames > 1)
       curGb.step(move);
-    if (curGb.step(move, curGb.rom.readJoypadInputHi) != 0); // doesn't matter which
+    if (curGb.step(move, curGb.rom.readJoypadInputLo, curGb.rom.readJoypadInputHi) != 0); // doesn't matter which
       curGb.step(0, curGb.rom.readJoypadAddress); // run until joypad input is registered or frame ended (whichever comes first)
 		return true;
 	}

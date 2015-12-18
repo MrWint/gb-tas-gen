@@ -65,8 +65,11 @@ public abstract class PokemonRomInfo extends RomInfo {
 	// menus
   public int mainMenuIndexAddress;
   public int monMenuIndexAddress;
+  public int menuCurPointerIndexAddress;
   public int itemMenuPointerIndexAddress;
   public int itemMenuScrollIndexAddress;
+  public int pcMonOperationIndexAddress;
+  public int curMonBoxAddress;
 
 	//walking
   public int overworldJoypadCallAddress;

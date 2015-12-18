@@ -13,7 +13,7 @@ import mrwint.gbtasgen.util.Util;
 
 public class EnemyFlinchSegment extends AttackActionSegment {
 
-  private class EnemyFlinchMetric implements StateResettingMetric {
+  public static class EnemyFlinchMetric implements StateResettingMetric {
     @Override
     public int getMetricInternal() {
       Util.runToAddressNoLimit(0, 0, 0x3e8e7); // run to start of flinch check

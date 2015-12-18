@@ -1,9 +1,9 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SCREECH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
-import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
-import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
@@ -13,7 +13,6 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class PewterDummyRed extends SeqSegment {
 
@@ -27,10 +26,9 @@ public class PewterDummyRed extends SeqSegment {
     seq(new EflInitFightSegment(9)); // start fight
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
-      kems.attackCount[2][1] = 5; // 5x ember crit
-      kems.numExpGainers = 2; // level up to 10
-      kems.onlyPrintInfo = false;
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
+      kems.attackCount[2][1] = 5; // ember crit
+      kems.numExpGainers = 2; // Charmander, level up to 10
       seq(kems); // Geodude
     }
     save("tmp");
@@ -38,11 +36,10 @@ public class PewterDummyRed extends SeqSegment {
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 103)}; // screech
-      kems.attackCount[2][0] = 1; // 1x ember
-      kems.attackCount[2][1] = 4; // 4x ember crit
-      kems.numExpGainers = 2; // level up to 12
-      kems.onlyPrintInfo = false;
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
+      kems.attackCount[2][0] = 1; // ember
+      kems.attackCount[2][1] = 4; // ember crit
+      kems.numExpGainers = 2; // Charmander, level up to 12
       seq(kems); // Onix
     }
     save("pd1");
@@ -50,28 +47,6 @@ public class PewterDummyRed extends SeqSegment {
     seq(new EflEndFightSegment(10)); // player defeated enemy
     seq(new EflSkipTextsSegment(14)); // after battle talk
     seq(new EflWalkToSegment(4, 14, false)); // exit gym
-
-//    {
-//      seq(new EflWalkToSegment(23, 17)); // enter pewter mart
-//
-//      seq(new EflWalkToSegment(3, 5));
-//      seq(new EflWalkToSegment(2, 5));
-//      seq(new MoveSegment(new EflOverworldInteract(1)));
-//      {
-//        seq(new EflSkipTextsSegment(1, true)); // buy
-//        seq(new EflTextSegment(Move.B));
-//        {
-//          seqEflScrollFastAF(2); // escape rope
-//          seqEflScrollA(-1); // buy x2
-//          seq(new EflSkipTextsSegment(1)); // confirmation text
-//          seq(new EflSkipTextsSegment(1, true)); // "yes"
-//          seq(new EflSkipTextsSegment(1, true)); // thank you text
-//        }
-//        seqEflButton(Move.B, PressMetric.PRESSED); // cancel
-//        seq(new EflSkipTextsSegment(2)); // cancel + bye
-//      }
-//      seq(new EflWalkToSegment(3, 8, false)); // leave mart
-//    }
 
     seq(new EflWalkToSegment(40, 17)); // leave pewter
 	}

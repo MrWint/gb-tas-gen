@@ -10,6 +10,11 @@ public class Constants {
   public static final int MENU_MON = 1;
   public static final int MENU_ITEM = 2;
 
+  public static final int PC_MON_WITHDRAW = 0;
+  public static final int PC_MON_DEPOSIT = 1;
+  public static final int PC_MON_RELEASE = 2;
+  public static final int PC_MON_CHANGEBOX = 3;
+
   public static final int MASTER_BALL = 1;
   public static final int ULTRA_BALL = 2;
   public static final int GREAT_BALL = 3;

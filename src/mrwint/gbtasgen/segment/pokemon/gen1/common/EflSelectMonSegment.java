@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.common;
 
 import static mrwint.gbtasgen.move.Move.A;
+import static mrwint.gbtasgen.move.Move.B;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CUT;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DIG;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FLY;
@@ -9,6 +10,8 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SURF;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TELEPORT;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
+import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
+import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil;
 
@@ -58,6 +61,30 @@ public class EflSelectMonSegment extends SeqSegment {
   protected int flyTo = Integer.MIN_VALUE;
   public EflSelectMonSegment andFlyTo(int flyTo) {
     this.flyTo = flyTo;
+    return this;
+  }
+
+  protected boolean cut = false;
+  public EflSelectMonSegment andCut() {
+    this.cut = true;
+    return this;
+  }
+
+  protected boolean surf = false;
+  public EflSelectMonSegment andSurf() {
+    this.surf = true;
+    return this;
+  }
+
+  protected boolean strength = false;
+  public EflSelectMonSegment andStrength() {
+    this.strength = true;
+    return this;
+  }
+
+  protected boolean teleport = false;
+  public EflSelectMonSegment andTeleport() {
+    this.teleport = true;
     return this;
   }
 
@@ -120,6 +147,23 @@ public class EflSelectMonSegment extends SeqSegment {
     if (flyTo != Integer.MIN_VALUE) {
       seqEflScrollAF(flyScrolls);
       seqEflScrollA(flyTo);
+    }
+    if (cut) {
+      seqEflScrollAF(cutScrolls);
+      seqEflButton(B); // hacked away (to text scroll)?
+    }
+    if (surf) {
+      seqEflScrollAF(surfScrolls);
+      seq(new EflSkipTextsSegment(1)); // got on
+    }
+    if (strength) {
+      seqEflScrollAF(strengthScrolls);
+      seq(new EflTextSegment()); // Strength
+      seq(new EflSkipTextsSegment(1)); // can move boulders
+    }
+    if (teleport) {
+      seqEflScrollAF(teleportScrolls);
+      seq(new EflTextSegment()); // teleport back
     }
 	}
 }

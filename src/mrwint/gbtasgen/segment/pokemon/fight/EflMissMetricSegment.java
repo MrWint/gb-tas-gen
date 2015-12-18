@@ -27,11 +27,10 @@ public class EflMissMetricSegment extends EflAttackActionSegment {
 	public void executeInternal(int minValue) {
 		seqUnbounded(new EflTextSegment(Move.A)); // enemy uses attack (unbounded buffer)
 		seqMetric(moveMetric);
-//		sb = new MoveSegment(new Wait(1)).execute(sb); // skip last frame of text box
 		seq(new EflTextSegment()); // "but it misses"
 
 		seq(new Segment() {
-      
+
       @Override
       public StateBuffer execute(StateBuffer sb) {
         for(State s : sb.getStates())

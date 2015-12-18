@@ -1,7 +1,7 @@
 package mrwint.gbtasgen.segment.util;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
-
+import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.move.EflPressButton;
@@ -74,10 +74,17 @@ public abstract class SeqSegment implements Segment {
   }
   public void seqEflScrollA(int num) {
     seq(new EflScroll(false, num, 0));
+    seqEflButtonNoDelay(Move.A, PRESSED);
+  }
+  public void seqEflScrollA(int num, PressMetric metric) {
+    seq(new EflScroll(false, num, 0).withInitialButtonMetric(metric));
     seqEflButtonNoDelay(Move.A);
   }
   public void seqEflScrollAF(int num) {
     seq(new EflScroll(false, num, Move.A));
+  }
+  public void seqEflScrollAF(int num, PressMetric metric) {
+    seq(new EflScroll(false, num, Move.A).withInitialButtonMetric(metric));
   }
   public void seqEflScrollFast(int num) {
     seq(new EflScroll(true, num, 0));

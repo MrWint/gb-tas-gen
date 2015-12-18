@@ -1,21 +1,23 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.move.Move.A;
+import static mrwint.gbtasgen.move.Move.B;
+import static mrwint.gbtasgen.move.Move.START;
+import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.metric.pokemon.gen1.Gen1CheckDVMetric;
-import mrwint.gbtasgen.move.Move;
-import mrwint.gbtasgen.move.pokemon.EflChangeOptionsMove;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflChangeOptionsSegment;
 import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
-import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
 public class ChooseStarterBlue extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seqMove(EflChangeOptionsMove.get(false)); // set options
+    seq(EflChangeOptionsSegment.fromOverworld()); // set options
     seq(new EflWalkToSegment(7, 1)); // go downstairs
 		seq(new EflWalkToSegment(3, 6)); // leave house
 		seq(new EflWalkToSegment(3, 8, false)); // leave house
@@ -27,24 +29,23 @@ public class ChooseStarterBlue extends SeqSegment {
     seq(new EflWalkToSegment(7, 3, false)); // walk to ball
 		seqMove(new EflOverworldInteract(3)); // Squirtle ball
 
-		seqEflButton(Move.B); // cancel dex
-		seqEflButton(Move.A); // cancel dex
+		seqEflButton(B); // cancel dex
+		seqEflButton(A); // cancel dex
 
 		// chose mon text
 		seq(new EflSkipTextsSegment(1)); // do you want?
 		seq(new EflSkipTextsSegment(1, true)); // want!
 		seq(new EflSkipTextsSegment(1)); // energetic
 
-    seq(new EflSkipTextsSegment(2)); // received! ; want to give a nick
-		seqUnbounded(new EflTextSegment(Move.B)); // to Squirtle?
-		seqEflButtonUnbounded(Move.A); // (yes)
-    seqEflButtonUnbounded(Move.A, PressMetric.PRESSED); // "A"
+		seqUnbounded(new EflSkipTextsSegment(2)); // received! ; want to give a nick
+		seqUnbounded(new EflSkipTextsSegment(1, true)); // to Squirtle? (yes)
+    seqEflButtonUnbounded(A, PRESSED); // "A"
     delayEfl(new SeqSegment() {
       @Override
       protected void execute() {
-        seqEflButtonUnbounded(Move.START);
-        seq(new CheckMetricSegment(new Gen1CheckDVMetric(15, 0, 12, 15, 15)));
-//        seq(new CheckMetricSegment(new Gen1CheckDVMetric(15, 0, 15, 15, 15)));
+        seqEflButtonUnbounded(START);
+        seqMetric(new Gen1CheckDVMetric(15, 0, 12, 15, 15));
+//        seqMetric(new Gen1CheckDVMetric(15, 0, 15, 15, 15));
       }
     });
 		seq(new EflSkipTextsSegment(2)); // rival choose mon

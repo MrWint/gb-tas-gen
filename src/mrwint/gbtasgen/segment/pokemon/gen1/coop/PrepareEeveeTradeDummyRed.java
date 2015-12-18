@@ -26,7 +26,7 @@ public class PrepareEeveeTradeDummyRed extends SeqSegment {
     seq(new EflWalkToSegment(4, 1)); // house
     seq(new EflWalkToSegment(2, 1)); // house
     seq(new EflWalkToSegment(4, 0)); // house
-    seq(new EflUseBikeSegment(0, 0));
+    seq(new EflUseBikeSegment().fromOverworld());
     seq(new EflWalkToSegment(41, 9)); // enter center
     seq(new EflWalkToSegment(11, 4)); // cable club
     seq(new EflWalkToSegment(11, 3)); // cable club

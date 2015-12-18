@@ -1,7 +1,12 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.move.Move.A;
+import static mrwint.gbtasgen.move.Move.B;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CHARMANDER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DISABLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RARE_CANDY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
-import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflEvolutionSegment;
@@ -13,6 +18,8 @@ import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment.EflEnemyMoveDesc;
 import mrwint.gbtasgen.segment.pokemon.fight.EflNewEnemyMonSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectItemSegment;
+import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectMonSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSwapWithSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflUseBikeSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
@@ -23,8 +30,9 @@ public class RockTunnelDummyRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seq(new EflWalkToSegment(13, 25)); // enter bike shop
-    seq(new EflWalkToSegment(6, 3, false)); // walk to counter // TODO: fix
+    seqUnbounded(new EflWalkToSegment(13, 25)); // enter bike shop
+    seqUnbounded(new EflWalkToSegment(6, 5)); // walk to counter // TODO: fix
+    seq(new EflWalkToSegment(6, 4)); // walk to counter // TODO: fix
     seqMove(new EflOverworldInteract(1)); // talk to owner
     seq(new EflSkipTextsSegment(5)); // get bike
     seq(new EflWalkToSegment(3, 8, false)); // leave shop
@@ -34,7 +42,7 @@ public class RockTunnelDummyRed extends SeqSegment {
       seqEflScrollFastAF(8); // HM01
       seqEflSkipInput(1);
       seqEflButton(Move.A); // use
-      seq(new EflLearnTMSegment(0, 0)); // cut for scratch
+      seq(new EflLearnTMSegment(CHARMANDER, 0)); // scratch -> cut
       seqEflScrollFast(1);
       seq(new EflSwapWithSegment(-8));
       seqEflButton(Move.A); // use bike
@@ -42,26 +50,10 @@ public class RockTunnelDummyRed extends SeqSegment {
     }
     seq(new EflWalkToSegment(19, 26)); // go to bush
     seq(new EflWalkToSegment(19, 27)); // go to bush
-    {
-      seqEflButton(Move.START, PressMetric.PRESSED);
-      seqEflScrollA(-1); // mon
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // sandshrew
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // cut
-      seqEflButton(Move.B); // hacked away (to text scroll)?
-    }
+    seq(new EflSelectMonSegment(CHARMANDER).fromOverworld().andCut());
     seq(new EflWalkToSegment(40, 17)); // leave cerulean
     seq(new EflWalkToSegment(4, 8)); // go to bush
-    {
-      seqEflButton(Move.START, PressMetric.PRESSED);
-      seqEflButton(Move.A); // mon
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // sandshrew
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // cut
-      seqEflButton(Move.B); // hacked away (to text scroll)?
-    }
+    seq(new EflSelectMonSegment(CHARMANDER).fromOverworld().andCut());
     seq(new EflWalkToSegment(13, 8)); // go to trainer
     seq(new EflWalkToSegment(13, 9)); // go to trainer
     seqMove(new EflOverworldInteract(1)); // talk to trainer
@@ -89,7 +81,7 @@ public class RockTunnelDummyRed extends SeqSegment {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[2][1] = 1; // ember crit
 //      kems.attackCount[0][1] = 1; // cut crit
-      kems.numExpGainers = 2; // level up to 27
+      kems.numExpGainers = 2; // Charmander, level up to 27
       seq(kems); // bellsprout
     }
 		seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -99,28 +91,18 @@ public class RockTunnelDummyRed extends SeqSegment {
 		save("rtd1");
 	  load("rtd1");
 
-	  {
-	    seqEflButton(Move.START, PressMetric.PRESSED);
-	    seqEflScrollA(2); // items
-	    seqEflScrollFastAF(1); // rare candy
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // use
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // charmander
-      seqEflButton(Move.B); // grew to 28
-      seqEflButton(Move.A); // close stats
-      seq(new EflEvolutionSegment(true));
-      seqEflButton(Move.A); // rare candy
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // use
-      seqEflSkipInput(1);
-      seqEflButton(Move.A); // charmander
-      seqEflButton(Move.B); // grew to 29
-      seqEflButton(Move.A); // close stats
-      seq(new EflEvolutionSegment(true, true));
-      seqEflButton(Move.B); // cancel
-      seqEflButton(Move.START); // cancel
-	  }
+    seq(new EflSelectItemSegment(RARE_CANDY).fromOverworld().andUse());
+    seq(new EflSelectMonSegment(CHARMANDER));
+    seqEflButton(B); // grew to 28
+    seqEflButton(A); // close stats
+    seq(new EflEvolutionSegment(true));
+    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+    seq(new EflSelectMonSegment(CHARMANDER));
+    seqEflButton(B); // grew to 29
+    seqEflButton(A); // close stats
+    seq(new EflEvolutionSegment(true, true));
+    seqEflButton(Move.B); // cancel
+    seqEflButton(Move.START); // cancel
 
     seq(new EflWalkToSegment(12, 11, false)); // jump ledge
     seq(new EflWalkToSegment(40, 10)); // go to trainer
@@ -166,7 +148,7 @@ public class RockTunnelDummyRed extends SeqSegment {
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
       kems.attackCount[3][0] = 1; // mega punch
       kems.attackCount[3][1] = 1; // mega punch crit
       seq(kems); // slowpoke
@@ -182,7 +164,7 @@ public class RockTunnelDummyRed extends SeqSegment {
     seq(new EflInitFightSegment(1)); // start fight
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
       kems.attackCount[3][1] = 2; // mega punch crit
       seq(kems); // slowpoke
     }
@@ -196,10 +178,10 @@ public class RockTunnelDummyRed extends SeqSegment {
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[2][1] = 1; // ember crit
-      kems.numExpGainers = 2; // level up to 30
+      kems.numExpGainers = 2; // Charmander, level up to 30
       seq(kems); // oddish
     }
-    seq(new EflOverrideMoveSegment(1)); // Slash for rage
+    seq(new EflOverrideMoveSegment(1)); // Rage -> Slash
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
@@ -224,7 +206,7 @@ public class RockTunnelDummyRed extends SeqSegment {
     seq(new EflInitFightSegment(1)); // start fight
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
       kems.attackCount[2][0] = 1; // ember
 //      kems.attackCount[0][1] = 1; // cut crit
       kems.attackCount[2][1] = 1; // ember crit
@@ -233,7 +215,7 @@ public class RockTunnelDummyRed extends SeqSegment {
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
       kems.attackCount[2][0] = 1; // ember
       kems.attackCount[2][1] = 1; // ember crit
       seq(kems); // geodude
@@ -245,7 +227,7 @@ public class RockTunnelDummyRed extends SeqSegment {
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(33)}; // tackle
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
       kems.attackCount[2][0] = 2; // ember
       kems.attackCount[2][1] = 1; // ember crit
       seq(kems); // graveler
@@ -272,7 +254,7 @@ public class RockTunnelDummyRed extends SeqSegment {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.attackCount[2][1] = 1; // ember crit
 //      kems.attackCount[1][1] = 1; // slash crit
-      kems.numExpGainers = 2; // level up to 31
+      kems.numExpGainers = 2; // Charmander, level up to 31
       seq(kems); // oddish
     }
     seq(EflNewEnemyMonSegment.any()); // next mon
@@ -313,10 +295,10 @@ public class RockTunnelDummyRed extends SeqSegment {
     seq(new EflWalkToSegment(13, 3)); // enter passage
     seq(new EflWalkToSegment(4, 4)); // enter passage
 
-    seq(new EflUseBikeSegment(2, 0));
+    seq(new EflUseBikeSegment().fromOverworld());
     seq(new EflWalkToSegment(2, 5)); // walk passage
     seq(new EflWalkToSegment(4, 8, false)); // exit passage
-    seq(new EflUseBikeSegment(0, 0));
+    seq(new EflUseBikeSegment().fromOverworld());
     seq(new EflWalkToSegment(-1, 3)); // enter celadon
 	}
 }

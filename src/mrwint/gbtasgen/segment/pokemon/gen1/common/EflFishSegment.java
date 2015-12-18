@@ -1,7 +1,6 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.common;
 
-import static mrwint.gbtasgen.move.Move.START;
-import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SUPER_ROD;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckFishResultMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
@@ -11,25 +10,17 @@ import mrwint.gbtasgen.util.EflUtil;
 
 public class EflFishSegment extends SeqSegment {
 
-	int mon, itemOffset, mainMenuOffset;
+	int mon;
 
-	public EflFishSegment(int mon, int itemOffset) {
-		this(mon, itemOffset, 2);
-	}
-
-	public EflFishSegment(int mon, int itemOffset, int mainMenuOffset) {
+	public EflFishSegment(int mon) {
     this.mon = mon;
-		this.itemOffset = itemOffset;
-    this.mainMenuOffset = mainMenuOffset;
 
 	   EflUtil.assertEfl();
 	}
 
 	@Override
 	public void execute() {
-		seqEflButton(START, PRESSED); // menu
-		seqEflScrollA(mainMenuOffset); // items
-		seqEflScrollFastAF(itemOffset); // rod
+	  seq(new EflSelectItemSegment(SUPER_ROD).fromOverworld());
 		seqEflSkipInput(1); // skip repress delay frame
 		delayEfl(new SeqSegment() {
 			@Override
