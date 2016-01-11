@@ -97,11 +97,13 @@ public class SilphCoBlue extends SeqSegment {
 	@Override
 	public void execute() {
 
-//    seqEflButton(A); // continue game
-//    seqEflButton(START);
-//    seqEflButton(A);
-//    seqEflButton(START);
-//    seqEflButton(A);
+    seqEflButton(A); // continue game
+    seqEflButton(START);
+    seqEflButton(A);
+    seqEflButton(START);
+    seqEflButton(A);
+    
+    seqMetric(new OutputParty());
 //
 //    {
 //      seq(new EflWalkToSegment(13, 4)); // PC
@@ -905,18 +907,18 @@ public class SilphCoBlue extends SeqSegment {
 //      seq(kems); // alakazam
 //    }
 //    save("tmp4");
-    load("tmp4");
-    seq(new EflEndFightSegment(6)); // player defeated enemy
-    seq(new EflEvolutionSegment()); // Charizard
-    seq(new EflSkipTextsSegment(9)); // after battle texts (no room)
-
-    save("si15");
-    load("si15");
-
-    seq(new EflWalkToSegment(11, 11)); // warp
-
-    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
-    seqEflSkipInput(2);
-    seqMetric(new OutputBoxMons());
+//    load("tmp4");
+//    seq(new EflEndFightSegment(6)); // player defeated enemy
+//    seq(new EflEvolutionSegment()); // Charizard
+//    seq(new EflSkipTextsSegment(9)); // after battle texts (no room)
+//
+//    save("si15");
+//    load("si15");
+//
+//    seq(new EflWalkToSegment(11, 11)); // warp
+//
+//    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
+//    seqEflSkipInput(2);
+//    seqMetric(new OutputBoxMons());
   }
 }

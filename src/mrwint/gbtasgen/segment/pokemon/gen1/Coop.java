@@ -83,75 +83,75 @@ public class Coop extends DualGbSegment {
     { // Blue Segments
 //      seqL(new OakSpeechBlue());
 //      saveL("OakSpeechBlue2");
-      loadL("OakSpeechBlue2");
+//      loadL("OakSpeechBlue2");
 //      seqL(new ChooseStarterBlue());
 //      saveL("ChooseStarterBlue2a");
-      loadL("ChooseStarterBlue2a"); // fcff
+//      loadL("ChooseStarterBlue2a"); // fcff
 //      seqL(new Rival1FightBlue());
 //      saveL("Rival1FightBlue2");
-      loadL("Rival1FightBlue2");
+//      loadL("Rival1FightBlue2");
 //      seqL(new OaksParcel());
 //      saveL("OaksParcel2");
-      loadL("OaksParcel2");
+//      loadL("OaksParcel2");
 //      seqL(new ViridianForestBlue());
 //      saveL("ViridianForestBlue2");
-      loadL("ViridianForestBlue2");
+//      loadL("ViridianForestBlue2");
 //      seqL(new PewterBlue());
 //      saveL("PewterBlue2");
-      loadL("PewterBlue2");
+//      loadL("PewterBlue2");
 //      seqL(new Route3Blue());
 //      saveL("Route3Blue2");
-      loadL("Route3Blue2");
+//      loadL("Route3Blue2");
 //      seqL(new MtMoonBlue());
 //      saveL("MtMoonBlue2a");
-      loadL("MtMoonBlue2a");
+//      loadL("MtMoonBlue2a");
 //      seqL(new NuggetBridgeBlue());
 //      saveL("NuggetBridgeBlue2a");
-      loadL("NuggetBridgeBlue2a");
+//      loadL("NuggetBridgeBlue2a");
 //      seqL(new SurgeBlue());
 //      saveL("SurgeBlue2a");
-      loadL("SurgeBlue2a");
+//      loadL("SurgeBlue2a");
 //      seqL(new PrepareEeveeTradeBlue());
 //      saveL("PrepareEeveeTradeBlue2a");
-      loadL("PrepareEeveeTradeBlue2a");
+//      loadL("PrepareEeveeTradeBlue2a");
     }
     { // Red Segments
 //      seqR(new OakSpeechDummyRed());
 //      saveR("OakSpeechDummyRed2");
-      loadR("OakSpeechDummyRed2");
+//      loadR("OakSpeechDummyRed2");
 //      seqR(new ChooseStarterDummyRed());
 //      saveR("ChooseStarterDummyRed2");
-      loadR("ChooseStarterDummyRed2"); // ffff
+//      loadR("ChooseStarterDummyRed2"); // ffff
 //      seqR(new Rival1FightDummyRed());
 //      saveR("Rival1FightDummyRed2");
-      loadR("Rival1FightDummyRed2");
+//      loadR("Rival1FightDummyRed2");
 //      seqR(new OaksParcel());
 //      saveR("OaksParcelDummyRed2");
-      loadR("OaksParcelDummyRed2");
+//      loadR("OaksParcelDummyRed2");
 //      seqR(new ViridianForestDummyRed());
 //      saveR("ViridianForestDummyRed2");
-      loadR("ViridianForestDummyRed2");
+//      loadR("ViridianForestDummyRed2");
 //      seqR(new PewterDummyRed());
 //      saveR("PewterDummyRed2");
-      loadR("PewterDummyRed2");
+//      loadR("PewterDummyRed2");
 //      seqR(new Route3DummyRed());
 //      saveR("Route3DummyRed2");
-      loadR("Route3DummyRed2");
+//      loadR("Route3DummyRed2");
 //      seqR(new MtMoonDummyRed());
 //      saveR("MtMoonDummyRed2");
-      loadR("MtMoonDummyRed2");
+//      loadR("MtMoonDummyRed2");
 //      seqR(new NuggetBridgeDummyRed());
 //      saveR("NuggetBridgeDummyRed2");
-      loadR("NuggetBridgeDummyRed2");
+//      loadR("NuggetBridgeDummyRed2");
 //      seqR(new SurgeDummyRed());
 //      saveR("SurgeDummyRed2");
-      loadR("SurgeDummyRed2");
+//      loadR("SurgeDummyRed2");
 //      seqR(new RockTunnelDummyRed());
 //      saveR("RockTunnelDummyRed2");
-      loadR("RockTunnelDummyRed2");
+//      loadR("RockTunnelDummyRed2");
 //      seqR(new PrepareEeveeTradeDummyRed());
 //      saveR("PrepareEeveeTradeDummyRed2");
-      loadR("PrepareEeveeTradeDummyRed");
+//      loadR("PrepareEeveeTradeDummyRed");
     }
 //    seqDualInputs(
 //        new DualGbHelper.InputBuilder()
@@ -198,29 +198,29 @@ public class Coop extends DualGbSegment {
 //            .build());
     { // Blue Segments
 //      saveL("PostEeveeTradeBlue2");
-      loadL("PostEeveeTradeBlue2");
+//      loadL("PostEeveeTradeBlue2");
 //      seqL(new PreRockTunnelBlue());
 //      saveL("PreRockTunnelBlue2");
-      loadL("PreRockTunnelBlue2");
+//      loadL("PreRockTunnelBlue2");
     }
     { // Red Segments
 //      saveR("PostEeveeTradeRed2");
-      loadR("PostEeveeTradeRed2");
+//      loadR("PostEeveeTradeRed2");
 //      seqR(new OakSpeechRed());
 //      saveR("OakSpeechRed2");
-      loadR("OakSpeechRed2");
+//      loadR("OakSpeechRed2");
 //      seqR(new ChooseSecondStarterRed());
 //      saveR("ChooseSecondStarterRed2");
-      loadR("ChooseSecondStarterRed2");
+//      loadR("ChooseSecondStarterRed2");
 //      seqR(new Rival1FightAgainRed());
 //      saveR("Rival1FightAgainRed2a");
-      loadR("Rival1FightAgainRed2a");
+//      loadR("Rival1FightAgainRed2a");
 //      seqR(new OaksParcel());
 //      saveR("OaksParcel2");
-      loadR("OaksParcel2");
+//      loadR("OaksParcel2");
 //      seqR(new PrepareBulbasaurTradeRed());
 //      saveR("PrepareBulbasaurTradeRed2");
-      loadR("PrepareBulbasaurTradeRed2");
+//      loadR("PrepareBulbasaurTradeRed2");
     }
 //    seqDualInputs(
 //        new DualGbHelper.InputBuilder()
@@ -260,32 +260,32 @@ public class Coop extends DualGbSegment {
 //            .build());
     { // Blue Segments
 //      saveL("PostBulbasaurTradeBlue2");
-      loadL("PostBulbasaurTradeBlue2");
+//      loadL("PostBulbasaurTradeBlue2");
 //      seqL(new RockTunnelBlue());
 //      saveL("RockTunnelBlue1");
-      loadL("RockTunnelBlue1");
+//      loadL("RockTunnelBlue1");
 //      seqL(new CeladonBlue());
 //      saveL("CeladonBlue2");
-      loadL("CeladonBlue2");
+//      loadL("CeladonBlue2");
     }
     { // Red Segments
 //      saveR("PostBulbasaurTradeRed2");
-      loadR("PostBulbasaurTradeRed2");
+//      loadR("PostBulbasaurTradeRed2");
 //      seqR(new ViridianForestRed());
 //      saveR("ViridianForestRed2");
-      loadR("ViridianForestRed2");
+//      loadR("ViridianForestRed2");
 //      seqR(new PewterRed());
 //      saveR("PewterRed2");
-      loadR("PewterRed2");
+//      loadR("PewterRed2");
 //      seqR(new Route3Red());
 //      saveR("Route3Red2");
-      loadR("Route3Red2");
+//      loadR("Route3Red2");
 //      seqR(new MtMoonRed());
 //      saveR("MtMoonRed2");
-      loadR("MtMoonRed2");
+//      loadR("MtMoonRed2");
 //      seqR(new CeruleanRed());
 //      saveR("CeruleanRed2");
-      loadR("CeruleanRed2");
+//      loadR("CeruleanRed2");
     }
 //    seqDualInputs(
 //        new DualGbHelper.InputBuilder()
@@ -346,23 +346,23 @@ public class Coop extends DualGbSegment {
 //            .build());
     { // Blue Segments
 //      saveL("PostAbraTradeBlue2");
-      loadL("PostAbraTradeBlue2");
+//      loadL("PostAbraTradeBlue2");
 //      seqL(new TowerBlue());
 //      saveL("TowerBlue2");
       loadL("TowerBlue2");
-//      seqL(new PrepareSquirtleTradeBlue());
-//      saveL("PrepareSquirtleTradeBlue2");
-      loadL("PrepareSquirtleTradeBlue2");
+      seqL(new PrepareSquirtleTradeBlue());
+      saveL("PrepareSquirtleTradeBlue2a");
+      loadL("PrepareSquirtleTradeBlue2a");
     }
     { // Red Segments
 //      saveR("PostAbraTradeRed2");
-      loadR("PostAbraTradeRed2");
+//      loadR("PostAbraTradeRed2");
 //      seqR(new SurgeRed());
 //      saveR("SurgeRed2");
-      loadR("SurgeRed2");
+//      loadR("SurgeRed2");
 //      seqR(new RockTunnelRed());
 //      saveR("RockTunnelRed2");
-      loadR("RockTunnelRed2");
+//      loadR("RockTunnelRed2");
 //      seqR(new PrepareSquirtleTradeRed());
 //      saveR("PrepareSquirtleTradeRed2");
       loadR("PrepareSquirtleTradeRed2");
@@ -429,26 +429,26 @@ public class Coop extends DualGbSegment {
 //            .build());
     { // Blue Segments
 //      saveL("PostSquirtleTradeBlue2");
-      loadL("PostSquirtleTradeBlue2");
+//      loadL("PostSquirtleTradeBlue2");
 //      seqL(new SafariBlue());
 //      saveL("SafariBlue2");
-      loadL("SafariBlue2");
+//      loadL("SafariBlue2");
 //      seqL(new CinnabarBlue());
 //      saveL("CinnabarBlue2");
-      loadL("CinnabarBlue2");
+//      loadL("CinnabarBlue2");
     }
     { // Red Segments
 //      saveR("PostSquirtleTradeRed2");
-      loadR("PostSquirtleTradeRed2");
+//      loadR("PostSquirtleTradeRed2");
 //      seqR(new RocketHideoutRed());
 //      saveR("RocketHideoutRed2");
-      loadR("RocketHideoutRed2");
+//      loadR("RocketHideoutRed2");
 //      seqR(new TowerRed());
 //      saveR("TowerRed2");
-      loadR("TowerRed2");
+//      loadR("TowerRed2");
 //      seqR(new CyclingRoadRed());
 //      saveR("CyclingRoadRed2");
-      loadR("CyclingRoadRed2");
+//      loadR("CyclingRoadRed2");
     }
 //    seqDualInputs(
 //        new DualGbHelper.InputBuilder()
@@ -524,47 +524,47 @@ public class Coop extends DualGbSegment {
 //            .build());
     { // Blue Segments
 //      saveL("PostOmanyteTradeBlue2");
-      loadL("PostOmanyteTradeBlue2");
+//      loadL("PostOmanyteTradeBlue2");
 //      seqL(new SilphCoBlue());
 //      saveL("SilphCoBlue2");
-      loadL("SilphCoBlue2");
+//      loadL("SilphCoBlue2");
 //      seqL(new VictoryRoadBlue());
 //      saveL("VictoryRoadBlue2");
-      loadL("VictoryRoadBlue2");
+//      loadL("VictoryRoadBlue2");
 //      seqL(new SeafoamBlue());
 //      saveL("SeafoamBlue2");
-      loadL("SeafoamBlue2");
+//      loadL("SeafoamBlue2");
 //      seqL(new CeruleanCaveBlue());
 //      saveL("CeruleanCaveBlue2");
-      loadL("CeruleanCaveBlue2");
+//      loadL("CeruleanCaveBlue2");
 //      seqL(new PorygonBlue());
 //      saveL("PorygonBlue2");
-      loadL("PorygonBlue2");
+//      loadL("PorygonBlue2");
     }
     { // Red Segments
 //      saveR("PostOmanyteTradeRed2");
-      loadR("PostOmanyteTradeRed2");
+//      loadR("PostOmanyteTradeRed2");
 //      seqR(new SafariRed());
 //      saveR("SafariRed2");
-      loadR("SafariRed2");
+//      loadR("SafariRed2");
 //      seqR(new CinnabarRed());
 //      saveR("CinnabarRed2");
-      loadR("CinnabarRed2");
+//      loadR("CinnabarRed2");
 //      seqR(new SilphCoRed());
 //      saveR("SilphCoRed2");
-      loadR("SilphCoRed2");
+//      loadR("SilphCoRed2");
 //      seqR(new SeafoamRed());
 //      saveR("SeafoamRed2");
-      loadR("SeafoamRed2");
+//      loadR("SeafoamRed2");
 //      seqR(new PowerplantRed());
 //      saveR("PowerplantRed2");
-      loadR("PowerplantRed2");
+//      loadR("PowerplantRed2");
 //      seqR(new VictoryRoadRed());
 //      saveR("VictoryRoadRed2");
-      loadR("VictoryRoadRed2");
+//      loadR("VictoryRoadRed2");
 //      seqR(new LickitungRed());
 //      saveR("LickitungRed2");
-      loadR("LickitungRed2");
+//      loadR("LickitungRed2");
     }
 //    seqDualInputs(
 //        new DualGbHelper.InputBuilder()
