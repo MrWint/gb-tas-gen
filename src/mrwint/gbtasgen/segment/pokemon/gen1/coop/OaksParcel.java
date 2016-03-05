@@ -31,7 +31,7 @@ public class OaksParcel extends SeqSegment {
 		seq(new EflWalkToSegment(5, 2, false)); // face towards oak
 		seqMove(new EflOverworldInteract(5)); // talk to oak
 		seq(new EflSkipTextsSegment(41)); // oak parcel speech
-    StateBuffer.pushBufferSize(20);
+    StateBuffer.pushBufferSize(30);
 		seq(new EflWalkToSegment(4, 12, false)); // leave oaks lab
 		seq(new EflWalkToSegment(10, -1)); // leave pallet town
 		seq(new EflWalkToSegment(10, -1)); // enter viridian

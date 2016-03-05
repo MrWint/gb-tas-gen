@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.EQUAL;
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.B;
 import static mrwint.gbtasgen.move.Move.DOWN;
@@ -54,6 +55,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM07;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.metric.Metric;
+import mrwint.gbtasgen.metric.comparator.Comparator;
 import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
@@ -81,6 +83,7 @@ import mrwint.gbtasgen.segment.pokemon.TextSegment;
 import mrwint.gbtasgen.segment.pokemon.WalkToSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
+import mrwint.gbtasgen.segment.pokemon.fight.EflHitMetricSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EndFightSegment;
@@ -155,8 +158,10 @@ public class SilphCoRed extends SeqSegment {
 //    seq(new EflSelectItemSegment(FIRE_STONE).fromOverworld().andUse());
 //    seq(new EflSelectMonSegment(GROWLITHE));
 //    seq(new EflEvolutionSegment()); // Arcanine
+//    seqEflSkipInput(0);
 //    seq(new EflSelectItemSegment(HM04).andUse());
 //    seq(new EflLearnTMSegment(EXEGGUTOR));
+//    seqEflSkipInput(0);
 //    seq(new EflSelectItemSegment(TM07).andUse());
 //    seq(new EflLearnTMSegment(PONYTA, 1)); // Tail Whip -> Horn Drill
 //    seqEflButton(B); // cancel
@@ -177,15 +182,19 @@ public class SilphCoRed extends SeqSegment {
 //    seqUnbounded(new EflWalkToSegment(8, 9, false)); // enter house
 //    seqUnbounded(new EflWalkToSegment(8, 5, false)); // leave house
 //    save("tmp");
-////    load("tmp");
-//    seqUnbounded(new EflWalkToSegment(17, 9)); // grass
-//    seq(new EflEncounterSegment(DITTO, RIGHT));
-//    save("tmp2");
-////    load("tmp2");
-//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(10));
-//
-//    seqUnbounded(new EflWalkToSegment(20, 9)); // grass
+//    load("tmp");
+//    seqUnbounded(new EflWalkToSegment(19, 9)); // grass
 //    seq(new EflEncounterSegment(GLOOM, RIGHT));
+//    save("tmp2a");
+//    load("tmp2a");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//
+////    seqUnbounded(new EflWalkToSegment(18, 8)); // grass
+////    seqUnbounded(new EflWalkToSegment(19, 8)); // grass
+//    seqUnbounded(new EflWalkToSegment(22, 9)); // grass
+//    seq(new EflEncounterSegment(DITTO, RIGHT));
+//    save("tmp3");
+////    load("tmp3");
 //    seq(new EflCatchMonSegment());
 //
 //    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(3)); // Celadon
@@ -198,6 +207,25 @@ public class SilphCoRed extends SeqSegment {
 //    seq(new EflSelectMonSegment(KABUTO).fromOverworld().andSwitchWith(OMANYTE));
 //    seqEflButton(B);
 //    seq(new EflUseBikeSegment().fromMainMenu());
+//    
+//    {
+//      seq(new EflWalkToSegment(25, 4, false)); // house
+//      seq(new EflWalkToSegment(2, 1)); // house
+//      seq(new EflWalkToSegment(4, 1)); // house
+//      seq(new EflWalkToSegment(2, 1)); // house
+//      seq(new EflWalkToSegment(2, 7)); // house
+//      seq(new EflWalkToSegment(4, 3, false)); // eevee ball
+//      seqMove(new EflOverworldInteract(2)); // eevee ball
+//      seq(new EflTextSegment()); // got eevee
+//      seq(new EflSkipTextsSegment(4 + 2)); // no space, no nick
+//      seq(new EflWalkToSegment(3, 6)); // leave
+//      seq(new EflWalkToSegment(3, 8, false)); // leave
+//      seq(new EflWalkToSegment(2, 1)); // house
+//      seq(new EflWalkToSegment(4, 1)); // house
+//      seq(new EflWalkToSegment(2, 1)); // house
+//      seq(new EflWalkToSegment(4, 0)); // house
+//      seq(new EflUseBikeSegment().fromOverworld());
+//    }
 //
 //    seq(new EflWalkToSegment(50, 10)); // leave celadon
 //    seq(new EflWalkToSegment(12, 10, false)); // enter house
@@ -394,25 +422,89 @@ public class SilphCoRed extends SeqSegment {
 //    seq(new EflWalkToSegment(6, 13));
 //    seq(new EflInitFightSegment(7)); // start fight
 //    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(FURY_ATTACK)};
-//      kems.attackCount[2][1] = 1; // Surf crit
-//      kems.numExpGainers = 2; // omanyte, boosted
-//      seq(kems); // nidorino
+//      {
+//        seqEflButton(A, PRESSED);
+//        seqEflButton(DOWN);
+//        seqEflSkipInput(1);
+//        seqEflButton(DOWN); // surf
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnbounded(A); // surf
+//            seqMetric(new EflCheckMoveOrderMetric(false)); // slower, any move
+//            seqMetric(new CheckNoAIMoveNew(), EQUAL, 0); // use Guard spec
+//          }
+//        });
+//        seq(new EflSkipTextsSegment(1)); // use Guard spec
+//        seq(new EflTextSegment()); // on Dugtrio
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            EflHitMetricSegment hit = new EflHitMetricSegment(true, false, true, true, 0, true, false);
+//    
+//            seqEflButtonUnbounded(B); // close text
+//            seq(new Segment() {
+//              @Override
+//              public StateBuffer execute(StateBuffer in) {
+//                return hit.execute(in, 98);
+//              }
+//            });
+//            if (hit.getFinishSegment() != null)
+//              seq(hit.getFinishSegment());
+//          }
+//        });
+//        seq(new EflSkipTextsSegment(2)); // fainted, xp, boosted
+//      }
+////      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+////      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(FURY_ATTACK)};
+////      kems.attackCount[2][1] = 1; // Surf crit
+////      kems.numExpGainers = 2; // omanyte, boosted
+////      seq(kems); // nidorino
 //    }
-//    save("tmp");
-//    load("tmp");
+//    save("tmpa");
+//    load("tmpa");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-//      kems.attackCount[3][1] = 1; // ice beam crit
-////      kems.attackCount[2][1] = 1; // Surf crit
-//      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 37
-//      seq(kems); // kangaskhan
+//      {
+//        seqEflButton(A, PRESSED);
+//        seqEflButton(DOWN); // ice beam
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnbounded(A); // surf
+//            seqMetric(new EflCheckMoveOrderMetric(false)); // slower, any move
+//            seqMetric(new CheckNoAIMoveNew(), EQUAL, 0); // use Guard spec
+//          }
+//        });
+//        seq(new EflSkipTextsSegment(1)); // use Guard spec
+//        seq(new EflTextSegment()); // on Dugtrio
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            EflHitMetricSegment hit = new EflHitMetricSegment(true, false, true, true, 0, true, false);
+//    
+//            seqEflButtonUnbounded(B); // close text
+//            seq(new Segment() {
+//              @Override
+//              public StateBuffer execute(StateBuffer in) {
+//                return hit.execute(in, 124);
+//              }
+//            });
+//            if (hit.getFinishSegment() != null)
+//              seq(hit.getFinishSegment());
+//          }
+//        });
+//        seq(new EflSkipTextsSegment(3)); // fainted, xp, boosted, lvlup to 37
+//      }
+////      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+////      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
+////      kems.attackCount[3][1] = 1; // ice beam crit
+//////      kems.attackCount[2][1] = 1; // Surf crit
+////      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 37
+////      seq(kems); // kangaskhan
 //    }
-//    save("tmp2");
-//    load("tmp2");
+//    save("tmp2a");
+//    load("tmp2a");
 //
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
@@ -423,90 +515,121 @@ public class SilphCoRed extends SeqSegment {
 //      kems.numExpGainers = 2; // omanyte, boosted
 //      seq(kems); // rhyhorn
 //    }
-//    save("tmp3");
-//    load("tmp3");
+//    save("tmp3a");
+//    load("tmp3a");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-//      kems.attackCount[3][1] = 1; // ice beam crit
-//      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 38
-//      seq(kems); // nidoqueen
+//      {
+//        seqEflButton(A, PRESSED);
+//        seqEflSkipInput(1); // ice beam
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnbounded(A); // surf
+//            seqMetric(new EflCheckMoveOrderMetric(false)); // slower, any move
+//            seqMetric(new CheckNoAIMoveNew(), EQUAL, 0); // use Guard spec
+//          }
+//        });
+//        seq(new EflSkipTextsSegment(1)); // use Guard spec
+//        seq(new EflTextSegment()); // on Dugtrio
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            EflHitMetricSegment hit = new EflHitMetricSegment(true, false, true, true, 0, true, false);
+//    
+//            seqEflButtonUnbounded(B); // close text
+//            seq(new Segment() {
+//              @Override
+//              public StateBuffer execute(StateBuffer in) {
+//                return hit.execute(in, 131);
+//              }
+//            });
+//            if (hit.getFinishSegment() != null)
+//              seq(hit.getFinishSegment());
+//          }
+//        });
+//        seq(new EflSkipTextsSegment(4)); // fainted, xp, boosted, lvlup to 38
+//      }
+////      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+////      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
+////      kems.attackCount[3][1] = 1; // ice beam crit
+////      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 38
+////      seq(kems); // nidoqueen
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
 //    seq(new EflSkipTextsSegment(7)); // after battle texts
 //
-//    save("si7");
-//    load("si7");
-//
-//    seqMetric(new OutputParty());
-//    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
-//    seqEflSkipInput(2);
-//    seq(new EflSelectMonSegment(OMANYTE).fromOverworld().andSwitchWith(KABUTO));
-//    seqEflSkipInput(0);
-//    seq(new EflSelectMonSegment(FARFETCHD).andFlyTo(1)); // Saffron
-//    seqEflSkipInput(1);
-//    seq(new EflUseBikeSegment().fromOverworld());
-//
-//    seq(new EflWalkToSegment(26, 3)); // dojo
-//    seq(new EflWalkToSegment(2, 4)); // blackbelt
-//    seqMove(new EflOverworldInteract(2)); // blackbelt
-//
-//    seq(new EflInitFightSegment(1)); // start fight
-//    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
-//      kems.attackCount[2][1] = 1; // Surf crit
-//      seq(kems); // mankey
-//    }
-//    seq(EflNewEnemyMonSegment.any()); // next mon
-//    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
-//      kems.attackCount[2][1] = 1; // Surf crit
-//      kems.numExpGainers = 2; // kabuto, lvlup to 33
-//      seq(kems); // mankey
-//    }
-//    seq(EflNewEnemyMonSegment.any()); // next mon
-//    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
-//      kems.attackCount[2][0] = 2; // Surf crit
-//      seq(kems); // primeape
-//    }
-//    seq(new EflEndFightSegment(1)); // player defeated enemy
-//
-//    save("si8");
-//    load("si8");
-//
-//    seq(new EflSelectItemSegment(ELIXER).fromOverworld().andUse());
-//    seq(new EflSelectMonSegment(KABUTO));
-//    seq(new EflSkipTextsSegment(1, true)); // PP restored
-//    seqEflButton(B);
-//    seqEflButton(START);
-//    seqMetric(new OutputParty());
-//
-//    seq(new EflWalkToSegment(4, 3)); // blackbelt
-//    seq(new EflInitFightSegment(6)); // start fight
-//    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(DOUBLE_KICK, ROLLING_KICK)};
-//      kems.attackCount[2][1] = 1; // Surf crit
-//      seq(kems); // hitmonlee
-//    }
-//    save("tmp");
-//    load("tmp");
-//    seq(EflNewEnemyMonSegment.any()); // next mon
-//    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(COMET_PUNCH, FIRE_PUNCH)};
-//      kems.attackCount[2][1] = 1; // Surf crit
-//      kems.numExpGainers = 3; // kabuto, lvlup tp 34, learn absorb
-//      seq(kems); // hitmonchan
-//    }
-//    seq(new EflEndFightSegment(1)); // player defeated enemy
-//
-//    save("si9");
+//    save("si7a");
+    load("si7a");
+
+    seqMetric(new OutputParty());
+    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
+    seqEflSkipInput(2);
+    seq(new EflSelectMonSegment(OMANYTE).fromOverworld().andSwitchWith(KABUTO));
+    seqEflSkipInput(0);
+    seq(new EflSelectMonSegment(FARFETCHD).andFlyTo(1)); // Saffron
+    seqEflSkipInput(1);
+    seq(new EflUseBikeSegment().fromOverworld());
+
+    seq(new EflWalkToSegment(26, 3)); // dojo
+    seq(new EflWalkToSegment(2, 4)); // blackbelt
+    seqMove(new EflOverworldInteract(2)); // blackbelt
+
+    seq(new EflInitFightSegment(1)); // start fight
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
+      kems.attackCount[2][1] = 1; // Surf crit
+      seq(kems); // mankey
+    }
+    seq(EflNewEnemyMonSegment.any()); // next mon
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
+      kems.attackCount[2][1] = 1; // Surf crit
+      kems.numExpGainers = 2; // kabuto, lvlup to 33
+      seq(kems); // mankey
+    }
+    seq(EflNewEnemyMonSegment.any()); // next mon
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
+      kems.attackCount[2][0] = 2; // Surf crit
+      seq(kems); // primeape
+    }
+    seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("si8");
+    load("si8");
+
+    seq(new EflSelectItemSegment(ELIXER).fromOverworld().andUse());
+    seq(new EflSelectMonSegment(KABUTO));
+    seq(new EflSkipTextsSegment(1, true)); // PP restored
+    seqEflButton(B);
+    seqEflButton(START);
+    seqMetric(new OutputParty());
+
+    seq(new EflWalkToSegment(4, 3)); // blackbelt
+    seq(new EflInitFightSegment(6)); // start fight
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(DOUBLE_KICK, ROLLING_KICK)};
+      kems.attackCount[2][1] = 1; // Surf crit
+      seq(kems); // hitmonlee
+    }
+    save("tmp");
+    load("tmp");
+    seq(EflNewEnemyMonSegment.any()); // next mon
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(COMET_PUNCH, FIRE_PUNCH)};
+      kems.attackCount[2][1] = 1; // Surf crit
+      kems.numExpGainers = 3; // kabuto, lvlup tp 34, learn absorb
+      seq(kems); // hitmonchan
+    }
+    seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("si9");
     load("si9");
 
     seq(new EflSkipTextsSegment(7)); // after battle texts

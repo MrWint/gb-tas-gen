@@ -189,7 +189,7 @@ public class EflKillEnemyMonSegment implements Segment {
 	public int nextMonLevel = -1;
 
 	public int lastAttack = -1;
-	public boolean keepLastEnemyAttack = false;
+  public boolean keepLastEnemyAttack = false;
 
 
 	private int[][] attackDmg = new int[4][2];	// max damage a noncrit/crit can do
@@ -419,7 +419,8 @@ public class EflKillEnemyMonSegment implements Segment {
 		final boolean playerEffective = attackEffective[ai];
 		final boolean lastTurn = (n==0);
     final boolean makeEnemyFlinch = PokemonUtil.isGen1() && faster && (DamageCalc.getMove(true, ai) == BITE || DamageCalc.getMove(true, ai) == STOMP);
-		final boolean pauseAfterPlayerAttack = playerEffective || playerCrit;
+    final int numEndOfAttackTexts = getNumEndOfAttackTexts(curTurn) + (DamageCalc.getMove(true, ai) == TAKE_DOWN ? 1 : 0);
+		final boolean pauseAfterPlayerAttack = playerEffective || playerCrit || numEndOfAttackTexts > 0;
 		final boolean pauseAfterEnemyAttack = getEnemyMoveSegment(curTurn).getFinishSegment() != null || makeEnemyFlinch;
 		final boolean separateAttacks = (faster && pauseAfterPlayerAttack) || (faster && lastTurn) || (!faster && pauseAfterEnemyAttack);
 
@@ -432,8 +433,6 @@ public class EflKillEnemyMonSegment implements Segment {
 		setAppendEnemyMoveMetric(curEnemyMoveSegment, curTurn, faster && !pauseAfterEnemyAttack && getNumEndOfTurnTexts(curTurn) == 0);
 		final int[] curEnemyMove = getEnemyMove(curTurn);
 		final int curEnemyMoveMinDamage = (curEnemyMove.length == 0) ? 0 : enemyDmg[getEnemyMoveIndex(curEnemyMove[0])][0];
-
-		final int numEndOfAttackTexts = getNumEndOfAttackTexts(curTurn) + (DamageCalc.getMove(true, ai) == TAKE_DOWN ? 1 : 0);
 
 		final EflAttackActionSegment curPlayerMoveSegment = new EflHitMetricSegment(playerCrit, false, playerEffective, true, numEndOfAttackTexts, numEndOfAttackTexts > 0, hasChargingTurn, n == 0 ? thrashNumAdditionalTurns : 0);
 		setAppendEnemyMoveMetric(curPlayerMoveSegment, curTurn, !faster && !pauseAfterPlayerAttack && !lastTurn && getNumEndOfTurnTexts(curTurn) == 0);
@@ -518,7 +517,7 @@ public class EflKillEnemyMonSegment implements Segment {
             protected void execute() {
               seqEflButtonUnboundedNoDelay(Move.B); // close text box
               if (!faster) {
-                seqMetric(new EflCheckMoveOrderMetric(null, getEnemyMove(curTurn)));
+                seqMetric(new EflCheckMoveOrderMetric(faster, getEnemyMove(curTurn)));
                 seqMetric(new CheckNoAIMoveNew());
               }
               seq(new Segment() {
@@ -535,7 +534,7 @@ public class EflKillEnemyMonSegment implements Segment {
 	            @Override
 	            protected void execute() {
 	              seq(getEnemyMoveSegment(curTurn).getFinishSegment());
-                seqMetric(new EflCheckMoveOrderMetric(null, getEnemyMove(curTurn)));
+                seqMetric(new EflCheckMoveOrderMetric(faster, getEnemyMove(curTurn)));
 	            }
 	          };
 			    }

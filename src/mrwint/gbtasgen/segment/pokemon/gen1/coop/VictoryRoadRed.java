@@ -14,6 +14,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ARCANINE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BELLSPROUT;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLOYSTER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DEWGONG;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DIG;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRAGONAIR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EKANS;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ELIXER;
@@ -40,6 +41,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KINGLER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KOFFING;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEAF_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LICKITUNG;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGIKARP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGMAR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MANKEY;
@@ -48,6 +50,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.OMANYTE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.OMASTAR;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ONIX;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEOTTO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEY;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PINSIR;
@@ -109,6 +112,7 @@ import mrwint.gbtasgen.segment.pokemon.EflLearnTMSegment;
 import mrwint.gbtasgen.segment.pokemon.EflOverrideMoveSegment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
+import mrwint.gbtasgen.segment.pokemon.fight.EflAttackActionSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflHitMetricSegment;
@@ -153,14 +157,14 @@ public class VictoryRoadRed extends SeqSegment {
 //
 //    {
 //      seqUnbounded(new EflWalkToSegment(19, 17)); // enter center
-//      seqUnbounded(new EflWalkToSegment(13, 5)); // PC
-//      seq(new EflWalkToSegment(13, 4)); // PC
+//      seqUnbounded(new EflWalkToSegment(13, 4)); // PC
+//      seq(new EflWalkToSegment(13, 3, false)); // PC
 //      {
 //        seqEflButton(A); // use PC
 //        seq(new EflSkipTextsSegment(1)); // turned on
 //        seqEflButton(A); // someone's PC
 //        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//        seq(new EflDepositMonSegment(ARCANINE));
+//        seq(new EflDepositMonSegment(LICKITUNG));
 //        seqEflButtonUnboundedNoDelay(B, MENU); // cancel
 //        seqEflButtonUnboundedNoDelay(B, PRESSED); // cancel
 //      }
@@ -185,8 +189,8 @@ public class VictoryRoadRed extends SeqSegment {
 //    seq(new EflWalkToSegment(9, 15, false)); // ledge
 ////    {
 ////      seq(new EflWalkToSegment(6, 22)); // corner
-////      seq(new EflWalkToSegment(13, 22)); // corner
-////      seq(new EflWalkToSegment(6, 22)); // corner
+//      seq(new EflWalkToSegment(13, 22)); // corner
+//      seq(new EflWalkToSegment(6, 22)); // corner
 ////      seq(new EflWalkToSegment(13, 22)); // corner
 ////      seq(new EflWalkToSegment(6, 22)); // corner
 ////    }
@@ -198,7 +202,7 @@ public class VictoryRoadRed extends SeqSegment {
 //    seq(new EflSkipTextsSegment(2)); // gat Magikarp back
 //    seq(new EflWalkToSegment(2, 8, false)); // leave house
 //
-//    seqMetric(new OutputParty()); // needs 4619 exp
+//    seqMetric(new OutputParty()); // needs 4619 exp / 4989 exp
 //
 //    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(-1)); // Viridian
 //    seqEflSkipInput(1);
@@ -259,7 +263,8 @@ public class VictoryRoadRed extends SeqSegment {
 //    seqEflButton(B);
 //    seqEflButton(START);
 //
-//    seq(new EflWalkToSegment(17, 18, false)); // leave gym
+//    seq(new EflWalkToSegment(16, 16)); // leave gym
+//    seq(new EflWalkToSegment(16, 18, false)); // leave gym
 //    seq(new EflWalkToSegment(32, 7)); // enter gym
 //    seq(new EflWalkToSegment(15, 5)); // engage
 //
@@ -267,16 +272,44 @@ public class VictoryRoadRed extends SeqSegment {
 //    seq(new EflWalkToSegment(2, 2)); // engage giovanni
 //    seqMove(new EflOverworldInteract(1));
 //    seq(new EflInitFightSegment(10)); // start fight
-//    seq(new EflSwitchPokemonSegment(KABUTO, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
+//    seq(new EflSwitchPokemonSegment(KABUTO, null));
+////    seq(new EflSwitchPokemonSegment(KABUTO, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.attackCount[2][0] = 1; // surf
 //      kems.numExpGainers = 4; // magikarp, lvlup to 16, kabuto, lvlup to 35
 //      seq(kems); // rhyhorn
 //    }
-//    save("tmp");
-//    load("tmp");
+//    save("tmpa");
+//    load("tmpa");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
+////    seq(new EflSwitchPokemonSegment(MAGIKARP, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), GROWL)));
+////    seq(new EflSwitchPokemonSegment(KABUTO, new EflEnemyMoveDesc(new EflAttackActionSegment() {
+////      
+////      @Override
+////      public Segment getFinishSegment() {
+////        return new SeqSegment() {
+////          @Override
+////          protected void execute() {
+////            seqEflButtonUnboundedNoDelay(B);
+////          }
+////        };
+////      }
+////      
+////      @Override
+////      public void executeInternal(int minValue) {
+////        seq(new EflTextSegment()); // "dug a hole!"
+////      }
+////    }, true, new int[] {DIG})));
+////    save("tmp1");
+////    load("tmp1");
+////    {
+////      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+////      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith()};
+////      kems.attackCount[2][1] = 1; // surf crit
+////      kems.numExpGainers = 2; // magikarp, kabuto
+////      seq(kems); // Dugtrio
+////    }
 //    {
 //      seqEflButton(A, PRESSED);
 //      seqEflSkipInput(1);
@@ -311,40 +344,49 @@ public class VictoryRoadRed extends SeqSegment {
 //    save("tmp2");
 //    load("tmp2");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
+//    seq(new EflSwitchPokemonSegment(MAGIKARP, null));
+////    seq(new EflSwitchPokemonSegment(MAGIKARP, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
+////    seq(new EflSwitchPokemonSegment(KABUTO, null));
+//    seq(new EflSwitchPokemonSegment(KABUTO, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
+//    save("tmp3");
+//    load("tmp3");
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
 //      kems.attackCount[2][0] = 1; // surf
 //      kems.attackCount[2][1] = 1; // surf crit
+//      kems.numExpGainers = 3; // magikarp, lvlup to 17, kabuto
 //      seq(kems); // nidoqueen
 //    }
-//    save("tmp3");
-//    load("tmp3");
-//    seq(EflNewEnemyMonSegment.any()); // next mon
-//    seq(new EflSwitchPokemonSegment(MAGIKARP, EflEnemyMoveDesc.missWith(TACKLE)));
-//    seq(new EflSwitchPokemonSegment(KABUTO, EflEnemyMoveDesc.missWith(TACKLE)));
 //    save("tmp4");
 //    load("tmp4");
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    seq(new EflSwitchPokemonSegment(MAGIKARP, null));
+////    seq(new EflSwitchPokemonSegment(MAGIKARP, EflEnemyMoveDesc.missWith(TACKLE)));
+//    seq(new EflSwitchPokemonSegment(KABUTO, EflEnemyMoveDesc.missWith(TACKLE)));
+//    save("tmp5");
+//    load("tmp5");
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
 //      kems.attackCount[2][0] = 2; // surf
 ////      kems.attackCount[2][1] = 1; // surf crit
-//      kems.numExpGainers = 4; // magikarp, lvlup to 17, kabuto, lvlup to 36
+//      kems.numExpGainers = 3; // magikarp, lvlup to 18, kabuto
 //      seq(kems); // nidoking
 //    }
-//    save("tmp5");
-//    load("tmp5");
-//    seq(EflNewEnemyMonSegment.any()); // next mon
-//    seq(new EflSwitchPokemonSegment(MAGIKARP, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
-//    seq(new EflSwitchPokemonSegment(KABUTO, EflEnemyMoveDesc.missWith(new CheckFissureMisses(), FISSURE)));
 //    save("tmp6");
 //    load("tmp6");
+//    seq(EflNewEnemyMonSegment.any()); // next mon
+//    seq(new EflSwitchPokemonSegment(MAGIKARP, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)));
+//    seq(new EflSwitchPokemonSegment(KABUTO, null));
+////    seq(new EflSwitchPokemonSegment(KABUTO, EflEnemyMoveDesc.missWith(new CheckFissureMisses(), FISSURE)));
+//    save("tmp7");
+//    load("tmp7");
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(FISSURE)};
 //      kems.attackCount[2][1] = 1; // surf crit
-//      kems.numExpGainers = 3; // magikarp, lvlup to 18, kabuto
+//      kems.numExpGainers = 4; // magikarp, lvlup to 19, kabuto, lvlup to 36
 //      seq(kems); // rhydon
 //    }
 //
@@ -357,8 +399,8 @@ public class VictoryRoadRed extends SeqSegment {
 //    seq(new EflSkipTextsSegment(14)); // after battle texts
 //
 //    seq(new EflWalkToSegment(15, 5)); // avoid spins
-//    seq(new EflWalkToSegment(17, 16)); // leave gym
-//    seq(new EflWalkToSegment(17, 18, false)); // leave gym
+//    seq(new EflWalkToSegment(16, 16)); // leave gym
+//    seq(new EflWalkToSegment(16, 18, false)); // leave gym
 //
 //    seqMetric(new OutputParty());
 //    seqMetric(new OutputItems());
@@ -373,18 +415,14 @@ public class VictoryRoadRed extends SeqSegment {
 //    save("vr5");
 //    load("vr5");
 //
-////    seq(new EflSelectItemSegment(RARE_CANDY).fromOverworld().andUse());
-////    seq(new EflSelectMonSegment(MAGIKARP));
-////    seqEflButton(B); // grew to 19 (no delay)?
-////    seqEflButton(A); // grew to 19 stats
-////    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-////    seq(new EflSelectMonSegment(MAGIKARP));
-////    seqEflButton(B); // grew to 20 (no delay)?
-////    seqEflButton(A); // grew to 20 stats
-////    seq(new EflEvolutionSegment()); // Gyarados
-////    seq(new EflSkipTextsSegment(1, true)); // learned bite
-////    seqEflButton(B);
-////    seqEflButton(START);
+//    seq(new EflSelectItemSegment(RARE_CANDY).fromOverworld().andUse());
+//    seq(new EflSelectMonSegment(MAGIKARP));
+//    seqEflButton(B); // grew to 20 (no delay)?
+//    seqEflButton(A); // grew to 20 stats
+//    seq(new EflEvolutionSegment()); // Gyarados
+//    seq(new EflSkipTextsSegment(1, true)); // learned bite
+//    seqEflButton(B);
+//    seqEflButton(START);
 //
 //    seqMetric(new OutputParty());
 //    seqMetric(new OutputBoxMons());
@@ -393,33 +431,13 @@ public class VictoryRoadRed extends SeqSegment {
 //      seq(new EflSkipTextsSegment(1)); // turned on
 //      seqEflButton(A); // someone's PC
 //      seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+//      seq(new EflChangeMonBoxSegment(0)); // box 1
+//      seq(new EflDepositMonSegment(GYARADOS));
+//      seq(new EflWithdrawMonSegment(BELLSPROUT));
 //      seq(new EflChangeMonBoxSegment(5)); // box 6
 //      seqEflButtonUnboundedNoDelay(B, MENU); // cancel
 //      seqEflButtonUnboundedNoDelay(B, PRESSED); // cancel
 //    }
-////    seqEflSkipInput(1);
-////    seq(new EflSelectItemSegment(WATER_STONE).fromOverworld().andUse());
-////    seq(new EflSelectMonSegment(SHELLDER));
-////    seq(new EflEvolutionSegment()); // Cloyster
-////    seq(new EflSelectItemSegment(WATER_STONE).andUse());
-////    seq(new EflSelectMonSegment(STARYU));
-////    seq(new EflEvolutionSegment()); // Starmie
-////    seqEflButton(B);
-////    seqEflButton(START);
-////    {
-////      seqEflButton(A); // use PC
-////      seq(new EflSkipTextsSegment(1)); // turned on
-////      seqEflButton(A); // someone's PC
-////      seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-////      seq(new EflDepositMonSegment(STARMIE));
-////      seq(new EflDepositMonSegment(CLOYSTER));
-////      seq(new EflWithdrawMonSegment(GYARADOS));
-////      seq(new EflChangeMonBoxSegment(2)); // box 3
-////      seq(new EflWithdrawMonSegment(BELLSPROUT));
-////      seq(new EflChangeMonBoxSegment(4)); // box 5
-////      seqEflButtonUnboundedNoDelay(B, MENU); // cancel
-////      seqEflButtonUnboundedNoDelay(B, PRESSED); // cancel
-////    }
 //
 //    seqUnbounded(new EflWalkToSegment(4, 6)); // leave center
 //    seq(new EflWalkToSegment(4, 8, false)); // leave center
@@ -430,7 +448,7 @@ public class VictoryRoadRed extends SeqSegment {
 //    seqMetric(new OutputParty());
 //    seqMetric(new OutputBoxMons());
 //
-//    seq(new EflSelectMonSegment(MAGIKARP).fromOverworld().andSwitchWith(PONYTA));
+//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andSwitchWith(BELLSPROUT));
 //    seqEflButton(B);
 //    seq(new EflUseBikeSegment().fromMainMenu());
 //
@@ -440,19 +458,14 @@ public class VictoryRoadRed extends SeqSegment {
 //
 //    seq(new EflWalkToSegment(-1, 17)); // ledge
 //
-////    seqUnbounded(new EflWalkToSegment(31, 10)); // align
-////    seqUnbounded(new EflWalkToSegment(31, 9)); // align
-////    seq(new EflEncounterSegment(RATTATA, UP));
-////    seq(new EflCatchMonSegment());
-//
 //    save("vr7");
 //    load("vr7");
 //
 //    seq(new EflWalkToSegment(29, 5)); // engage
 //    seq(new EflInitFightSegment(10)); // start fight
-////    seq(new EflSwitchPokemonSegment(PONYTA, EflEnemyMoveDesc.missWith(Metric.TRUE, WHIRLWIND)));
-////    save("tmp");
-////    load("tmp");
+//    seq(new EflSwitchPokemonSegment(PONYTA, EflEnemyMoveDesc.missWith(Metric.TRUE, WHIRLWIND)));
+//    save("tmp");
+//    load("tmp");
 //    seq(new EflUseBattleItemSegment(X_SPEED, EflEnemyMoveDesc.missWith(Metric.TRUE, WHIRLWIND)));
 //    save("tmp2");
 //    load("tmp2");
@@ -462,7 +475,7 @@ public class VictoryRoadRed extends SeqSegment {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.skipFirstMainBattleMenu = true;
 //      kems.attackCount[1][1] = 1; // horn drill
-//      kems.numExpGainers = 2; // ponyta, lvlup to 38
+//      kems.numExpGainers = 5; // bellsprout, boosted, lvlup to 22, ponyta, lvlup to 38
 //      seq(kems); // pidgeot
 //    }
 //    save("tmp3");
@@ -507,6 +520,7 @@ public class VictoryRoadRed extends SeqSegment {
 //    save("vr8");
 //    load("vr8");
 //
+//    seq(new EflEvolutionSegment()); // Weepinbell
 //    seq(new EflEvolutionSegment()); // Rapidash
 //
 //    seq(new EflSkipTextsSegment(5)); // after battle text
@@ -526,43 +540,48 @@ public class VictoryRoadRed extends SeqSegment {
 //    seq(new EflWalkToSegment(10, 105)); // badge check
 //    seq(new EflSkipTextsSegment(4)); // badge check
 //    seq(new EflWalkToSegment(10, 104)); // water
+//    save("tmp");
+//    load("tmp");
+//    seq(new EflFishSegment(KINGLER));
+//    seq(new EflCatchMonSegment().withBufferSize(0));
 //    seq(new EflFishSegment(SEAKING));
 //    seq(new EflCatchMonSegment());
-//    seq(new EflFishSegment(KINGLER));
-//    seq(new EflCatchMonSegment().withExtraSkips(180)); //
-//    seq(new EflSelectMonSegment(OMASTAR).fromOverworld().andSurf());
+//    seqUnbounded(new EflSelectMonSegment(OMASTAR).fromOverworld().andSurf());
 //    seqEflSkipInput(1);
 //
-//    save("vr9");
-//    load("vr9");
+//    save("tmp2");
+////    load("tmp2");
 //
 //    for(int i=0;i<7;i++)
-//      seqMove(new EflWalkStep(Move.UP, true));
-//    seq(new EflSkipTextsSegment(4)); // badge check
+//      seqMoveUnboundedNoDelay(new EflWalkStep(Move.UP, true));
+//    seqUnbounded(new EflSkipTextsSegment(4)); // badge check
 //    for(int i=0;i<3;i++)
-//      seqMove(new EflWalkStep(Move.UP, true));
+//      seqMoveUnboundedNoDelay(new EflWalkStep(Move.UP, true));
 //    for(int i=0;i<3;i++)
-//      seqMove(new EflWalkStep(Move.LEFT, true));
+//      seqMoveUnboundedNoDelay(new EflWalkStep(Move.LEFT, true));
 //    for(int i=0;i<8;i++)
-//      seqMove(new EflWalkStep(Move.UP, true));
-//    seq(new EflSkipTextsSegment(3)); // badge check
+//      seqMoveUnboundedNoDelay(new EflWalkStep(Move.UP, true));
+//    seqUnbounded(new EflSkipTextsSegment(3)); // badge check
 //    seqUnbounded(new EflSkipTextsSegment(1)); // badge check
 //    for(int i=0;i<10;i++)
 //      seqMoveUnboundedNoDelay(new EflWalkStep(Move.UP, true));
 //    seqMoveUnboundedNoDelay(new EflWalkStep(Move.RIGHT, true));
 //    for(int i=0;i<4;i++)
 //      seqMoveUnboundedNoDelay(new EflWalkStep(Move.UP, true));
+//    save("tmp3");
+//    load("tmp3");
+//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //    {
-//      seqUnbounded(new EflWalkToSegment(8, 68)); // grass
-//      seq(new EflEncounterSegment(FEAROW, UP));
-//      save("tmp");
-////      load("tmp");
-//      seq(new EflCatchMonSegment().withBufferSize(0));
-//      seqUnbounded(new EflUseBikeSegment().fromOverworld());
-//      seqUnbounded(new EflWalkToSegment(10, 62)); // grass
+//      seqUnbounded(new EflWalkToSegment(9, 67)); // grass
+////      seqUnbounded(new EflWalkToSegment(10, 62)); // grass
 //      seq(new EflEncounterSegment(ARBOK, UP));
-//      save("tmp2");
-//    //  load("tmp2");
+//      save("tmp4");
+////      load("tmp4");
+//      seq(new EflCatchMonSegment().withBufferSize(0));
+//      seqUnbounded(new EflWalkToSegment(10, 62)); // grass
+//      seq(new EflEncounterSegment(FEAROW, UP));
+//      save("tmp5");
+//    //  load("tmp5");
 //      seq(new EflCatchMonSegment());
 //    }
 //    seq(new EflWalkToSegment(12, 57)); // badge check
@@ -578,7 +597,7 @@ public class VictoryRoadRed extends SeqSegment {
 ////    seq(new EflSelectItemSegment(HM04).fromOverworld().andUse());
 ////    seq(new EflLearnTMSegment(GYARADOS)); // learn Strength
 ////    seqEflButton(B);
-//    seq(new EflSelectMonSegment(EXEGGUTOR).fromOverworld().andStrength());
+//    seqUnbounded(new EflSelectMonSegment(EXEGGUTOR).fromOverworld().andStrength());
 //
 //    seqUnbounded(new EflWalkToSegment(5, 14));
 //    seqUnbounded(new EflWalkToSegment(5, 15, false));
@@ -613,73 +632,106 @@ public class VictoryRoadRed extends SeqSegment {
 //    seqUnbounded(new EflWalkToSegment(17, 12, false));
 //    seqUnbounded(new EflWalkToSegment(17, 12, false));
 //
-//    seqUnbounded(new EflWalkToSegment(13, 14)); // align
+//    seqUnbounded(new EflWalkToSegment(16, 13)); // align
 //    save("tmp");
 //    load("tmp");
-//    seq(new EflEncounterSegment(Constants.ONIX, LEFT));
+////    seqUnbounded(new EflWalkToSegment(16, 14)); // align
+//    seq(new EflEncounterSegment(Constants.MAROWAK, DOWN));
 //    save("tmp2");
-////    load("tmp2");
+//    load("tmp2");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(10, 14));
-//    seq(new EflEncounterSegment(Constants.GEODUDE, LEFT));
+//    seqUnbounded(new EflWalkToSegment(14, 14));
+//    seq(new EflEncounterSegment(Constants.ONIX, LEFT));
 //    save("tmp3");
-////    load("tmp3");
+//    load("tmp3");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(9, 15));
-//    seqUnbounded(new EflWalkToSegment(8, 15));
-//    seq(new EflEncounterSegment(Constants.MACHOKE, LEFT));
-//    save("tmp4");
-////    load("tmp4");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
+////    seqUnbounded(new EflWalkToSegment(9, 15));
+////    seqUnbounded(new EflWalkToSegment(8, 15));
 //    seqUnbounded(new EflWalkToSegment(5, 16));
-//    seqUnbounded(new EflWalkToSegment(5, 15));
-//    seqUnbounded(new EflWalkToSegment(5, 14));
+//    seq(new EflEncounterSegment(Constants.MACHOKE, UP));
+//    save("tmp4");
+//    load("tmp4");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//    seqUnbounded(new EflWalkToSegment(5, 13));
 //    seq(new EflEncounterSegment(Constants.ZUBAT, UP));
 //    save("tmp5");
-////    load("tmp5");
+//    load("tmp5");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(6, 12));
+//    seqUnbounded(new EflWalkToSegment(7, 12));
 //    seq(new EflEncounterSegment(Constants.MACHOP, RIGHT));
 //    save("tmp6");
-////    load("tmp6");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(17, 2));
-//    seqUnbounded(new EflWalkToSegment(16, 2));
-//    seq(new EflEncounterSegment(Constants.MAROWAK, LEFT));
-//    save("tmp7");
+    load("tmp6");
+    seq(new EflCatchMonSegment().withBufferSize(0));
+    seqUnbounded(new EflWalkToSegment(18, 7));
+    seq(new EflEncounterSegment(Constants.GEODUDE, UP));
+    save("tmp7");
 //    load("tmp7");
-//
-//    seqMetric(new OutputBoxMons());
-//
-//    seq(new EflCatchMonSegment());
-//    seq(new EflWalkToSegment(14, 2, false));
-//    seq(new EflWalkToSegment(14, 2, false));
-//    seq(new EflWalkToSegment(13, 2, false));
-//    seq(new EflWalkToSegment(12, 2, false));
-//    seq(new EflWalkToSegment(11, 3));
-//    seq(new EflWalkToSegment(11, 2, false));
-//    seq(new EflWalkToSegment(11, 2, false));
-//    seq(new EflWalkToSegment(10, 2));
-//    seqMove(new EflOverworldInteract(4)); // Rare Candy
-//    seq(new EflTextSegment()); // Rare Candy
+
+    seq(new EflCatchMonSegment());
+    save("tmp8");
+//    load("tmp8");
+    seq(new EflWalkToSegment(16, 2));
+    seq(new EflWalkToSegment(15, 2));
+
+    seq(new EflWalkToSegment(14, 2, false));
+    seq(new EflWalkToSegment(14, 2, false));
+    seq(new EflWalkToSegment(13, 2, false));
+    seq(new EflWalkToSegment(12, 2, false));
+    seq(new EflWalkToSegment(11, 3));
+    seq(new EflWalkToSegment(11, 2, false));
+    seq(new EflWalkToSegment(11, 2, false));
+    seq(new EflWalkToSegment(10, 2));
+    seqMove(new EflOverworldInteract(4)); // Rare Candy
+    seq(new EflTextSegment()); // Rare Candy
+
+    save("vr11");
+    load("vr11");
+
+//    seq(new EflWalkToSegment(14, 2));
+//    seq(new EflWalkToSegment(8, 16));
+//    seq(new EflWalkToSegment(8, 18, false));
+
+    seqEflSkipInput(1);
+    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
+    seqEflSkipInput(2);
+
+//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(4)); // Celadon
+//    seqEflSkipInput(1);
+//    seq(new EflWalkToSegment(41, 9)); // enter Center
+
+    
 //    seq(new EflWalkToSegment(14, 2));
 //    seq(new EflWalkToSegment(1, 1)); // ladder up
 //
-//    save("vr11");
-//    load("vr11");
+//    seq(new EflSelectMonSegment(WEEPINBELL).fromOverworld().andSwitchWith(KABUTO));
+//    seqEflSkipInput(0);
+//    seq(new EflSelectMonSegment(EXEGGUTOR).andStrength());
+//    seqUnbounded(new EflWalkToSegment(5, 14));
+//    seqUnbounded(new EflWalkToSegment(4, 14, false));
+//    seqUnbounded(new EflWalkToSegment(4, 14, false));
+//    seqUnbounded(new EflWalkToSegment(3, 13));
+//    seqUnbounded(new EflWalkToSegment(3, 14, false));
+//    seqUnbounded(new EflWalkToSegment(3, 14, false));
+//    seqUnbounded(new EflWalkToSegment(3, 15, false));
+//    seqUnbounded(new EflWalkToSegment(4, 16));
+//    seqUnbounded(new EflWalkToSegment(3, 16, false));
+//    seqUnbounded(new EflWalkToSegment(3, 16, false));
+//    seqUnbounded(new EflWalkToSegment(2, 16, false));
+//    save("tmp");
+//    load("tmp");
+//    seqUnbounded(new EflWalkToSegment(4, 16)); // align
+//    seqUnbounded(new EflWalkToSegment(4, 15)); // align
+//    seq(new EflEncounterSegment(Constants.ZUBAT, UP));
+//    save("tmp2");
+////    load("tmp2");
+//    {
+//      seq(new EflSkipTextsSegment(2)); // wild mon, go mon
+//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+//      kems.attackCount[2][0] = 1; // surf
+//      kems.numExpGainers = 2; // kabuto, lvlup to 36
+//      seq(kems); // graveler
+//    }
 //
-//    seq(new EflSelectMonSegment(EXEGGUTOR).fromOverworld().andStrength());
-//    seq(new EflWalkToSegment(5, 14));
-//    seq(new EflWalkToSegment(4, 14, false));
-//    seq(new EflWalkToSegment(4, 14, false));
-//    seq(new EflWalkToSegment(3, 13));
-//    seq(new EflWalkToSegment(3, 14, false));
-//    seq(new EflWalkToSegment(3, 14, false));
-//    seq(new EflWalkToSegment(3, 15, false));
-//    seq(new EflWalkToSegment(4, 16));
-//    seq(new EflWalkToSegment(3, 16, false));
-//    seq(new EflWalkToSegment(3, 16, false));
-//    seq(new EflWalkToSegment(2, 16, false));
 //    seq(new EflWalkToSegment(23, 7)); // ladder up
 //    seq(new EflWalkToSegment(2, 0)); // ladder down
 //    seq(new EflWalkToSegment(11, 3)); // moltres
@@ -692,6 +744,10 @@ public class VictoryRoadRed extends SeqSegment {
 //    load("vr12");
 //    seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
 //    seqEflSkipInput(2);
+//
+//    
+//    
+//    
 ////    {
 ////      seq(new EflSelectMonSegment(MAGMAR).fromOverworld().andStrength());
 ////      seq(new EflWalkToSegment(5, 5, false)); // boulder

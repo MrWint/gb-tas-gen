@@ -1,6 +1,8 @@
 package mrwint.gbtasgen.segment;
 
 import static mrwint.gbtasgen.state.Gameboy.curGb;
+
+import mrwint.gbtasgen.movie.BizhawkMovie;
 import mrwint.gbtasgen.state.DualGbHelper;
 import mrwint.gbtasgen.state.DualGbState;
 import mrwint.gbtasgen.state.StateBuffer;
@@ -66,6 +68,14 @@ public abstract class DualGbSegment {
   }
   public void saveL(String name) {
     state.stateBufferL.save(name, "Dual" + state.gbL.rom.fileNameSuffix);
+  }
+  public void compareL(String name1, String name2) {
+    BizhawkMovie.exportMovie(
+        new DualGbState(state.gbL, state.gbL,
+            StateBuffer.load(name1, "Dual" + state.gbL.rom.fileNameSuffix),
+            StateBuffer.load(name2, "Dual" + state.gbL.rom.fileNameSuffix)),
+        "Comparison" + name1 + name2);
+    
   }
   public void loadR(String name) {
     state = new DualGbState(state.gbL, state.gbR, state.stateBufferL, StateBuffer.load(name, "Dual" + state.gbR.rom.fileNameSuffix));

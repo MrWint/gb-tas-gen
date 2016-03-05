@@ -10,10 +10,14 @@ import mrwint.gbtasgen.segment.util.MoveSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 
+/**
+ * An operation executed on a {@link StateBuffer}, resulting in a new {@link StateBuffer}.
+ */
 public interface Segment {
 
 	StateBuffer execute(StateBuffer in);
 
+	/** Identity, does nothing. */
 	public static final Segment NULL = (in) -> in;
 
 

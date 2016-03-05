@@ -2,6 +2,7 @@ package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.DOWN;
+import static mrwint.gbtasgen.move.Move.LEFT;
 import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.move.Move.UP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BELLSPROUT;
@@ -14,6 +15,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VULPIX;
 import mrwint.gbtasgen.metric.pokemon.CheckEncounterMetric;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
+import mrwint.gbtasgen.metric.pokemon.gen1.OutputParty;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflCatchMonSegment;
@@ -55,10 +57,7 @@ public class RockTunnelBlue extends SeqSegment {
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(BONE_CLUB)};
-//      kems.attackCount[1][0] = 1; // bite
-//      kems.attackCount[2][1] = 1; // bubble crit
-//      kems.lastAttack = 2;
-////      kems.attackCount[3][0] = 1; // bubblebeam // no pp
+//      kems.attackCount[3][0] = 1; // bubblebeam
 //			seq(kems); // cubone
 //		}
 //    seq(EflNewEnemyMonSegment.any()); // next mon
@@ -168,8 +167,7 @@ public class RockTunnelBlue extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[1][0] = 2; // bite
-////      kems.attackCount[0][1] = 1; // mega punch crit // no pp
+//      kems.attackCount[0][1] = 1; // mega punch crit
 //      seq(kems); // oddish
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
@@ -197,16 +195,13 @@ public class RockTunnelBlue extends SeqSegment {
 //    seq(new EflInitFightSegment(1)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[1][0] = 1; // bite
-//      kems.attackCount[1][1] = 1; // bite
-////      kems.attackCount[0][1] = 1; // mega punch crit
+//      kems.attackCount[3][0] = 1; // bubblebeam
 //      seq(kems); // growlithe
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-////      kems.attackCount[1][0] = 2; // bite
-//      kems.attackCount[0][1] = 1; // mega punch crit // no PP
+//      kems.attackCount[3][0] = 1; // bubblebeam
 //      seq(kems); // vulpix
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -214,43 +209,51 @@ public class RockTunnelBlue extends SeqSegment {
 //    save("rt6");
 //    load("rt6");
 //
-//    seq(new EflWalkToSegment(13, 3)); // enter passage
-//    seq(new EflWalkToSegment(4, 4)); // enter passage
+//    seqUnbounded(new EflWalkToSegment(13, 3)); // enter passage
+//    seqUnbounded(new EflWalkToSegment(4, 4)); // enter passage
 //
-//    seq(new EflUseBikeSegment().fromOverworld());
+//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //    {
-//      seq(new EflWalkToSegment(23, 5)); // walk passage
-//      seq(new EflWalkToSegment(22, 5)); // walk passage
-//      seqEflButton(Move.A);
-//      seq(new EflTextSegment()); // got elixer
+//      seqUnbounded(new EflWalkToSegment(23, 5)); // walk passage
+//      seqUnbounded(new EflWalkToSegment(22, 5)); // walk passage
+//      seqEflButtonUnboundedNoDelay(A);
+//      seqUnbounded(new EflTextSegment()); // got elixer
 //    }
 //    {
-//      seq(new EflWalkToSegment(12, 4)); // walk passage
-//      seq(new EflWalkToSegment(12, 3)); // walk passage
-//      seqEflButton(Move.A);
-//      seq(new EflTextSegment()); // got nugget
+//      seqUnbounded(new EflWalkToSegment(12, 4)); // walk passage
+//      seqUnbounded(new EflWalkToSegment(12, 3)); // walk passage
+//      seqEflButtonUnboundedNoDelay(A);
+//      seqUnbounded(new EflTextSegment()); // got nugget
 //    }
 //    seqUnbounded(new EflWalkToSegment(2, 5)); // walk passage
 //    seqUnbounded(new EflWalkToSegment(4, 8, false)); // exit passage
 //    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //
-//    seqUnbounded(new EflWalkToSegment(8, 6)); // grass
-//    seq(new EflEncounterSegment(VULPIX, UP));
-//    save("tmp");
-//    load("tmp");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
+//    save("tmpa");
+//    load("tmpa");
 //
-//  //  seqUnbounded(new EflWalkToSegment(15, 2)); // grass
-//    seqUnbounded(new EflWalkToSegment(8, 3)); // grass
+//    seqUnbounded(new EflWalkToSegment(8, 6)); // grass
 //    seq(new EflEncounterSegment(new CheckEncounterMetric(BELLSPROUT, 22), UP));
-//    save("tmp2");
-    load("tmp2");
-    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(20));
+//    save("tmp1");
+//    load("tmp1");
+//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(2));
+//
+////    seqUnbounded(new EflWalkToSegment(11, 6)); // grass
+////    seqUnbounded(new EflWalkToSegment(11, 4)); // grass
+////    seqUnbounded(new EflWalkToSegment(11, 3)); // grass
+//    seqUnbounded(new EflWalkToSegment(11, 4)); // grass
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(MEOWTH, 20).withAtkDV(13,14,15).withSpcDV(12,13,14,15), DOWN));
+////    seq(new EflEncounterSegment(VULPIX, LEFT));
+//    save("tmp2a");
+    load("tmp2a");
 
-    seqUnbounded(new EflWalkToSegment(8, 4)); // grass
+    seq(new EflCatchMonSegment().withBufferSize(0).withName("O").withExtraSkips(14));
+
+    seqUnbounded(new EflWalkToSegment(9, 5)); // grass
 //    seqUnbounded(new EflWalkToSegment(9, 3)); // grass
 //    seqUnbounded(new EflWalkToSegment(9, 4)); // grass
-    seq(new EflEncounterSegment(new CheckEncounterMetric(MEOWTH, 20).withAtkDV(13,14,15).withSpcDV(12,13,14,15), DOWN));
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(MEOWTH, 20).withAtkDV(13,14,15).withSpcDV(12,13,14,15), DOWN));
+    seq(new EflEncounterSegment(VULPIX, LEFT));
     seq(new EflCatchMonSegment());
 
     seq(new EflWalkToSegment(-1, 3)); // enter celadon

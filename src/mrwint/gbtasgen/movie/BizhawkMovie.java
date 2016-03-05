@@ -14,6 +14,9 @@ import mrwint.gbtasgen.state.SingleGbState;
 import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.State.InputNode;
 
+/**
+ * Export the given game state to a BizHawk (bkm) movie file.
+ */
 public class BizhawkMovie {
   public static void exportMovie(SingleGbState state, String filename) {
     try {

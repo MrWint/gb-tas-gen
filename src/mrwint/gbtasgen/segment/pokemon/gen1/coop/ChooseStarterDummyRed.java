@@ -22,28 +22,31 @@ public class ChooseStarterDummyRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-    seq(EflChangeOptionsSegment.fromOverworld()); // set options
-    seq(new EflWalkToSegment(7, 1)); // go downstairs
-		seq(new EflWalkToSegment(3, 6)); // leave house
-		seq(new EflWalkToSegment(3, 8, false)); // leave house
-		seq(new EflWalkToSegment(10, 1)); // walk into grass
-		seq(new EflTextSegment()); // OAK: don't go out
-		seqEflButton(0); // skip holding key
-    seq(new EflSkipTextsSegment(6));
-    seq(new EflSkipTextsSegment(18));
+//    seq(EflChangeOptionsSegment.fromOverworld()); // set options
+//    seq(new EflWalkToSegment(7, 1)); // go downstairs
+//		seq(new EflWalkToSegment(3, 6)); // leave house
+//		seq(new EflWalkToSegment(3, 8, false)); // leave house
+//		seq(new EflWalkToSegment(10, 1)); // walk into grass
+//		seq(new EflTextSegment()); // OAK: don't go out
+//		seqEflButton(0); // skip holding key
+//    seq(new EflSkipTextsSegment(6));
+//    seq(new EflSkipTextsSegment(18));
+//
+//    seqMove(new EflWalkStep(RIGHT, false, true), 0); // walk to ball
+//		seqMove(new EflOverworldInteract(2)); // Charmander ball
+//
+//		seqEflButton(B); // cancel dex
+//		seqEflButton(A); // cancel dex
+//
+//		// chose mon text
+//		seq(new EflSkipTextsSegment(1)); // do you want?
+//		seq(new EflSkipTextsSegment(1, true)); // want!
+//		seq(new EflSkipTextsSegment(1)); // energetic
+//
+//    save("csd1");
+    load("csd1");
 
-    seqMove(new EflWalkStep(RIGHT, false, true), 0); // walk to ball
-		seqMove(new EflOverworldInteract(2)); // Charmander ball
-
-		seqEflButton(B); // cancel dex
-		seqEflButton(A); // cancel dex
-
-		// chose mon text
-		seq(new EflSkipTextsSegment(1)); // do you want?
-		seq(new EflSkipTextsSegment(1, true)); // want!
-		seq(new EflSkipTextsSegment(1)); // energetic
-
-		seqUnbounded(new EflSkipTextsSegment(2)); // received! ; want to give a nick
+    seqUnbounded(new EflSkipTextsSegment(2)); // received! ; want to give a nick
 		seqUnbounded(new EflSkipTextsSegment(1, true)); // to Charmander? (yes)
     seqEflButtonUnbounded(LEFT); // I
     seqEflButtonUnbounded(A, PRESSED); // "I"
@@ -51,8 +54,9 @@ public class ChooseStarterDummyRed extends SeqSegment {
       @Override
       protected void execute() {
         seqEflButtonUnbounded(START);
-        seqMetric(new Gen1CheckDVMetric(15, 0, 12, 15, 15));
-//        seqMetric(new Gen1CheckDVMetric(15, 0, 15, 15, 15));
+//        seqMetric(new Gen1CheckDVMetric(15, 0, 12, 15, 15));
+//        seqMetric(new Gen1CheckDVMetric(15, 0, 15, 15, 11));
+        seqMetric(new Gen1CheckDVMetric(14, 0, 10, 14, 3));
       }
     });
 		seq(new EflSkipTextsSegment(2)); // rival choose mon

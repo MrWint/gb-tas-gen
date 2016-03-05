@@ -4,7 +4,9 @@ import static mrwint.gbtasgen.state.Gameboy.curGb;
 import mrwint.gbtasgen.metric.Metric;
 import mrwint.gbtasgen.state.State;
 
-
+/**
+ * Operation executed on a single game state, resulting in a new game state.
+ */
 public abstract class Move {
 	public static final int A      = 0x01;
 	public static final int B      = 0x02;

@@ -10,11 +10,20 @@ import mrwint.gbtasgen.rom.sml2.Sml2RomInfo;
 import mrwint.gbtasgen.rom.tetris.TetrisRomInfo;
 import mrwint.gbtasgen.state.State.InputNode;
 
+/**
+ * Wrapper for the JNI to gambatte, representing an instance of a running Gameboy device.
+ * Supports savestating at any point and keeps track of the inputs.
+ * You can create multiple of these to run multiple Gameboy instances simultaneously.
+ */
 public class Gameboy {
 
+  /**
+   * The currently active Gameboy session. Most operations are only done on one Gameboy instance
+   * at a time, and this determines which instance that is.
+   */
   public static Gameboy curGb;
 
-
+  /** JNI */
   final Gb gb;
 
 	public boolean onFrameBoundaries = true;
@@ -42,6 +51,11 @@ public class Gameboy {
   public TetrisRomInfo tetris;
   public Sml2RomInfo sml2;
 
+  /**
+   * Creates a new Gameboy instance running the given {@code rom}.
+   * @param screen index number of the screen this gambatte instance will be rendered on.
+   * @param equalLengthFrames Whether to use the equal frame length timing introduced in BizHawk 1.7.
+   */
 	public Gameboy(RomInfo rom, int screen, boolean equalLengthFrames) {
     this.rom = rom;
     this.equalLengthFrames = equalLengthFrames;
@@ -77,6 +91,7 @@ public class Gameboy {
 	      new HashMap<String, Object>(attributes), ocdCount, lastMove, inputNode, onFrameBoundaries, rerecordCount);
 	}
 
+	/** Saves the current state of the Gameboy into a saved state object. */
 	public State createState() {
 		return createState(false);
 	}
@@ -99,9 +114,8 @@ public class Gameboy {
     return state;
   }
 
+  /** loads a given saved state into this Gameboy. */
 	public int restore(State s) {
-//		if (!onFrameBoundaries)
-//			step(); // get to next frame boundary
 		gb.loadState(s.bb);
 		inputNode = s.inputs;
 		stepCount = s.stepCount;
@@ -123,6 +137,7 @@ public class Gameboy {
     lastMove = moves;
 	}
 
+	/** Completes the next frame, with no inputs */
 	public void step() {
 		gb.step(onFrameBoundaries ? 0 : lastMove);
 		logInput(0);
@@ -130,15 +145,21 @@ public class Gameboy {
 		clearCache();
 	}
 
+  /** Completes the next {@code numberOfSteps} frames, with no inputs */
 	public void steps(int numberOfSteps) {
 		steps(numberOfSteps, 0);
 	}
 
+  /** Completes the next {@code numberOfSteps} frames, while pressing {@code moves} */
 	public void steps(int numberOfSteps, int moves) {
 		for (int i = 0; i < numberOfSteps; i++)
 			step(moves);
 	}
 
+  /**
+   * Runs the emulation while pressing {@code moves}. It runs until one of the breakpoint
+   * {@code addresses} are hit, or until the end of the frame,
+   */
 	public int step(int moves, int... addresses) {
 		if(moves != 0) {
 			ocdCount += 2;
@@ -154,16 +175,20 @@ public class Gameboy {
 		return ret;
 	}
 
+	/** Returns the current values in the CPU registers. */
 	public int[] getCurrentRegisters() {
 		if(!currentRegistersValid)
 		  currentRegisters = gb.getRegisters();
 		currentRegistersValid = true;
 		return currentRegisters;
 	}
+
+	 /** Returns the current values in the specified CPU register. */
 	public int getRegister(int register) {
 		return getCurrentRegisters()[register];
 	}
 
+  /** Returns the current state of the Gameboy memory. */
 	public int[] getCurrentMemory() {
 		if(!currentMemoryValid)
 		  currentMemory = gb.getMemory();
@@ -171,6 +196,7 @@ public class Gameboy {
 		return currentMemory;
 	}
 
+  /** Returns a dump of the loaded ROM. */
 	public int[] getROM() {
 		if(!ROMValid) {
 	    ROM = gb.getROM();
@@ -184,10 +210,17 @@ public class Gameboy {
 		currentMemoryValid = false;
 	}
 
+  /** Reads a single byte of memory from the Gameboy's RAM. */
   public int readMemory(int address) {
     return gb.readMemory(address);
   }
 
+  /**
+   * Writes a single byte of memory to the Gameboy's RAM.
+   * Note that this changes the state of the emulation, and will cause any movies created after
+   * the call to likely desync. It is useful for debugging or A/B testing different states in a
+   * controlled environment.
+   */
   public void writeMemory(int address, int value) {
     gb.writeMemory(address, value);
   }

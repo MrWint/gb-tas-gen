@@ -2,6 +2,10 @@ package mrwint.gbtasgen.rom;
 
 import mrwint.gbtasgen.Gb;
 
+/**
+ * Contains all necessary meta-information about a Gameboy ROM, as well as used ROM addresses.
+ * Subclasses must set all the fields and may specify any additional useful methods and addresses.
+ */
 public abstract class RomInfo {
 
 	/// rom ///

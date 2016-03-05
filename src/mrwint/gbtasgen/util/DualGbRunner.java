@@ -11,6 +11,9 @@ import mrwint.gbtasgen.state.StateBuffer;
 
 
 
+/**
+ * Utility for initializing and running a dual Gameboy setup.
+ */
 public class DualGbRunner {
 
   public static void run(RomInfo romL, RomInfo romR, DualGbSegment segment) {

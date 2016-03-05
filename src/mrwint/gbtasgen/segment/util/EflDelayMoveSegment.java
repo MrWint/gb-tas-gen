@@ -9,8 +9,8 @@ import mrwint.gbtasgen.util.EflUtil;
 public class EflDelayMoveSegment implements Segment {
 	Segment segment;
 
-	int fullCutoffDelay = 0;
-	int nonemptyCutoffDelay = 4;
+	int fullCutoffDelay = 10;
+	int nonemptyCutoffDelay = 400;
 	int maxSkips = 1000000;
 
 	public EflDelayMoveSegment withMaxDelay(int maxDelay) {

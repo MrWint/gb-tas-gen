@@ -8,98 +8,7 @@ import static mrwint.gbtasgen.move.Move.RIGHT;
 import static mrwint.gbtasgen.move.Move.SELECT;
 import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.move.Move.UP;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.AERODACTYL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.AGILITY;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ARBOK;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BELLSPROUT;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CHARIZARD;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLOYSTER;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DEWGONG;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRAGONAIR;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EEVEE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EKANS;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ESCAPE_ROPE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EXEGGCUTE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EXEGGUTOR;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FIRE_STONE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FISSURE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GEODUDE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GOLBAT;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GOLDEEN;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GOLDUCK;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GRIMER;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWLITHE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GYARADOS;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HITMONLEE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM03;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM04;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HORSEA;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.IVYSAUR;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KABUTO;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KINGLER;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KOFFING;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KRABBY;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEAF_STONE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LICKITUNG;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGIKARP;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGMAR;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MANKEY;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MEWTWO;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MOON_STONE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MUK;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDOKING;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDOQUEEN;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINA;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORINO;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NINETALES;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.OMANYTE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.OMASTAR;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEOT;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEOTTO;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEY;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PINSIR;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POISON_STING;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWAG;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWHIRL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWRATH;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PONYTA;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PORYGON;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PRIMEAPE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PSYDUCK;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RAPIDASH;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RARE_CANDY;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RATTATA;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ROAR;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SANDSHREW;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SANDSLASH;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SCYTHER;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SEADRA;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SEAKING;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SEEL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SHELLDER;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SLOWBRO;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SLOWPOKE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.STARMIE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.STARYU;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TANGELA;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TENTACOOL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TENTACRUEL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VAPOREON;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VICTREEBEL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VOLTORB;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VULPIX;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WARTORTLE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WATER_STONE;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WEEPINBELL;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WEEZING;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WHIRLWIND;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.X_SPEED;
-import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ZAPDOS;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.*;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 
@@ -167,43 +76,50 @@ public class PrepEndTrade2Blue extends SeqSegment {
     seqEflButton(Move.START);
     seqEflButton(Move.A);
 
+    seqMetric(new OutputParty());
+
 	  {
       seq(new EflWalkToSegment(13, 4)); // PC
       seq(new EflWalkToSegment(13, 3, false)); // PC
 
-      seqMetric(new OutputParty());
-
       seq(new EflSelectItemSegment(RARE_CANDY).fromOverworld().andUse());
-      seq(new EflSelectMonSegment(KABUTO));
-      seqEflButton(B); // lvlup to 35
+      seq(new EflSelectMonSegment(DRAGONAIR));
+//      seqEflButton(B); // lvlup to 44
+//      seqEflButton(A); // cancel stats
+//      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+//      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 45
+      seqEflButton(A); // cancel stats
+      seq(new EflCancelMoveLearnSegment()); // Dragon Rage
+      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 46
       seqEflButton(A); // cancel stats
       seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-      seq(new EflSelectMonSegment(KABUTO));
-      seqEflButton(B); // lvlup to 36
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 47
       seqEflButton(A); // cancel stats
       seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-      seq(new EflSelectMonSegment(KABUTO));
-      seqEflButton(B); // lvlup to 37
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 48
       seqEflButton(A); // cancel stats
       seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-      seq(new EflSelectMonSegment(KABUTO));
-      seqEflButton(B); // lvlup to 38
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 49
       seqEflButton(A); // cancel stats
       seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-      seq(new EflSelectMonSegment(KABUTO));
-      seqEflButton(B); // lvlup to 39
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 50
       seqEflButton(A); // cancel stats
-      seq(new EflCancelMoveLearnSegment()); // slash
+      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 51
+      seqEflButton(A); // cancel stats
       seq(new EflSelectItemSegment(RARE_CANDY).andUse());
       seq(new EflSelectMonSegment(KABUTO));
       seqEflButton(B); // lvlup to 40
       seqEflButton(A); // cancel stats
       seq(new EflEvolutionSegment()); // Kabutops
-      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-      seq(new EflSelectMonSegment(WARTORTLE));
-      seqEflButton(B); // lvlup to 26
-      seqEflButton(A); // cancel stats
-      seq(new EflEvolutionSegment()); // Blastoise
       seqEflButton(B); // cancel
       seqEflButton(START); // cancel
       seqEflSkipInput(1);
@@ -213,14 +129,16 @@ public class PrepEndTrade2Blue extends SeqSegment {
         seqEflButton(A); // someone's PC
         seq(new EflSkipTextsSegment(2)); // accessed, mon storage
 //        seq(new EflChangeMonBoxSegment(1)); // box 2
-        seq(new EflDepositMonSegment(OMASTAR));
-        seq(new EflWithdrawMonSegment(EEVEE));
         seq(new EflDepositMonSegment(RAPIDASH));
-        seq(new EflWithdrawMonSegment(WEEPINBELL));
-        seq(new EflDepositMonSegment(GYARADOS));
-        seq(new EflWithdrawMonSegment(POLIWHIRL));
-        seq(new EflDepositMonSegment(LICKITUNG));
-        seq(new EflWithdrawMonSegment(VULPIX));
+        seq(new EflDepositMonSegment(OMASTAR));
+        seq(new EflDepositMonSegment(ARBOK));
+        seq(new EflDepositMonSegment(JOLTEON));
+//        seq(new EflDepositMonSegment(KABUTOPS));
+        seq(new EflWithdrawMonSegment(SANDSLASH));
+        seq(new EflWithdrawMonSegment(RHYDON));
+        seq(new EflWithdrawMonSegment(KADABRA));
+        seq(new EflWithdrawMonSegment(HYPNO));
+//        seq(new EflWithdrawMonSegment(DODRIO));
         seqEflButton(B, MENU); // cancel
         seqEflButton(B, PRESSED); // cancel
       }
@@ -228,37 +146,37 @@ public class PrepEndTrade2Blue extends SeqSegment {
       seqMetric(new OutputParty());
       seqMetric(new OutputItems());
 
-      seqEflSkipInput(1);
-      seq(new EflSelectItemSegment(FIRE_STONE).fromOverworld().andUse());
-      seq(new EflSelectMonSegment(VULPIX));
-      seq(new EflEvolutionSegment()); // Ninetales
-      seq(new EflSelectItemSegment(WATER_STONE).andUse());
-      seq(new EflSelectMonSegment(POLIWHIRL));
-      seq(new EflEvolutionSegment()); // Poliwrath
-      seq(new EflSelectItemSegment(LEAF_STONE).andUse());
-      seq(new EflSelectMonSegment(WEEPINBELL));
-      seq(new EflEvolutionSegment()); // Victreebel
-      seq(new EflSelectItemSegment(WATER_STONE).andUse());
-      seq(new EflSelectMonSegment(EEVEE));
-      seq(new EflEvolutionSegment()); // Vaporeon
-      seqEflButton(B); // cancel
-      seqEflButton(START); // cancel
-      seqEflSkipInput(1);
-      {
-        seqEflButton(A); // use PC
-        seq(new EflSkipTextsSegment(1)); // turned on
-        seqEflButton(A); // someone's PC
-        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-        seq(new EflDepositMonSegment(VICTREEBEL));
-        seq(new EflWithdrawMonSegment(HITMONLEE));
-        seq(new EflChangeMonBoxSegment(4)); // box 5
-        seq(new EflDepositMonSegment(POLIWRATH));
-        seq(new EflDepositMonSegment(NINETALES));
-        seq(new EflWithdrawMonSegment(PORYGON));
-        seq(new EflWithdrawMonSegment(MEWTWO));
-        seqEflButton(B, MENU); // cancel
-        seqEflButton(B, PRESSED); // cancel
-      }
+//      seqEflSkipInput(1);
+//      seq(new EflSelectItemSegment(FIRE_STONE).fromOverworld().andUse());
+//      seq(new EflSelectMonSegment(VULPIX));
+//      seq(new EflEvolutionSegment()); // Ninetales
+//      seq(new EflSelectItemSegment(WATER_STONE).andUse());
+//      seq(new EflSelectMonSegment(POLIWHIRL));
+//      seq(new EflEvolutionSegment()); // Poliwrath
+//      seq(new EflSelectItemSegment(LEAF_STONE).andUse());
+//      seq(new EflSelectMonSegment(WEEPINBELL));
+//      seq(new EflEvolutionSegment()); // Victreebel
+//      seq(new EflSelectItemSegment(WATER_STONE).andUse());
+//      seq(new EflSelectMonSegment(EEVEE));
+//      seq(new EflEvolutionSegment()); // Vaporeon
+//      seqEflButton(B); // cancel
+//      seqEflButton(START); // cancel
+//      seqEflSkipInput(1);
+//      {
+//        seqEflButton(A); // use PC
+//        seq(new EflSkipTextsSegment(1)); // turned on
+//        seqEflButton(A); // someone's PC
+//        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+//        seq(new EflDepositMonSegment(VICTREEBEL));
+//        seq(new EflWithdrawMonSegment(HITMONLEE));
+//        seq(new EflChangeMonBoxSegment(4)); // box 5
+//        seq(new EflDepositMonSegment(POLIWRATH));
+//        seq(new EflDepositMonSegment(NINETALES));
+//        seq(new EflWithdrawMonSegment(PORYGON));
+//        seq(new EflWithdrawMonSegment(MEWTWO));
+//        seqEflButton(B, MENU); // cancel
+//        seqEflButton(B, PRESSED); // cancel
+//      }
 
       seq(new EflWalkToSegment(11, 4)); // trade
       seq(new EflWalkToSegment(11, 3)); // trade

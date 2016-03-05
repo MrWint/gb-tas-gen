@@ -444,6 +444,8 @@ public class CyclingRoadRed extends SeqSegment {
 //
 //    save("cr6");
 //    load("cr6");
+//    
+//    seqMetric(new OutputItems());
 //
 //    seq(new EflWalkToSegment(11, 17)); // Route 17
 //    seqEflSkipInput(0); // TODO: fix

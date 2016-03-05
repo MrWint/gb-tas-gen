@@ -8,6 +8,7 @@ import static mrwint.gbtasgen.move.Move.RIGHT;
 import static mrwint.gbtasgen.move.Move.SELECT;
 import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ARCANINE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BELLSPROUT;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CHARMELEON;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.COMET_PUNCH;
@@ -29,6 +30,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GLOOM;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM04;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.IVYSAUR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KABUTO;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KRABBY;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGNEMITE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGNETON;
@@ -42,6 +44,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PSYCHIC;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.REFLECT;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ROLLING_KICK;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SAND_ATTACK;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SLOWBRO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.STUN_SPORE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM07;
@@ -116,24 +119,94 @@ public class PowerplantRed extends SeqSegment {
 //    seqMetric(new OutputItems());
 //    seqMetric(new OutputBoxMons());
 //
+//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(3)); // Fuschia
+//    seqEflSkipInput(1);
+//  
+//    seq(new EflWalkToSegment(19, 27)); // Center
+//  
 //    {
-//      seq(new EflWalkToSegment(13, 25)); // enter center
-//      seq(new EflWalkToSegment(13, 5)); // PC
 //      seq(new EflWalkToSegment(13, 4)); // PC
+//      seq(new EflWalkToSegment(13, 3, false)); // PC
 //      {
 //        seqEflButton(A); // use PC
 //        seq(new EflSkipTextsSegment(1)); // turned on
 //        seqEflButton(A); // someone's PC
 //        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+//        seq(new EflDepositMonSegment(ARCANINE));
+//        seq(new EflWithdrawMonSegment(SLOWBRO));
 //        seq(new EflChangeMonBoxSegment(4)); // box 5
 //        seqEflButton(B, MENU); // cancel
 //        seqEflButton(B, PRESSED); // cancel
 //      }
 //      seqMetric(new OutputBoxMons());
-//
+//  
 //      seq(new EflWalkToSegment(4, 6)); // leave center
 //      seq(new EflWalkToSegment(4, 8, false)); // leave center
-//    }
+//  }
+//  
+//    seq(new EflUseBikeSegment().fromOverworld());
+//    seq(new EflWalkToSegment(2, 28, false)); // ledge
+//    seq(new EflWalkToSegment(-1, 17)); // Route 18
+//  
+//    save("pp1");
+//    load("pp1");
+//  
+//    seqUnbounded(new EflWalkToSegment(39, 9, false)); // house
+//    seqUnbounded(new EflWalkToSegment(6, 8)); // stairs
+//    seqUnbounded(new EflWalkToSegment(5, 4)); // trader
+//    seqUnbounded(new EflWalkToSegment(5, 3)); // trader
+//    delayEfl(new SeqSegment() {
+//      @Override
+//      protected void execute() {
+//        seqEflButtonUnboundedNoDelay(A);
+//        seqMetric(new EflOverworldInteract.OverworldInteractMetric(1)); // trader
+//      }
+//    });
+//    seq(new EflSkipTextsSegment(1));
+//    seq(new EflSkipTextsSegment(1, true));
+//    seq(new EflSelectMonSegment(SLOWBRO));
+//    seq(new EflSkipTextsSegment(1));
+//    seq(new EflSkipTextsSegment(3));
+//    seq(new EflWalkToSegment(7, 7)); // stairs
+//    seq(new EflWalkToSegment(1, 5)); // house
+//    seq(new EflWalkToSegment(-1, 5, false)); // house
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflButton(DOWN);
+//    seqEflSkipInput(1);
+//    seq(new EflFishSegment(KRABBY));
+//    seq(new EflCatchMonSegment());
+//  
+//    save("pp2");
+//    load("pp2");
+//
+//
+////    {
+////      seq(new EflWalkToSegment(13, 25)); // enter center
+////      seq(new EflWalkToSegment(13, 5)); // PC
+////      seq(new EflWalkToSegment(13, 4)); // PC
+////      {
+////        seqEflButton(A); // use PC
+////        seq(new EflSkipTextsSegment(1)); // turned on
+////        seqEflButton(A); // someone's PC
+////        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+////        seq(new EflChangeMonBoxSegment(4)); // box 5
+////        seqEflButton(B, MENU); // cancel
+////        seqEflButton(B, PRESSED); // cancel
+////      }
+////      seqMetric(new OutputBoxMons());
+////
+////      seq(new EflWalkToSegment(4, 6)); // leave center
+////      seq(new EflWalkToSegment(4, 8, false)); // leave center
+////    }
 //
 //    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(-3)); // Cerulean
 //    seqEflSkipInput(1);
@@ -156,41 +229,43 @@ public class PowerplantRed extends SeqSegment {
 //      seqMoveUnbounded(new EflWalkStep(DOWN, true));
 //    seqMoveUnbounded(new EflWalkStep(LEFT, true));
 //
-//    save("pp0");
-//    load("pp0");
+//    save("pp3");
+//    load("pp3");
 //
 //    seqUnbounded(new EflUseBikeSegment().fromOverworld());
 //    seqUnbounded(new EflWalkToSegment(6, 39)); // enter powerplant
+//    save("tmp");
+//    load("tmp");
 //
 //    seqUnbounded(new EflWalkToSegment(4, 33)); // align
 //    seq(new EflEncounterSegment(MAGNEMITE, UP));
-//    save("tmp");
-////    load("tmp");
+//    save("tmp1");
+//    load("tmp1");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //
-//    seqUnbounded(new EflWalkToSegment(4, 30)); // align
-//    seq(new EflEncounterSegment(ELECTABUZZ, UP));
-//    save("tmp2");
-////    load("tmp2");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//
-//    seqUnbounded(new EflWalkToSegment(4, 27)); // align
+//    seqUnbounded(new EflWalkToSegment(4, 29)); // align
 //    seq(new EflEncounterSegment(VOLTORB, UP));
+//    save("tmp2");
+//    load("tmp2");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//
+//    seqUnbounded(new EflWalkToSegment(3, 21)); // align
+//    seq(new EflEncounterSegment(ELECTABUZZ, RIGHT));
 //    save("tmp3");
 //    load("tmp3");
-//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(10));
-//
-//    seqUnbounded(new EflWalkToSegment(5, 17)); // align
-//    seq(new EflEncounterSegment(MAGNETON, UP));
-//    save("tmp4");
-//    load("tmp4");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //
-//    seqUnbounded(new EflWalkToSegment(8, 16)); // align
+//    seqUnbounded(new EflWalkToSegment(6, 18)); // align
 //    seq(new EflEncounterSegment(PIKACHU, RIGHT));
-//    save("tmp5");
-    load("tmp5");
-    seq(new EflCatchMonSegment().noNew());
+//    save("tmp4");
+    load("tmp4");
+    seq(new EflCatchMonSegment().withBufferSize(0).noNew());
+
+    seqUnbounded(new EflWalkToSegment(7, 16)); // align
+    seq(new EflEncounterSegment(MAGNETON, RIGHT));
+    save("tmp5");
+//    load("tmp5");
+    seq(new EflCatchMonSegment());
 
     seq(new EflWalkToSegment(34, 3, false)); // rare candy
     seqMove(new EflOverworldInteract(12));

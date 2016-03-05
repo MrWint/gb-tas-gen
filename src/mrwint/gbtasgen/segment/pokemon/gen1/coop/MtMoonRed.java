@@ -34,17 +34,25 @@ public class MtMoonRed extends SeqSegment {
 
 	@Override
 	public void execute() {
-//    seq(new EflWalkToSegment(11,5)); // enter Center
-//    seq(new EflWalkToSegment(8, 6)); // Man
-//    seq(new EflWalkToSegment(9, 6, false)); // Man
-//    seq(new MoveSegment(new EflOverworldInteract(4))); // Man
-//    seq(new EflSkipTextsSegment(4));
-//    seq(new EflSkipTextsSegment(1, true)); // take Magikarp
-//    seq(new EflTextSegment()); // got
-//    seq(new EflSkipTextsSegment(2)); // no nickname
-//    seq(new EflSkipTextsSegment(4)); // no room
-//    seq(new EflWalkToSegment(4, 6)); // leave
-//    seq(new EflWalkToSegment(4, 8, false)); // leave
+//    {
+//      seqUnbounded(new EflWalkToSegment(11, 5)); // enter Center
+////      seqUnbounded(new EflWalkToSegment(8, 6)); // Man
+//      seqUnbounded(new EflWalkToSegment(9, 6, false)); // Man
+//      delayEfl(new SeqSegment() {
+//        @Override
+//        protected void execute() {
+//          seqEflButtonUnboundedNoDelay(A);
+//          seqMetric(new EflOverworldInteract.OverworldInteractMetric(4));
+//        }
+//      });
+//      seq(new EflSkipTextsSegment(4));
+//      seq(new EflSkipTextsSegment(1, true)); // take Magikarp
+//      seq(new EflTextSegment()); // got
+//      seq(new EflSkipTextsSegment(2)); // no nickname
+//      seq(new EflSkipTextsSegment(4)); // no room
+//      seq(new EflWalkToSegment(4, 6)); // leave
+//      seq(new EflWalkToSegment(4, 8, false)); // leave
+//    }
 //
 //    seq(new EflWalkToSegment(18,5)); // enter Mt. Moon
 //
@@ -58,7 +66,6 @@ public class MtMoonRed extends SeqSegment {
 ////    seq(new MoveSegment(new EflOverworldInteract(11))); // collect Escape Rope
 ////    seq(new EflTextSegment()); // found Escape Rope
 //
-//
 //    seq(new EflWalkToSegment(4, 2).setBlockAllWarps(true)); // Moon Stone
 //    seq(new EflWalkToSegment(3, 2)); // Moon Stone
 //    seqMove(new EflOverworldInteract(9)); // Moon Stone
@@ -70,8 +77,9 @@ public class MtMoonRed extends SeqSegment {
 //    save("mm1");
 //    load("mm1");
 //
-//    seqUnbounded(new EflWalkToSegment(34, 22)); // go to encounter
-//    seq(new EflEncounterSegment(CLEFAIRY, LEFT));
+////    seqUnbounded(new EflWalkToSegment(34, 22)); // go to encounter
+//    seqUnbounded(new EflWalkToSegment(33, 30)); // go to encounter
+//    seq(new EflEncounterSegment(CLEFAIRY, DOWN));
 //    seq(new EflCatchMonSegment());
 //
 //		seq(new EflWalkToSegment(11, 16, false)); // go to rocket
@@ -81,14 +89,14 @@ public class MtMoonRed extends SeqSegment {
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-//			kems.attackCount[2][0] = 1; // ember
+//			kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //			seq(kems); // Rattata
 //		}
 //		seq(EflNewEnemyMonSegment.any());
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //			kems.numExpGainers = 2; // Charmeleon, boosted
 //			seq(kems); // Zubat
 //		}
@@ -107,7 +115,7 @@ public class MtMoonRed extends SeqSegment {
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 ////			kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(1)}; // pound
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //			seq(kems); // Grimer
 //		}
@@ -115,7 +123,7 @@ public class MtMoonRed extends SeqSegment {
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //			seq(kems); // Voltorb
 //		}
@@ -123,7 +131,7 @@ public class MtMoonRed extends SeqSegment {
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(SMOG)};
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //			seq(kems); // Koffing
 //		}
@@ -136,23 +144,29 @@ public class MtMoonRed extends SeqSegment {
 		seq(new MoveSegment(new EflOverworldInteract(6))); // grab fossil
 		seq(new EflSkipTextsSegment(1, true)); // grab fossil
 		seq(new EflSkipTextsSegment(1)); // got fossil
-		seq(new EflTextSegment()); // put fossil in bag
+		seqUnbounded(new EflTextSegment()); // put fossil in bag
 
-		seq(new EflWalkToSegment(5,7)); // go to MtMoon2
-		seq(new EflWalkToSegment(27,3)); // leave MtMoon
+		seqUnbounded(new EflWalkToSegment(5,7)); // go to MtMoon2
+		seqUnbounded(new EflWalkToSegment(27,3)); // leave MtMoon
 
 		seqUnbounded(new EflWalkToSegment(64, 9, false)); // hop into grass
     seq(new EflEncounterSegment(EKANS, DOWN));
+    save("tmp");
+    load("tmp");
     seq(new EflCatchMonSegment().withBufferSize(0));
 
     seqUnbounded(new EflWalkToSegment(67, 14)); // go in grass
     seqUnbounded(new EflWalkToSegment(68, 14)); // go in grass
     seq(new EflEncounterSegment(RATTATA, RIGHT));
+    save("tmp2");
+    load("tmp2");
     seq(new EflCatchMonSegment().withBufferSize(0));
 
     seqUnbounded(new EflWalkToSegment(71, 14)); // go in grass
     seqUnbounded(new EflWalkToSegment(72, 14)); // go in grass
     seq(new EflEncounterSegment(SPEAROW, RIGHT));
+    save("tmp3");
+    load("tmp3");
     seq(new EflCatchMonSegment());
 
 		seq(new EflWalkToSegment(90, 11)); // enter Cerulean

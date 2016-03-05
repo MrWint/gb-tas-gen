@@ -76,49 +76,31 @@ public class PrepEndTrade3Red extends SeqSegment {
     seqEflButton(Move.START);
     seqEflButton(Move.A);
 
+    seqMetric(new OutputParty());
+//    seqMetric(new OutputBoxMons());
+
 	  {
       seq(new EflWalkToSegment(13, 4)); // PC
       seq(new EflWalkToSegment(13, 3, false)); // PC
 
-      seqMetric(new OutputParty());
-
-      {
-        seqEflButton(A); // use PC
-        seq(new EflSkipTextsSegment(1)); // turned on
-        seqEflButton(A); // someone's PC
-        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//        seq(new EflChangeMonBoxSegment(1)); // box 2
-        seq(new EflDepositMonSegment(KABUTOPS));
-        seq(new EflDepositMonSegment(BLASTOISE));
-        seq(new EflDepositMonSegment(VAPOREON));
-        seq(new EflWithdrawMonSegment(ELECTABUZZ));
-        seq(new EflWithdrawMonSegment(MAGNEMITE));
-        seq(new EflWithdrawMonSegment(HITMONCHAN));
-        seq(new EflDepositMonSegment(HITMONLEE));
-        seq(new EflDepositMonSegment(PORYGON));
-        seq(new EflDepositMonSegment(MEWTWO));
-        seq(new EflWithdrawMonSegment(PIKACHU));
-        seq(new EflWithdrawMonSegment(GLOOM));
-        seq(new EflWithdrawMonSegment(GROWLITHE));
-        seqEflButton(B, MENU); // cancel
-        seqEflButton(B, PRESSED); // cancel
-      }
-      seqMetric(new OutputBoxMons());
-      seqMetric(new OutputParty());
-      seqMetric(new OutputItems());
-
-      seqEflSkipInput(1);
-      seq(new EflSelectItemSegment(FIRE_STONE).fromOverworld().andUse());
-      seq(new EflSelectMonSegment(GROWLITHE));
-      seq(new EflEvolutionSegment()); // Arcanine
-      seqEflSkipInput(1);
-      seq(new EflSelectItemSegment(LEAF_STONE).andUse());
-      seq(new EflSelectMonSegment(GLOOM));
-      seq(new EflEvolutionSegment()); // Vileplume
-      seqEflSkipInput(1);
-      seq(new EflSelectItemSegment(THUNDER_STONE).andUse());
-      seq(new EflSelectMonSegment(PIKACHU));
-      seq(new EflEvolutionSegment()); // Raichu
+      seq(new EflSelectItemSegment(RARE_CANDY).fromOverworld().andUse());
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 52
+      seqEflButton(A); // cancel stats
+      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 53
+      seqEflButton(A); // cancel stats
+      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 54
+      seqEflButton(A); // cancel stats
+      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+      seq(new EflSelectMonSegment(DRAGONAIR));
+      seqEflButton(B); // lvlup to 55
+      seqEflButton(A); // cancel stats
+      seq(new EflCancelMoveLearnSegment()); // Hyper Beam
+      seq(new EflEvolutionSegment()); // Dragonite
       seqEflButton(B); // cancel
       seqEflButton(START); // cancel
       seqEflSkipInput(1);
@@ -127,17 +109,58 @@ public class PrepEndTrade3Red extends SeqSegment {
         seq(new EflSkipTextsSegment(1)); // turned on
         seqEflButton(A); // someone's PC
         seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-        seq(new EflChangeMonBoxSegment(4)); // box 5
-        seq(new EflDepositMonSegment(RAICHU));
         seq(new EflDepositMonSegment(VILEPLUME));
-        seq(new EflDepositMonSegment(ARCANINE));
-        seq(new EflWithdrawMonSegment(GRAVELER));
-        seq(new EflWithdrawMonSegment(MACHOKE));
-        seq(new EflWithdrawMonSegment(ARBOK));
+        seq(new EflDepositMonSegment(KABUTOPS));
+        seq(new EflDepositMonSegment(SANDSLASH));
+        seq(new EflDepositMonSegment(RHYDON));
+        seq(new EflDepositMonSegment(HYPNO));
+        seq(new EflWithdrawMonSegment(SHELLDER));
+        seq(new EflWithdrawMonSegment(PIKACHU));
+        seq(new EflWithdrawMonSegment(MAGNEMITE));
+        seq(new EflWithdrawMonSegment(LICKITUNG));
+        seq(new EflChangeMonBoxSegment(2)); // box 3
+        seq(new EflWithdrawMonSegment(AERODACTYL));
+//        seq(new EflWithdrawMonSegment(JYNX));
         seqEflButton(B, MENU); // cancel
         seqEflButton(B, PRESSED); // cancel
       }
+      seqMetric(new OutputBoxMons());
+      seqMetric(new OutputParty());
+      seqMetric(new OutputItems());
 
+//      seqEflSkipInput(1);
+//      seq(new EflSelectItemSegment(FIRE_STONE).fromOverworld().andUse());
+//      seq(new EflSelectMonSegment(GROWLITHE));
+//      seq(new EflEvolutionSegment()); // Arcanine
+//      seqEflSkipInput(1);
+//      seq(new EflSelectItemSegment(LEAF_STONE).andUse());
+//      seq(new EflSelectMonSegment(GLOOM));
+//      seq(new EflEvolutionSegment()); // Vileplume
+//      seqEflSkipInput(1);
+//      seq(new EflSelectItemSegment(THUNDER_STONE).andUse());
+//      seq(new EflSelectMonSegment(PIKACHU));
+//      seq(new EflEvolutionSegment()); // Raichu
+//      seqEflButton(B); // cancel
+//      seqEflButton(START); // cancel
+//      seqEflSkipInput(1);
+//      {
+//        seqEflButton(A); // use PC
+//        seq(new EflSkipTextsSegment(1)); // turned on
+//        seqEflButton(A); // someone's PC
+//        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+//        seq(new EflChangeMonBoxSegment(4)); // box 5
+//        seq(new EflDepositMonSegment(RAICHU));
+//        seq(new EflDepositMonSegment(VILEPLUME));
+//        seq(new EflDepositMonSegment(ARCANINE));
+//        seq(new EflWithdrawMonSegment(GRAVELER));
+//        seq(new EflWithdrawMonSegment(MACHOKE));
+//        seq(new EflWithdrawMonSegment(ARBOK));
+//        seqEflButton(B, MENU); // cancel
+//        seqEflButton(B, PRESSED); // cancel
+//      }
+
+      seq(new EflWalkToSegment(12, 4)); // trade
+      seqEflSkipInput(50);
       seq(new EflWalkToSegment(11, 4)); // trade
       seq(new EflWalkToSegment(11, 3)); // trade
     }

@@ -9,7 +9,9 @@ import mrwint.gbtasgen.state.State;
 import mrwint.gbtasgen.state.StateBuffer;
 
 
-
+/**
+ * Utility for initializing and running a single Gameboy instance.
+ */
 public class SingleGbRunner {
 
   public static void run(RomInfo rom, SingleGbSegment segment) {
@@ -17,6 +19,7 @@ public class SingleGbRunner {
   }
   public static void run(RomInfo rom, SingleGbSegment segment, boolean equalLengthFrames) {
 
+    // Initialize Gambatte with 1 screen.
     Gb.loadGambatte(1);
 
     // load rom

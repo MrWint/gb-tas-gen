@@ -3,6 +3,7 @@ package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
+import mrwint.gbtasgen.metric.pokemon.gen1.OutputParty;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflEvolutionSegment;
@@ -25,6 +26,8 @@ public class PrepareEeveeTradeBlue extends SeqSegment {
 
 	@Override
 	public void execute() {
+    seqMetric(new OutputParty());
+    
     seq(new EflWalkToSegment(15, 19)); // go to bush
     seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andCut());
 

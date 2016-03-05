@@ -2,6 +2,7 @@ package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
 import static mrwint.gbtasgen.move.Move.DOWN;
 import static mrwint.gbtasgen.move.Move.RIGHT;
+import static mrwint.gbtasgen.move.Move.UP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.JIGGLYPUFF;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEY;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
@@ -29,21 +30,21 @@ public class Route3Red extends SeqSegment {
 //		seq(new EflInitFightSegment(1)); // start fight
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//			kems.attackCount[2][0] = 1; // ember
+//			kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmander, boosted
 //			seq(kems); // Caterpie
 //		}
 //		seq(EflNewEnemyMonSegment.any()); // next mon
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//			kems.attackCount[2][0] = 1; // ember
+//			kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmander, boosted
 //			seq(kems); // Weedle
 //		}
 //		seq(EflNewEnemyMonSegment.any()); // next mon
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //			kems.numExpGainers = 2; // Charmander, boosted
 //			seq(kems); // Caterpie
 //		}
@@ -60,7 +61,7 @@ public class Route3Red extends SeqSegment {
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 39)}; // tail whip
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmander, boosted
 //			seq(kems); // Rattata
 //		}
@@ -68,7 +69,7 @@ public class Route3Red extends SeqSegment {
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), 43)}; // leer
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 3; // Charmander, boosted, lvlup to 32
 //			seq(kems); // Ekans
 //		}
@@ -84,14 +85,14 @@ public class Route3Red extends SeqSegment {
 //    seq(new EflInitFightSegment(2)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //      seq(kems); // Rattata
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //      seq(kems); // NidoranM
 //    }
@@ -104,31 +105,31 @@ public class Route3Red extends SeqSegment {
 //		seq(new EflInitFightSegment(1)); // start fight
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //			seq(kems); // Caterpie
 //		}
 //		seq(EflNewEnemyMonSegment.any()); // next mon
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // ember
+//      kems.attackCount[0][0] = 1; // ember
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //			seq(kems); // Metapod
 //		}
 //
 //    save("r33");
-    load("r33");
-
-    seqUnbounded(new EflEndFightSegment(1)); // player defeated enemy
-
-    seqUnbounded(new EflWalkToSegment(27, 11)); // go in grass
-    seqUnbounded(new EflWalkToSegment(28, 11)); // go in grass
-    seq(new EflEncounterSegment(JIGGLYPUFF, RIGHT));
-    save("tmp");
+//    load("r33");
+//
+//    seqUnbounded(new EflEndFightSegment(1)); // player defeated enemy
+//
+//    seqUnbounded(new EflWalkToSegment(27, 11)); // go in grass
+////    seqUnbounded(new EflWalkToSegment(28, 11)); // go in grass
+//    seq(new EflEncounterSegment(PIDGEY, RIGHT));
+//    save("tmp");
     load("tmp");
     seq(new EflCatchMonSegment().withBufferSize(0));
     seqUnbounded(new EflWalkToSegment(36, 11)); // go in grass
-    seq(new EflEncounterSegment(PIDGEY, RIGHT));
+    seq(new EflEncounterSegment(JIGGLYPUFF, UP));
     seq(new EflCatchMonSegment());
 		seq(new EflWalkToSegment(59, -1, false)); // leave route 3
 	}

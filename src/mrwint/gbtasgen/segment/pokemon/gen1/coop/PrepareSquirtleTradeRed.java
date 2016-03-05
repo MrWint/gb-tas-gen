@@ -7,6 +7,7 @@ import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CATERPIE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CHARMELEON;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLEFAIRY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DUGTRIO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EEVEE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWLITHE;
@@ -56,26 +57,27 @@ public class PrepareSquirtleTradeRed extends SeqSegment {
 	@Override
 	public void execute() {
 
-	  seqMetric(new OutputParty());
-	  {
-	    seq(new EflWalkToSegment(25, 4, false)); // house
-	    seq(new EflWalkToSegment(2, 1)); // house
-	    seq(new EflWalkToSegment(4, 1)); // house
-	    seq(new EflWalkToSegment(2, 1)); // house
-	    seq(new EflWalkToSegment(2, 7)); // house
-	    seq(new EflWalkToSegment(4, 3, false)); // eevee ball
-	    seqMove(new EflOverworldInteract(2)); // eevee ball
-	    seq(new EflTextSegment()); // got eevee
-      seq(new EflSkipTextsSegment(2)); // no nick
-      seq(new EflSkipTextsSegment(4)); // no room, to box
-	    seq(new EflWalkToSegment(3, 6)); // leave
-	    seq(new EflWalkToSegment(3, 8, false)); // leave
-	    seq(new EflWalkToSegment(2, 1)); // house
-	    seq(new EflWalkToSegment(4, 1)); // house
-	    seq(new EflWalkToSegment(2, 1)); // house
-	    seq(new EflWalkToSegment(4, 0)); // house
-	    seq(new EflUseBikeSegment().fromOverworld());
-	  }
+    seqMetric(new OutputParty());
+    seqMetric(new OutputBoxMons());
+//	  {
+//	    seq(new EflWalkToSegment(25, 4, false)); // house
+//	    seq(new EflWalkToSegment(2, 1)); // house
+//	    seq(new EflWalkToSegment(4, 1)); // house
+//	    seq(new EflWalkToSegment(2, 1)); // house
+//	    seq(new EflWalkToSegment(2, 7)); // house
+//	    seq(new EflWalkToSegment(4, 3, false)); // eevee ball
+//	    seqMove(new EflOverworldInteract(2)); // eevee ball
+//	    seq(new EflTextSegment()); // got eevee
+//      seq(new EflSkipTextsSegment(2)); // no nick
+//      seq(new EflSkipTextsSegment(4)); // no room, to box
+//	    seq(new EflWalkToSegment(3, 6)); // leave
+//	    seq(new EflWalkToSegment(3, 8, false)); // leave
+//	    seq(new EflWalkToSegment(2, 1)); // house
+//	    seq(new EflWalkToSegment(4, 1)); // house
+//	    seq(new EflWalkToSegment(2, 1)); // house
+//	    seq(new EflWalkToSegment(4, 0)); // house
+//	    seq(new EflUseBikeSegment().fromOverworld());
+//	  }
 
 //	  seq(new EflWalkToSegment(10, 13)); // enter mart
 //    seq(new EflWalkToSegment(12, 1)); // 2nd floor
@@ -196,9 +198,10 @@ public class PrepareSquirtleTradeRed extends SeqSegment {
       seqMetric(new OutputBoxMons());
       seq(new EflDepositMonSegment(CHARMELEON));
       seq(new EflDepositMonSegment(CATERPIE));
-//      seq(new EflDepositMonSegment(FARFETCHD));
+      seq(new EflDepositMonSegment(DUGTRIO));
 //      seq(new EflDepositMonSegment(MEOWTH));
 //      seq(new EflWithdrawMonSegment(EEVEE));
+      seq(new EflWithdrawMonSegment(MANKEY));
       seq(new EflWithdrawMonSegment(GROWLITHE));
 //      seq(new EflWithdrawMonSegment(ODDISH));
       seq(new EflWithdrawMonSegment(CLEFAIRY));

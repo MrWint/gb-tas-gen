@@ -20,7 +20,11 @@ public class EflUtil {
   // run primitives //
   ////////////////////
 
-  /** returns address or 0 */
+  /**
+   * Runs the simulation until one of the {@code addresses} are reached,
+   * but at most {@code stepLimit} steps.
+   * @return address or 0
+   */
   public static int runToAddressLimit(int baseKeys, int startKeys,
       int stepLimit, int... addresses) {
     if (!curGb.onFrameBoundaries) {
@@ -37,12 +41,19 @@ public class EflUtil {
     }
     return 0;
   }
-  /** returns address */
+
+  /**
+   * Runs the simulation until one of the {@code addresses} are reached.
+   * @return address
+   */
   public static int runToAddressNoLimit(int baseKeys, int startKeys,
       int... addresses) {
     return runToAddressLimit(baseKeys, startKeys, Integer.MAX_VALUE, addresses);
   }
 
+  /**
+   * Runs the simulation for {@code numFrames}.
+   */
   public static void runFor(int numFrames, int baseKeys, int startKeys) {
     if (!curGb.onFrameBoundaries)
       curGb.step(); // end unfinished frame

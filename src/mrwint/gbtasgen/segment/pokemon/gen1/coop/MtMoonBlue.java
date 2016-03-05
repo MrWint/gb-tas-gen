@@ -3,13 +3,18 @@ package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.B;
 import static mrwint.gbtasgen.move.Move.DOWN;
+import static mrwint.gbtasgen.move.Move.LEFT;
+import static mrwint.gbtasgen.move.Move.RIGHT;
 import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.move.Move.UP;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLEFAIRY;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DISABLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POUND;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SANDSHREW;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SCREECH;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SMOG;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SQUIRTLE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM01;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckDisableEffectMisses;
@@ -38,10 +43,16 @@ public class MtMoonBlue extends SeqSegment {
 	@Override
 	public void execute() {
 //	  {
-//	    seq(new EflWalkToSegment(11, 5)); // enter Center
-//	    seq(new EflWalkToSegment(8, 6)); // Man
-//	    seq(new EflWalkToSegment(9, 6, false)); // Man
-//	    seqMove(new EflOverworldInteract(4)); // Man
+//	    seqUnbounded(new EflWalkToSegment(11, 5)); // enter Center
+//	    seqUnbounded(new EflWalkToSegment(9, 6, false)); // Man
+////	    seqUnbounded(new EflWalkToSegment(9, 6, false)); // Man
+//      delayEfl(new SeqSegment() {
+//        @Override
+//        protected void execute() {
+//          seqEflButtonUnboundedNoDelay(A);
+//          seqMetric(new EflOverworldInteract.OverworldInteractMetric(4));
+//        }
+//      });
 //	    seq(new EflSkipTextsSegment(4));
 //	    seq(new EflSkipTextsSegment(1, true)); // take Magikarp
 //	    seq(new EflTextSegment()); // got
@@ -51,6 +62,9 @@ public class MtMoonBlue extends SeqSegment {
 //	  }
 //
 //	  seq(new EflWalkToSegment(18, 5)); // enter Mt. Moon
+//
+//    save("mm0a");
+//    load("mm0a");
 //
 //    seq(new EflWalkToSegment(33, 31).setBlockAllWarps(true)); // Rare Candy
 //    seq(new EflWalkToSegment(34, 31)); // Rare Candy
@@ -68,8 +82,8 @@ public class MtMoonBlue extends SeqSegment {
 //    seqEflSkipInput(1);
 //    seq(new EflSelectItemSegment(TM01).fromOverworld().andUse());
 //    seq(new EflLearnTMSegment(SQUIRTLE, 0)); // tackle -> mega punch
-//    seqEflButton(Move.B);
-//    seqEflButton(Move.START);
+//    seqEflButton(B);
+//    seqEflButton(START);
 //		seq(new EflWalkToSegment(25,9));
 //		seq(new EflWalkToSegment(25,9));
 //
@@ -82,69 +96,71 @@ public class MtMoonBlue extends SeqSegment {
 //		seq(new EflWalkToSegment(21, 17)); // go to MtMoon3
 //
 //    save("mm1");
-//    load("mm1");
-//
-//    seqUnbounded(new EflWalkToSegment(36, 16)); // go to encounter
-//
-//    seq(new EflEncounterSegment(4, Move.DOWN)); // Clefairy
-//    seq(new EflCatchMonSegment());
-//
-//		seq(new EflWalkToSegment(11, 16, false)); // go to rocket
-//		seqMove(new EflOverworldInteract(2)); // talk to rocket
-//
-//		seq(new EflInitFightSegment(3)); // start fight
-//		{
-//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-//			kems.attackCount[0][1] = 1; // mega punch crit
-//			seq(kems); // Rattata
-//		}
-//		seq(EflNewEnemyMonSegment.any());
-//		{
-//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//			kems.attackCount[0][1] = 1; // mega punch crit
-//			kems.numExpGainers = 2; // Squirtle, level up to 16
-//			seq(kems); // Zubat
-//		}
-//		seq(new EflEndFightSegment(1)); // player defeated enemy
-//
-//    save("mm2");
-//    load("mm2");
-//
-//    seq(new EflEvolutionSegment(true));
-//
-//    seq(new EflWalkToSegment(17, 12)); // Moon Stone
-//    seqEflButton(A); // collect Moon Stone
-//    seq(new EflTextSegment()); // found Moon Stone
-//
-//		seq(new EflWalkToSegment(13, 8));
-//		seq(new EflInitFightSegment(3)); // start fight
-//		{
-//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-////			kems.enemyMoveDesc = new EnemyMoveDesc[]{EnemyMoveDesc.missWith(1)}; // pound
+    load("mm1");
+
+    seqUnbounded(new EflWalkToSegment(34, 23)); // go to encounter
+
+    seq(new EflEncounterSegment(CLEFAIRY, LEFT));
+    seq(new EflCatchMonSegment());
+
+		seq(new EflWalkToSegment(11, 16, false)); // go to rocket
+		seqMove(new EflOverworldInteract(2)); // talk to rocket
+
+		seq(new EflInitFightSegment(3)); // start fight
+		{
+		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
+			kems.attackCount[0][1] = 1; // mega punch crit
+			seq(kems); // Rattata
+		}
+		seq(EflNewEnemyMonSegment.any());
+		{
+		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+			kems.attackCount[0][1] = 1; // mega punch crit
+			kems.numExpGainers = 2; // Squirtle, level up to 16
+			seq(kems); // Zubat
+		}
+		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+    save("mm2");
+    load("mm2");
+
+    seq(new EflEvolutionSegment(true));
+
+    seq(new EflWalkToSegment(17, 12)); // Moon Stone
+    seqEflButton(A); // collect Moon Stone
+    seq(new EflTextSegment()); // found Moon Stone
+
+		seq(new EflWalkToSegment(13, 8));
+		seq(new EflInitFightSegment(3)); // start fight
+		{
+		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(POUND)};
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
-//			kems.attackCount[0][0] = 2; // mega punch
-//			seq(kems); // Grimer
-//		}
-//		seq(EflNewEnemyMonSegment.any());
-//		{
-//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
-//			kems.attackCount[0][1] = 1; // mega punch crit
-//			seq(kems); // Voltorb
-//		}
-//		seq(EflNewEnemyMonSegment.any());
-//		{
-//		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.attackCount[0][1] = 1; // mega punch crit
+      kems.attackCount[2][0] = 1; // bubble
+			seq(kems); // Grimer
+		}
+		seq(EflNewEnemyMonSegment.any());
+		{
+		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
+			kems.attackCount[0][1] = 1; // mega punch crit
+			seq(kems); // Voltorb
+		}
+		seq(EflNewEnemyMonSegment.any());
+		{
+		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE, SMOG)};
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(SMOG)};
-//			kems.attackCount[0][0] = 1; // mega punch
-//			kems.attackCount[0][1] = 1; // mega punch crit
-//			kems.numExpGainers = 2; // Squirtle, level up to 17
-//			seq(kems); // Koffing
-//		}
-//		seq(new EflEndFightSegment(1)); // player defeated enemy
-//
-//		save("mm3");
+			kems.attackCount[0][1] = 1; // mega punch crit
+      kems.attackCount[2][1] = 1; // bubble crit
+			kems.numExpGainers = 2; // Squirtle, level up to 17
+			seq(kems); // Koffing
+		}
+		seq(new EflEndFightSegment(1)); // player defeated enemy
+
+		save("mm3");
 		load("mm3");
 
     seq(new EflEvolutionSegment(true));
@@ -161,8 +177,8 @@ public class MtMoonBlue extends SeqSegment {
 
 //    seq(new EflWalkToSegment(76, 9, false)); // hop into grass
 
-    seqUnbounded(new EflWalkToSegment(73, 9, false)); // hop into grass
-    seqUnbounded(new EflWalkToSegment(73, 12)); // go in grass
+    seqUnbounded(new EflWalkToSegment(64, 9, false)); // hop into grass
+//    seqUnbounded(new EflWalkToSegment(72, 14)); // go in grass
     seq(new EflEncounterSegment(SANDSHREW, DOWN));
     seq(new EflCatchMonSegment());
 

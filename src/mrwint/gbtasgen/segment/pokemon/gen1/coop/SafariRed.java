@@ -16,6 +16,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRATINI;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ESCAPE_ROPE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EXEGGCUTE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FIRE_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KANGASKHAN;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGMAR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.NIDORANF;
@@ -40,6 +41,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM13;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TM21;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VENOMOTH;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VENONAT;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VULPIX;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WARTORTLE;
 import static mrwint.gbtasgen.state.Gameboy.curGb;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
@@ -128,6 +130,8 @@ public class SafariRed extends SeqSegment {
 //
 //    save("sa1");
 //    load("sa1");
+//    
+//    seqMetric(new OutputItems());
 //
 //    seq(new EflWalkToSegment(12, 1)); // 2nd floor
 //    seq(new EflWalkToSegment(16, 1)); // 3rd floor
@@ -181,7 +185,7 @@ public class SafariRed extends SeqSegment {
 //        seqMetric(new OutputItems());
 //
 //        seq(new EflSellItemSegment(4, 0)); // TM34 x1
-//        seq(new EflSellItemSegment(6, 0, true)); // Nugget x3
+//        seq(new EflSellItemSegment(6, 0, true)); // Nugget x2
 //        seqEflButton(B);
 //      }
 //
@@ -190,9 +194,9 @@ public class SafariRed extends SeqSegment {
 //      seq(new EflTextSegment(B));
 //      {
 //        seq(new EflBuyItemSegment(4, 3)); // Leaf Stone x3
-//        seq(new EflBuyItemSegment(0, 1)); // Thunder Stone x1
-//        seq(new EflBuyItemSegment(1, 4)); // Water Stone x3
-//        seq(new EflBuyItemSegment(-1, 3, true)); // Fire Stone x3
+//        seq(new EflBuyItemSegment(0, 2)); // Thunder Stone x2
+//        seq(new EflBuyItemSegment(1, 3)); // Water Stone x3
+//        seq(new EflBuyItemSegment(-1, 2, true)); // Fire Stone x2
 //      }
 //      seqEflButton(B); // cancel
 //      seq(new EflSkipTextsSegment(2)); // cancel + bye
@@ -290,7 +294,7 @@ public class SafariRed extends SeqSegment {
 //    seq(new EflInitFightSegment(2)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.attackCount[2][0] = 2; // surf
 //      kems.numExpGainers = 2; // omanyte, boosted
 //      seq(kems); // drowzee
@@ -300,7 +304,7 @@ public class SafariRed extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.attackCount[2][0] = 2; // surf
 //      kems.numExpGainers = 2; // omanyte, boosted
 //      seq(kems); // drowzee
@@ -310,7 +314,7 @@ public class SafariRed extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.attackCount[2][0] = 1; // surf
 //      kems.attackCount[2][1] = 1; // surf
 //      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 31
@@ -321,7 +325,7 @@ public class SafariRed extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.attackCount[2][0] = 2; // surf
 //      kems.numExpGainers = 2; // omanyte, boosted
 //      seq(kems); // drowzee
@@ -331,19 +335,11 @@ public class SafariRed extends SeqSegment {
 //    save("sa5");
 //    load("sa5");
 //
-////    seqMetric(new OutputParty());
-////    seq(new EflSelectMonSegment(WARTORTLE).fromOverworld().andSwitchWith(OMANYTE));
-////    seqEflButton(B);
-////    seq(new EflSelectItemSegment(TM13).fromMainMenu().andUse());
-////    seq(new EflLearnTMSegment(OMANYTE));
-////    seqEflButton(B);
-////    seqEflButton(START);
-//
 //    seq(new EflWalkToSegment(1, 7)); // engage
 //    seq(new EflInitFightSegment(3)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), 139)}; // poison gas
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_GAS)};
 //      kems.attackCount[3][1] = 2; // ice beam crit
 //      kems.numExpGainers = 2; // omanyte, boosted
 //      seq(kems); // drowzee
@@ -353,7 +349,7 @@ public class SafariRed extends SeqSegment {
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), 50)}; // disable
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.attackCount[2][1] = 2; // surf crit
 //      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 32
 //      seq(kems); // hypno
@@ -380,7 +376,6 @@ public class SafariRed extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_GAS)};
-////      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
 //      kems.attackCount[2][1] = 1; // surf crit
 //      kems.attackCount[3][1] = 1; // ice beam crit
 //      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 33
@@ -407,7 +402,7 @@ public class SafariRed extends SeqSegment {
 //    {
 //      EflEnemyMoveDesc enemyMoveDesc = EflEnemyMoveDesc.missWith(SELF_DESTRUCT);
 //
-//      seqEflButton(A); // Fight
+//      seqEflButton(A, PRESSED); // Fight
 //      seqEflSkipInput(1);
 //      delayEfl(new SeqSegment() {
 //        @Override
@@ -520,7 +515,7 @@ public class SafariRed extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 ////      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(72)}; // Mega Drain
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), 77)}; // Poisonpowder
+//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckPoisonEffectMisses(), POISON_POWDER)};
 //      kems.attackCount[3][1] = 1; // Ice Beam
 //      kems.numExpGainers = 3; // omanyte, boosted, lvlup to 36
 //      seq(kems); // vileplume
@@ -542,42 +537,55 @@ public class SafariRed extends SeqSegment {
 //    seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(23, 28, false)); // ledge
 //
-//    seq(new EflWalkToSegment(18, 3)); // enter safari house
-//    seq(new EflWalkToSegment(3, 2)); // go pay
-//    seq(new EflSkipTextsSegment(4)); // welcome to safari
-//    seq(new EflSkipTextsSegment(1, true)); // yes, go on safari
-//    seq(new EflSkipTextsSegment(7)); // welcome to safari
+//    seqUnbounded(new EflWalkToSegment(18, 3)); // enter safari house
+//    seqUnbounded(new EflWalkToSegment(3, 2)); // go pay
+//    seqUnbounded(new EflSkipTextsSegment(4)); // welcome to safari
+//    seqUnbounded(new EflSkipTextsSegment(1, true)); // yes, go on safari
+//    seqUnbounded(new EflSkipTextsSegment(7)); // welcome to safari
 //    seqUnbounded(new EflUseBikeSegment().fromOverworld());
+//    save("tmp");
+//    load("tmp");
 //
 //    seqUnbounded(new EflWalkToSegment(19, 23));
-//    seq(new EflEncounterSegment(SCYTHER, RIGHT));
+//    seq(new EflEncounterSegment(VENONAT, RIGHT));
+////    seq(new EflEncounterSegment(RHYHORN, RIGHT));
 //
-//    save("tmp");
-//  //  load("tmp");
+//    save("tmp1");
+//    load("tmp1");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(22, 23));
-//    seq(new EflEncounterSegment(RHYHORN, UP));
+//    seq(new EflEncounterSegment(PARASECT, UP));
+////    seq(new EflEncounterSegment(NIDORINO, UP));
 //    save("tmp2");
-//  //load("tmp2");
+//    load("tmp2");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(23, 21));
-//    seq(new EflEncounterSegment(EXEGGCUTE, UP));
+//    seq(new EflEncounterSegment(RHYHORN, UP));
+////    seq(new EflEncounterSegment(NIDORANM, UP));
 //    save("tmp3");
-////    load("tmp3");
+//    load("tmp3");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
-//    seqUnbounded(new EflWalkToSegment(26, 20));
-//    seq(new EflEncounterSegment(NIDORANM, UP));
+//    seqUnbounded(new EflWalkToSegment(24, 19));
+//    seq(new EflEncounterSegment(NIDORINA, UP));
+////    seq(new EflEncounterSegment(VENONAT, UP));
 //    save("tmp4");
-//  //load("tmp4");
+//    load("tmp4");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
-//    seqUnbounded(new EflWalkToSegment(26, 17));
-//    seq(new EflEncounterSegment(VENONAT, UP));
+//    seqUnbounded(new EflWalkToSegment(24, 16));
+//    seq(new EflEncounterSegment(NIDORANM, UP));
+////    seq(new EflEncounterSegment(EXEGGCUTE, UP));
 //    save("tmp5");
-//  //load("tmp5");
+//    load("tmp5");
+//    seq(new EflCatchSafariMonSegment().withBufferSize(0).withExtraSkips(1));
+//
+//    seqUnbounded(new EflWalkToSegment(26, 15));
+//    seq(new EflEncounterSegment(EXEGGCUTE, RIGHT));
+//    save("tmp6");
+//    load("tmp6");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(30, 11, false)); // east
@@ -586,85 +594,102 @@ public class SafariRed extends SeqSegment {
 //    load("sa11");
 //
 //    seqUnbounded(new EflWalkToSegment(13, 24));
-//    seq(new EflEncounterSegment(KANGASKHAN, RIGHT));
+//    seq(new EflEncounterSegment(PARAS, RIGHT));
 //    save("tmp");
-//  //  load("tmp");
+//    load("tmp");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(16, 24));
-//    seq(new EflEncounterSegment(PARAS, RIGHT));
+//    seq(new EflEncounterSegment(NIDORANF, RIGHT));
 //    save("tmp2");
-////    load("tmp2");
-//    seq(new EflCatchSafariMonSegment().withBufferSize(0).withExtraSkips(80));
+//    load("tmp2");
+//    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
-//    seqUnbounded(new EflWalkToSegment(19, 24));
-//    seq(new EflEncounterSegment(PARASECT, RIGHT));
+//    seqUnbounded(new EflWalkToSegment(20, 24));
+//    seqUnbounded(new EflWalkToSegment(20, 23));
+//    seq(new EflEncounterSegment(SCYTHER, UP));
 //    save("tmp3");
-////    load("tmp3");
+//    load("tmp3");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(9, 15));
-//    seq(new EflEncounterSegment(NIDORANF, UP));
+//    seq(new EflEncounterSegment(KANGASKHAN, UP));
+////    seq(new EflEncounterSegment(PARASECT, UP));
 //    save("tmp4");
-////    load("tmp4");
+//    load("tmp4");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(9, 10));
 //    seq(new EflEncounterSegment(DODUO, UP));
 //    save("tmp5");
-////    load("tmp5");
+//    load("tmp5");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
-////    seqUnbounded(new EflWalkToSegment(20, 4));
-//    seqUnbounded(new EflWalkToSegment(10, 3));
-//    seq(new EflEncounterSegment(NIDORINO, LEFT));
-//    save("tmp6");
+////    seqUnbounded(new EflWalkToSegment(20, 7));
+//////    seqUnbounded(new EflWalkToSegment(10, 3));
+////    seq(new EflEncounterSegment(NIDORINO, UP));
+////    save("tmp6");
 ////    load("tmp6");
-//    seq(new EflCatchSafariMonSegment().withBufferSize(0));
+////    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
 //    seqUnbounded(new EflWalkToSegment(-1, 5, false)); // east
 //
 //    save("sa12");
-////    load("sa12");
+//    load("sa12");
 //
-//    seqUnbounded(new EflWalkToSegment(24, 25));
+////    seqUnbounded(new EflWalkToSegment(28, 31));
+//    seqUnbounded(new EflWalkToSegment(22, 26));
+//    seqUnbounded(new EflWalkToSegment(22, 25));
 //    seq(new EflEncounterSegment(TAUROS, UP));
 //    save("tmp");
-////    load("tmp");
-//    seq(new EflCatchSafariMonSegment().withBufferSize(0).withExtraSkips(10));
+//    load("tmp");
+//    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
+////    seqUnbounded(new EflWalkToSegment(22, 26));
+////    seqUnbounded(new EflWalkToSegment(22, 25));
 //    seqUnbounded(new EflWalkToSegment(13, 27));
 //    seq(new EflEncounterSegment(CHANSEY, UP));
 //    save("tmp2");
-//  //  load("tmp2");
+//    load("tmp2");
 //    seq(new EflCatchSafariMonSegment().withBufferSize(0));
 //
-//    seqUnbounded(new EflWalkToSegment(15, 12));
-//    seq(new EflEncounterSegment(VENOMOTH, UP));
-//    save("tmp3");
-//  //  load("tmp3");
-//    seq(new EflCatchSafariMonSegment().withBufferSize(0));
-//
+////    seqUnbounded(new EflWalkToSegment(15, 12));
 //    seqUnbounded(new EflWalkToSegment(27, 6));
-//    seq(new EflEncounterSegment(NIDORINA, RIGHT));
-//    save("tmp4");
-////    load("tmp4");
-//    seq(new EflCatchSafariMonSegment());
-//
-//    seq(new EflWalkToSegment(4, 12)); // water
-//    seq(new EflWalkToSegment(4, 13)); // water
-//    {
-//      seq(new EflFishSegment(DRATINI));
-//      seq(new EflCatchSafariMonSegment());
-//    }
-//
-//    seq(new EflWalkToSegment(3, 36, false)); // east
-//
-//    save("sa13");
+//    seq(new EflEncounterSegment(NIDORINO, RIGHT));
+////    seq(new EflEncounterSegment(VENOMOTH, RIGHT));
+//    save("tmp3a");
+    load("tmp3a");
+    seq(new EflCatchSafariMonSegment().withBufferSize(0)); // .withExtraSkips(15)
+
+    seqUnbounded(new EflWalkToSegment(4, 8));
+    seqUnbounded(new EflWalkToSegment(4, 1));
+    seqUnbounded(new EflWalkToSegment(4, 8));
+//    seqUnbounded(new EflWalkToSegment(27, 6));
+//    seqUnbounded(new EflWalkToSegment(10, 3));
+    seq(new EflEncounterSegment(VENOMOTH, DOWN));
+//    seq(new EflEncounterSegment(NIDORINO, LEFT));
+//    seq(new EflEncounterSegment(NIDORINA, DOWN));
+    save("tmp4");
+//    load("tmp4");
+    seq(new EflCatchSafariMonSegment());
+
+    seq(new EflWalkToSegment(4, 12)); // water
+    seq(new EflWalkToSegment(4, 13)); // water
+    {
+      seq(new EflFishSegment(DRATINI));
+      seq(new EflCatchSafariMonSegment());
+    }
+
+    seq(new EflWalkToSegment(3, 36, false)); // east
+
+    save("sa13");
     load("sa13");
 
     seqMetric(new OutputItems());
     seq(new EflSelectItemSegment(TM06).fromOverworld().andToss());
+    seq(new EflSelectItemSegment(FIRE_STONE).andUse());
+    seq(new EflSelectMonSegment(VULPIX));
+    seq(new EflEvolutionSegment()); // ninetales
     seq(new EflSelectItemSegment(TM21).andToss());
     seqEflButton(B);
     seqEflButton(START);

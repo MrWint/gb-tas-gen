@@ -15,9 +15,23 @@ public class NamingSegment extends SeqSegment {
 
 	private String name;
 	private List<Integer> moveList;
+	private int startX, startY;
+	private boolean startUpperCase;
 
   public NamingSegment(String name) {
+    this(name, 0, 0, true);
+  }
+
+  public NamingSegment(String name, char fromChar) {
+    this(name, getCharX(fromChar), getCharY(fromChar), Character.isUpperCase(fromChar));
+  }
+
+  public NamingSegment(String name, int startX, int startY, boolean startUpperCase) {
 		this.name = name;
+		this.startX = startX;
+		this.startY = startY;
+		this.startUpperCase = startUpperCase;
+		
 		generateMoveList();
 
 		debugPrintMoveList();
@@ -52,7 +66,7 @@ public class NamingSegment extends SeqSegment {
 		System.out.println();
 	}
 
-	String[] charMap = {
+	static final String[] charMap = {
 			"ABCDEFGHI",
 			"abcdefghi",
 			"JKLMNOPQR",
@@ -64,14 +78,14 @@ public class NamingSegment extends SeqSegment {
 			"-?!´♀/., ",
 			"-?! ♀/., "};
 
-	private int getCharX(char c) {
+	private static int getCharX(char c) {
 		for(int i=0;i<charMap.length;i++)
 			if(charMap[i].contains(""+c))
 				return charMap[i].indexOf(c);
 		return -1;
 	}
 
-	private int getCharY(char c) {
+	private static int getCharY(char c) {
 		for(int i=0;i<charMap.length;i++)
 			if(charMap[i].contains(""+c))
 				return i/2;
@@ -178,8 +192,8 @@ public class NamingSegment extends SeqSegment {
 
 	private void generateMoveList() {
 		moveList = new ArrayList<Integer>();
-		int curX = 0, curY = 0;
-		boolean upperCase = true;
+		int curX = startX, curY = startY;
+		boolean upperCase = startUpperCase;
 		for(int i=0;i<name.length();i++) {
 			char c = name.charAt(i);
 			int newX = getCharX(c);

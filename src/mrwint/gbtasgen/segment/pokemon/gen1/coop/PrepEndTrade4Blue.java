@@ -66,7 +66,7 @@ import mrwint.gbtasgen.segment.util.SkipTextsSegment;
 import mrwint.gbtasgen.state.StateBuffer;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
 
-public class PrepEndTrade3Blue extends SeqSegment {
+public class PrepEndTrade4Blue extends SeqSegment {
 
 	@Override
 	public void execute() {
@@ -77,6 +77,7 @@ public class PrepEndTrade3Blue extends SeqSegment {
     seqEflButton(Move.A);
 
     seqMetric(new OutputParty());
+//    seqMetric(new OutputBoxMons());
 
 	  {
       seq(new EflWalkToSegment(13, 4)); // PC
@@ -87,58 +88,77 @@ public class PrepEndTrade3Blue extends SeqSegment {
         seq(new EflSkipTextsSegment(1)); // turned on
         seqEflButton(A); // someone's PC
         seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-        seq(new EflDepositMonSegment(HITMONCHAN));
-        seq(new EflDepositMonSegment(ZAPDOS));
-        seq(new EflDepositMonSegment(ELECTABUZZ));
-        seq(new EflDepositMonSegment(VOLTORB));
-        seq(new EflDepositMonSegment(ALAKAZAM));
-        seq(new EflWithdrawMonSegment(DODRIO));
-        seq(new EflChangeMonBoxSegment(4)); // box 5
-        seq(new EflWithdrawMonSegment(IVYSAUR));
-        seq(new EflChangeMonBoxSegment(2)); // box 3
-        seq(new EflWithdrawMonSegment(HITMONLEE));
-        seq(new EflWithdrawMonSegment(EEVEE));
-        seq(new EflWithdrawMonSegment(WEEPINBELL));
+        seq(new EflDepositMonSegment(VICTREEBEL));
+        seq(new EflDepositMonSegment(DRAGONITE));
+        seq(new EflDepositMonSegment(MAGNEMITE));
+        seq(new EflDepositMonSegment(LICKITUNG));
+        seq(new EflDepositMonSegment(AERODACTYL));
+        seq(new EflWithdrawMonSegment(POLIWHIRL));
+        seq(new EflWithdrawMonSegment(VULPIX));
+        seq(new EflWithdrawMonSegment(BLASTOISE));
+        seq(new EflWithdrawMonSegment(TENTACRUEL));
+        seq(new EflChangeMonBoxSegment(1)); // box 2
+        seq(new EflDepositMonSegment(VAPOREON));
+        seq(new EflDepositMonSegment(BLASTOISE));
+        seq(new EflWithdrawMonSegment(NIDORINO));
+        seq(new EflWithdrawMonSegment(NIDORINA));
+        seq(new EflWithdrawMonSegment(EXEGGCUTE));
         seqEflButton(B, MENU); // cancel
         seqEflButton(B, PRESSED); // cancel
       }
       seqMetric(new OutputBoxMons());
       seqMetric(new OutputItems());
 
-//      seqEflSkipInput(1);
-//      seq(new EflSelectItemSegment(LEAF_STONE).fromOverworld().andUse());
-//      seq(new EflSelectMonSegment(WEEPINBELL));
-//      seq(new EflEvolutionSegment()); // Victreebel
-//      seqEflSkipInput(1);
-//      seq(new EflSelectItemSegment(WATER_STONE).andUse());
-//      seq(new EflSelectMonSegment(POLIWHIRL));
-//      seq(new EflEvolutionSegment()); // Poliwrath
-//      seqEflButton(B); // cancel
-//      seqEflButton(START); // cancel
-//      seqEflSkipInput(1);
-//      {
-//        seqEflButton(A); // use PC
-//        seq(new EflSkipTextsSegment(1)); // turned on
-//        seqEflButton(A); // someone's PC
-//        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//        seq(new EflDepositMonSegment(VICTREEBEL));
-//        seq(new EflDepositMonSegment(POLIWRATH));
-//        seq(new EflWithdrawMonSegment(EEVEE));
-//        seq(new EflWithdrawMonSegment(VULPIX));
-//        seqEflButton(B, MENU); // cancel
-//        seqEflButton(B, PRESSED); // cancel
-//      }
-
       seqEflSkipInput(1);
-      seq(new EflSelectItemSegment(LEAF_STONE).fromOverworld().andUse());
-      seq(new EflSelectMonSegment(WEEPINBELL));
-      seq(new EflEvolutionSegment()); // Victreebel
+      seq(new EflSelectItemSegment(WATER_STONE).fromOverworld().andUse());
+      seq(new EflSelectMonSegment(POLIWHIRL));
+      seq(new EflEvolutionSegment()); // Poliwrath
       seqEflSkipInput(0);
-      seq(new EflSelectItemSegment(WATER_STONE).andUse());
-      seq(new EflSelectMonSegment(EEVEE));
-      seq(new EflEvolutionSegment()); // Vaporeon
+      seq(new EflSelectItemSegment(FIRE_STONE).andUse());
+      seq(new EflSelectMonSegment(VULPIX));
+      seq(new EflEvolutionSegment()); // Ninetales
+      seqEflSkipInput(0);
+      seq(new EflSelectItemSegment(MOON_STONE).andUse());
+      seq(new EflSelectMonSegment(NIDORINO));
+      seq(new EflEvolutionSegment()); // Ninetales
+      seqEflSkipInput(0);
+      seq(new EflSelectItemSegment(MOON_STONE).andUse());
+      seq(new EflSelectMonSegment(NIDORINA));
+      seq(new EflEvolutionSegment()); // Arcanine
+      seqEflSkipInput(0);
+      seq(new EflSelectItemSegment(LEAF_STONE).andUse());
+      seq(new EflSelectMonSegment(EXEGGCUTE));
+      seq(new EflEvolutionSegment()); // Exeggutor
       seqEflButton(B); // cancel
       seqEflButton(START); // cancel
+      seqEflSkipInput(1);
+      {
+        seqEflButton(A); // use PC
+        seq(new EflSkipTextsSegment(1)); // turned on
+        seqEflButton(A); // someone's PC
+        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+        seq(new EflDepositMonSegment(POLIWRATH));
+        seq(new EflDepositMonSegment(NINETALES));
+        seq(new EflWithdrawMonSegment(VAPOREON));
+        seq(new EflWithdrawMonSegment(BLASTOISE));
+        seq(new EflChangeMonBoxSegment(0)); // box 1
+        seq(new EflDepositMonSegment(NIDOKING));
+        seq(new EflDepositMonSegment(NIDOQUEEN));
+        seq(new EflDepositMonSegment(EXEGGUTOR));
+        seq(new EflWithdrawMonSegment(BUTTERFREE));
+        seq(new EflChangeMonBoxSegment(3)); // box 4
+        seq(new EflWithdrawMonSegment(MOLTRES));
+        seq(new EflWithdrawMonSegment(GRAVELER));
+        seqEflButtonUnbounded(B, MENU); // cancel
+        seqEflButtonUnbounded(B, PRESSED); // cancel
+      }
+//
+//      seqEflSkipInput(1);
+//      seq(new EflSelectItemSegment(WATER_STONE).fromOverworld().andUse());
+//      seq(new EflSelectMonSegment(EEVEE));
+//      seq(new EflEvolutionSegment()); // Vaporeon
+//      seqEflButton(B); // cancel
+//      seqEflButton(START); // cancel
 
       seq(new EflWalkToSegment(11, 4)); // trade
       seq(new EflWalkToSegment(11, 3)); // trade

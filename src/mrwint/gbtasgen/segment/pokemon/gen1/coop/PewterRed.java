@@ -36,7 +36,7 @@ public class PewterRed extends SeqSegment {
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
-      kems.attackCount[2][1] = 1; // ember crit
+      kems.attackCount[0][1] = 1; // ember crit
       kems.numExpGainers = 2; // Charmander, boosted
       seq(kems); // Geodude
     }
@@ -44,7 +44,7 @@ public class PewterRed extends SeqSegment {
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
-      kems.attackCount[2][1] = 1; // ember crit
+      kems.attackCount[0][1] = 1; // ember crit
       kems.numExpGainers = 2; // Charmander, boosted
       seq(kems); // Onix
     }

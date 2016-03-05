@@ -22,18 +22,24 @@ public class ViridianForestBlue extends SeqSegment {
 	@Override
 	public void execute() {
 //		seqUnbounded(new EflWalkToSegment(18, -1)); // leave viridian
-//		seqUnbounded(new EflWalkToSegment(8, 50)); // walk up to encounter
+//    save("tmp");
+    load("tmp");
+    seqUnbounded(new EflWalkToSegment(5, 51)); // walk up to encounter
+    seqUnbounded(new EflWalkToSegment(5, 50)); // walk up to encounter
+//    seqUnbounded(new EflWalkToSegment(8, 50)); // walk up to encounter
 //		seqUnbounded(new EflWalkToSegment(8, 49)); // walk up to encounter
-//		seq(new EflEncounterSegment(new CheckEncounterMetric(RATTATA, 2), UP));
-//    seq(new EflSkipTextsSegment(1)); // wild rattata
-//    seq(new EflTextSegment()); // go
-//    {
-//      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-//      kems.attackCount[0][0] = 2; // tackle
-//      seq(kems); // Rattata
-//    }
-//    save("vf1");
+		seq(new EflEncounterSegment(new CheckEncounterMetric(RATTATA, 2), UP));
+    save("tmp2");
+    load("tmp2");
+    seq(new EflSkipTextsSegment(1)); // wild rattata
+    seq(new EflTextSegment()); // go
+    {
+      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
+      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
+      kems.attackCount[0][0] = 2; // tackle
+      seq(kems); // Rattata
+    }
+    save("vf1");
     load("vf1");
 
 		seq(new EflWalkToSegment(3, 43)); // enter viridian forest house

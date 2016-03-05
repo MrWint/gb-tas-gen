@@ -51,10 +51,10 @@ public class EflCatchMonSegment extends SeqSegment {
 
 	@Override
 	public void execute() {
-		seq(new EflSkipTextsSegment(2)); // wild mon, go mon
+		seq(new EflSkipTextsSegment(2).withExtraWait(extraSkips)); // wild mon, go mon
     boolean partyFull = curGb.readMemory(curGb.pokemon.numPartyMonAddress) >= 6;
 		seqEflButton(DOWN | A, PRESSED); // items
-    seqEflSkipInput(1);
+    seqEflSkipInput(1+extraSkips);
     delayEfl(new SeqSegment() {
       @Override
       protected void execute() {
@@ -65,19 +65,18 @@ public class EflCatchMonSegment extends SeqSegment {
     });
 
 		if (noNew) {
-      seq(new EflSkipTextsSegment(2)); // cought, new dex data
+      seq(new EflSkipTextsSegment(2).withExtraWait(extraSkips)); // cought, new dex data
 		} else {
-  		seq(new EflSkipTextsSegment(4)); // cought, new dex data
+  		seq(new EflSkipTextsSegment(4).withExtraWait(extraSkips)); // cought, new dex data
+      if (extraSkips > 0) seqEflSkipInput(extraSkips);
       seqEflButton(A); // skip dex
+      if (extraSkips > 0) seqEflSkipInput(extraSkips);
       seqEflButton(B); // skip dex
 		}
     if (bufferSize >= 0 && !partyFull)
       StateBuffer.pushBufferSize(bufferSize);
-		seq(new EflTextSegment(A));
-		if (extraSkips > 0)
-		  seqEflSkipInput(extraSkips);
-		seqEflButtonUnboundedNoDelay(B);
-		seq(new EflSkipTextsSegment(1, name != null)); // nickname?
+		seq(new EflSkipTextsSegment(1).withExtraWait(extraSkips));
+		seq(new EflSkipTextsSegment(1, name != null).withExtraWait(extraSkips)); // nickname?
 		if (name != null) {
 			seq(new NamingSegment(name));
 			seqEflButton(START);

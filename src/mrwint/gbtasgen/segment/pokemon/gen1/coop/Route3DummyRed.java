@@ -23,19 +23,19 @@ public class Route3DummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(1)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			seq(kems); // Caterpie
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			seq(kems); // Weedle
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][0] = 1; // ember
+      kems.attackCount[0][0] = 1; // ember
 			kems.numExpGainers = 2; // Charmander, level up to 13
 			seq(kems); // Caterpie
 		}
@@ -52,14 +52,14 @@ public class Route3DummyRed extends SeqSegment {
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-			kems.attackCount[2][0] = 2; // ember
+			kems.attackCount[0][0] = 2; // ember
 			seq(kems); // Rattata
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
-			kems.attackCount[2][0] = 2; // ember
+			kems.attackCount[0][0] = 2; // ember
 			seq(kems); // Ekans
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -73,26 +73,26 @@ public class Route3DummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(1)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			kems.numExpGainers = 2; // Charmander, level up to 14
 			seq(kems); // Weedle
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			seq(kems); // Kakuna
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			seq(kems); // Caterpie
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			kems.numExpGainers = 3; // Charmander, level up to 15, learn leer
 			seq(kems); // Metapod
 		}
@@ -103,13 +103,13 @@ public class Route3DummyRed extends SeqSegment {
 		seq(new EflInitFightSegment(1)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			seq(kems); // Caterpie
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-			kems.attackCount[2][0] = 1; // ember
+			kems.attackCount[0][0] = 1; // ember
 			seq(kems); // Metapod
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy

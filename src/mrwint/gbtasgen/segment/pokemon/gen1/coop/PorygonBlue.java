@@ -7,16 +7,20 @@ import static mrwint.gbtasgen.move.Move.START;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ABRA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BEEDRILL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BUTTERFREE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLOYSTER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRAGONAIR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRATINI;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EEVEE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MEOWTH;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MEWTWO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MOLTRES;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEOT;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PORYGON;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RAICHU;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RARE_CANDY;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SANDSHREW;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.STARMIE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WARTORTLE;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
@@ -31,6 +35,7 @@ import mrwint.gbtasgen.metric.pokemon.gen1.slots.SlotsWin300Metric;
 import mrwint.gbtasgen.metric.pokemon.gen1.slots.SlotsWinModeMetric;
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
+import mrwint.gbtasgen.move.pokemon.gen1.OverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;import mrwint.gbtasgen.segment.pokemon.gen1.common.BuyItemSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.Constants;
@@ -58,8 +63,20 @@ public class PorygonBlue extends SeqSegment {
 //    seq(new EflUseBikeSegment().fromOverworld());
 //    seq(new EflWalkToSegment(28, 19)); // enter
 //
+////    {
+////      seq(new EflWalkToSegment(5, 7, false));
+////      for (int i = 0; i < 54; i++) {
+////        seqMove(new EflOverworldInteract(2));
+////        seq(new EflSkipTextsSegment(3));
+////        seq(new EflSkipTextsSegment(1, true)); // take the coins
+////        seq(new EflSkipTextsSegment(1));
+////      }
+////    }
+//
 //    seq(new EflWalkToSegment(15, 15));
 //    seq(new EflWalkToSegment(14, 15));
+////    seq(new EflWalkToSegment(14, 10));
+////    seq(new EflWalkToSegment(13, 10, false));
 //    seqEflButton(A);
 //
 //    save("tmp");
@@ -77,7 +94,7 @@ public class PorygonBlue extends SeqSegment {
 //    });
 //    save("tmp2");
 //    load("tmp2");
-//    StateBuffer.pushBufferSize(10);
+//    StateBuffer.pushBufferSize(50);
 //    delayEfl(new SeqSegment() {
 //      @Override
 //      protected void execute() {
@@ -180,7 +197,7 @@ public class PorygonBlue extends SeqSegment {
 //    save("po2");
     load("po2");
 
-    seqMetric(new OutputBoxMons());
+//    seqMetric(new OutputBoxMons());
 
     seq(new EflUseBikeSegment().fromOverworld());
     seq(new EflWalkToSegment(41, 9)); // enter center
@@ -191,38 +208,40 @@ public class PorygonBlue extends SeqSegment {
       seq(new EflSkipTextsSegment(1)); // turned on
       seqEflButton(A); // someone's PC
       seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-      seq(new EflChangeMonBoxSegment(2)); // box 3
-//      seq(new EflDepositMonSegment(RAICHU));
-//      seq(new EflWithdrawMonSegment(SANDSHREW));
+      seq(new EflDepositMonSegment(CLOYSTER));
+      seq(new EflDepositMonSegment(STARMIE));
+      seq(new EflWithdrawMonSegment(PORYGON));
+      seq(new EflWithdrawMonSegment(MEWTWO));
+//      seq(new EflChangeMonBoxSegment(1)); // box 3
       seqEflButton(B, MENU); // cancel
       seqEflButton(B, PRESSED); // cancel
     }
-    seqMetric(new OutputBoxMons());
+//    seqMetric(new OutputBoxMons());
     seqMetric(new OutputParty());
-    seqMetric(new OutputItems());
+//    seqMetric(new OutputItems());
 
     seqEflSkipInput(1);
     seq(new EflSelectItemSegment(RARE_CANDY).fromOverworld().andUse());
     seq(new EflSelectMonSegment(DRAGONAIR));
     seqEflButton(B); // lvlup to 44
     seqEflButton(A); // cancel stats
-    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-    seq(new EflSelectMonSegment(DRAGONAIR));
-    seqEflButton(B); // lvlup to 45
-    seqEflButton(A); // cancel stats
-    seq(new EflCancelMoveLearnSegment()); // dragon rage
-    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-    seq(new EflSelectMonSegment(DRAGONAIR));
-    seqEflButton(B); // lvlup to 46
-    seqEflButton(A); // cancel stats
-    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-    seq(new EflSelectMonSegment(DRAGONAIR));
-    seqEflButton(B); // lvlup to 47
-    seqEflButton(A); // cancel stats
-    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
-    seq(new EflSelectMonSegment(DRAGONAIR));
-    seqEflButton(B); // lvlup to 48
-    seqEflButton(A); // cancel stats
+//    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+//    seq(new EflSelectMonSegment(DRAGONAIR));
+//    seqEflButton(B); // lvlup to 45
+//    seqEflButton(A); // cancel stats
+//    seq(new EflCancelMoveLearnSegment()); // dragon rage
+//    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+//    seq(new EflSelectMonSegment(DRAGONAIR));
+//    seqEflButton(B); // lvlup to 46
+//    seqEflButton(A); // cancel stats
+//    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+//    seq(new EflSelectMonSegment(DRAGONAIR));
+//    seqEflButton(B); // lvlup to 47
+//    seqEflButton(A); // cancel stats
+//    seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+//    seq(new EflSelectMonSegment(DRAGONAIR));
+//    seqEflButton(B); // lvlup to 48
+//    seqEflButton(A); // cancel stats
     seqEflButton(B); // cancel
     seqEflButton(START); // cancel
 

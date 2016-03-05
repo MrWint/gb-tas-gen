@@ -1,5 +1,6 @@
 package mrwint.gbtasgen.segment.pokemon.gen1.coop;
 
+import static mrwint.gbtasgen.metric.comparator.Comparator.GREATER_EQUAL;
 import static mrwint.gbtasgen.move.Move.A;
 import static mrwint.gbtasgen.move.Move.B;
 import static mrwint.gbtasgen.move.Move.LEFT;
@@ -9,6 +10,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ABRA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CATERPIE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLEFABLE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLEFAIRY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ESCAPE_ROPE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.JIGGLYPUFF;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
@@ -17,6 +19,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.METAPOD;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MOON_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SANDSHREW;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SAND_ATTACK;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SELF_DESTRUCT;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.SQUIRTLE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TACKLE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
@@ -25,10 +28,13 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WEEDLE;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.MENU;
 import static mrwint.gbtasgen.util.EflUtil.PressMetric.PRESSED;
 import mrwint.gbtasgen.metric.Metric;
+import mrwint.gbtasgen.metric.comparator.Comparator;
+import mrwint.gbtasgen.metric.pokemon.CheckAttackMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.CheckLowerStatEffectMisses;
 import mrwint.gbtasgen.metric.pokemon.gen1.OutputBoxMons;
 import mrwint.gbtasgen.metric.pokemon.gen1.OutputParty;
 import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.move.pokemon.EflSelectMoveInList;
 import mrwint.gbtasgen.move.pokemon.gen1.EflOverworldInteract;
 import mrwint.gbtasgen.segment.pokemon.EflCatchMonSegment;
 import mrwint.gbtasgen.segment.pokemon.EflEvolutionSegment;
@@ -37,6 +43,9 @@ import mrwint.gbtasgen.segment.pokemon.EflOverrideMoveSegment;
 import mrwint.gbtasgen.segment.pokemon.EflPokecenterSegment;
 import mrwint.gbtasgen.segment.pokemon.EflTextSegment;
 import mrwint.gbtasgen.segment.pokemon.EflWalkToSegment;
+import mrwint.gbtasgen.segment.pokemon.fight.EflCheckAdditionalTexts;
+import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveDamage;
+import mrwint.gbtasgen.segment.pokemon.fight.EflCheckMoveOrderMetric;
 import mrwint.gbtasgen.segment.pokemon.fight.EflEndFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflInitFightSegment;
 import mrwint.gbtasgen.segment.pokemon.fight.EflKillEnemyMonSegment;
@@ -48,6 +57,7 @@ import mrwint.gbtasgen.segment.pokemon.gen1.common.EflEncounterSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectItemSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflSelectMonSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.common.EflWithdrawMonSegment;
+import mrwint.gbtasgen.segment.util.CheckMetricSegment;
 import mrwint.gbtasgen.segment.util.EflSkipTextsSegment;
 import mrwint.gbtasgen.segment.util.SeqSegment;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
@@ -60,10 +70,44 @@ public class NuggetBridgeBlue extends SeqSegment {
 //    seq(new EflWalkToSegment(5, 3)); // engage
 //    seq(new EflInitFightSegment(2)); // start fight
 //    {
+//      {
+//        seqEflButton(A, PRESSED); // fight
+//        seqMove(new EflSelectMoveInList(2, 4));
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnboundedNoDelay(A); // ember
+//            seqMetric(new EflCheckMoveOrderMetric(false, TAIL_WHIP));
+//            seqUnbounded(new EflTextSegment()); // goldeen uses tail whip
+//            seqMetric(new CheckLowerStatEffectMisses());
+//            seq(new EflTextSegment()); // but it failed
+//          }
+//        });
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnboundedNoDelay(B); // skip text
+//            seqUnbounded(new EflTextSegment()); // uses bubble
+//            seqMetric(new EflCheckMoveDamage(false, true, 0, 3, 3, false),GREATER_EQUAL, 3);
+//          }
+//        });
+//        seqUnbounded(new EflTextSegment()); // not effective
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnboundedNoDelay(B); // skip text
+//            seqMetric(new EflCheckAdditionalTexts(), Comparator.EQUAL, 0);
+//          }          
+//        });
+//        seq(new EflSkipTextsSegment(1)); // goldeen's speed fell
+//      }
+//      save("tmp");
+//      load("tmp");
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-//      kems.attackCount[0][0] = 2; // mega punch
-//      kems.attackCount[0][1] = 1; // mega punch crit
+////      kems.attackCount[0][0] = 2; // mega punch
+////      kems.attackCount[0][1] = 1; // mega punch crit
+//      kems.attackCount[0][1] = 2; // mega punch crit
 //      seq(kems); // Goldeen
 //    }
 //    seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -83,6 +127,8 @@ public class NuggetBridgeBlue extends SeqSegment {
 //      seq(kems); // Staryu
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
+//    save("tmp");
+//    load("tmp");
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(TACKLE)};
@@ -110,8 +156,8 @@ public class NuggetBridgeBlue extends SeqSegment {
 //    seqEflButton(START);
 //
 //    {
-//      seq(new EflWalkToSegment(19, 17)); // enter Center
-//      seq(new EflWalkToSegment(13, 4)); // PC // TODO
+//      seqUnbounded(new EflWalkToSegment(19, 17)); // enter Center
+//      seqUnbounded(new EflWalkToSegment(13, 4)); // PC
 //      seq(new EflWalkToSegment(13, 3, false)); // PC
 //
 //      seqMetric(new OutputParty());
@@ -125,11 +171,11 @@ public class NuggetBridgeBlue extends SeqSegment {
 //        seq(new EflDepositMonSegment(JIGGLYPUFF));
 //        seq(new EflDepositMonSegment(MAGIKARP));
 //        seq(new EflDepositMonSegment(CLEFABLE));
-//        seq(new EflDepositMonSegment(SANDSHREW));
-//        seqEflButton(B, MENU); // cancel
-//        seqEflButton(B, PRESSED); // cancel
+//        seqUnbounded(new EflDepositMonSegment(SANDSHREW));
+//        seqEflButtonUnbounded(B, MENU); // cancel
+//        seqEflButtonUnbounded(B, PRESSED); // cancel
 //      }
-//      seq(new EflWalkToSegment(3, 4)); // walk to counter
+//      seqUnbounded(new EflWalkToSegment(3, 4)); // walk to counter
 //      seq(new EflPokecenterSegment(true)); // set warp point in center
 //    }
 //
@@ -142,17 +188,53 @@ public class NuggetBridgeBlue extends SeqSegment {
 //    seq(new EflWalkToSegment(9, 10, false)); // go to house
 //    seq(new EflWalkToSegment(2, 8, false)); // go through house
 //
+//    save("nb25");
+//    load("nb25");
+//
 //    seq(new EflWalkToSegment(20,6)); // go to rival fight
 //		seq(new EflInitFightSegment(8)); // start fight
 //		{
+//      {
+//        seqEflButton(A, PRESSED); // fight
+//        seqMove(new EflSelectMoveInList(3, 4));
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnboundedNoDelay(A); // ember
+//            seqMetric(new EflCheckMoveOrderMetric(false, SAND_ATTACK));
+//            seqUnbounded(new EflTextSegment()); // pidgeotto uses sand attack
+//            seqMetric(new CheckLowerStatEffectMisses());
+//            seq(new EflTextSegment()); // but it failed
+//          }
+//        });
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnboundedNoDelay(B); // skip text
+//            seqUnbounded(new EflTextSegment()); // uses bubble
+//            seqMetric(new EflCheckMoveDamage(true, true, 0, 41, 41, false),GREATER_EQUAL, 41);
+//          }
+//        });
+//        seqUnbounded(new EflTextSegment()); // critical hit
+//        delayEfl(new SeqSegment() {
+//          @Override
+//          protected void execute() {
+//            seqEflButtonUnboundedNoDelay(B); // skip text
+//            seqMetric(new EflCheckAdditionalTexts(), Comparator.EQUAL, 0);
+//          }          
+//        });
+//        seq(new EflSkipTextsSegment(1)); // pidgeotto's speed fell
+//      }
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SAND_ATTACK)};
-//      kems.attackCount[3][0] = 1; // bubblebeam
-//      kems.attackCount[3][1] = 1; // bubblebeam crit
+//      kems.attackCount[2][1] = 1; // bubble crit
+////      kems.attackCount[3][1] = 1; // bubblebeam crit
 //      kems.numExpGainers = 2; // Squirtle, level up to 20
 //			seq(kems); // pidgeotto
 //		}
 //		seq(EflNewEnemyMonSegment.any()); // next mon
+//    save("tmp");
+//    load("tmp");
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(Metric.TRUE)}; // teleport
@@ -160,14 +242,17 @@ public class NuggetBridgeBlue extends SeqSegment {
 //			seq(kems); // abra
 //		}
 //		seq(EflNewEnemyMonSegment.any()); // next mon
+//    save("tmp2");
+//    load("tmp2");
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-//      kems.attackCount[0][1] = 1; // mega punch crit
-////			kems.attackCount[3][0] = 1; // bubblebeam
+//			kems.attackCount[3][0] = 1; // bubblebeam
 //			seq(kems); // rattata
 //		}
 //		seq(EflNewEnemyMonSegment.any()); // next mon
+//    save("tmp3");
+//    load("tmp3");
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //			kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), GROWL)};
@@ -196,8 +281,7 @@ public class NuggetBridgeBlue extends SeqSegment {
 //		seq(EflNewEnemyMonSegment.any()); // next mon
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-////			kems.attackCount[3][0] = 1; // bubblebeam
-//      kems.attackCount[0][0] = 1; // mega punch
+//			kems.attackCount[3][0] = 1; // bubblebeam
 //      kems.numExpGainers = 2; // Squirtle, level up to 21
 //			seq(kems); // weedle
 //		}
@@ -225,8 +309,8 @@ public class NuggetBridgeBlue extends SeqSegment {
 //		}
 //		seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("nb5a");
-//    load("nb5a");
+//    save("nb5");
+//    load("nb5");
 //
 //		seq(new EflWalkToSegment(11, 26)); // walk up to trainer
 //		seqMove(new EflOverworldInteract(5)); // talk to trainer 3
@@ -251,8 +335,8 @@ public class NuggetBridgeBlue extends SeqSegment {
 //		}
 //		seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//    save("nb6a");
-//    load("nb6a");
+//    save("nb6");
+//    load("nb6");
 //
 //		seq(new EflWalkToSegment(10, 23)); // walk up to trainer
 //		seqMove(new EflOverworldInteract(4)); // talk to trainer 4
@@ -271,8 +355,8 @@ public class NuggetBridgeBlue extends SeqSegment {
 //			seq(kems); // nidoF
 //		}
 //
-//    save("nb7a");
-//    load("nb7a");
+//    save("nb7");
+//    load("nb7");
 //
 //    seq(new EflOverrideMoveSegment(1)); // override leer with bite
 //
@@ -297,19 +381,19 @@ public class NuggetBridgeBlue extends SeqSegment {
 //		seq(new EflInitFightSegment(15)); // start fight
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[3][0] = 1; // bubblebeam
+//      kems.attackCount[1][1] = 1; // bite crit
 //			seq(kems); // Ekans
 //		}
 //		seq(EflNewEnemyMonSegment.any()); // next mon
 //		{
 //		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[3][1] = 1; // bubblebeam crit
+//      kems.attackCount[1][1] = 1; // bite crit
 //			seq(kems); // Zubat
 //		}
 //		seq(new EflEndFightSegment(1)); // player defeated enemy
 //
-//		save("nb8a");
-//		load("nb8a");
+//		save("nb8");
+//		load("nb8");
 //
 //    seq(new EflSkipTextsSegment(2)); // after rocket battle texts
 //    seqUnbounded(new EflSkipTextsSegment(1)); // after rocket battle texts
@@ -317,30 +401,32 @@ public class NuggetBridgeBlue extends SeqSegment {
 //		seqUnbounded(new EflWalkToSegment(20, 9)); // enter route 25
 //
 //		seqUnbounded(new EflWalkToSegment(9, 5)); // go in grass
-//		seqUnbounded(new EflWalkToSegment(8, 5)); // go in grass
+//		seqUnbounded(new EflWalkToSegment(7, 5)); // go in grass
 //    seq(new EflEncounterSegment(CATERPIE, LEFT));
 //    save("tmp");
 //    load("tmp");
-//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(30));
+//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(2));
 //
-//    seqUnbounded(new EflWalkToSegment(5, 5)); // go in grass
+//    seqUnbounded(new EflWalkToSegment(4, 5)); // go in grass
 ////    seqUnbounded(new EflWalkToSegment(7, 4)); // go in grass
 ////    seqUnbounded(new EflWalkToSegment(6, 4)); // go in grass
 //    seq(new EflEncounterSegment(ABRA, LEFT));
 //    save("tmp2");
 //    load("tmp2");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
+//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(4));
 //
-//    seqUnbounded(new EflWalkToSegment(5, 5)); // go in grass
-//    seqUnbounded(new EflWalkToSegment(4, 5)); // go in grass
-//    seq(new EflEncounterSegment(METAPOD, LEFT));
+//    seqUnbounded(new EflWalkToSegment(2, 5)); // go in grass
+//    seqUnbounded(new EflWalkToSegment(3, 5)); // go in grass
+//    seq(new EflEncounterSegment(METAPOD, RIGHT));
 //    save("tmp3");
-    load("tmp3");
-    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(70));
-
-    seqUnbounded(new EflWalkToSegment(5, 5)); // go in grass
+//    load("tmp3");
+//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(9));
+//
 //    seqUnbounded(new EflWalkToSegment(6, 5)); // go in grass
-    seq(new EflEncounterSegment(WEEDLE, RIGHT));
+////    seqUnbounded(new EflWalkToSegment(6, 5)); // go in grass
+//    seq(new EflEncounterSegment(WEEDLE, RIGHT));
+//    save("tmp4");
+    load("tmp4");
     seq(new EflCatchMonSegment());
 
     seq(new EflWalkToSegment(14, 7)); // engage hiker
@@ -365,16 +451,14 @@ public class NuggetBridgeBlue extends SeqSegment {
 		seq(new EflInitFightSegment(1)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[3][1] = 1; // bubblebeam crit
-//      kems.attackCount[3][0] = 1; // bubblebeam // Wartortle
+      kems.attackCount[1][1] = 1; // bite crit
       kems.numExpGainers = 2; // Squirtle, level up to 23
 			seq(kems); // nidoM
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[3][1] = 1; // bubblebeam crit
-//      kems.attackCount[3][0] = 1; // bubblebeam // Wartortle
+      kems.attackCount[3][0] = 1; // bubblebeam // Wartortle
 			seq(kems); // nidoF
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -389,13 +473,13 @@ public class NuggetBridgeBlue extends SeqSegment {
 		seq(new EflInitFightSegment(2)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][1] = 1; // 1x bubble crit
+      kems.attackCount[1][1] = 1; // bite crit
 			seq(kems); // rattata
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[3][0] = 1; // bubblebeam
+      kems.attackCount[1][1] = 1; // bite crit
 			seq(kems); // ekans
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -410,22 +494,19 @@ public class NuggetBridgeBlue extends SeqSegment {
 		seq(new EflInitFightSegment(2)); // start fight
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[0][1] = 1; // mega punch crit
-//      kems.attackCount[0][0] = 1; // mega punch // Wartortle
+      kems.attackCount[1][1] = 1; // bite crit
 			seq(kems); // oddish
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[0][0] = 1; // mega punch
-//      kems.attackCount[2][1] = 1; // bubble crit // Wartortle
+      kems.attackCount[1][1] = 1; // bite crit
 			seq(kems); // pidgey
 		}
 		seq(EflNewEnemyMonSegment.any()); // next mon
 		{
 		  EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[0][1] = 1; // mega punch crit
-//      kems.attackCount[0][0] = 1; // mega punch // Wartortle
+      kems.attackCount[1][1] = 1; // bite crit
 			seq(kems); // oddish
 		}
 		seq(new EflEndFightSegment(1)); // player defeated enemy
@@ -452,12 +533,7 @@ public class NuggetBridgeBlue extends SeqSegment {
 		seqMove(new EflOverworldInteract(2)); // talk to bill
 		seq(new EflSkipTextsSegment(18));
 
-		seqEflButton(Move.START, PressMetric.PRESSED);
-		seqEflScrollA(2); // items
-		seqEflScrollFastAF(2); // escape rope
-		seqEflSkipInput(1);
-		seqEflButton(Move.A);
-
+		seq(new EflSelectItemSegment(ESCAPE_ROPE).fromOverworld().andUse());
     seqEflSkipInput(2);
 	}
 }

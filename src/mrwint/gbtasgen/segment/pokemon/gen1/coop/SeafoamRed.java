@@ -140,51 +140,53 @@ public class SeafoamRed extends SeqSegment {
 //      seqMoveUnbounded(new EflWalkStep(RIGHT, true));
 //    for(int i=0;i<4;i++)
 //      seqMoveUnbounded(new EflWalkStep(UP, true));
-//    seqUnbounded(new EflWalkToSegment(58, 9)); // enter Seafoam Islands
 //
-//    save("tmp");
-////    load("tmp");
-//
-//    seqUnbounded(new EflWalkToSegment(26, 16));
-//    seq(new EflEncounterSegment(GOLDUCK, UP));
-//    save("tmp2");
-////    load("tmp2");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
-//    seqUnbounded(new EflWalkToSegment(26, 13));
-//    seq(new EflEncounterSegment(SLOWPOKE, LEFT));
-//    save("tmp3");
-//    load("tmp3");
-//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(60));
-//    seqUnbounded(new EflWalkToSegment(23, 13));
-//    seq(new EflEncounterSegment(PSYDUCK, DOWN));
-//    save("tmp4");
-////    load("tmp4");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(23, 15)); // b1f
-//    seqUnbounded(new EflWalkToSegment(25, 15));
-//    seq(new EflEncounterSegment(HORSEA, RIGHT));
-//    save("tmp5");
-////    load("tmp5");
-//    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflWalkToSegment(26, 12));
-//    seq(new EflEncounterSegment(SEEL, UP));
-//    save("tmp6");
-//    load("tmp6");
-//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(7));
-//    seqUnbounded(new EflWalkToSegment(25, 11)); // b2f
-//    seqUnbounded(new EflWalkToSegment(25, 14)); // b3f
-//    seqUnbounded(new EflWalkToSegment(25, 10));
-//    seq(new EflEncounterSegment(DEWGONG, UP));
 //    save("tmp");
 //    load("tmp");
-//    seq(new EflCatchMonSegment().withBufferSize(0).withExtraSkips(40));
-//    seqUnbounded(new EflWalkToSegment(24, 8));
-//    seq(new EflEncounterSegment(SHELLDER, LEFT));
-//    save("tmp2");
+//
+//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
+//    seqUnbounded(new EflWalkToSegment(58, 9)); // enter Seafoam Islands
+//    seqUnbounded(new EflWalkToSegment(26, 16));
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(PSYDUCK), UP));
+//    save("tmp2a");
 //    load("tmp2");
-//    seq(new EflCatchMonSegment());
-//    seq(new EflWalkToSegment(23, 9));
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+////    seqUnbounded(new EflUseBikeSegment().fromOverworld());
+//    seqUnbounded(new EflWalkToSegment(26, 13));
+//    seq(new EflEncounterSegment(SHELLDER, LEFT));
+//    save("tmp3");
+////    load("tmp3");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//    seqUnbounded(new EflWalkToSegment(23, 13));
+//    seq(new EflEncounterSegment(GOLDUCK, DOWN));
+//    save("tmp4");
+//    load("tmp4");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+////    seqUnbounded(new EflWalkToSegment(22, 13));
+//////    seqUnbounded(new EflWalkToSegment(22, 14));
+////    seq(new EflEncounterSegment(SLOWPOKE, DOWN));
+////    save("tmp5b");
+//////    load("tmp5b");
+////    seq(new EflCatchMonSegment().withBufferSize(0));
+//    seqUnbounded(new EflWalkToSegment(23, 15)); // b1f
+//    seqUnbounded(new EflWalkToSegment(25, 15));
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(HORSEA).withMinDSum(0x6d), RIGHT));
+//    save("tmp6");
+////    load("tmp6");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//    seqUnbounded(new EflWalkToSegment(26, 13));
+//    seq(new EflEncounterSegment(DEWGONG, UP));
+//    save("tmp7");
+//    load("tmp7");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//    seqUnbounded(new EflWalkToSegment(25, 11)); // b2f
+//    seqUnbounded(new EflWalkToSegment(25, 14)); // b3f
+//    seqUnbounded(new EflWalkToSegment(23, 8));
+//    seq(new EflEncounterSegment(SEADRA, DOWN));
+//    save("tmp");
+//    load("tmp");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+////    seqUnbounded(new EflWalkToSegment(23, 9));
 //    seqUnbounded(new EflSelectMonSegment(KABUTO).fromOverworld().andSurf());
 //    for(int i=0;i<2;i++)
 //      seqMoveUnbounded(new EflWalkStep(LEFT, true));
@@ -198,57 +200,71 @@ public class SeafoamRed extends SeqSegment {
 //    for(int i=0;i<2;i++)
 //      seqMoveUnbounded(new EflWalkStep(RIGHT, true));
 //    seqMoveUnbounded(new EflWalkStep(UP, true));
-//    seqUnbounded(new EflWalkToSegment(22, 4));
+//    save("tmp2");
+//    load("tmp2");
+//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
+//    seqUnbounded(new EflWalkToSegment(21, 4));
 //    seq(new EflEncounterSegment(GOLBAT, LEFT));
 //    save("tmp3");
-////    load("tmp3");
+//    load("tmp3");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
-//    seqUnbounded(new EflUseBikeSegment().fromOverworld());
-//    seqUnbounded(new EflWalkToSegment(14, 7));
-//    seqUnbounded(new EflWalkToSegment(13, 7));
-//    seq(new EflEncounterSegment(SLOWBRO, LEFT));
-//    save("tmp4");
-////    load("tmp4");
+//    seqUnbounded(new EflWalkToSegment(18, 4));
+//    seq(new EflEncounterSegment(new CheckEncounterMetric(SLOWPOKE).withMaxDSum(0xb1), LEFT));
+//    save("tmp4a");
+//    load("tmp4a");
+//    seq(new EflCatchMonSegment().withBufferSize(0));
+//    seqUnbounded(new EflWalkToSegment(12, 8));
+//    seqUnbounded(new EflWalkToSegment(10, 8));
+//    seqUnbounded(new EflWalkToSegment(10, 6));
+//    seqUnbounded(new EflWalkToSegment(12, 6));
+////    seqUnbounded(new EflWalkToSegment(12, 8));
+////    seqUnbounded(new EflWalkToSegment(14, 7));
+////    seqUnbounded(new EflWalkToSegment(13, 7));
+//    seq(new EflEncounterSegment(SLOWBRO, DOWN));
+//    save("tmp5a");
+//    load("tmp5a");
 //    seq(new EflCatchMonSegment().withBufferSize(0));
 //    seqUnbounded(new EflWalkToSegment(11, 7)); // b3f
-//    seqUnbounded(new EflWalkToSegment(11, 11));
-//    seq(new EflEncounterSegment(SEADRA, DOWN));
-//    save("tmp5");
-    load("tmp5");
-    seq(new EflCatchMonSegment());
-
-    seq(new EflSelectMonSegment(EXEGGUTOR).fromOverworld().andStrength());
-    seq(new EflWalkToSegment(7, 15));
-    seq(new EflWalkToSegment(6, 14));
-    seq(new EflWalkToSegment(5, 14, false));
-    seq(new EflWalkToSegment(5, 14, false));
-    seq(new EflWalkToSegment(5, 14, false));
-    seq(new EflWalkToSegment(4, 14, false));
-    seq(new EflWalkToSegment(3, 14, false));
-    seq(new EflWalkToSegment(3, 15, false));
-    seq(new EflWalkToSegment(5, 14, false));
-
-    seq(new EflWalkToSegment(9, 14, false));
-    seq(new EflWalkToSegment(9, 14, false));
-    seq(new EflWalkToSegment(9, 14, false));
-    seq(new EflWalkToSegment(9, 13, false));
-    seq(new EflWalkToSegment(8, 13));
-    seq(new EflWalkToSegment(8, 14, false));
-    seq(new EflWalkToSegment(8, 14, false));
-    seq(new EflWalkToSegment(9, 14));
-    seq(new EflWalkToSegment(9, 15));
-    seq(new EflWalkToSegment(8, 15, false));
-    seq(new EflWalkToSegment(8, 15, false));
-    seq(new EflWalkToSegment(7, 15, false));
-    seq(new EflWalkToSegment(7, 17));
-    seq(new EflWalkToSegment(5, 17));
-    seq(new EflWalkToSegment(5, 14));
-    seq(new EflWalkToSegment(6, 14));
-    seq(new EflWalkToSegment(6, 15, false));
-    seq(new EflWalkToSegment(6, 15, false));
-    seq(new EflWalkToSegment(6, 16));
-
-    save("sf1");
+//
+//    seqUnbounded(new EflSelectMonSegment(EXEGGUTOR).fromOverworld().andStrength());
+//    seqUnbounded(new EflWalkToSegment(5, 9));
+//    seq(new EflEncounterSegment(SEEL, RIGHT));
+//    save("tmp6");
+////    load("tmp6");
+//    seq(new EflCatchMonSegment());
+//    seq(new EflWalkToSegment(7, 15));
+//    seq(new EflWalkToSegment(6, 14));
+//    seq(new EflWalkToSegment(5, 14, false));
+//    seq(new EflWalkToSegment(5, 14, false));
+//    seq(new EflWalkToSegment(5, 14, false));
+//    seq(new EflWalkToSegment(4, 14, false));
+//    seq(new EflWalkToSegment(3, 14, false));
+//    seq(new EflWalkToSegment(3, 15, false));
+//    seq(new EflWalkToSegment(5, 14, false));
+//
+//    save("tmp7");
+////    load("tmp7");
+//    seq(new EflWalkToSegment(9, 14, false));
+//    seq(new EflWalkToSegment(9, 14, false));
+//    seq(new EflWalkToSegment(9, 14));
+//    seq(new EflWalkToSegment(9, 13, false));
+//    seq(new EflWalkToSegment(8, 13));
+//    seq(new EflWalkToSegment(8, 14, false));
+//    seq(new EflWalkToSegment(8, 14, false));
+//    seq(new EflWalkToSegment(9, 14, false));
+//    seq(new EflWalkToSegment(9, 15));
+//    seq(new EflWalkToSegment(8, 15, false));
+//    seq(new EflWalkToSegment(8, 15, false));
+//    seq(new EflWalkToSegment(7, 15, false));
+//    seq(new EflWalkToSegment(7, 17));
+//    seq(new EflWalkToSegment(5, 17));
+//    seq(new EflWalkToSegment(5, 14));
+//    seq(new EflWalkToSegment(6, 14));
+//    seq(new EflWalkToSegment(6, 15, false));
+//    seq(new EflWalkToSegment(6, 15, false));
+//    seq(new EflWalkToSegment(6, 16));
+//
+//    save("sf1");
     load("sf1");
     for(int i=0;i<10;i++)
       seqMove(new EflWalkStep(UP, true));
@@ -260,7 +276,7 @@ public class SeafoamRed extends SeqSegment {
     seq(new EflFishSegment(GOLDEEN));
     seq(new EflCatchMonSegment());
     seq(new EflFishSegment(STARYU));
-    seq(new EflCatchMonSegment().withExtraSkips(10));
+    seq(new EflCatchMonSegment());
 
     seq(new EflWalkToSegment(6, 1, false));
     seqMove(new EflOverworldInteract(3)); // Articuno

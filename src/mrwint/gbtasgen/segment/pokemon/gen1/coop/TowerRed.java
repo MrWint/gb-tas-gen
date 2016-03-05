@@ -73,45 +73,56 @@ public class TowerRed extends SeqSegment {
 //    save("t0");
 //    load("t0");
 //
+//    seqMetric(new OutputParty());
+//    
 //    seq(new EflWalkToSegment(15, 5)); // engage rival
 //    seq(new EflInitFightSegment(6)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SAND_ATTACK)};
-//      kems.attackCount[1][1] = 1; // Slash crit
+////      kems.attackCount[1][1] = 1; // Slash crit
+//      kems.attackCount[3][1] = 1; // Mega Punch crit
 //      kems.numExpGainers = 2; // Charmeleon, boosted;
 //      seq(kems); // pidgeotto
 //    }
+//    save("tmp");
+//    load("tmp");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][0] = 1; // Ember
+//      kems.attackCount[0][0] = 1; // Ember
 //      kems.numExpGainers = 3; // Charmeleon, boosted, lvl up 34;
 //      seq(kems); // Exeggcute
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    seq(new EflSwitchPokemonSegment(CATERPIE, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)));
 //    seq(new EflSwitchPokemonSegment(MEOWTH, EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)));
+//    save("tmp2");
+//    load("tmp2");
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[0][1] = 1; // Thunderbolt crit
+//      kems.attackCount[3][1] = 1; // Thunderbolt crit
 //      kems.numExpGainers = 7; // Charmeleon, boosted, Meowth, boosted, lvlup to 27, caterpie, lvlup
 //      seq(kems); // gyarados
 //    }
+//    save("tmp3");
+//    load("tmp3");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckDisableEffectMisses(), DISABLE)};
-//      kems.attackCount[2][1] = 1; // bite crit
+//      kems.attackCount[0][1] = 1; // bite crit
 //      kems.numExpGainers = 2; // Meowth, boosted;
 //      seq(kems); // kadabra
 //    }
+//    save("tmp4");
+//    load("tmp4");
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), LEER)};
-//      kems.attackCount[2][0] = 1; // bite
-//      kems.attackCount[2][1] = 1; // bite crit
+//      kems.attackCount[0][0] = 1; // bite
+//      kems.attackCount[0][1] = 1; // bite crit
 //      kems.numExpGainers = 3; // Meowth, boosted, l28;
 //      seq(kems); // Charmeleon
 //    }
@@ -123,12 +134,31 @@ public class TowerRed extends SeqSegment {
 //    save("t1");
 //	  load("t1");
 //
-//    seq(new EflSelectMonSegment(CHARMELEON).fromOverworld().andSwitchWith(WARTORTLE));
-//    seqEflButton(B); // cancel
-//    seqEflButton(START); // cancel
-//    seqMetric(new OutputParty());
+//	  seqUnbounded(new EflSelectMonSegment(CHARMELEON).fromOverworld().andSwitchWith(WARTORTLE));
+//    seqEflButtonUnboundedNoDelay(B); // cancel
+//    seqEflButtonUnboundedNoDelay(START); // cancel
+////    seqMetric(new OutputParty());
 //
-//    seq(new EflWalkToSegment(3, 9)); // l3
+//    seqUnbounded(new EflWalkToSegment(3, 9)); // l3
+//    {
+//      save("tmp");
+//      load("tmp");
+//      seqUnbounded(new EflWalkToSegment(6, 13)); // align
+//      seq(new EflEncounterSegment(HAUNTER, RIGHT));
+//      save("tmp2");
+//      load("tmp2");
+//      seq(new EflCatchMonSegment().withBufferSize(0));
+//      seqUnbounded(new EflWalkToSegment(8, 12)); // align
+//      seq(new EflEncounterSegment(GASTLY, UP));
+//      save("tmp3");
+//      load("tmp3");
+//      seq(new EflCatchMonSegment().withBufferSize(0));
+//      seqUnbounded(new EflWalkToSegment(15, 6)); // align
+//      seq(new EflEncounterSegment(CUBONE, RIGHT));
+//      save("tmp4");
+//      load("tmp4");
+//      seq(new EflCatchMonSegment());
+//    }
 //    seq(new EflWalkToSegment(18, 9)); // l4
 //
 //    seq(new EflWalkToSegment(17, 7)); // engage
@@ -161,34 +191,16 @@ public class TowerRed extends SeqSegment {
 //      seq(new EflTextSegment());
 //    }
 //    seq(new EflWalkToSegment(3, 9)); // l5
-//    {
-//      seq(new EflWalkToSegment(4, 11)); // elixer
-//      seqEflButton(Move.A); // elixer
-//      seqUnbounded(new EflTextSegment());
-//    }
-//    {
-//      save("tmp");
-//      load("tmp");
-//      seqUnbounded(new EflWalkToSegment(4, 10)); // align
-//      seq(new EflEncounterSegment(GASTLY, UP));
-//      save("tmp2");
-//      load("tmp2");
-//      seq(new EflCatchMonSegment().withBufferSize(0));
-//      seqUnbounded(new EflWalkToSegment(8, 6)); // align
-//      seq(new EflEncounterSegment(CUBONE, RIGHT));
-//      save("tmp3");
-//      load("tmp3");
-//      seq(new EflCatchMonSegment());
-//      seq(new EflWalkToSegment(11, 9)); // heal
-//      seq(new EflSkipTextsSegment(1)); // healed
-//      seqUnbounded(new EflSkipTextsSegment(1)); // healed
-//      seqUnbounded(new EflWalkToSegment(7, 14)); // nugget
-//      seqMoveUnboundedNoDelay(new EflOverworldInteract(6)); // nugget
-//      seqUnbounded(new EflTextSegment()); // nugget
-//      seqUnbounded(new EflWalkToSegment(8, 14)); // align
-//      seq(new EflEncounterSegment(HAUNTER, RIGHT));
-//      seq(new EflCatchMonSegment());
-//    }
+////    {
+////      seq(new EflWalkToSegment(4, 11)); // elixer
+////      seqEflButton(Move.A); // elixer
+////      seq(new EflTextSegment());
+////    }
+//    seq(new EflWalkToSegment(11, 9)); // heal
+//    seq(new EflSkipTextsSegment(2)); // healed
+//    seq(new EflWalkToSegment(7, 14)); // nugget
+//    seqMove(new EflOverworldInteract(6)); // nugget
+//    seq(new EflTextSegment()); // nugget
 //    seq(new EflWalkToSegment(18, 9)); // l6
 //
 //    save("t3");
@@ -241,7 +253,8 @@ public class TowerRed extends SeqSegment {
 //      {
 //        EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //        kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), GROWL, LEER)};
-//        kems.attackCount[2][1] = 2; // Ember crit
+//        kems.attackCount[0][0] = 1; // Ember
+//        kems.attackCount[0][1] = 1; // Ember crit
 ////        kems.attackCount[3][0] = 1; // Bubblebeam
 //        seq(kems); // marowak
 //      }
@@ -258,14 +271,14 @@ public class TowerRed extends SeqSegment {
 //    seq(new EflInitFightSegment(1)); // start fight
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][1] = 1; // Ember crit
+//      kems.attackCount[0][1] = 1; // Ember crit
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //      seq(kems); // zubat
 //    }
 //    seq(EflNewEnemyMonSegment.any()); // next mon
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-//      kems.attackCount[2][1] = 1; // Ember crit
+//      kems.attackCount[0][1] = 1; // Ember crit
 //      kems.numExpGainers = 2; // Charmeleon, boosted
 //      seq(kems); // zubat
 //    }
@@ -273,8 +286,8 @@ public class TowerRed extends SeqSegment {
 //    {
 //      EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
 //      kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), SCREECH)};
-//      kems.attackCount[2][0] = 1; // Ember crit
-//      kems.attackCount[2][1] = 1; // Ember crit
+//      kems.attackCount[0][0] = 1; // Ember crit
+//      kems.attackCount[0][1] = 1; // Ember crit
 //      kems.numExpGainers = 3; // Charmeleon, boosted, lvlup to 35
 //      seq(kems); // golbat
 //    }
@@ -324,14 +337,14 @@ public class TowerRed extends SeqSegment {
     seq(new EflInitFightSegment(1)); // start fight
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][1] = 1; // Ember
+      kems.attackCount[0][1] = 1; // Ember crit
       kems.numExpGainers = 2; // boosted
       seq(kems); // zubat
     }
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][0] = 1; // Ember crit
+      kems.attackCount[0][0] = 1; // Ember
       kems.numExpGainers = 2; // boosted
       seq(kems); // rattata
     }
@@ -339,14 +352,14 @@ public class TowerRed extends SeqSegment {
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
       kems.enemyMoveDesc = new EflEnemyMoveDesc[]{EflEnemyMoveDesc.missWith(new CheckLowerStatEffectMisses(), TAIL_WHIP)};
-      kems.attackCount[2][1] = 1; // Ember crit
+      kems.attackCount[0][1] = 1; // Ember crit
       kems.numExpGainers = 2; // boosted
       seq(kems); // raticate
     }
     seq(EflNewEnemyMonSegment.any()); // next mon
     {
       EflKillEnemyMonSegment kems = new EflKillEnemyMonSegment();
-      kems.attackCount[2][1] = 1; // Ember crit
+      kems.attackCount[0][1] = 1; // Ember crit
       kems.numExpGainers = 2; // boosted
       seq(kems); // zubat
     }
@@ -367,6 +380,5 @@ public class TowerRed extends SeqSegment {
     seq(new EflWalkToSegment(2, 8, false)); // leave house
 
     seqMetric(new OutputParty());
-
   }
 }

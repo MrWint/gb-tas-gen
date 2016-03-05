@@ -14,6 +14,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.BELLSPROUT;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.CLOYSTER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DEWGONG;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.DRAGONAIR;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EEVEE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EKANS;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ESCAPE_ROPE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EXEGGCUTE;
@@ -21,6 +22,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.EXEGGUTOR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FARFETCHD;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.FISSURE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GEODUDE;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GLOOM;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GOLBAT;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GOLDEEN;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GOLDUCK;
@@ -28,6 +30,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GRIMER;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GROWLITHE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.GYARADOS;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HITMONCHAN;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM03;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HM04;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.HORSEA;
@@ -37,6 +40,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KOFFING;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.KRABBY;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEAF_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.LEER;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MACHOKE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGIKARP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MAGMAR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.MANKEY;
@@ -47,6 +51,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.OMANYTE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.OMASTAR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEOTTO;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIDGEY;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PIKACHU;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PINSIR;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POISON_STING;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWAG;
@@ -54,6 +59,7 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWHIRL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.POLIWRATH;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PONYTA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.PSYDUCK;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RAPIDASH;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RARE_CANDY;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.RATTATA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.ROAR;
@@ -70,7 +76,9 @@ import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TAIL_WHIP;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TANGELA;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TENTACOOL;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.TENTACRUEL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.THUNDER_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VICTREEBEL;
+import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.VILEPLUME;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WARTORTLE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WATER_STONE;
 import static mrwint.gbtasgen.segment.pokemon.gen1.common.Constants.WEEPINBELL;
@@ -139,13 +147,13 @@ public class LickitungRed extends SeqSegment {
 	@Override
 	public void execute() {
 
-	  seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(3)); // Fuschia
-    seqEflSkipInput(1);
-
-    seqMetric(new OutputParty());
-    seqMetric(new OutputItems());
-    seqMetric(new OutputBoxMons());
-
+//	  seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(3)); // Fuschia
+//    seqEflSkipInput(1);
+//
+//    seqMetric(new OutputParty());
+//    seqMetric(new OutputItems());
+//    seqMetric(new OutputBoxMons());
+//
 //    seq(new EflWalkToSegment(19, 27)); // Center
 //
 //    {
@@ -211,30 +219,95 @@ public class LickitungRed extends SeqSegment {
 //
 //    save("li1");
 //    load("li1");
-//
-//    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(4)); // Celadon
-//    seqEflSkipInput(1);
-//    seq(new EflWalkToSegment(41, 9)); // enter Center
-//    {
-//      seq(new EflWalkToSegment(13, 4)); // PC
-//      seq(new EflWalkToSegment(13, 3, false)); // PC
+
+    seq(new EflSelectMonSegment(FARFETCHD).fromOverworld().andFlyTo(4)); // Celadon
+    seqEflSkipInput(1);
+    seq(new EflWalkToSegment(41, 9)); // enter Center
+    {
+      seq(new EflWalkToSegment(13, 4)); // PC
+      seq(new EflWalkToSegment(13, 3, false)); // PC
+
+      seq(new EflSelectItemSegment(RARE_CANDY).fromOverworld().andUse());
+      seq(new EflSelectMonSegment(KABUTO));
+      seqEflButton(B); // lvlup to 37
+      seqEflButton(A); // cancel stats
+      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+      seq(new EflSelectMonSegment(KABUTO));
+      seqEflButton(B); // lvlup to 38
+      seqEflButton(A); // cancel stats
+      seq(new EflSelectItemSegment(RARE_CANDY).andUse());
+      seq(new EflSelectMonSegment(KABUTO));
+      seqEflButton(B); // lvlup to 39
+      seqEflButton(A); // cancel stats
+      seq(new EflCancelMoveLearnSegment()); // Slash
+      seq(new EflSelectItemSegment(LEAF_STONE).andUse());
+      seq(new EflSelectMonSegment(WEEPINBELL));
+      seq(new EflEvolutionSegment()); // Victreebel
+      seqEflButton(B); // cancel
+      seqEflButton(START); // cancel
+      seqEflSkipInput(1);
+
+      {
+        seqEflButton(A); // use PC
+        seq(new EflSkipTextsSegment(1)); // turned on
+        seqEflButton(A); // someone's PC
+        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
+        seq(new EflDepositMonSegment(VICTREEBEL));
+        seq(new EflDepositMonSegment(EXEGGUTOR));
+        seq(new EflDepositMonSegment(FARFETCHD));
+        seq(new EflWithdrawMonSegment(MACHOKE));
+        seq(new EflWithdrawMonSegment(ARBOK));
+        seq(new EflChangeMonBoxSegment(3)); // Box 4
+//        seq(new EflDepositMonSegment(RAPIDASH));
+        seq(new EflDepositMonSegment(MACHOKE));
+        seq(new EflWithdrawMonSegment(STARYU));
+        seq(new EflWithdrawMonSegment(EEVEE));
+//        seq(new EflWithdrawMonSegment(GLOOM));
+        seqEflButton(B, MENU); // cancel
+        seqEflButton(B, PRESSED); // cancel
+      }
+      
+      {
+        seqEflSkipInput(1);
+//        seq(new EflSelectItemSegment(LEAF_STONE).andUse());
+//        seq(new EflSelectMonSegment(GLOOM));
+//        seq(new EflEvolutionSegment()); // Vileplume
+//        seqEflSkipInput(0);
+        seq(new EflSelectItemSegment(THUNDER_STONE).fromOverworld().andUse());
+        seq(new EflSelectMonSegment(EEVEE));
+        seq(new EflEvolutionSegment()); // Jolteon
+        seqEflSkipInput(0);
+        seq(new EflSelectItemSegment(WATER_STONE).andUse());
+        seq(new EflSelectMonSegment(STARYU));
+        seq(new EflEvolutionSegment()); // Starmie
+//        seqEflSkipInput(0);
+        seqEflButton(B); // cancel
+        seqEflButton(START); // cancel
+      }
+      
 //      {
+//        seqEflSkipInput(1);
 //        seqEflButton(A); // use PC
 //        seq(new EflSkipTextsSegment(1)); // turned on
 //        seqEflButton(A); // someone's PC
 //        seq(new EflSkipTextsSegment(2)); // accessed, mon storage
-//        seq(new EflChangeMonBoxSegment(1)); // box 2
-////        seq(new EflDepositMonSegment(FARFETCHD));
-////        seq(new EflWithdrawMonSegment(WARTORTLE));
+//        seq(new EflDepositMonSegment(STARMIE));
+//        seq(new EflDepositMonSegment(CLOYSTER));
+////        seq(new EflDepositMonSegment(VILEPLUME));
+//        seq(new EflWithdrawMonSegment(HITMONCHAN));
+//        seq(new EflWithdrawMonSegment(RAPIDASH));
+////        seq(new EflWithdrawMonSegment(KABUTO));
+////        seq(new EflChangeMonBoxSegment(0)); // Box 4
 //        seqEflButton(B, MENU); // cancel
 //        seqEflButton(B, PRESSED); // cancel
 //      }
-//      seqMetric(new OutputBoxMons());
-//      seqMetric(new OutputParty());
+      
+      seqMetric(new OutputBoxMons());
+      seqMetric(new OutputParty());
 //      seqMetric(new OutputItems());
-//
-//      seq(new EflWalkToSegment(11, 4)); // trade
-//      seq(new EflWalkToSegment(11, 3)); // trade
-//    }
+
+      seq(new EflWalkToSegment(11, 4)); // trade
+      seq(new EflWalkToSegment(11, 3)); // trade
+    }
   }
 }
