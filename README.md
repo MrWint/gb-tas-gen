@@ -1,6 +1,10 @@
 gb-tas-gen
 ==========
 
+#### Disclaimer
+
+This repository is my code dumping ground and not a refined and maintained piece of software. You are welcome to look trough and use the code for whatever purpose you like, it's likely in a consistent state and does what's written on the tin, but expect random, obsolete, unfinished or non-working bits and pieces everywhere, and overall horrible architecture and design. This has grown organically over the years with all sorts of things I tried and is not meant to be a clean code base.
+
 #### Overview
 
 This is a framework to create tool-assisted gameplay for Gameboy games with fine control and automation.
@@ -8,8 +12,6 @@ This is a framework to create tool-assisted gameplay for Gameboy games with fine
 It runs a modified [libgambatte](https://github.com/sinamas/gambatte) as a core, and produces movies that can be played back with [BizHawk](https://github.com/TASVideos/BizHawk).
 
 #### Installation
-
-**Note:** This repository is my code dumping ground and not a refined and maintained piece of software. You are welcome to look trough and use the code for whatever purpose you like, it's likely in a consistent state and does what's written on the tin, but expect random, obsolete, unfinished or non-working bits and pieces everywhere, and overall horrible architecture and design. This has grown organically over the years with all sorts of things I tried and is not meant to be a clean code base.
 
 You'll need some prerequisites: `ant`, `scons`, `libsdl1.2-dev`, as well as a Java (8+) and a C compiler.
 
