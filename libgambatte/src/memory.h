@@ -26,6 +26,7 @@
 #include "tima.h"
 #include "video.h"
 #include "loadsave.h"
+#include <fstream>
 
 namespace gambatte {
 class InputGetter;
@@ -54,6 +55,11 @@ public:
 
 	bool LINKCABLE;
 	bool linkClockTrigger;
+
+	std::ofstream logout;
+	static const bool LOG = true;
+	void log_init();
+	void log_write(unsigned P, unsigned data, unsigned long cycleCounter);
 
 	void updateInput();
 	void decEventCycles(MemEventId eventId, unsigned long dec);

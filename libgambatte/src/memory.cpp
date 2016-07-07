@@ -23,6 +23,7 @@
 #include "savestate.h"
 #include <cstring>
 #include <iostream>
+#include <fstream>
 
 namespace gambatte {
 
@@ -239,6 +240,7 @@ unsigned long Memory::event(unsigned long cycleCounter) {
 							if (oamDmaPos == 0)
 								startOamDma(lOamDmaUpdate - 1);
 
+							log_write(0xfe00 | (src & 0xFF), data, cycleCounter);
 							ioamhram[src & 0xFF] = data;
 						} else if (oamDmaPos == 0xA0) {
 							endOamDma(lOamDmaUpdate - 1);
@@ -336,6 +338,8 @@ void Memory::decEventCycles(const MemEventId eventId, const unsigned long dec) {
 		intreq.setEventTime(eventId, intreq.eventTime(eventId) - dec);
 }
 
+long curFrameStartCycle;
+
 unsigned long Memory::resetCounters(unsigned long cycleCounter) {
 	if (lastOamDmaUpdate != DISABLED_TIME)
 		updateOamDma(cycleCounter);
@@ -361,6 +365,7 @@ unsigned long Memory::resetCounters(unsigned long cycleCounter) {
 	decEventCycles(UNHALT, dec);
 
 	cycleCounter -= dec;
+	curFrameStartCycle -= dec;
 	
 	intreq.resetCc(oldCC, cycleCounter);
 	tima.resetCc(oldCC, cycleCounter, TimaInterruptRequester(intreq));
@@ -401,6 +406,7 @@ void Memory::updateOamDma(const unsigned long cycleCounter) {
 			if (oamDmaPos == 0)
 				startOamDma(lastOamDmaUpdate - 1);
 
+			log_write(0xfe00 | oamDmaPos, oamDmaSrc ? oamDmaSrc[oamDmaPos] : cart.rtcRead(), lastOamDmaUpdate);
 			ioamhram[oamDmaPos] = oamDmaSrc ? oamDmaSrc[oamDmaPos] : cart.rtcRead();
 		} else if (oamDmaPos == 0xA0) {
 			endOamDma(lastOamDmaUpdate - 1);
@@ -582,6 +588,8 @@ unsigned Memory::nontrivial_read(const unsigned P, const unsigned long cycleCoun
 void Memory::nontrivial_ff_write(const unsigned P, unsigned data, const unsigned long cycleCounter) {
 	if (lastOamDmaUpdate != DISABLED_TIME)
 		updateOamDma(cycleCounter);
+
+	log_write(P, data, cycleCounter);
 
 	switch (P & 0xFF) {
 	case 0x00:
@@ -972,6 +980,8 @@ void Memory::nontrivial_write(const unsigned P, const unsigned data, const unsig
 			if (P < 0x8000) {
 				cart.mbcWrite(P, data);
 			} else if (display.vramAccessible(cycleCounter)) {
+				log_write(P, data, cycleCounter);
+
 				display.vramChange(cycleCounter);
 				cart.vrambankptr()[P] = data;
 			}
@@ -985,6 +995,8 @@ void Memory::nontrivial_write(const unsigned P, const unsigned data, const unsig
 	} else if (P - 0xFF80u >= 0x7Fu) {
 		if (P < 0xFF00) {
 			if (display.oamWritable(cycleCounter) && oamDmaPos >= 0xA0 && (P < 0xFEA0 || isCgb())) {
+				log_write(P, data, cycleCounter);
+
 				display.oamChange(cycleCounter);
 				ioamhram[P - 0xFE00] = data;
 			}
@@ -1003,6 +1015,117 @@ LoadRes Memory::loadROM(std::string const &romfile, bool const forceDmg, bool co
 	interrupter.setGameShark(std::string());
 
 	return LOADRES_OK;
+}
+
+unsigned lastVram[2][0x2000];
+unsigned lastHram[0x200];
+unsigned curVramBank;
+int curScene;
+int curFrame;
+
+void Memory::log_init() {
+	logout.open("log.txt");
+	for (int i = 0; i < 0x2000; i++)
+		lastVram[0][i] = lastVram[1][i] = 0x100;
+	for (int i = 0; i < 0x200; i++)
+		lastHram[i] = 0x100;
+	curVramBank = 0;
+  curScene = 0;
+  curFrame = 0; // LCD starts enabled
+  curFrameStartCycle = 380; // initial delay
+}
+
+void Memory::log_write(const unsigned P, const unsigned data, const unsigned long cycleCounter) {
+	if (!LOG)
+		return;
+	if (!logout.is_open())
+		log_init();
+
+	if (P == 0xff00 // joypad
+			|| P == 0xff01 // serial
+			|| P == 0xff02 // serial
+			|| P == 0xff04 // div
+			|| P == 0xff05 // tima
+			|| P == 0xff06 // tma
+			|| P == 0xff07 // tac
+			|| P == 0xff0f // IF
+			|| P == 0xff41 // STAT
+			|| P == 0xff45 // LYC
+			|| P == 0xff4d // Speed switch
+			|| P == 0xff56 // Infrared
+			|| P == 0xff70 // wram bank
+			|| P == 0xffff // IE
+	) return;
+
+	if (P == 0xff4f) // vram bank
+		curVramBank = data & 1;
+
+	if (P >= 0x8000 && P < 0xa000) { // vram
+		if (data == lastVram[curVramBank][P & 0x1fff])
+			return;
+		lastVram[curVramBank][P & 0x1fff] = data;
+	}		
+
+	if (P >= 0xfe00 && P < 0xff00) { // oam
+		if (data == lastHram[P - 0xfe00])
+			return;
+		lastHram[P - 0xfe00] = data;
+	}
+
+	if (P == 0xff24 // sound control
+			|| P == 0xff25 // sound output
+			|| (P >= 0xff30 && P < 0xff40) // wave ram
+			|| P == 0xff40 // LCDC
+			|| P == 0xff42 // SCY
+			|| P == 0xff43 // SCX
+			|| P == 0xff47 // BGP
+			|| P == 0xff48 // OBP0
+			|| P == 0xff49 // OBP1
+			|| P == 0xff4a // WY
+			|| P == 0xff4b // WX
+			|| P == 0xff4f // vram bank
+			|| P == 0xff51 // DMA src
+			|| P == 0xff52 // DMA src
+			|| P == 0xff53 // DMA dest
+			|| P == 0xff54 // DMA dest
+	) {
+		if (data == lastHram[P - 0xfe00])
+			return;
+		lastHram[P - 0xfe00] = data;
+	}
+
+	if (P == 0xff26) { // sound on/off, only 7th bit
+		if ((data & 0x80) == lastHram[P - 0xfe00])
+			return;
+		lastHram[P - 0xfe00] = (data & 0x80);
+	}
+
+	int frameCycles = display.lyCounter().frameCycles(cycleCounter);
+  long frameStartCycle = ((long)cycleCounter) - frameCycles;
+	int frame = curFrame == -1 ? -1 : curFrame + (frameStartCycle - curFrameStartCycle) / 70224;
+	if ((frame - curFrame) * 70224 != frameStartCycle - curFrameStartCycle) {
+		logout << "ERROR: " << frame << " " << curFrame << " " << frameStartCycle << " " << curFrameStartCycle << std::endl;
+	}
+  curFrameStartCycle = frameStartCycle;
+	curFrame = frame;
+
+	logout
+			//<< std::hex << cycleCounter
+			<< " " << std::dec << curScene
+			<< " " << curFrame
+			<< " " << frameCycles
+			<< " " << std::hex << P
+			<< " " << data
+			<< std::endl;
+	if (P == 0xff40) {
+		if ((data & 0x80) == 0 && curFrame != -1) {
+			curScene++;
+			curFrame = -1;
+		} else if ((data & 0x80) != 0 && curFrame == -1) {
+			curFrame = 0;
+			curFrameStartCycle = (long)cycleCounter;
+		}
+	}
 }
 
 unsigned Memory::fillSoundBuffer(const unsigned long cycleCounter) {

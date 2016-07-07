@@ -553,7 +553,9 @@ void CPU::process(const unsigned long cycles) {
 		
 		//if(first-- >= 0)
 			//std::cout << "PC1: " << std::hex << PC << std::endl;
-		
+		if ((cycleCounter & 0xfffffL) == 0)
+			std::cout << "CC: " << std::hex << cycleCounter << std::endl;
+	
 		if (memory.halted()) {
 			if (cycleCounter < memory.nextEventTime()) {
 				const unsigned long cycles = memory.nextEventTime() - cycleCounter;

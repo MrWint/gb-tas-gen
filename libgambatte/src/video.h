@@ -248,6 +248,7 @@ public:
 
 		return lyReg;
 	}
+	const LyCounter & lyCounter() const { return ppu.lyCounter(); }
 
 	unsigned long nextMode1IrqTime() const { return eventTimes_(MODE1_IRQ); }
 

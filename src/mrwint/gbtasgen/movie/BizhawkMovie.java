@@ -1,12 +1,17 @@
 package mrwint.gbtasgen.movie;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
+import java.util.zip.ZipFile;
 
 import mrwint.gbtasgen.move.Move;
 import mrwint.gbtasgen.state.DualGbState;
@@ -133,5 +138,55 @@ public class BizhawkMovie {
     out.println("SyncSettings {\"o\":{\"$type\":\"BizHawk.Emulation.Cores.Nintendo.Gameboy.GambatteLink+GambatteLinkSyncSettings, BizHawk.Emulation.Cores\",\"L\":{\"ForceDMG\":false,\"GBACGB\":false,\"MulticartCompat\":false,\"RealTimeRTC\":false,\"RTCInitialTime\":0},\"R\":{\"ForceDMG\":false,\"GBACGB\":false,\"MulticartCompat\":false,\"RealTimeRTC\":false,\"RTCInitialTime\":0}}}");
     out.println("SHA1 A435C4F79D268FD1F751411507A2D3FA1077C35D");
     out.println("Core DualGambatte");
+  }
+  
+  public static ArrayList<Integer> getBkmInputs(String filename) throws FileNotFoundException {
+    String path = "movies/" + filename + ".bkm";
+    Scanner s = new Scanner(new BufferedInputStream(new FileInputStream(path)));
+    
+    ArrayList<Integer> inputs = new ArrayList<>();
+    while (s.hasNextLine()) {
+      String line = s.nextLine();
+      if (line.startsWith("|")) {
+        inputs.add((line.charAt(1) == 'P' ? Move.RESET : 0)
+            | (line.charAt(3) == 'U' ? Move.UP : 0)
+            | (line.charAt(4) == 'D' ? Move.DOWN : 0)
+            | (line.charAt(5) == 'L' ? Move.LEFT : 0)
+            | (line.charAt(6) == 'R' ? Move.RIGHT : 0)
+            | (line.charAt(7) == 's' ? Move.SELECT : 0)
+            | (line.charAt(8) == 'S' ? Move.START : 0)
+            | (line.charAt(9) == 'B' ? Move.B : 0)
+            | (line.charAt(10) == 'A' ? Move.A : 0)
+        );
+      }
+    }
+    s.close();
+    return inputs;
+  }
+  
+  public static ArrayList<Integer> getBk2Inputs(String filename) throws IOException {
+    String path = "movies/" + filename + ".bk2";
+    ZipFile zip = new ZipFile(path);
+    Scanner s = new Scanner(new BufferedInputStream(zip.getInputStream(zip.getEntry("Input Log.txt"))));
+    
+    ArrayList<Integer> inputs = new ArrayList<>();
+    while (s.hasNextLine()) {
+      String line = s.nextLine();
+      if (line.startsWith("|")) {
+        inputs.add((line.charAt(9) == 'P' ? Move.RESET : 0)
+            | (line.charAt(1) == 'U' ? Move.UP : 0)
+            | (line.charAt(2) == 'D' ? Move.DOWN : 0)
+            | (line.charAt(3) == 'L' ? Move.LEFT : 0)
+            | (line.charAt(4) == 'R' ? Move.RIGHT : 0)
+            | (line.charAt(5) == 'S' ? Move.START : 0)
+            | (line.charAt(6) == 's' ? Move.SELECT : 0)
+            | (line.charAt(7) == 'B' ? Move.B : 0)
+            | (line.charAt(8) == 'A' ? Move.A : 0)
+        );
+      }
+    }
+    s.close();
+    zip.close();
+    return inputs;
   }
 }
