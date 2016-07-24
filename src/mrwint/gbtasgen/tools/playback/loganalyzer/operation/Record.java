@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AlwaysAccessible;
+
 public class Record implements PlaybackOperation {
-  public static final int JUMP_ADDRESS = 0xc000;
-  
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
   private final int cycleCount;
   public Record(List<Integer> values) {
@@ -46,7 +47,7 @@ public class Record implements PlaybackOperation {
   }
   @Override
   public int getJumpAddress() {
-    return JUMP_ADDRESS;
+    return PlaybackAddresses.RECORD;
   }
   
   public static Record forStackFrames(List<Integer> stackFrames) {
@@ -73,5 +74,9 @@ public class Record implements PlaybackOperation {
   @Override
   public int getEndOutputCycle() {
     return -1;
+  }
+  @Override
+  public Accessibility getAccessibility() {
+    return new AlwaysAccessible();
   }
 }

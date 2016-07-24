@@ -2,11 +2,17 @@ package mrwint.gbtasgen.tools.playback.loganalyzer.operation;
 
 import java.util.TreeMap;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.VramAccessibility;
+
 public class WriteByteDirect implements PlaybackOperation {
-  public static final int JUMP_ADDRESS = 0x0339;
-  
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
-  public WriteByteDirect(int address, int value) {
+  
+  private final int newVramBank;
+
+  public WriteByteDirect(int address, int value, int newVramBank) {
+    this.newVramBank = newVramBank;
+
     inputMap.put(12, toJoypadInput1((address >> 8) & 0xff));
     inputMap.put(28, toJoypadInput2((address >> 8) & 0xff));
     inputMap.put(40, toJoypadInput1(address & 0xff));
@@ -20,11 +26,25 @@ public class WriteByteDirect implements PlaybackOperation {
   }
   @Override
   public int getCycleCount() {
-    return 116;
+    switch (newVramBank) {
+    case 0:
+      return 132;
+    case 1:
+      return 132;
+    default:
+      return 116;
+    }
   }
   @Override
   public int getJumpAddress() {
-    return JUMP_ADDRESS;
+    switch (newVramBank) {
+    case 0:
+      return PlaybackAddresses.WRITE_BYTE_DIRECT_VRAM0;
+    case 1:
+      return PlaybackAddresses.WRITE_BYTE_DIRECT_VRAM1;
+    default:
+      return PlaybackAddresses.WRITE_BYTE_DIRECT;
+    }
   }
   @Override
   public int getStartOutputCycle() {
@@ -33,5 +53,9 @@ public class WriteByteDirect implements PlaybackOperation {
   @Override
   public int getEndOutputCycle() {
     return 92;
+  }
+  @Override
+  public Accessibility getAccessibility() {
+    return new VramAccessibility();
   }
 }

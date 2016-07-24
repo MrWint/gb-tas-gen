@@ -468,7 +468,7 @@ public class StateMap {
     System.out.println("# of Actions: " + actions.size());
     int nonStartingActions = 0;
     for (TimedAction action : actions) {
-      if (action.from.frame != -1)
+      if (action.from != -1)
         nonStartingActions++;
     }
     System.out.println("# of non-starting actions: " + nonStartingActions);
@@ -476,20 +476,27 @@ public class StateMap {
 
   private <T, R> void addToActions(History<T> history, Function<Entry<TimeStamp, T>, R> toValue, Type type, int address, ArrayList<TimedAction> actions) {
     R lastNonNullValue = null;
-    TimeStamp lastNonNullTimestamp = new TimeStamp(0, -1, 0);
+    int lastNonNullScene = 0;
+    long lastNonNullCycles = -1;
     for (Entry<TimeStamp, T> e : history.getOperations().entrySet()) {
       if (e.getValue() == null)
         continue;
       R value = toValue.apply(e);
 
       // If this action spans scenes, put it into the LCD off period before the scene.
-      if (e.getKey().scene > lastNonNullTimestamp.scene)
-        lastNonNullTimestamp = new TimeStamp(e.getKey().scene, -1, 0);
+      if (e.getKey().scene > lastNonNullScene) {
+        lastNonNullScene = e.getKey().scene;
+        lastNonNullCycles = -1;
+      }
 
       if (!Objects.equals(lastNonNullValue, value))
-        actions.add(new TimedAction(new Action<R>(type, value, address), lastNonNullTimestamp, e.getKey()));
-      lastNonNullTimestamp = e.getKey();
+        actions.add(new TimedAction(new Action<R>(type, value, address), lastNonNullScene, lastNonNullCycles, toCycles(e.getKey())));
+      lastNonNullCycles = toCycles(e.getKey());
       lastNonNullValue = value;
     }
+  }
+  
+  private static long toCycles(TimeStamp time) {
+    return (long)time.frame * GbConstants.FRAME_CYCLES + time.frameCycle;
   }
 }

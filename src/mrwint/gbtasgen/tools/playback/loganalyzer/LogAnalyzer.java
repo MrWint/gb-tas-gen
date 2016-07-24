@@ -5,10 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
@@ -17,9 +17,9 @@ public class LogAnalyzer {
   // Initial Record cycleCounter: 202372
   // First frame end cycleCounter: 206592
   public static void main(String[] args) throws Exception {
-//    new LogAnalyzer();
+    new LogAnalyzer();
     
-    new PlaybackWriter(generateDummyPlayback(), 70224*2 + 136228).write("movies/playbackTest.lsmv");
+//    new PlaybackWriter(generateDummyPlayback(), 70224*2 + 136228).write("movies/playbackTest.lsmv");
   }
 
   TreeMap<TimeStamp, LogInput> log = new TreeMap<>();
@@ -38,7 +38,7 @@ public class LogAnalyzer {
       System.out.println("Scene " + scene + "/" + maxScene + " with " + (maxFrame + 1) + " frames");
     }
     stateMap = new StateMap()
-        .addScene(memoryMap, 10, 500, 500);
+        .addScene(memoryMap, 10, 500, 100);
     System.out.println("State map created");
     stateMap.calculateTilePositions();
     System.out.println("Tile positions calculated");
@@ -51,9 +51,9 @@ public class LogAnalyzer {
   
   public static ArrayList<PlaybackOperation> generateDummyPlayback() {
     Wait wait = new Wait(3880);
-    Record record = Record.forStackFrames(Arrays.asList(wait.getJumpAddress(), Record.JUMP_ADDRESS));
+    Record record = Record.forStackFrames(Arrays.asList(wait.getJumpAddress(), PlaybackAddresses.RECORD));
     Wait wait2 = new Wait(70224*2 - record.getCycleCount() - 4);
-    Record record2 = Record.forStackFrames(Arrays.asList(wait2.getJumpAddress(), Record.JUMP_ADDRESS));
+    Record record2 = Record.forStackFrames(Arrays.asList(wait2.getJumpAddress(), PlaybackAddresses.RECORD));
     
     ArrayList<PlaybackOperation> playback = new ArrayList<>();
     playback.add(record);
@@ -70,7 +70,7 @@ public class LogAnalyzer {
     while (s.hasNextInt()) {
       int scene = s.nextInt();
       int frame = s.nextInt();
-      int frameCycle = s.nextInt();
+      int frameCycle = s.nextInt() * GbConstants.DOUBLE_SPEED_FACTOR; // assumes input is normal speed
       int address = s.nextInt(16);
       int value = s.nextInt(16);
       log.put(new TimeStamp(scene, frame, frameCycle), new LogInput(address, value));

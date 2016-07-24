@@ -3,10 +3,10 @@ package mrwint.gbtasgen.tools.playback.loganalyzer.operation;
 import java.util.TreeMap;
 
 import mrwint.gbtasgen.tools.playback.loganalyzer.Palette;
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.BgPaletteAccessibility;
 
 public class WriteBgPaletteDirect implements PlaybackOperation {
-  public static final int JUMP_ADDRESS = 0x02F7;
-  
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
   public WriteBgPaletteDirect(int index, Palette value) {
     int indexValue = 0x80 | (index << 3);
@@ -27,7 +27,7 @@ public class WriteBgPaletteDirect implements PlaybackOperation {
   }
   @Override
   public int getJumpAddress() {
-    return JUMP_ADDRESS;
+    return PlaybackAddresses.WRITE_BG_PALETTE_DIRECT;
   }
   @Override
   public int getStartOutputCycle() {
@@ -36,5 +36,9 @@ public class WriteBgPaletteDirect implements PlaybackOperation {
   @Override
   public int getEndOutputCycle() {
     return 304;
+  }
+  @Override
+  public Accessibility getAccessibility() {
+    return new BgPaletteAccessibility();
   }
 }

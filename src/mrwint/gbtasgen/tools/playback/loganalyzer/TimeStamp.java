@@ -19,4 +19,8 @@ public class TimeStamp implements Comparable<TimeStamp> {
       return frame - o.frame;
     return frameCycle - o.frameCycle;
   }
+  
+  public TimeStamp addCycles(int cycles) {
+    return new TimeStamp(scene, frame, frameCycle + cycles);
+  }
 }

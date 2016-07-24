@@ -3,11 +3,13 @@ package mrwint.gbtasgen.tools.playback.loganalyzer;
 public class TimedAction {
   
   public final Action<?> action;
-  public final TimeStamp from;
-  public final TimeStamp to;
+  public final int scene;
+  public final long from;
+  public final long to;
   
-  public TimedAction(Action<?> action, TimeStamp from, TimeStamp to) {
+  public TimedAction(Action<?> action, int scene, long from, long to) {
     this.action = action;
+    this.scene = scene;
     this.from = from;
     this.to = to;
   }

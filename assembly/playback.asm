@@ -249,6 +249,56 @@ WriteTileDirect:: ; 656, 0 payload frames, 35 inputs (68 + {0,16} + 36*i), outpu
   ld [bc], a   ; 8
   ret          ; 16
 
+WriteTileDirectVram0:: ; 672, 0 payload frames, 35 inputs (68 + {0,16} + 36*i), outputs 92 - 632
+  ld hl, $ff00 ; 12
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld b, a      ; 4
+  ld a, [hl]   ; 8
+  and $f       ; 8
+  swap a       ; 8
+  ld c, a      ; 4
+  rept 15
+    ld a, [hl]   ; 8
+    swap a       ; 8
+    xor [hl]     ; 8
+    ld [bc], a   ; 8
+    inc c        ; 4
+  endr
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld [bc], a   ; 8
+  xor a        ; 4
+  ld [$ff4f], a ; 12
+  ret          ; 16
+
+WriteTileDirectVram1:: ; 672, 0 payload frames, 35 inputs (68 + {0,16} + 36*i), outputs 92 - 632
+  ld hl, $ff00 ; 12
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld b, a      ; 4
+  ld a, [hl]   ; 8
+  and $f       ; 8
+  swap a       ; 8
+  ld c, a      ; 4
+  rept 15
+    ld a, [hl]   ; 8
+    swap a       ; 8
+    xor [hl]     ; 8
+    ld [bc], a   ; 8
+    inc c        ; 4
+  endr
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld [bc], a   ; 8
+  ld a, h ;$ff ; 4
+  ld [$ff4f], a ; 12
+  ret          ; 16
+
 
 
 WriteBgPaletteDirect:: ; 328, 18 inputs (20, 36, 56 + {0,16} + 32*i), outputs 80 - 304
@@ -298,6 +348,42 @@ WriteByteDirect:: ; 116, 0 payload frames, 6 inputs (12 + {0,16} + i*28), output
   swap a       ; 8
   xor [hl]     ; 8
   ld [bc], a   ; 8
+  ret          ; 16
+
+WriteByteDirectVram0:: ; 132, 0 payload frames, 6 inputs (12 + {0,16} + i*28), outputs 92
+  ld hl, $ff00 ; 12
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld b, a      ; 4
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld c, a      ; 4
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld [bc], a   ; 8
+  xor a        ; 4
+  ld [$ff4f], a ; 12
+  ret          ; 16
+
+WriteByteDirectVram1:: ; 132, 0 payload frames, 6 inputs (12 + {0,16} + i*28), outputs 92
+  ld hl, $ff00 ; 12
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld b, a      ; 4
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld c, a      ; 4
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld [bc], a   ; 8
+  ld a, h ;$ff ; 4
+  ld [$ff4f], a ; 12
   ret          ; 16
 
 

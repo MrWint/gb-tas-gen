@@ -2,9 +2,10 @@ package mrwint.gbtasgen.tools.playback.loganalyzer.operation;
 
 import java.util.TreeMap;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AlwaysAccessible;
+
 public class WriteHByteDirect implements PlaybackOperation {
-  public static final int JUMP_ADDRESS = 0x0350;
-  
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
   public WriteHByteDirect(int address, int value) {
     inputMap.put(12, toJoypadInput1(address & 0xff));
@@ -22,7 +23,7 @@ public class WriteHByteDirect implements PlaybackOperation {
   }
   @Override
   public int getJumpAddress() {
-    return JUMP_ADDRESS;
+    return PlaybackAddresses.WRITE_HBYTE_DIRECT;
   }
   @Override
   public int getStartOutputCycle() {
@@ -31,5 +32,9 @@ public class WriteHByteDirect implements PlaybackOperation {
   @Override
   public int getEndOutputCycle() {
     return 64;
+  }
+  @Override
+  public Accessibility getAccessibility() {
+    return new AlwaysAccessible();
   }
 }

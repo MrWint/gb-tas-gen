@@ -5,6 +5,7 @@ import static mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants.FRAME_CYCLE
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
@@ -34,8 +35,8 @@ public class Calibration {
         - Record.getCycleCount(4) // Time taken up by initial Record call
         - Record.getFirstInputCycles()); // Time until first input in second Record call
     Wait wait2 = new Wait(FRAME_CYCLES - Record.getCycleCount(4) - 4);
-    Record record = Record.forStackFrames(Arrays.asList(wait.getJumpAddress(), Record.JUMP_ADDRESS));
-    Record record2 = Record.forStackFrames(Arrays.asList(wait2.getJumpAddress(), Record.JUMP_ADDRESS));
+    Record record = Record.forStackFrames(Arrays.asList(wait.getJumpAddress(), PlaybackAddresses.RECORD));
+    Record record2 = Record.forStackFrames(Arrays.asList(wait2.getJumpAddress(), PlaybackAddresses.RECORD));
     
     ArrayList<PlaybackOperation> playback = new ArrayList<>();
     playback.add(record);
@@ -46,28 +47,13 @@ public class Calibration {
     playback.add(wait2);
     return playback;
   }
-  
-  public static int getM0TimeOfLine(int numSprites) {
-    return (264 + 6 /* Win on */ + numSprites * 11) * GbConstants.DOUBLE_SPEED_FACTOR;
-  }
-  public static final int getVramInaccessibleFrom() {
-    return 80 * GbConstants.DOUBLE_SPEED_FACTOR - 1;
-  }
-  public static final int getVramInaccessibleTo(int numSprites) {
-    return getM0TimeOfLine(numSprites) - 3 - (GbConstants.DOUBLE_SPEED ? 1 : 0) + (GbConstants.GBC ? 1 : 0);
-  }
-  public static final int getCbgpInaccessibleFrom() {
-    return 80 * GbConstants.DOUBLE_SPEED_FACTOR - 1 + (GbConstants.DOUBLE_SPEED ? 2 : 0);
-  }
-  public static final int getCbgpInaccessibleTo(int numSprites) {
-    return getM0TimeOfLine(numSprites) + 2 - (GbConstants.DOUBLE_SPEED ? 1 : 0);
-  }
+
   public static ArrayList<PlaybackOperation> calibrateVramAccessible() {
     WriteHByteDirect setScx = new WriteHByteDirect(GbConstants.SCX, 0x7);
     WriteHByteDirect setWx = new WriteHByteDirect(GbConstants.WX, 0xa7);
     WriteHByteDirect setWy = new WriteHByteDirect(GbConstants.WY, 0x1);
     WriteHByteDirect enableLcd = new WriteHByteDirect(GbConstants.LCDC, 0xa3);
-    WriteByteDirect writeVram = new WriteByteDirect(0x8000, 0xa3);
+    WriteByteDirect writeVram = new WriteByteDirect(0x8000, 0xa3, -1);
     Wait wait = new Wait(GbConstants.LINE_CYCLES + 520 - (enableLcd.getCycleCount() - enableLcd.getEndOutputCycle()) - writeVram.getStartOutputCycle());
     Record record = Record.forStackFrames(Arrays.asList(
         setScx.getJumpAddress(),

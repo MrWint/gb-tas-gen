@@ -2,10 +2,10 @@ package mrwint.gbtasgen.tools.playback.loganalyzer.operation;
 
 import java.util.TreeMap;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
+import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AlwaysAccessible;
+
 public class Wait implements PlaybackOperation {
-  public static final int OFFSET_SHORT = 0x018D;
-  public static final int OFFSET_LONG = 0x01A3;
-  
   private final int waitCycles;
   private final int jumpAddress;
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
@@ -17,7 +17,7 @@ public class Wait implements PlaybackOperation {
 
     this.waitCycles = waitCycles;
     if (waitCycles <= 100) {
-      jumpAddress = OFFSET_SHORT + (100 - waitCycles) / 4;
+      jumpAddress = PlaybackAddresses.WAIT_SHORT + (100 - waitCycles) / 4;
     } else {
       int remainingCycles = waitCycles - 104;
       int b = Math.min(remainingCycles / 4108, 255);
@@ -26,7 +26,7 @@ public class Wait implements PlaybackOperation {
       remainingCycles -= a * 16;
       int offset = 6 - (remainingCycles / 4);
       
-      jumpAddress = OFFSET_LONG + offset;
+      jumpAddress = PlaybackAddresses.WAIT_LONG + offset;
       inputMap.put(12 + remainingCycles, toJoypadInput1((b + 1) % 256));
       inputMap.put(28 + remainingCycles, toJoypadInput2((b + 1) % 256));
       inputMap.put(40 + remainingCycles, toJoypadInput1((a + 1) % 256));
@@ -52,5 +52,9 @@ public class Wait implements PlaybackOperation {
   @Override
   public int getEndOutputCycle() {
     return -1;
+  }
+  @Override
+  public Accessibility getAccessibility() {
+    return new AlwaysAccessible();
   }
 }
