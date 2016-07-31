@@ -6,13 +6,16 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AlwaysAccessible;
 
 public class Wait implements PlaybackOperation {
+  public static final int MIN_WAIT_CYCLES = 16;
+  public static final int MAX_WAIT_CYCLES = 1051748;
+  
   private final int waitCycles;
   private final int jumpAddress;
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
   public Wait(int waitCycles) {
-    if (waitCycles < 16)
+    if (waitCycles < MIN_WAIT_CYCLES)
       throw new IllegalArgumentException("delay " + waitCycles + " too small.");
-    if (waitCycles > 1051748)
+    if (waitCycles > MAX_WAIT_CYCLES)
       throw new IllegalArgumentException("delay " + waitCycles + " too large.");
 
     this.waitCycles = waitCycles;

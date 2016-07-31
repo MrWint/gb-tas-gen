@@ -29,6 +29,16 @@ public class TimedAction {
       this.value = value;
       this.position = position;
     }
+    
+    @Override
+    public String toString() {
+      return "[Action type " + type + " position " + Integer.toHexString(position) + " value " + value + "]";
+    }
+  }
+  
+  @Override
+  public String toString() {
+    return "[TimedAction scene " + scene + " from " + from + " to " + to + " action " + action + "]";
   }
 }
 

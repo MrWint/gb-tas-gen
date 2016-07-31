@@ -6,6 +6,9 @@ public class VramAccessibility implements Accessibility {
 
   @Override
   public long lastAccessibleCycleBefore(long cycle, AccessibilityGbState gbState) {
+    if (cycle < getVramInaccessibleFrom()) // before first frame
+      return cycle;
+
     int lineCycle = (int) (cycle % GbConstants.LINE_CYCLES);
     int frameLine = (int) ((cycle % GbConstants.FRAME_CYCLES) / GbConstants.LINE_CYCLES);
 
@@ -16,7 +19,7 @@ public class VramAccessibility implements Accessibility {
       return cycle;
     
     if (lineCycle <= getVramInaccessibleTo(cycle, gbState)) { // in mode 3
-      int offset = lineCycle - getVramInaccessibleFrom() - 1;
+      int offset = lineCycle - (getVramInaccessibleFrom() - 1);
       return ((cycle - offset) / 4) * 4; // align to multiples of 4
     }
     

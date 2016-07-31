@@ -38,7 +38,9 @@ public class LogAnalyzer {
       System.out.println("Scene " + scene + "/" + maxScene + " with " + (maxFrame + 1) + " frames");
     }
     stateMap = new StateMap()
-        .addScene(memoryMap, 10, 500, 100);
+        .addScene(memoryMap, 10, 0, 2000);
+//        .addScene(memoryMap, 7, 0, 20)
+//        .addScene(memoryMap, 10, 0, 20);
     System.out.println("State map created");
     stateMap.calculateTilePositions();
     System.out.println("Tile positions calculated");
@@ -46,7 +48,7 @@ public class LogAnalyzer {
     System.out.println("BG palette positions calculated");
     ArrayList<TimedAction> actions = stateMap.generateActionList();
     ArrayList<PlaybackOperation> playback = new PlaybackAssembler(actions).assemble();
-    new PlaybackWriter(playback, 70224).write("movies/playbackTest.lsmv");
+    new PlaybackWriter(playback, Calibration.PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/playbackTest.lsmv");
   }
   
   public static ArrayList<PlaybackOperation> generateDummyPlayback() {

@@ -97,7 +97,7 @@ public class StateMap {
       if ((frame - firstFrame) % 100 == 0)
         System.out.println("frame " + frame);
       for (int scanLine = 0; scanLine < 144; scanLine++) {
-        int frameCycle = 456 * scanLine + 80;
+        int frameCycle = GbConstants.LINE_CYCLES * scanLine + 80 * GbConstants.DOUBLE_SPEED_FACTOR;
         TimeStamp time = new TimeStamp(scene, frame, frameCycle);
         TimeStamp adjustedTime = new TimeStamp(numScenes - 1, frame - firstFrame, frameCycle);
         
@@ -124,8 +124,8 @@ public class StateMap {
           int x = add & 0x1f;
           int y = (add >>> 5) & 0x1f;
           mWinTile &= mWx && y == (scanLine - wy) / 8 && x <= Math.min((166 - wx) / 8, 19); // Win tiles x>=20 never rendered even when WX < 7
-          mBgTile &= mScyx && y == ((scy + scanLine) & 0xff) / 8 && ((8*x + 0x100 - scx) & 0xff) < 0xa0 // tile on screen
-              && (!mWx || ((8*x + 0x100 - scx) & 0xff) < wx - 7); // not covered by window
+          mBgTile &= mScyx && y == ((scy + scanLine) & 0xff) / 8 && ((8*x + 0x100 + 7 - scx) & 0xff) < 0xa7 // tile on screen
+              && (!mWx || ((8*x + 0x100 + 7 - scx) & 0xff) < (wx - 7) + 7); // not covered by window
           
           TileState state = null;
           if (mWinTile) {
@@ -246,7 +246,7 @@ public class StateMap {
   }
 
   private int canonicalizeLcdc(int value) {
-    return value & (~0x10);
+    return (value & 0x80) == 0 ? 0 : (value & (~0x10));
   }
   private int canonicalizeWy(int value) {
     return Math.min(value, 0x90);
