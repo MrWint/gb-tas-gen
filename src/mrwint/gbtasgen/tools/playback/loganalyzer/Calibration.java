@@ -2,21 +2,25 @@ package mrwint.gbtasgen.tools.playback.loganalyzer;
 
 import static mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants.FRAME_CYCLES;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaySound;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteByteDirect;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteHByteDirect;
+import mrwint.gbtasgen.tools.playback.util.SoundUtil;
 
 public class Calibration {
   
   public static void main(String[] args) throws Exception {
 //    new PlaybackWriter(calibratePlaybackInputCycleOffsetOperations(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
-    new PlaybackWriter(calibrateVramAccessible(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
+//    new PlaybackWriter(calibrateVramAccessible(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
+    new PlaybackWriter(createSoundTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/soundTest.lsmv");
   }
  
   // Initial Record cycleCounter:  202372
@@ -72,5 +76,31 @@ public class Calibration {
     playback.add(wait);
     playback.add(writeVram);
     return playback;
+  }
+
+  public static ArrayList<PlaybackOperation> createSoundTest() throws IOException {
+    PlaySound playSound = SoundUtil.rewriteTo4bitFancy(SoundUtil.read16bitPcmMonoAudio("audio/in.wav"));
+//    PlaySound playSound = createDummySound();
+    SoundUtil.write16bitPcmMonoAudio("audio/out.wav", playSound);
+    Record record = Record.forStackFrames(Arrays.asList(
+//        0x501,
+        playSound.getJumpAddress(),
+        PlaybackAddresses.STOP_OPERATIONS));
+    
+    ArrayList<PlaybackOperation> playback = new ArrayList<>();
+    playback.add(record);
+    playback.add(playSound);
+    return playback;
+  }
+  
+  private static PlaySound createDummySound() {
+    int len = 100000;
+    int[] samples = new int[len];
+    int[] so = new int[len];
+    for (int i = 0; i < len; i++) {
+      samples[i] = 0xeeee;
+      so[i] = 7;
+    }
+    return new PlaySound(samples, so);
   }
 }

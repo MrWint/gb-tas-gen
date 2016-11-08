@@ -49,7 +49,7 @@ SECTION "Header", ROM0 [$104]
 
 SECTION "Main", ROM0
 
-Start::
+Start:
   ; Disable LCD (execution starts at VBlank)
   xor a          ; 4 (*2)
   ld [rLCDC], a  ; 12 (*2)
@@ -71,7 +71,7 @@ Start::
 
 
 
-WriteBytes::
+WriteBytes:
 ; 36 + 52*(len/2) cycles, delay 40,52
   pop hl       ; 12
   pop bc       ; 12
@@ -85,7 +85,7 @@ WriteBytes::
   jr nz, .loop ; 12/8
   ret          ; 16
 
-FillBytes::
+FillBytes:
 ; 40 + 24*len cycles, delay 28
   pop hl       ; 12
   pop bc       ; 12
@@ -96,7 +96,7 @@ FillBytes::
   jr nz, .loop ; 12/8
   ret          ; 16
 
-FillBytes2::
+FillBytes2:
 ; 56 + 8*len + 16*ceil(len/16) cycles, delay 44
   pop hl       ; 12
   pop bc       ; 12
@@ -141,8 +141,7 @@ WaitLong:: ; 4 inputs, max delay 1051748
   ret          ; 16
 
 
-OamDma::
-; 680 cycles
+OamDma:           ; 680 cycles
   ld a, $d3       ; 8
   ld [$FF46], a   ; 12
   ld a, 40        ; 8 ; 40 * 16 - 4 = 636 cycles
@@ -152,7 +151,7 @@ OamDma::
   ret             ; 16
 
 
-RecordEasy::
+RecordEasy:
 ; 76 + len * 60; no 0 inputs
   ld hl, $d000    ; 12
   ld sp, hl       ; 8
@@ -173,7 +172,7 @@ Record::
 ; len * 40 + ceil(len/16) * 16 + 128
   ld de, $d000    ; 12
   ld sp, $d000    ; 12
-ContinueRecord:: ; len * 40 + ceil(len/16) * 16 + 104
+ContinueRecord:  ; len * 40 + ceil(len/16) * 16 + 104
   ld hl, $ff00    ; 12
   ld a, [hl]      ; 8
   swap a          ; 8
@@ -201,7 +200,7 @@ ContinueRecord:: ; len * 40 + ceil(len/16) * 16 + 104
   jr nz, .loop    ; 12/8
   ret             ; 16
 
-Tmp_CopyRecord::
+Tmp_CopyRecord:
   ld hl, Record
   ld de, $c000
   ld c, Tmp_CopyRecord - Record
@@ -215,7 +214,7 @@ Tmp_CopyRecord::
 
 
 
-WriteTile::    ; 316, 9 payload frames, 0 inputs, delay 28,40 + i*36
+WriteTile:     ; 316, 9 payload frames, 0 inputs, delay 28,40 + i*36
   pop hl       ; 12
   rept 8
   pop bc       ; 12
@@ -319,13 +318,13 @@ WriteBgPaletteDirect:: ; 328, 18 inputs (20, 36, 56 + {0,16} + 32*i), outputs 80
 
 
 
-WriteByte::    ; 48, 2 payload frames, 0 inputs, delay 24
+WriteByte:     ; 48, 2 payload frames, 0 inputs, delay 24
   pop hl       ; 12
   pop af       ; 12
   ld [hl], a   ; 8
   ret          ; 16
 
-WriteByteHalfDirect:: ; 72, 1 payload frame, 2 inputs (24,40), delay 48
+WriteByteHalfDirect:  ; 72, 1 payload frame, 2 inputs (24,40), delay 48
   ld hl, $ff00 ; 12
   pop bc       ; 12
   ld a, [hl]   ; 8
@@ -388,7 +387,7 @@ WriteByteDirectVram1:: ; 132, 0 payload frames, 6 inputs (12 + {0,16} + i*28), o
 
 
 
-WriteHByte::      ; 40, 1 payload frame, 0 inputs, delay 16
+WriteHByte:       ; 40, 1 payload frame, 0 inputs, delay 16
   pop bc          ; 12
   ld a, b         ; 4
   ld [$ff00+c], a ; 8
@@ -405,4 +404,900 @@ WriteHByteDirect:: ; 88, 0 payload frames, 4 inputs (12,28,40,56), outputs 64
   xor [hl]        ; 8
   ld [$ff00+c], a ; 8
   ret             ; 16
+
+
+
+WriteSprite:: ; 204, 0 payload frames, 10 inputs (20, 36, 48 + {0,16} + 36*i), outputs 72 - 180
+  ld hl, $ff00 ; 12
+  ld b, $fe    ; 8
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld c, a      ; 4
+  rept 3
+    ld a, [hl]   ; 8
+    swap a       ; 8
+    xor [hl]     ; 8
+    ld [bc], a   ; 8
+    inc c        ; 4
+  endr
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld [bc], a   ; 8
+  ret          ; 16
+
+ClearSprite:: ; 76, 0 payload frames, 2 inputs (20, 36), outputs 52
+  ld hl, $ff00 ; 12
+  ld b, $fe    ; 8
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld c, a      ; 4
+  xor a        ; 4
+  ld [bc], a   ; 8
+  ret          ; 16
+
+
+
+StopOperations::
+  jr StopOperations
+
+
+
+; 40 + 916 + 80 + 484 + 912*(samples / 2) + 28 = 1548 + 912*(samples / 2)
+; inputs: 40, 60 + {0, 16} + k60, 1520 + {0, 36, 52, 884} + k912
+PlaySound::
+  ld hl, $ff00    ; 12
+  ld a, $44       ; 8 
+  ld [$ff25], a   ; 12 ; all sounds to all outputs
+  ld c, $30       ; 8 ; start of wave ram
+  ; 40
+
+  ld a, [hl]      ; 8
+  ld [$ff00+c], a ; 8
+  inc c           ; 4
+.waveRamLoop ; maybe unroll?
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff00+c], a ; 8
+  inc c           ; 4
+  ld a, c         ; 4
+  cp $40          ; 8
+  jr nz, .waveRamLoop ; 12/8 ; 60*15 - 4 + 20 = 916
+
+  ld a, $80       ; 8
+  ld [$ff1a], a   ; 12 ; enable channel 3
+  ld a, $20       ; 8
+  ld [$ff1c], a   ; 12 ; output volume
+  ld a, $8e       ; 8
+  ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*2)
+  ld a, $87       ; 8
+  ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*2) + start
+  ; 80
+
+  ld a, 30        ; 8
+.initialWait       ; 30 * 16 - 4 = 476 cycles
+  dec a            ; 4
+  jr nz, .initialWait ; 12/8
+  ; 484
+
+.loop 
+  ld a, [hl]      ; 8
+  ld b, a         ; 4
+  swap a          ; 8
+  xor b           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ; 36
+  
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+  ; 36
+
+  ld a, 50        ; 8
+.loopWait          ; 50 * 16 - 4 = 796 cycles
+  dec a            ; 4
+  jr nz, .loopWait ; 12/8
+  nop             ; 4
+  nop             ; 4
+  ; 812
+
+  ld a, [hl]      ; 8
+  cp $cf          ; 8
+  jr nz, .loop    ; 12/8 ; loop sum 100 + 752 = 912
+
+  xor a           ; 4
+  ld [$ff1a], a   ; 12 ; disable channel 3
+  ret             ; 16
+
+
+; 668 cycles
+; inputs 32, 52 + {0, 16} + k*36
+PlaySoundInit::
+  ld hl, $ff00    ; 12
+  ld a, $44       ; 8
+  ld [$ff25], a   ; 12 ; all sounds to output 3
+  ; 32
+
+  ld a, [hl]      ; 8
+  ld [$ff30], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff31], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff32], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff33], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff34], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff35], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff36], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff37], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff38], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff39], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff3a], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff3b], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff3c], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff3d], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff3e], a   ; 12
+	ld a, [hl]      ; 8
+	swap a          ; 8
+	xor [hl]        ; 8
+	ld [$ff3f], a   ; 12
+  ; 560
+
+  ld a, $80       ; 8
+  ld [$ff1a], a   ; 12 ; enable channel 3
+  ld a, $20       ; 8
+  ld [$ff1c], a   ; 12 ; output volume
+  ld a, $8e       ; 8
+  ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*2)
+  ret             ; 16
+
+; 36 cycles
+; output at 8
+PlaySoundStart::
+  ld a, $87       ; 8
+  ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*2) + start
+  ret             ; 16
+
+; 52 cycles
+; inputs 0
+; outputs 24
+PlaySoundSetSo::
+  ld a, [hl]      ; 8
+  ld b, a         ; 4
+  swap a          ; 8
+  xor b           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ret             ; 16
+
+  
+; 88 cycles
+; inputs 0, 36, 52
+; outputs 24,60
+PlaySoundSetSoAndSamples::
+  ld a, [hl]      ; 8
+  ld b, a         ; 4
+  swap a          ; 8
+  xor b           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+  ret             ; 16
+
+
+
+
+hAttributePtr EQU $fff0
+hBbackup      EQU $fff2
+hCbackup      EQU $fff3
+hDbackup      EQU $fff4
+hEbackup      EQU $fff5
+hLoopCounter  EQU $fff6
+
+FMV::
+
+  xor a         ; 4
+  ld [$ff4f], a ; 12
+; 16
+
+; write common tiles to 1:8000 - 1:8780 and 0:9000 - 0:9780
+  ld hl, $ff00        ; 12
+  ld de, $9000        ; 12
+  ld c, $78           ; 8
+.commonTileLoopOuter ; 120 * 2324 + 4 = 278884
+    ld b, $10         ; 8
+.commonTileLoopInner  ;; 144 * 16 + 4 = 2308
+      ld a, [hl]      ; 8
+      swap a          ; 8
+      xor [hl]        ; 8
+      ld [de], a      ; 8
+      swap d          ; 8
+      dec d           ; 4
+      swap d          ; 8
+      ld l, $4f       ; 8
+      ld [hl], $1     ; 12
+      ld [de], a      ; 8
+      ld [hl], $0     ; 12
+      ld l, $0        ; 8
+      swap d          ; 8
+      inc d           ; 4
+      swap d          ; 8
+      inc de          ; 8
+      dec b           ; 4
+    jr nz, .commonTileLoopInner ; 12/8
+    dec c             ; 4 
+  jr nz, .commonTileLoopOuter ; 12/8
+; 278908
+
+; write common tile mapping buffer 0 to 0:9800 - 0:9a40
+; write common tile mapping buffer 1 to 0:9c00 - 0:9e40
+  ld hl, $9800      ; 12
+; first 2 static rows
+  ld c, 0           ; 8
+  ld d, 2           ; 8
+.tileMappingLoopLine0Outer ;; 1476 * 2 + 4 = 2956
+    ld b, $14       ; 8
+.tileMappingLoopLine0 ;; 72 * 20 + 4 = 1444
+      ld [hl], c    ; 8
+      inc h         ; 4
+      inc h         ; 4
+      inc h         ; 4
+      inc h         ; 4
+      ld [hl], c    ; 8
+      dec h         ; 4
+      dec h         ; 4
+      dec h         ; 4
+      dec h         ; 4
+      inc c         ; 4
+      inc l         ; 4
+      dec b         ; 4
+    jr nz, .tileMappingLoopLine0 ; 12/8
+    ld a, 12        ; 8
+    add l           ; 4
+    ld l, a         ; 4
+    dec d           ; 4
+  jr nz, .tileMappingLoopLine0Outer ; 12/8
+; 2976
+
+; middle 12 dynamic rows
+  ld c, 0           ; 8
+  ld d, 12          ; 8
+.tileMappingLoopLine2Outer ; 1728 * 12 + 4 = 20740
+    ld b, $14       ; 8
+.tileMappingLoopLine2 ;; 84 * 20 + 4 = 1684
+      ld [hl], c    ; 8
+      inc h         ; 4
+      inc h         ; 4
+      inc h         ; 4
+      inc h         ; 4
+      ld a, $80     ; 8
+      xor c         ; 4
+      ld [hl], a    ; 8
+      dec h         ; 4
+      dec h         ; 4
+      dec h         ; 4
+      dec h         ; 4
+      inc c         ; 4
+      inc l         ; 4
+      dec b         ; 4
+    jr nz, .tileMappingLoopLine2 ; 12/8
+    ld a, 12        ; 8
+    add l           ; 4
+    ld l, a         ; 4
+    jr nz, .tileMappingLoopLine2Overflow ; 12/8
+      inc h         ; 4
+.tileMappingLoopLine2Overflow
+    dec d           ; 4
+  jr nz, .tileMappingLoopLine2Outer ; 12/8
+; 20748
+
+; bottom 4 static rows
+  ld c, 40          ; 8
+  ld d, 4           ; 8
+.tileMappingLoopLineEOuter ;; 1488 * 4 + 4 = 5956
+    ld b, $14       ; 8
+.tileMappingLoopLineE ; 72 * 20 + 4 = 1444
+      ld [hl], c    ; 8
+      inc h         ; 4
+      inc h         ; 4
+      inc h         ; 4
+      inc h         ; 4
+      ld [hl], c    ; 8
+      dec h         ; 4
+      dec h         ; 4
+      dec h         ; 4
+      dec h         ; 4
+      inc c         ; 4
+      inc l         ; 4
+      dec b         ; 4
+    jr nz, .tileMappingLoopLineE ; 12/8
+    ld a, 12        ; 8
+    add l           ; 4
+    ld l, a         ; 4
+    jr nz, .tileMappingLoopLineEOverflow ; 12/8
+      inc h         ; 4
+.tileMappingLoopLineEOverflow
+    dec d           ; 4
+  jr nz, .tileMappingLoopLineEOuter ; 12/8
+; 5964
+
+
+; write tile attributes buffer 0 to 1:9800 - 1:9a40
+; write tile attributes buffer 1 to 1:9a00 - 1:9e40
+  ld a, 1           ; 8
+  ld [$ff4f], a     ; 12
+  ld de, $9800      ; 12
+  ld hl, $ff00      ; 12
+; 18 tile attribute rows
+  ld c, 18          ; 8
+.tileAttributeLoopOuter ;; 1888 * 18 + 4 = 33988
+    ld b, $14       ; 8
+.tileAttributeLoopInner ;; 92 * 20 + 4 = 1844
+      ld a, [hl]    ; 8
+      and $f        ; 8
+      ld [de], a    ; 8
+      inc d         ; 4
+      inc d         ; 4
+      inc d         ; 4
+      inc d         ; 4
+      xor $8        ; 8 ; switch vram bank
+      ld [de], a    ; 8
+      dec d         ; 4
+      dec d         ; 4
+      dec d         ; 4
+      dec d         ; 4
+      inc e         ; 4
+      dec b         ; 4
+    jr nz, .tileAttributeLoopInner ; 12/8
+    ld a, 12        ; 8
+    add e           ; 4
+    ld e, a         ; 4
+    jr nz, .tileAttributeLoopOverflow ; 12/8
+      inc d         ; 4
+.tileAttributeLoopOverflow
+    dec c           ; 4
+  jr nz, .tileAttributeLoopOuter ; 12/8
+; 34032
+
+; write first frame tiles to 0:8000 - 0:8f00
+  xor a               ; 4
+  ld [$ff4f], a       ; 12
+  ld hl, $ff00        ; 12
+  ld de, $8000        ; 12
+  ld c, $f0           ; 8
+.frame0TileLoopOuter ;; 916 * 240 + 4 = 219844
+    ld b, $10         ; 8
+.frame0TileLoopInner ;; 56 * 16 + 4 = 900
+      ld a, [hl]      ; 8
+      swap a          ; 8
+      xor [hl]        ; 8
+      ld [de], a      ; 8
+      inc de          ; 8
+      dec b           ; 4
+    jr nz, .frame0TileLoopInner ; 12/8
+    dec c             ; 4 
+  jr nz, .frame0TileLoopOuter ; 12/8
+; 219884
+
+
+; write BG palette data to 6:d000 - 6:d930 and 7:d000 - 7:d930
+  ld a, 6             ; 8
+  ld [rSVBK], a       ; 12
+  ld hl, $ff00        ; 12
+  ld de, $d000        ; 12
+  ld c, $93           ; 8
+.bgPalleteInitialLoopOuter ;; 1684 * 147 + 4 = 247552
+    ld b, $10         ; 8
+.bgPalleteInitialLoopInner ;; 104 * 16 + 4 = 1668
+      ld a, [hl]      ; 8
+      swap a          ; 8
+      xor [hl]        ; 8
+      ld [de], a      ; 8
+      ld l, $70       ; 8
+      ld [hl], $7     ; 12
+      ld [de], a      ; 8
+      ld [hl], $6     ; 12
+      ld l, $0        ; 8
+      inc de          ; 8
+      dec b           ; 4
+    jr nz, .bgPalleteInitialLoopInner ; 12/8
+    dec c             ; 4 
+  jr nz, .bgPalleteInitialLoopOuter ; 12/8
+; 247596
+
+; read initial palettes
+  ld sp, $d000       ; 12 ; 1176 colors/294 palettes (active: [38, 224)) -> 186
+  ld hl, rBGPI       ; 12
+  ld [hl], $0        ; 12
+  inc l              ; 4
+  ld a, 32           ; 8
+.initPaletteLoop ;; 44 * 32 + 4 = 1412
+  pop de           ; 12
+  ld [hl], d       ; 8
+  ld [hl], e       ; 8
+  dec a            ; 4
+  jr nz, .initPaletteLoop ; 12/8
+; 1452
+
+
+; write sound wave ram
+  ld hl, $ff00    ; 12
+  ld c, $30       ; 8
+  ld a, [hl]      ; 8
+  ld [$ff00+c], a ; 8
+  ld b, 15        ; 8
+.initWaveRamLoop ;; 52 * 15 + 4 = 784
+    inc c           ; 4
+    ld a, [hl]      ; 8
+    swap a          ; 8
+    xor [hl]        ; 8
+    ld [$ff00+c], a ; 8
+    dec b           ; 4
+  jr nz, .initWaveRamLoop ; 12/8
+; 820
+
+; start sound
+  ld a, $44       ; 8
+  ld [$ff25], a   ; 12 ; all sounds to output 3
+  ld a, $80       ; 8
+  ld [$ff1a], a   ; 12 ; enable channel 3
+  ld a, $20       ; 8
+  ld [$ff1c], a   ; 12 ; output volume
+  ld a, $8e       ; 8
+  ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*2)
+  ld a, $87       ; 8
+  ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*2) + start
+; 100
+
+  xor a            ; 4
+  ld [rSCY], a     ; 12
+  ld [rSCX], a     ; 12
+  ld a, $90        ; 8
+  ld [rWY], a      ; 12
+  ld a, $91       ; 8
+  ld [rLCDC], a   ; 12
+  ld a, $1         ; 8
+  ld [$ff4f], a    ; 12
+  ld a, $9c               ; 8
+  ld [hAttributePtr], a   ; 12
+  ld a, $40               ; 8
+  ld [hAttributePtr+1], a ; 12
+  ld hl, $ff00      ; 12
+  ld bc, $8800      ; 12 ; 240 + 8 tiles
+  ld de, $d130      ; 12 ; new palette position
+; 164 (@104v,172a)
+
+; <wait >=264>
+  ld a, 17        ; 8
+.loopWaitPreLineLoop     ;; 17 * 16 + 4 = 276 cycles
+  dec a            ; 4
+  jr nz, .loopWaitPreLineLoop ; 12/8
+; 276 (@380v,448a)
+
+.lineLoopStart ; (starts at -44 from Update sound)
+  ld a, 143             ; 8
+  ld [hLoopCounter], a  ; 12
+; 20 (@400v,468a)
+
+;;;; Line Loop ;;;;
+.lineLoop
+  nop             ; 4
+  nop             ; 4
+
+; backup e
+  ld a, e          ; 4
+  ld [hEbackup], a ; 12
+; 16 (24)
+
+; Update sound
+  ld a, [hl]      ; 8
+  ld e, a         ; 4
+  swap a          ; 8
+  xor e           ; 4
+  ld [$ff24], a   ; 12 ; (@520a; needs >= 456) ; set so for next samples
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+; 72 (96)
+
+; backup d
+  ld a, d          ; 4
+; 4 (100)
+
+; Update palettes
+  ld l, $69        ; 8
+rept 8
+  pop de           ; 12
+  ld [hl], d       ; 8 (@520v; needs >= 508 for cbgp write)
+  ld [hl], e       ; 8
+endr
+  ld l, $00        ; 8
+; 240 (340)
+
+; restore d
+  ld d, a           ; 4
+; 4 (344)
+
+  ld a, [hLoopCounter]          ; 12
+  cp 20                         ; 8
+  jp c, .skipTileAndPaletteData ; 16/12
+; 36/32 (/376)
+
+; Write tile data
+rept 7
+  ld a, [hl]       ; 8
+  swap a           ; 8
+  xor [hl]         ; 8
+  ld [bc], a       ; 8
+  inc c            ; 4
+endr
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [bc], a      ; 8 (@1052v=140 needs <= 156 for vram write)
+  inc bc          ; 8
+; 292 (668)
+
+; restore e
+  ld a, [hEbackup]  ; 12
+  ld e, a           ; 4
+; 16 (684)
+
+; switch RAM bank
+  ld a, [rSVBK]     ; 12
+  xor $01           ; 8
+  ld [rSVBK], a     ; 12
+; 32 (716)
+
+; Write new palette data
+rept 3
+  ld a, [hl]       ; 8
+  swap a           ; 8
+  xor [hl]         ; 8
+  ld [de], a       ; 8
+  inc de           ; 8
+endr
+; 120 (836)
+
+; switch RAM bank
+  ld a, [rSVBK]     ; 12
+  xor $01           ; 8
+  ld [rSVBK], a     ; 12
+; 32 (868)
+
+.finishLineLoop
+; finish loop
+  ld a, [hLoopCounter]     ; 12
+  dec a                    ; 4
+  ld [hLoopCounter], a     ; 12
+  jp nz, .lineLoop  ; 16/12
+; 44/40 (912/908)
+
+;;;; VBlank ;;;;
+  nop             ; 4 (-4)
+  nop             ; 4
+  nop             ; 4
+; 8
+
+; backup e
+  ld a, e          ; 4
+  ld [hEbackup], a ; 12
+; 16 (24)
+
+; Update sound
+  ld a, [hl]      ; 8
+  ld e, a         ; 4
+  swap a          ; 8
+  xor e           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+; 72 (96)
+
+; <wait 280>
+  ld a, 17        ; 8
+.loopWaitExit     ;; 17 * 16 + 4 = 276 cycles
+  dec a            ; 4
+  jr nz, .loopWaitExit ; 12/8
+  nop             ; 4
+  ; 280
+
+;maybe exit
+  ld a, [hl]      ; 8
+  cp $cf          ; 8
+  jp z, .stopFmv  ; 16/12
+; 32/28
+
+; backup b,c,d
+  ld a, b          ; 4
+  ld [hBbackup], a ; 12
+  ld a, c          ; 4
+  ld [hCbackup], a ; 12
+  ld a, d          ; 4
+  ld [hDbackup], a ; 12
+; 48
+
+; load tile attributes pointer
+  ld a, $1                ; 8
+  ld [$ff4f], a           ; 12
+  ld a, [hAttributePtr]   ; 12
+  ld d, a                 ; 4
+  ld a, [hAttributePtr+1] ; 12
+  ld e, a                 ; 4
+  ld hl, $ff00            ; 12
+  ld c, 8                 ; 8
+; 72
+
+.vblankTileAttributeLoopOuter
+
+; <wait 412>
+  ld a, 25        ; 8
+.loopWaitAttributeLoop         ;; 25 * 16 + 4 = 404 cycles
+  dec a            ; 4
+  jr nz, .loopWaitAttributeLoop ; 12/8
+  nop             ; 4
+  nop             ; 4
+  ; 412
+
+; Update sound
+  ld a, [hl]      ; 8
+  ld b, a         ; 4
+  swap a          ; 8
+  xor b           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+; 72
+
+  ld b, $8                                    ; 8
+.vblankTileAttributeLoopInner
+    ld a, [hl]                                ; 8
+    and $f                                    ; 8
+    ld [de], a                                ; 8
+    inc e                                     ; 4
+    dec b                                     ; 4
+  jr nz, .vblankTileAttributeLoopInner        ; 12/8
+  ld a, e                                     ; 4
+  and $10                                     ; 8
+  ld a, e                                     ; 4
+  ld e, 12                                    ; 8
+  jr z, .vblankNoFullAttributeLineDone        ; 12/8
+    add e                                     ; 4
+.vblankNoFullAttributeLineDone
+  ld e, a                                     ; 4
+  and a                                       ; 4
+  jr nz, .vblankTileAttributeLoopOverflow     ; 12/8
+    inc d                                     ; 4
+.vblankTileAttributeLoopOverflow
+    dec c                                     ; 4
+  jr nz, .vblankTileAttributeLoopOuter        ; 12/8
+; 428/424
+
+; prepare next frame if necessary
+  ld a, [hDbackup]  ; 12
+  cp $d7            ; 8
+  jr nz, .skipPrepareNextFrame ; 12/8
+; 32/28
+
+  ld a, [rSVBK]     ; 12
+  and $1            ; 8
+  add a             ; 4
+  add a             ; 4
+  add a             ; 4
+; 32
+
+; switch LCDC
+  add $89           ; 8
+  ld [rLCDC], a     ; 12
+; 20
+
+; switch bc: new tile positon; switch hAttributePtr
+  sub $9            ; 8
+  ld [hBbackup], a  ; 12
+  rrca              ; 4
+  add $58           ; 8
+  ld [hAttributePtr], a  ; 12
+  ld a, $40         ; 8
+  ld [hAttributePtr+1], a  ; 12
+  xor a             ; 4
+  ld [hCbackup], a  ; 12
+; 80
+
+; switch de: new palette positon
+  ld a, $d1         ; 8
+  ld [hDbackup], a  ; 12
+  ld a, $30         ; 8
+  ld [hEbackup], a  ; 12
+; 40
+
+; switch RAM bank
+  ld a, [rSVBK]     ; 12
+  xor $01           ; 8
+  ld [rSVBK], a     ; 12
+; 32
+
+; <wait 172>
+  ld a, 10        ; 8
+.loopWaitPrepareNextFrame         ;; 10 * 16 + 4 = 164 cycles
+  dec a           ; 4
+  jr nz, .loopWaitPrepareNextFrame ; 12/8
+  nop             ; 4
+  nop             ; 4
+; 172
+
+  jr .continueWithWritingPaletteMap ; 12
+; 12 (416)
+
+.skipPrepareNextFrame
+; store tile attributes pointer
+  ld a, d                 ; 4
+  ld [hAttributePtr], a   ; 12
+  ld a, e                 ; 4
+  ld [hAttributePtr+1], a ; 12
+; 32
+
+; <wait 352>
+  ld a, 21        ; 8
+.loopWaitSkipNextFrame         ;; 21 * 16 + 4 = 340 cycles
+  dec a           ; 4
+  jr nz, .loopWaitSkipNextFrame ; 12/8
+  nop             ; 4
+  nop             ; 4
+  nop             ; 4
+; 352 (416)
+
+.continueWithWritingPaletteMap
+
+; Update sound
+  ld a, [hl]      ; 8
+  ld e, a         ; 4
+  swap a          ; 8
+  xor e           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+; 72
+
+; write initial palette data (1)
+  ld sp, $d000       ; 12
+  ld hl, rBGPI       ; 12
+  ld [hl], $0        ; 12
+  inc l              ; 4
+  ld a, 11           ; 8
+.vblankInitPaletteLoop1
+  pop de           ; 12
+  ld [hl], d       ; 8
+  ld [hl], e       ; 8
+  pop de           ; 12
+  ld [hl], d       ; 8
+  ld [hl], e       ; 8
+  dec a            ; 4
+  jr nz, .vblankInitPaletteLoop1 ; 12/8
+  ld l, 0         ; 8
+; 844
+
+; Update sound (late 4 cycles)
+  ld a, [hl]      ; 8
+  ld e, a         ; 4
+  swap a          ; 8
+  xor e           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+; 72
+
+; read initial palette data (2)
+  ld l, $69        ; 8
+  ld a, 10         ; 8
+.vblankInitPaletteLoop2
+  pop de           ; 12
+  ld [hl], d       ; 8
+  ld [hl], e       ; 8
+  dec a            ; 4
+  jr nz, .vblankInitPaletteLoop2 ; 12/8
+; 452
+
+; <wait 220-4 = 216 (last sound was 4 cycles late)>
+  ld a, 13        ; 8
+.loopWaitBeforeRestore         ;; 13 * 16 + 4 = 212 cycles
+  dec a           ; 4
+  jr nz, .loopWaitBeforeRestore ; 12/8
+  nop             ; 4
+; 216
+
+; Set VRAM bank
+  ld a, [rSVBK]           ; 12
+  or $fe                  ; 8
+  cpl                     ; 4
+  ld [$ff4f], a           ; 12
+; 36
+
+; restore b,c,d,e
+  ld a, [hBbackup]  ; 12
+  ld b, a           ; 4
+  ld a, [hCbackup]  ; 12
+  ld c, a           ; 4
+  ld a, [hDbackup]  ; 12
+  ld d, a           ; 4
+  ld a, [hEbackup]  ; 12
+  ld e, a           ; 4
+  ld l, 0           ; 8
+  jp .lineLoopStart ; 16
+; 88
+
+
+
+
+.skipTileAndPaletteData ; (380)
+; restore e
+  ld a, [hEbackup]  ; 12
+  ld e, a           ; 4
+; 16 (396)
+
+  ld a, 28          ; 8
+.skipTileAndPaletteDataLoop
+    dec a                              ; 4
+    jr nz, .skipTileAndPaletteDataLoop ; 12/8
+  nop               ; 4
+jp .finishLineLoop ; 16
+; 472 (868)
+
+
+
+
+.stopFmv
+  jr .stopFmv
 

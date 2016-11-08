@@ -12,4 +12,6 @@ public final class PlaybackAddresses {
   public static final int WRITE_TILE_DIRECT = 0x0289;
   public static final int WRITE_TILE_DIRECT_VRAM0 = 0x02F7;
   public static final int WRITE_TILE_DIRECT_VRAM1 = 0x0368;
+  public static final int STOP_OPERATIONS = 0x049B;
+  public static final int PLAY_SOUND = 0x049D;
 }

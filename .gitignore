@@ -7,7 +7,6 @@ libgambatte/java/dist/
 libgambatte/include/mrwint_gbtasgen_Gb.h
 bin/
 movies/*
-roms/*
 saves/*
 assembly/dk.asm
 assembly/sml2_10.asm
@@ -15,14 +14,23 @@ assembly/tetris10.asm
 assembly/tetris11.asm
 temp/*
 
+# protected files
+audio/*
+roms/*
+video/*
+
 # binary files
 *.o
 *.os
 *.so
 *.dylib
 
+# temporary backups
+*~
+
 # logs
 *.log
+log.txt
 
 # hidden files
 .*

@@ -109,7 +109,7 @@ public class StateMap {
         boolean mWx = mWy && wy <= scanLine;
         int scy = memoryMap.getHramValue(GbConstants.SCY, time, GbConstants.SCY_DEFAULT);
         int scx = memoryMap.getHramValue(GbConstants.SCX, time, GbConstants.SCX_DEFAULT);
-        boolean mScyx = (lcdc & 0x1) != 0 && (!mWx || wx <= 7); // right edge not rendered when WX < 7
+        boolean mScyx = (lcdc & 0x1) != 0 && (!mWx || wx > 7); // right edge not rendered when WX < 7
         
         this.lcdc.add(adjustedTime, mLcdc ? canonicalizeLcdc(lcdc) : null);
         this.wy.add(adjustedTime, mWy ? canonicalizeWy(wy) : null);
@@ -214,7 +214,7 @@ public class StateMap {
     boolean flipVertically;
     boolean bgToOamPriority;
     for (int dy = 0; dy < 8; dy++) {
-      int frameCycle = Math.max(0, firstRowScanLine + dy) * 456 + 80;
+      int frameCycle = Math.max(0, firstRowScanLine + dy) * GbConstants.LINE_CYCLES + 80 * GbConstants.DOUBLE_SPEED_FACTOR;
       TimeStamp time = new TimeStamp(scene, frame, frameCycle);
       int lcdc = memoryMap.getHramValue(GbConstants.LCDC, time, GbConstants.LCDC_DEFAULT);
       int bgMapTile = memoryMap.getVramValue(0, address, time, GbConstants.VRAM_DEFAULT);
@@ -227,7 +227,7 @@ public class StateMap {
       tileData[2 * dy + 1] = (byte)memoryMap.getVramValue(vramBank, bgMapTileAddress + 2*dy + 1, time, GbConstants.VRAM_DEFAULT);
     }
     
-    int frameCycle = scanLine * 456 + 80;
+    int frameCycle = scanLine * GbConstants.LINE_CYCLES + 80 * GbConstants.DOUBLE_SPEED_FACTOR;
     TimeStamp time = new TimeStamp(scene, frame, frameCycle);
     
     int bgMapAttribute = memoryMap.getVramValue(1, address, time, GbConstants.VRAM_DEFAULT);
