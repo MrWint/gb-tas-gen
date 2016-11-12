@@ -18,18 +18,18 @@ public class KMeans {
         sums[i][0] = sums[i][1] = sums[i][2] = counts[i] = 0;
 
       for (int i = 0; i < colors.length; i++) {
-        int index = VideoUtil.findClosestMatchIndex(colors[i], newPalette);
+        int index = ColorUtil.findClosestMatchIndex(colors[i], newPalette);
         if (index != colorMap[i])
           mappingChanged = true;
         colorMap[i] = index;
         for (int j = 0; j < 3; j++)
-          sums[index][j] += VideoUtil.getComponent(colors[i], j);
+          sums[index][j] += ColorUtil.getComponent(colors[i], j);
         counts[index]++;
       }
       for (int i = 0; i < 4; i++) {
         if (counts[i] > 0) {
           for (int j = 0; j < 3; j++) {
-            newPalette[i] = VideoUtil.setComponent(newPalette[i], j, sums[i][j] / counts[i]);
+            newPalette[i] = ColorUtil.setComponent(newPalette[i], j, sums[i][j] / counts[i]);
           }
         }
       }

@@ -20,7 +20,7 @@ public class FourPalette {
             | (((val >>       BITS_PER_ROUND) & BITS_PER_ROUND_MASK) << 16)
             | (((val >> (2 * BITS_PER_ROUND)) & BITS_PER_ROUND_MASK) << 32)
             | (((val >> (3 * BITS_PER_ROUND)) & BITS_PER_ROUND_MASK) << 48)) << (c * 5 + bitShift);
-        long curError = VideoUtil.getCosts(colors, gbPalette + gbPaletteOffset);
+        long curError = ColorUtil.getCosts(colors, gbPalette + gbPaletteOffset);
         if (curError < minError) {
           minError = curError;
           minErrorOffset = gbPaletteOffset;

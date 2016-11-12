@@ -640,38 +640,9 @@ hLoopCounter  EQU $fff6
 
 FMV::
 
-  xor a         ; 4
-  ld [$ff4f], a ; 12
+  xor a               ; 4
+  ld [$ff4f], a       ; 12
 ; 16
-
-; write common tiles to 1:8000 - 1:8780 and 0:9000 - 0:9780
-  ld hl, $ff00        ; 12
-  ld de, $9000        ; 12
-  ld c, $78           ; 8
-.commonTileLoopOuter ; 120 * 2324 + 4 = 278884
-    ld b, $10         ; 8
-.commonTileLoopInner  ;; 144 * 16 + 4 = 2308
-      ld a, [hl]      ; 8
-      swap a          ; 8
-      xor [hl]        ; 8
-      ld [de], a      ; 8
-      swap d          ; 8
-      dec d           ; 4
-      swap d          ; 8
-      ld l, $4f       ; 8
-      ld [hl], $1     ; 12
-      ld [de], a      ; 8
-      ld [hl], $0     ; 12
-      ld l, $0        ; 8
-      swap d          ; 8
-      inc d           ; 4
-      swap d          ; 8
-      inc de          ; 8
-      dec b           ; 4
-    jr nz, .commonTileLoopInner ; 12/8
-    dec c             ; 4 
-  jr nz, .commonTileLoopOuter ; 12/8
-; 278908
 
 ; write common tile mapping buffer 0 to 0:9800 - 0:9a40
 ; write common tile mapping buffer 1 to 0:9c00 - 0:9e40
@@ -701,7 +672,7 @@ FMV::
     ld l, a         ; 4
     dec d           ; 4
   jr nz, .tileMappingLoopLine0Outer ; 12/8
-; 2976
+; 2976 (2992)
 
 ; middle 12 dynamic rows
   ld c, 0           ; 8
@@ -733,7 +704,7 @@ FMV::
 .tileMappingLoopLine2Overflow
     dec d           ; 4
   jr nz, .tileMappingLoopLine2Outer ; 12/8
-; 20748
+; 20748 (23740)
 
 ; bottom 4 static rows
   ld c, 40          ; 8
@@ -763,7 +734,55 @@ FMV::
 .tileMappingLoopLineEOverflow
     dec d           ; 4
   jr nz, .tileMappingLoopLineEOuter ; 12/8
-; 5964
+; 5964 (29704)
+
+
+; write common tiles to 1:8000 - 1:8780 and 0:9000 - 0:9780
+  ld hl, $ff00        ; 12
+  ld de, $9000        ; 12
+  ld c, $78           ; 8
+.commonTileLoopOuter ; 2324 * 120 + 4 = 278884
+    ld b, $10         ; 8
+.commonTileLoopInner  ;; 144 * 16 + 4 = 2308
+      ld a, [hl]      ; 8 ;; 40
+      swap a          ; 8
+      xor [hl]        ; 8 ;; 56
+      ld [de], a      ; 8
+      swap d          ; 8
+      dec d           ; 4
+      swap d          ; 8
+      ld l, $4f       ; 8
+      ld [hl], $1     ; 12
+      ld [de], a      ; 8
+      ld [hl], $0     ; 12
+      ld l, $0        ; 8
+      swap d          ; 8
+      inc d           ; 4
+      swap d          ; 8
+      inc de          ; 8
+      dec b           ; 4
+    jr nz, .commonTileLoopInner ; 12/8
+    dec c             ; 4 
+  jr nz, .commonTileLoopOuter ; 12/8
+; 278908 (308612) [3840i]
+
+
+; write first frame tiles to 0:8000 - 0:8f00
+  ld de, $8000        ; 12
+  ld c, $f0           ; 8
+.frame0TileLoopOuter ;; 916 * 240 + 4 = 219844
+    ld b, $10         ; 8
+.frame0TileLoopInner ;; 56 * 16 + 4 = 900
+      ld a, [hl]      ; 8 ;; 28
+      swap a          ; 8
+      xor [hl]        ; 8 ;; 44
+      ld [de], a      ; 8
+      inc de          ; 8
+      dec b           ; 4
+    jr nz, .frame0TileLoopInner ; 12/8
+    dec c             ; 4 
+  jr nz, .frame0TileLoopOuter ; 12/8
+; 219856 (528468) [7680i (11520i)]
 
 
 ; write tile attributes buffer 0 to 1:9800 - 1:9a40
@@ -771,13 +790,12 @@ FMV::
   ld a, 1           ; 8
   ld [$ff4f], a     ; 12
   ld de, $9800      ; 12
-  ld hl, $ff00      ; 12
 ; 18 tile attribute rows
   ld c, 18          ; 8
 .tileAttributeLoopOuter ;; 1888 * 18 + 4 = 33988
     ld b, $14       ; 8
 .tileAttributeLoopInner ;; 92 * 20 + 4 = 1844
-      ld a, [hl]    ; 8
+      ld a, [hl]    ; 8 ;; 48
       and $f        ; 8
       ld [de], a    ; 8
       inc d         ; 4
@@ -801,41 +819,20 @@ FMV::
 .tileAttributeLoopOverflow
     dec c           ; 4
   jr nz, .tileAttributeLoopOuter ; 12/8
-; 34032
-
-; write first frame tiles to 0:8000 - 0:8f00
-  xor a               ; 4
-  ld [$ff4f], a       ; 12
-  ld hl, $ff00        ; 12
-  ld de, $8000        ; 12
-  ld c, $f0           ; 8
-.frame0TileLoopOuter ;; 916 * 240 + 4 = 219844
-    ld b, $10         ; 8
-.frame0TileLoopInner ;; 56 * 16 + 4 = 900
-      ld a, [hl]      ; 8
-      swap a          ; 8
-      xor [hl]        ; 8
-      ld [de], a      ; 8
-      inc de          ; 8
-      dec b           ; 4
-    jr nz, .frame0TileLoopInner ; 12/8
-    dec c             ; 4 
-  jr nz, .frame0TileLoopOuter ; 12/8
-; 219884
+; 34020 (562488) [360i (11880i)]
 
 
 ; write BG palette data to 6:d000 - 6:d930 and 7:d000 - 7:d930
   ld a, 6             ; 8
   ld [rSVBK], a       ; 12
-  ld hl, $ff00        ; 12
   ld de, $d000        ; 12
   ld c, $93           ; 8
 .bgPalleteInitialLoopOuter ;; 1684 * 147 + 4 = 247552
     ld b, $10         ; 8
 .bgPalleteInitialLoopInner ;; 104 * 16 + 4 = 1668
-      ld a, [hl]      ; 8
+      ld a, [hl]      ; 8 ;; 48
       swap a          ; 8
-      xor [hl]        ; 8
+      xor [hl]        ; 8 ;; 64
       ld [de], a      ; 8
       ld l, $70       ; 8
       ld [hl], $7     ; 12
@@ -847,38 +844,38 @@ FMV::
     jr nz, .bgPalleteInitialLoopInner ; 12/8
     dec c             ; 4 
   jr nz, .bgPalleteInitialLoopOuter ; 12/8
-; 247596
+; 247584 (810072) [4704i (16584i)]
 
 ; read initial palettes
   ld sp, $d000       ; 12 ; 1176 colors/294 palettes (active: [38, 224)) -> 186
   ld hl, rBGPI       ; 12
-  ld [hl], $0        ; 12
-  inc l              ; 4
+  ld [hl], $80       ; 12
+  inc c              ; 4
   ld a, 32           ; 8
 .initPaletteLoop ;; 44 * 32 + 4 = 1412
   pop de           ; 12
-  ld [hl], d       ; 8
   ld [hl], e       ; 8
+  ld [hl], d       ; 8
   dec a            ; 4
   jr nz, .initPaletteLoop ; 12/8
-; 1452
+  ld l, a          ; 4
+; 1456 (811528) [0i (16584i)]
 
 
 ; write sound wave ram
-  ld hl, $ff00    ; 12
   ld c, $30       ; 8
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 8
   ld [$ff00+c], a ; 8
   ld b, 15        ; 8
 .initWaveRamLoop ;; 52 * 15 + 4 = 784
     inc c           ; 4
-    ld a, [hl]      ; 8
+    ld a, [hl]      ; 8 ;; 36
     swap a          ; 8
-    xor [hl]        ; 8
+    xor [hl]        ; 8 ;; 52
     ld [$ff00+c], a ; 8
     dec b           ; 4
   jr nz, .initWaveRamLoop ; 12/8
-; 820
+; 808 (812336) [31i (16615i)]
 
 ; start sound
   ld a, $44       ; 8
@@ -891,7 +888,7 @@ FMV::
   ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*2)
   ld a, $87       ; 8
   ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*2) + start
-; 100
+; 100 (812436)
 
   xor a            ; 4
   ld [rSCY], a     ; 12
@@ -900,28 +897,25 @@ FMV::
   ld [rWY], a      ; 12
   ld a, $91       ; 8
   ld [rLCDC], a   ; 12
-  ld a, $1         ; 8
-  ld [$ff4f], a    ; 12
   ld a, $9c               ; 8
   ld [hAttributePtr], a   ; 12
   ld a, $40               ; 8
   ld [hAttributePtr+1], a ; 12
-  ld hl, $ff00      ; 12
   ld bc, $8800      ; 12 ; 240 + 8 tiles
   ld de, $d130      ; 12 ; new palette position
-; 164 (@104v,172a)
+; 132 (@72v,140a) (812568)
 
-; <wait >=264>
-  ld a, 17        ; 8
-.loopWaitPreLineLoop     ;; 17 * 16 + 4 = 276 cycles
+; <wait >=296>
+  ld a, 19        ; 8
+.loopWaitPreLineLoop     ;; 19 * 16 + 4 = 308 cycles
   dec a            ; 4
   jr nz, .loopWaitPreLineLoop ; 12/8
-; 276 (@380v,448a)
+; 308 (@380v,448a) (812876)
 
 .lineLoopStart ; (starts at -44 from Update sound)
   ld a, 143             ; 8
   ld [hLoopCounter], a  ; 12
-; 20 (@400v,468a)
+; 20 (@400v,468a) (812896) [0i (10855i)]
 
 ;;;; Line Loop ;;;;
 .lineLoop
@@ -934,16 +928,16 @@ FMV::
 ; 16 (24)
 
 ; Update sound
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 24
   ld e, a         ; 4
   swap a          ; 8
   xor e           ; 4
   ld [$ff24], a   ; 12 ; (@520a; needs >= 456) ; set so for next samples
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 60
   swap a          ; 8
-  xor [hl]        ; 8
+  xor [hl]        ; 8 ;; 76
   ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
-; 72 (96)
+; 72 (96) [3i]
 
 ; backup d
   ld a, d          ; 4
@@ -953,8 +947,8 @@ FMV::
   ld l, $69        ; 8
 rept 8
   pop de           ; 12
-  ld [hl], d       ; 8 (@520v; needs >= 508 for cbgp write)
-  ld [hl], e       ; 8
+  ld [hl], e       ; 8 (@520v; needs >= 508 for cbgp write)
+  ld [hl], d       ; 8
 endr
   ld l, $00        ; 8
 ; 240 (340)
@@ -970,18 +964,18 @@ endr
 
 ; Write tile data
 rept 7
-  ld a, [hl]       ; 8
+  ld a, [hl]       ; 8 ;; 376 + i * 36
   swap a           ; 8
-  xor [hl]         ; 8
+  xor [hl]         ; 8 ;; 392 + i * 36
   ld [bc], a       ; 8
   inc c            ; 4
 endr
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 628
   swap a          ; 8
-  xor [hl]        ; 8
+  xor [hl]        ; 8 ;; 644
   ld [bc], a      ; 8 (@1052v=140 needs <= 156 for vram write)
   inc bc          ; 8
-; 292 (668)
+; 292 (668) [16i (19i)]
 
 ; restore e
   ld a, [hEbackup]  ; 12
@@ -996,13 +990,13 @@ endr
 
 ; Write new palette data
 rept 3
-  ld a, [hl]       ; 8
+  ld a, [hl]       ; 8 ;; 716 + i * 40
   swap a           ; 8
-  xor [hl]         ; 8
+  xor [hl]         ; 8 ;; 732 + i * 40
   ld [de], a       ; 8
   inc de           ; 8
 endr
-; 120 (836)
+; 120 (836) [6i (25i)]
 
 ; switch RAM bank
   ld a, [rSVBK]     ; 12
@@ -1018,7 +1012,7 @@ endr
   jp nz, .lineLoop  ; 16/12
 ; 44/40 (912/908)
 
-;;;; VBlank ;;;;
+;;;; VBlank ;;;;       [(25i*124+3i*19 = 3157i)]
   nop             ; 4 (-4)
   nop             ; 4
   nop             ; 4
@@ -1030,30 +1024,31 @@ endr
 ; 16 (24)
 
 ; Update sound
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 24
   ld e, a         ; 4
   swap a          ; 8
   xor e           ; 4
   ld [$ff24], a   ; 12 ; set so for next samples
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 60
   swap a          ; 8
-  xor [hl]        ; 8
+  xor [hl]        ; 8 ;; 76
   ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
-; 72 (96)
+; 72 (96) [3i (3160i)]
 
-; <wait 280>
-  ld a, 17        ; 8
-.loopWaitExit     ;; 17 * 16 + 4 = 276 cycles
+; <wait 380>
+  ld a, 23        ; 8
+.loopWaitExit     ;; 23 * 16 + 4 = 372 cycles
   dec a            ; 4
   jr nz, .loopWaitExit ; 12/8
   nop             ; 4
-  ; 280
+  nop             ; 4
+; 380 (476)
 
 ;maybe exit
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 476
   cp $cf          ; 8
   jp z, .stopFmv  ; 16/12
-; 32/28
+; 32/28 (508/504) [1i (3161i)]
 
 ; backup b,c,d
   ld a, b          ; 4
@@ -1062,7 +1057,7 @@ endr
   ld [hCbackup], a ; 12
   ld a, d          ; 4
   ld [hDbackup], a ; 12
-; 48
+; 48 (552)
 
 ; load tile attributes pointer
   ld a, $1                ; 8
@@ -1071,74 +1066,71 @@ endr
   ld d, a                 ; 4
   ld a, [hAttributePtr+1] ; 12
   ld e, a                 ; 4
-  ld hl, $ff00            ; 12
-  ld c, 8                 ; 8
-; 72
+; 52 (604)  [0i (3161i)]
 
-.vblankTileAttributeLoopOuter
-
-; <wait 412>
-  ld a, 25        ; 8
-.loopWaitAttributeLoop         ;; 25 * 16 + 4 = 404 cycles
+  ld c, 6                 ; 8
+.vblankTileAttributeLoopOuter ;; 912 * 6 + 4 = 5476
+; <wait 324>
+  ld a, 20        ; 8
+.loopWaitAttributeLoop         ;; 20 * 16 + 4 = 324 cycles
   dec a            ; 4
   jr nz, .loopWaitAttributeLoop ; 12/8
-  nop             ; 4
-  nop             ; 4
-  ; 412
+; 332 (936)
 
 ; Update sound
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 936
   ld b, a         ; 4
   swap a          ; 8
   xor b           ; 4
   ld [$ff24], a   ; 12 ; set so for next samples
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 972
   swap a          ; 8
-  xor [hl]        ; 8
+  xor [hl]        ; 8 ;; 988
   ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
-; 72
+; 72 (1008) [3i]
 
-  ld b, $8                                    ; 8
-.vblankTileAttributeLoopInner
-    ld a, [hl]                                ; 8
-    and $f                                    ; 8
-    ld [de], a                                ; 8
-    inc e                                     ; 4
-    dec b                                     ; 4
-  jr nz, .vblankTileAttributeLoopInner        ; 12/8
-  ld a, e                                     ; 4
-  and $10                                     ; 8
-  ld a, e                                     ; 4
-  ld e, 12                                    ; 8
-  jr z, .vblankNoFullAttributeLineDone        ; 12/8
-    add e                                     ; 4
+  ld b, $a                                ; 8
+.vblankTileAttributeLoopInner               ;; 44 * 10 + 4 = 444
+    ld a, [hl]                            ; 8 ;; 1024
+    and $f                                ; 8
+    ld [de], a                            ; 8
+    inc e                                 ; 4
+    dec b                                 ; 4
+  jr nz, .vblankTileAttributeLoopInner    ; 12/8
+  ld a, e                                 ; 4
+  and $10                                 ; 8
+  ld a, e                                 ; 4
+  ld e, 12                                ; 8
+  jr z, .vblankNoFullAttributeLineDone    ; 12/8
+    add e                                 ; 4
 .vblankNoFullAttributeLineDone
-  ld e, a                                     ; 4
-  and a                                       ; 4
-  jr nz, .vblankTileAttributeLoopOverflow     ; 12/8
-    inc d                                     ; 4
+  ld e, a                                 ; 4
+  and a                                   ; 4
+  jr nz, .vblankTileAttributeLoopOverflow ; 12/8
+    inc d                                 ; 4
 .vblankTileAttributeLoopOverflow
-    dec c                                     ; 4
-  jr nz, .vblankTileAttributeLoopOuter        ; 12/8
-; 428/424
+    dec c                                 ; 4
+  jr nz, .vblankTileAttributeLoopOuter    ; 12/8
+; 516/512 (6080) [10i (13i)]
 
-; prepare next frame if necessary
+
+; prepare next frame if necessary  [(3161i + 13i+6 = 3239i)]
   ld a, [hDbackup]  ; 12
   cp $d7            ; 8
   jr nz, .skipPrepareNextFrame ; 12/8
-; 32/28
+; 32/28 (/6108)
 
   ld a, [rSVBK]     ; 12
   and $1            ; 8
   add a             ; 4
   add a             ; 4
   add a             ; 4
-; 32
+; 32 (6140)
 
 ; switch LCDC
   add $89           ; 8
   ld [rLCDC], a     ; 12
-; 20
+; 20 (6160)
 
 ; switch bc: new tile positon; switch hAttributePtr
   sub $9            ; 8
@@ -1150,120 +1142,149 @@ endr
   ld [hAttributePtr+1], a  ; 12
   xor a             ; 4
   ld [hCbackup], a  ; 12
-; 80
+; 80 (6240)
 
 ; switch de: new palette positon
   ld a, $d1         ; 8
   ld [hDbackup], a  ; 12
   ld a, $30         ; 8
   ld [hEbackup], a  ; 12
-; 40
+; 40 (6280)
 
 ; switch RAM bank
   ld a, [rSVBK]     ; 12
   xor $01           ; 8
   ld [rSVBK], a     ; 12
-; 32
+; 32 (6312)
 
-; <wait 172>
-  ld a, 10        ; 8
-.loopWaitPrepareNextFrame         ;; 10 * 16 + 4 = 164 cycles
+; <wait 76>
+  ld a, 4         ; 8
+.loopWaitPrepareNextFrame         ;; 4 * 16 + 4 = 68 cycles
   dec a           ; 4
   jr nz, .loopWaitPrepareNextFrame ; 12/8
   nop             ; 4
   nop             ; 4
-; 172
+; 76 (6388)
 
   jr .continueWithWritingPaletteMap ; 12
-; 12 (416)
+; 12 (6400)
 
-.skipPrepareNextFrame
+.skipPrepareNextFrame ; (6112)
 ; store tile attributes pointer
   ld a, d                 ; 4
   ld [hAttributePtr], a   ; 12
   ld a, e                 ; 4
   ld [hAttributePtr+1], a ; 12
-; 32
+; 32 (6144)
 
-; <wait 352>
-  ld a, 21        ; 8
-.loopWaitSkipNextFrame         ;; 21 * 16 + 4 = 340 cycles
+; <wait 256>
+  ld a, 15        ; 8
+.loopWaitSkipNextFrame         ;; 15 * 16 + 4 = 244 cycles
   dec a           ; 4
   jr nz, .loopWaitSkipNextFrame ; 12/8
   nop             ; 4
   nop             ; 4
   nop             ; 4
-; 352 (416)
+; 256 (6400)
 
 .continueWithWritingPaletteMap
 
+  ld c, 2         ; 8
+; 8 (6408)
+.wait2LinesLoop  ;; 912 * 2 + 4 = 1828
 ; Update sound
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 6408
   ld e, a         ; 4
   swap a          ; 8
   xor e           ; 4
   ld [$ff24], a   ; 12 ; set so for next samples
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 6444
   swap a          ; 8
-  xor [hl]        ; 8
+  xor [hl]        ; 8 ;; 6460
   ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
-; 72
+; 72 (6480) [3i (3242i)]
 
-; write initial palette data (1)
+; <wait 824>
+  ld a, 51        ; 8
+.loopWaitWait2Lines         ;; 51 * 16 + 4 = 820 cycles
+  dec a           ; 4
+  jr nz, .loopWaitWait2Lines ; 12/8
+  nop             ; 4
+; 824 (7304)
+
+  dec c           ; 4
+  jr nz, .wait2LinesLoop ; 12/8
+  nop             ; 4
+; 16 (8232)
+
+; Update sound  [(3239i + 3i*2 = 3245i)]
+  ld a, [hl]      ; 8 ;; 8232
+  ld e, a         ; 4
+  swap a          ; 8
+  xor e           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ld a, [hl]      ; 8 ;; 8268
+  swap a          ; 8
+  xor [hl]        ; 8 ;; 8284
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+; 72 (8304) [3i (3248i)]
+
+; read initial palette data (1)
   ld sp, $d000       ; 12
   ld hl, rBGPI       ; 12
-  ld [hl], $0        ; 12
+  ld [hl], $80       ; 12
   inc l              ; 4
   ld a, 11           ; 8
 .vblankInitPaletteLoop1
   pop de           ; 12
-  ld [hl], d       ; 8
   ld [hl], e       ; 8
+  ld [hl], d       ; 8
   pop de           ; 12
-  ld [hl], d       ; 8
   ld [hl], e       ; 8
+  ld [hl], d       ; 8
   dec a            ; 4
   jr nz, .vblankInitPaletteLoop1 ; 12/8
-  ld l, 0         ; 8
-; 844
+  ld l, a          ; 4
+; 840 (9144)
 
-; Update sound (late 4 cycles)
-  ld a, [hl]      ; 8
+; Update sound
+  ld a, [hl]      ; 8 ;; 9144
   ld e, a         ; 4
   swap a          ; 8
   xor e           ; 4
   ld [$ff24], a   ; 12 ; set so for next samples
-  ld a, [hl]      ; 8
+  ld a, [hl]      ; 8 ;; 9180
   swap a          ; 8
-  xor [hl]        ; 8
+  xor [hl]        ; 8 ;; 9196
   ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
-; 72
+; 72 (9216) [3i (3251i)]
 
 ; read initial palette data (2)
   ld l, $69        ; 8
   ld a, 10         ; 8
 .vblankInitPaletteLoop2
   pop de           ; 12
-  ld [hl], d       ; 8
   ld [hl], e       ; 8
+  ld [hl], d       ; 8
   dec a            ; 4
   jr nz, .vblankInitPaletteLoop2 ; 12/8
-; 452
+; 452 (9668)
 
-; <wait 220-4 = 216 (last sound was 4 cycles late)>
+; <wait 220>
   ld a, 13        ; 8
 .loopWaitBeforeRestore         ;; 13 * 16 + 4 = 212 cycles
   dec a           ; 4
   jr nz, .loopWaitBeforeRestore ; 12/8
   nop             ; 4
-; 216
+  nop             ; 4
+; 220 (9888)
 
 ; Set VRAM bank
   ld a, [rSVBK]           ; 12
   or $fe                  ; 8
   cpl                     ; 4
   ld [$ff4f], a           ; 12
-; 36
+; 36 (9924)
 
 ; restore b,c,d,e
   ld a, [hBbackup]  ; 12
@@ -1276,7 +1297,7 @@ endr
   ld e, a           ; 4
   ld l, 0           ; 8
   jp .lineLoopStart ; 16
-; 88
+; 88 (10012)
 
 
 

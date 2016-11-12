@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Fmv;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaySound;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
@@ -13,14 +14,18 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteByteDirect;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteHByteDirect;
-import mrwint.gbtasgen.tools.playback.util.SoundUtil;
+import mrwint.gbtasgen.tools.playback.util.audio.AudioUtil;
+import mrwint.gbtasgen.tools.playback.util.audio.GbAudio;
+import mrwint.gbtasgen.tools.playback.util.video.GbVideo;
+import mrwint.gbtasgen.tools.playback.util.video.SimpleAvi;
 
 public class Calibration {
   
   public static void main(String[] args) throws Exception {
 //    new PlaybackWriter(calibratePlaybackInputCycleOffsetOperations(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
 //    new PlaybackWriter(calibrateVramAccessible(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
-    new PlaybackWriter(createSoundTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/soundTest.lsmv");
+//    new PlaybackWriter(createSoundTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/sbsoundTest.lsmv");
+    new PlaybackWriter(createFmvTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/fmvTest.lsmv");
   }
  
   // Initial Record cycleCounter:  202372
@@ -79,9 +84,8 @@ public class Calibration {
   }
 
   public static ArrayList<PlaybackOperation> createSoundTest() throws IOException {
-    PlaySound playSound = SoundUtil.rewriteTo4bitFancy(SoundUtil.read16bitPcmMonoAudio("audio/in.wav"));
-//    PlaySound playSound = createDummySound();
-    SoundUtil.write16bitPcmMonoAudio("audio/out.wav", playSound);
+    PlaySound playSound = new PlaySound(AudioUtil.rewriteTo4bitFancy(AudioUtil.read16bitPcmMonoAudio("audio/sb.wav")));
+    AudioUtil.write16bitPcmMonoAudio("audio/sbout.wav", playSound);
     Record record = Record.forStackFrames(Arrays.asList(
 //        0x501,
         playSound.getJumpAddress(),
@@ -92,15 +96,42 @@ public class Calibration {
     playback.add(playSound);
     return playback;
   }
+
+  public static ArrayList<PlaybackOperation> createFmvTest() throws IOException {
+    GbAudio audio = AudioUtil.rewriteTo4bitFancy(AudioUtil.read16bitPcmMonoAudio("audio/sb.wav"));
+    GbVideo video = new GbVideo(SimpleAvi.fromFile("video/sb.avi"));
+    Fmv fmv = new Fmv(video, audio);
+    PlaySound tmpPlaySound = new PlaySound(audio);
+    System.out.println("compare o a");
+    compareGbAudio(audio, AudioUtil.toGbAudio(tmpPlaySound));
+    System.out.println("compare o b");
+    compareGbAudio(audio, AudioUtil.toGbAudio(fmv));
+    System.out.println("compare a b");
+    compareGbAudio(AudioUtil.toGbAudio(tmpPlaySound), AudioUtil.toGbAudio(fmv));
+    AudioUtil.write16bitPcmMonoAudio("audio/fmvout1.wav", AudioUtil.toGbAudio(tmpPlaySound));
+    AudioUtil.write16bitPcmMonoAudio("audio/fmvout2.wav", AudioUtil.toGbAudio(fmv));
+    Record record = Record.forStackFrames(Arrays.asList(
+        fmv.getJumpAddress(),
+        PlaybackAddresses.STOP_OPERATIONS));
+    
+    ArrayList<PlaybackOperation> playback = new ArrayList<>();
+    playback.add(record);
+    playback.add(fmv);
+    return playback;
+  }
   
-  private static PlaySound createDummySound() {
-    int len = 100000;
-    int[] samples = new int[len];
-    int[] so = new int[len];
-    for (int i = 0; i < len; i++) {
-      samples[i] = 0xeeee;
-      so[i] = 7;
+  private static void compareGbAudio(GbAudio a, GbAudio b) {
+    for (int i = 0; i < Math.min(a.soValues.length,  b.soValues.length); i++) {
+      if (a.soValues[i] != b.soValues[i]) {
+        System.out.println("diff so " + i + ": " + a.soValues[i] + " " + b.soValues[i]);
+        break;
+      }
     }
-    return new PlaySound(samples, so);
+    for (int i = 0; i < Math.min(a.samples.length,  b.samples.length); i++) {
+      if (a.samples[i] != b.samples[i]) {
+        System.out.println("diff sample " + i + ": " + a.samples[i] + " " + b.samples[i]);
+        break;
+      }
+    }
   }
 }

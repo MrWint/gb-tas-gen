@@ -14,4 +14,5 @@ public final class PlaybackAddresses {
   public static final int WRITE_TILE_DIRECT_VRAM1 = 0x0368;
   public static final int STOP_OPERATIONS = 0x049B;
   public static final int PLAY_SOUND = 0x049D;
+  public static final int FMV = 0x0572;
 }

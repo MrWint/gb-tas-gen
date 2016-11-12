@@ -1,4 +1,4 @@
-package mrwint.gbtasgen.tools.playback.util;
+package mrwint.gbtasgen.tools.playback.util.audio;
 
 import static mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation.toJoypadNibble;
 
@@ -10,11 +10,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Fmv;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaySound;
 
-public class SoundUtil {
+public class AudioUtil {
 
-  public static PlaySound rewriteTo4bitSimple(short[] samples) {
+  public static GbAudio rewriteTo4bitSimple(short[] samples) {
     int len = samples.length / 2;
     int[] outSamples = new int[len * 2];
     int[] soValues = new int[len];
@@ -36,10 +37,10 @@ public class SoundUtil {
       soValues[pos] = so;
     }
 
-    return new PlaySound(outSamples, soValues);
+    return new GbAudio(outSamples, soValues);
   }
 
-  public static PlaySound rewriteTo4bitFancy(short[] samples) {
+  public static GbAudio rewriteTo4bitFancy(short[] samples) {
     int len = samples.length / 2;
     int[] outSamples = new int[len * 2];
     int[] soValues = new int[len];
@@ -79,7 +80,7 @@ public class SoundUtil {
       soValues[pos] = minSoErrorSo;
     }
 
-    return new PlaySound(outSamples, soValues);
+    return new GbAudio(outSamples, soValues);
   }
 
   private static short[] resample(short[] samples, int fromFreq, int toFreq) {
@@ -127,6 +128,46 @@ public class SoundUtil {
     return resample(samples, freq * 57 * 2, 1 << 21);
   }
   
+  public static GbAudio toGbAudio(PlaySound playSound) throws IOException {
+    ArrayList<Integer> inputs = new ArrayList<>(playSound.getInputMap().values());
+    int cycles = (playSound.getInputMap().size() - 31) / 4;
+    int[] samples = new int[cycles * 2];
+    int[] soValues = new int[cycles];
+    
+    samples[0] = inputs.get(0) ^ 0xf;
+    soValues[0] = toJoypadNibble(inputs.get(31));
+    for (int i = 1; i < 31; i++) {
+      samples[i] = toJoypadNibble(inputs.get(i));
+      soValues[i/2] = toJoypadNibble(inputs.get(31 + (i/2)*4));
+    }
+    for (int i = 31; i < cycles * 2; i++) {
+      samples[i] = toJoypadNibble(inputs.get(31 + ((i-31)/2) * 4 + 1 + (i-31)%2));
+      soValues[i/2] = toJoypadNibble(inputs.get(31 + (i/2)*4));
+    }
+    
+    return new GbAudio(samples, soValues);
+  }
+  public static GbAudio toGbAudio(Fmv fmv) throws IOException {
+    ArrayList<Integer> inputs = new ArrayList<>(fmv.getInputMap().values());
+    int cycles = fmv.numFrames * 4 * 154 - 10;
+    int[] samples = new int[cycles * 2];
+    int[] soValues = new int[cycles];
+    samples[0] = inputs.get(getSampleInputIndex(0)) ^ 0xf;
+    for (int i = 1; i < cycles * 2; i++) {
+      samples[i] = toJoypadNibble(inputs.get(getSampleInputIndex(i)));
+      soValues[i/2] = toJoypadNibble(inputs.get(getSoValueInputIndex(i)));
+    }
+    
+    return new GbAudio(samples, soValues);
+  }
+  public static void write16bitPcmMonoAudio(String file, GbAudio gbAudio) throws IOException {
+    short[] samples = new short[gbAudio.samples.length];
+    for (int i = 0; i < gbAudio.samples.length; i++)
+      samples[i] = getSample(gbAudio.samples[i], gbAudio.soValues[i/2]);
+
+    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/2);
+  }
+
   public static void write16bitPcmMonoAudio(String file, PlaySound playSound) throws IOException {
     ArrayList<Integer> inputs = new ArrayList<>(playSound.getInputMap().values());
     int cycles = (playSound.getInputMap().size() - 31) / 4;
@@ -140,6 +181,37 @@ public class SoundUtil {
     }
     
     write16bitPcmMonoAudio(file, samples, (1 << 21)/57/2);
+  }
+  
+  public static void write16bitPcmMonoAudio(String file, Fmv fmv) throws IOException {
+    ArrayList<Integer> inputs = new ArrayList<>(fmv.getInputMap().values());
+    int cycles = fmv.numFrames * 4 * 154 - 10;
+    short[] samples = new short[cycles * 2];
+    for (int i = 0; i < cycles * 2; i++)
+      samples[i] = getSample(inputs.get(getSampleInputIndex(i)), inputs.get(getSoValueInputIndex(i)));
+
+    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/2);
+  }
+  private static int getSampleInputIndex(int sampleIndex) {
+    if (sampleIndex < 31)
+      return 16584 + sampleIndex;
+    sampleIndex -= 31;
+    return getSoValueInputIndex(sampleIndex) + 1 + (sampleIndex & 1);
+  }
+  private static int getSoValueInputIndex(int sampleIndex) {
+    int soIndex = sampleIndex / 2;
+    int inputIndex = 16615 + (soIndex / 154) * 3251;
+    soIndex %= 154;
+    if (soIndex < 124)
+      return inputIndex + soIndex * 25;
+    else if (soIndex < 143)
+      return inputIndex + 3100 + (soIndex-124) * 3;
+    else if (soIndex == 143)
+      return inputIndex + 3157;
+    else if (soIndex < 150)
+      return inputIndex + 3161 + (soIndex-144) * 13;
+    else
+      return inputIndex + 3239 + (soIndex-150) * 3;      
   }
 
   public static void write16bitPcmMonoAudio(String file, short[] samples, int freq) throws IOException {

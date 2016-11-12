@@ -4,11 +4,15 @@ import java.util.TreeMap;
 
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AlwaysAccessible;
+import mrwint.gbtasgen.tools.playback.util.audio.GbAudio;
 
 public class PlaySound implements PlaybackOperation {
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
   private final int cycleCount;
-  public PlaySound(int[] samples, int[] soValues) {
+  public PlaySound(GbAudio audio) {
+    int[] samples = audio.samples;
+    int[] soValues = audio.soValues;
+
     if (samples.length != soValues.length * 2)
       throw new IllegalArgumentException("samples length " + samples.length + " does not match twice so length " + soValues.length);
     if (soValues.length < 1)
@@ -24,7 +28,7 @@ public class PlaySound implements PlaybackOperation {
     
     int curCycles = 1520;
     for (int i = 0; i < soValues.length; i++) {
-      inputMap.put(curCycles, toJoypadInput2(soValues[i] & 0x7));
+      inputMap.put(curCycles, toJoypadInput2(soValues[i]));
       
       inputMap.put(curCycles + 36, toJoypadInput2(getSampleOrPadding(samples, 2*i + 31)));
       inputMap.put(curCycles + 52, toJoypadInput2(getSampleOrPadding(samples, 2*i + 32)));

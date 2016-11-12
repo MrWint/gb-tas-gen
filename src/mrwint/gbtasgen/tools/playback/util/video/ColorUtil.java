@@ -1,6 +1,6 @@
 package mrwint.gbtasgen.tools.playback.util.video;
 
-public class VideoUtil {
+public class ColorUtil {
 
   public static int getComponent(long color, int index) {
     return (int) ((color >> (index << 4)) & 0xffff);
@@ -9,7 +9,7 @@ public class VideoUtil {
   public static long setComponent(long color, int index, int component) {
     component = Math.max(component, 0);
     component = Math.min(component, 0xffff);
-    return (color & ~(0xffffL << (index << 4))) | (long)(component & 0xffff) << (index << 4);
+    return (color & ~(0xffffL << (index << 4))) | (component & 0xffffL) << (index << 4);
   }
 
   public static long addToComponent(long color, int index, int delta) {

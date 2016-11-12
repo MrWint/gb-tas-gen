@@ -13,7 +13,9 @@ public class GbVideo {
 
   private static final int FIRST_FRAME_PALETTES = Palette.NUM_PALETTES + Palette.PALETTES_PER_LINE * (HEIGHT - 1);
 
+  @SuppressWarnings("unused")
   private static final int TOP_PALETTE_FREEZE = FREEZE_TOP <= 0 ? 0 : (Palette.PALETTE_HEIGHT - 1) * Palette.PALETTES_PER_LINE + FREEZE_TOP * 8 * Palette.PALETTES_PER_LINE;
+  @SuppressWarnings("unused")
   private static final int BOTTOM_PALETTE_FREEZE = FREEZE_BOTTOM <= 0 ? FIRST_FRAME_PALETTES : (HEIGHT - FREEZE_BOTTOM * 8) * Palette.PALETTES_PER_LINE;
 
   public long[][] framePalettes;

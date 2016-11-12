@@ -21,9 +21,9 @@ public class MedianCut {
     public void add(long color) {
       colors.add(color);
       for (int i = 0; i < 3; i++)
-        minC[i] = Math.min(minC[i], VideoUtil.getComponent(color, i));
+        minC[i] = Math.min(minC[i], ColorUtil.getComponent(color, i));
       for (int i = 0; i < 3; i++)
-        maxC[i] = Math.max(maxC[i], VideoUtil.getComponent(color, i));
+        maxC[i] = Math.max(maxC[i], ColorUtil.getComponent(color, i));
     }
 
     public int getMaxDiff() {
@@ -43,16 +43,16 @@ public class MedianCut {
         }
       }
       final int fmc = mc;
-      Collections.sort(colors, (o1, o2) -> VideoUtil.getComponent(o1, fmc) - VideoUtil.getComponent(o2, fmc));
-      int minComponent = VideoUtil.getComponent(colors.get(0), mc);
-      int medianComponent = VideoUtil.getComponent(colors.get((colors.size()+1)/2), mc);
+      Collections.sort(colors, (o1, o2) -> ColorUtil.getComponent(o1, fmc) - ColorUtil.getComponent(o2, fmc));
+      int minComponent = ColorUtil.getComponent(colors.get(0), mc);
+      int medianComponent = ColorUtil.getComponent(colors.get((colors.size()+1)/2), mc);
       if (medianComponent == minComponent)
         medianComponent++;
       ArrayList<Long> tmpColors = colors;
       reset();
       Bucket upper = new Bucket();
       for (long color : tmpColors) {
-        if (VideoUtil.getComponent(color, mc) >= medianComponent)
+        if (ColorUtil.getComponent(color, mc) >= medianComponent)
           upper.add(color);
         else
           this.add(color);
@@ -64,8 +64,8 @@ public class MedianCut {
       for (int c = 0; c < 3; c++) {
         long sum = 0;
         for (long color : colors)
-          sum += VideoUtil.getComponent(color, c);
-        ret = VideoUtil.setComponent(ret, c, (int) (sum/colors.size()));
+          sum += ColorUtil.getComponent(color, c);
+        ret = ColorUtil.setComponent(ret, c, (int) (sum/colors.size()));
       }
       return ret;
     }

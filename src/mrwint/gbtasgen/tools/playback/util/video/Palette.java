@@ -55,9 +55,9 @@ public class Palette {
     // Median Cut
     {
       long mcPalette = MedianCut.calculateGbPalette(colors);
-      long mcPaletteCost = VideoUtil.getCosts(colors, mcPalette);
+      long mcPaletteCost = ColorUtil.getCosts(colors, mcPalette);
       long mcKmPalette = KMeans.kMeans(mcPalette, colors);
-      long mcKmPaletteCost = VideoUtil.getCosts(colors, mcKmPalette);
+      long mcKmPaletteCost = ColorUtil.getCosts(colors, mcKmPalette);
       if (mcKmPaletteCost < minCosts) {
         minCosts = mcKmPaletteCost;
         minCostPalette = mcKmPalette;
@@ -73,9 +73,9 @@ public class Palette {
     // FourPalette
     {
       long fcPalette = FourPalette.calculateGbPalette(colors);
-      long fcPaletteCost = VideoUtil.getCosts(colors, fcPalette);
+      long fcPaletteCost = ColorUtil.getCosts(colors, fcPalette);
       long fcKmPalette = KMeans.kMeans(fcPalette, colors);
-      long fcKmPaletteCost = VideoUtil.getCosts(colors, fcKmPalette);
+      long fcKmPaletteCost = ColorUtil.getCosts(colors, fcKmPalette);
       if (fcKmPaletteCost < minCosts) {
         minCosts = fcKmPaletteCost;
         minCostPalette = fcKmPalette;
@@ -90,11 +90,11 @@ public class Palette {
 
     // Random
     Random random = new Random();
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100; i++) {
       long rPalette = random.nextLong() & 0x7fff7fff7fff7fffL;
-      long rPaletteCost = VideoUtil.getCosts(colors, rPalette);
+      long rPaletteCost = ColorUtil.getCosts(colors, rPalette);
       long rKmPalette = KMeans.kMeans(rPalette, colors);
-      long rKmPaletteCost = VideoUtil.getCosts(colors, rKmPalette);
+      long rKmPaletteCost = ColorUtil.getCosts(colors, rKmPalette);
       if (rKmPaletteCost < minCosts) {
         minCosts = rKmPaletteCost;
         minCostPalette = rKmPalette;
@@ -135,7 +135,7 @@ public class Palette {
           for (int dy = 0; dy < 8; dy++) {
             int paletteIndex = paletteOffset + p + (dy + (PALETTE_HEIGHT - 1) - (p / PALETTES_PER_LINE))/PALETTE_HEIGHT * NUM_PALETTES;
             for (int dx = 0; dx < 8; dx++) {
-              curError += VideoUtil.findClosestMatchDistance(frame[y+dy][x+dx], gbPalettes[paletteIndex]);
+              curError += ColorUtil.findClosestMatchDistance(frame[y+dy][x+dx], gbPalettes[paletteIndex]);
             }
           }
           if (curError < minError) {
@@ -164,7 +164,7 @@ public class Palette {
       for (int x = 0; x < width; x ++) {
         int p = paletteMap[y/8 - freezeTop][x/8];
         int paletteIndex = p + (y + (PALETTE_HEIGHT - 1) - (p / PALETTES_PER_LINE))/PALETTE_HEIGHT * NUM_PALETTES;
-        pixels[y - 8*freezeTop][x] = VideoUtil.findClosestMatchIndex(frame[y][x], gbPalettes[paletteIndex]);
+        pixels[y - 8*freezeTop][x] = ColorUtil.findClosestMatchIndex(frame[y][x], gbPalettes[paletteIndex]);
         long pixelColor = Palette.fromGbColor((short) (gbPalettes[paletteIndex] >> (pixels[y - 8*freezeTop][x] << 4)));
         dither.dither(frame, x, y, pixelColor);
       }
@@ -174,9 +174,9 @@ public class Palette {
 
   public static long toGbPalette(long[] colors) {
     return toGbColor(colors[0])
-        + ((long)toGbColor(colors.length > 1 ? colors[1] : 0) << 16)
-        + ((long)toGbColor(colors.length > 2 ? colors[2] : 0) << 32)
-        + ((long)toGbColor(colors.length > 3 ? colors[3] : 0) << 48);
+        | (long)toGbColor(colors.length > 1 ? colors[1] : 0) << 16
+        | (long)toGbColor(colors.length > 2 ? colors[2] : 0) << 32
+        | (long)toGbColor(colors.length > 3 ? colors[3] : 0) << 48;
   }
 
   public static long[] fromGbPalette(long palette) {
@@ -188,14 +188,43 @@ public class Palette {
   }
 
   public static short toGbColor(long color) {
-    return (short) (((color >> 43) & 0x1f) /*r*/
-        | ((color >> 22) & 0x3e0) /*g*/
-        | ((color >> 1) & 0x7c00) /*b*/);
+//    return (short) (((color >> 43) & 0x1f) /* r */
+//        | ((color >> 22) & 0x3e0) /* g */
+//        | ((color >> 1) & 0x7c00) /* b */);
+    return rgb64ToGbc(color);
   }
 
   public static long fromGbColor(short gbColor) {
-    return ((long)(gbColor & 0x7c00) << 1) /*b*/
-        | ((long)(gbColor & 0x3e0) << 22) /*g*/
-        | ((long)(gbColor & 0x1f) << 43) /*r*/;
+//    return (gbColor & 0x7c00L) << 1 /* b */
+//        | (gbColor & 0x3e0L) << 22 /* g */
+//        | (gbColor & 0x1fL) << 43 /* r */;
+    return gbcToRgb64(gbColor);
+  }
+
+  public static long gbcToRgb64(short gbColor) {
+    long r = gbColor       & 0x1F;
+    long g = gbColor >>  5 & 0x1F;
+    long b = gbColor >> 10 & 0x1F;
+
+    return (r * 13 + g * 2 + b) << 39 | (g * 3 + b) << 25 | (r * 3 + g * 2 + b * 11) << 7;
+  }
+
+  public static short rgb64ToGbc(long color) {
+    long r = color >> 32 & 0xFFFF;
+    long g = color >> 16 & 0xFFFF;
+    long b = color       & 0xFFFF;
+    
+    long gbR = (31 * r -  5 * g -      b) / 51200;
+    long gbG = (3  * r + 35 * g - 13 * b) / 51200;
+    long gbB = (-9 * r -  5 * g + 39 * b) / 51200;
+
+    if (gbR > 0x1f) gbR = 0x1f;
+    if (gbR < 0) gbR = 0;
+    if (gbG > 0x1f) gbG = 0x1f;
+    if (gbG < 0) gbG = 0;
+    if (gbB > 0x1f) gbB = 0x1f;
+    if (gbB < 0) gbB = 0;
+
+    return (short) (gbB << 10 | gbG << 5 | gbR);
   }
 }
