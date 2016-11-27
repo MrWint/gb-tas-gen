@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import mrwint.gbtasgen.tools.playback.loganalyzer.state.StateHistory;
+
 public class PaletteRegistry {
   public static class PaletteEntry {
     public final Palette palette;
-    public final TreeMap<TimeStamp, Integer> usages = new TreeMap<>();
+    public final StateHistory<TimeStamp, Integer> usages = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
     public PaletteEntry(Palette palette) {
       this.palette = palette;
     }
@@ -29,13 +31,20 @@ public class PaletteRegistry {
     return knownPalettes.size();
   }
   
-  public TreeMap<TimeStamp, ArrayList<PaletteEntry>> getUsageMap() {
+  public int getUsageSize() {
+    int usageSize = 0;
+    for (PaletteEntry palette : knownPalettes.values())
+      usageSize += palette.usages.getSize();
+    return usageSize;
+  }
+
+  public TreeMap<TimeStamp, ArrayList<PaletteEntry>> getUsageEventMap() {
     TreeMap<TimeStamp, ArrayList<PaletteEntry>> map = new TreeMap<>();
     for (PaletteEntry palette : knownPalettes.values()) {
-      for (TimeStamp usage : palette.usages.keySet()) {
-        if (!map.containsKey(usage))
-          map.put(usage, new ArrayList<>());
-        map.get(usage).add(palette);
+      for (TimeStamp usageEvent : palette.usages.getNonNullEventIndices()) {
+        if (!map.containsKey(usageEvent))
+          map.put(usageEvent, new ArrayList<>());
+        map.get(usageEvent).add(palette);
       }
     }
     return map;

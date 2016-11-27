@@ -1,6 +1,7 @@
 package mrwint.gbtasgen.tools.playback.loganalyzer;
 
 public class TimeStamp implements Comparable<TimeStamp> {
+  public static final TimeStamp MIN_VALUE = new TimeStamp(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
   public final int scene;
   public final int frame;
   public final int frameCycle;
@@ -14,10 +15,10 @@ public class TimeStamp implements Comparable<TimeStamp> {
   @Override
   public int compareTo(TimeStamp o) {
     if (scene != o.scene)
-      return scene - o.scene;
+      return Integer.compare(scene, o.scene);
     if (frame != o.frame)
-      return frame - o.frame;
-    return frameCycle - o.frameCycle;
+      return Integer.compare(frame, o.frame);
+    return Integer.compare(frameCycle, o.frameCycle);
   }
   
   public TimeStamp addCycles(int cycles) {

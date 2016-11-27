@@ -12,6 +12,9 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
+import mrwint.gbtasgen.tools.playback.loganalyzer.state.BackgroundStateMap;
+import mrwint.gbtasgen.tools.playback.loganalyzer.state.SpriteStateMap;
+import mrwint.gbtasgen.tools.playback.loganalyzer.state.StateMap;
 
 public class LogAnalyzer {
   // Initial Record cycleCounter: 202372
@@ -22,33 +25,46 @@ public class LogAnalyzer {
 //    new PlaybackWriter(generateDummyPlayback(), 70224*2 + 136228).write("movies/playbackTest.lsmv");
   }
 
-  TreeMap<TimeStamp, LogInput> log = new TreeMap<>();
-  
-  RawMemoryMap memoryMap;
-  StateMap stateMap;
 
   public LogAnalyzer() throws Exception {
-    readLog();
+    
+    TreeMap<TimeStamp, LogInput> log = readLog();
     System.out.println("Read " + log.size() + " log entries");
-    memoryMap = new RawMemoryMap(log);
-    System.out.println("Memory map created");
     int maxScene = log.lastKey().scene;
     for (int scene = 0; scene <= maxScene; scene++) {
       int maxFrame = log.lowerKey(new TimeStamp(scene + 1, -1, 0)).frame;
       System.out.println("Scene " + scene + "/" + maxScene + " with " + (maxFrame + 1) + " frames");
     }
-    stateMap = new StateMap()
-        .addScene(memoryMap, 10, 0, 2000);
+
+    RawMemoryMap memoryMap = new RawMemoryMap(log);
+    System.out.println("Memory map created");
+    log = null; // drop log
+
+    StateMap stateMap = new StateMap();
+    BackgroundStateMap tilesState = new BackgroundStateMap(stateMap, memoryMap, 10, 0, 2000);
+    SpriteStateMap spriteStates = new SpriteStateMap(stateMap, memoryMap, 10, 0, 2000);
+//        .addScene(memoryMap, 10, 0, 2000);
 //        .addScene(memoryMap, 7, 0, 20)
 //        .addScene(memoryMap, 10, 0, 20);
     System.out.println("State map created");
+    memoryMap = null; // drop memory map
+    
+    stateMap.assembleScene(new BackgroundStateMap[] {tilesState}, new SpriteStateMap[] {spriteStates});
+    System.out.println("Scene assembled");
+    tilesState = null; // drop tiles
+    spriteStates = null; // drop sprites
+
     stateMap.calculateTilePositions();
     System.out.println("Tile positions calculated");
     stateMap.calculateBgPalettePositions();
     System.out.println("BG palette positions calculated");
+    stateMap.calculateObjPalettePositions();
+    System.out.println("Obj palette positions calculated");
+    stateMap.compressStates();
+
     ArrayList<TimedAction> actions = stateMap.generateActionList();
     ArrayList<PlaybackOperation> playback = new PlaybackAssembler(actions).assemble();
-    new PlaybackWriter(playback, Calibration.PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/playbackTest.lsmv");
+    new PlaybackWriter(playback, Calibration.PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/playback3Test.lsmv");
   }
   
   public static ArrayList<PlaybackOperation> generateDummyPlayback() {
@@ -67,7 +83,8 @@ public class LogAnalyzer {
     return playback;
   }
   
-  public void readLog() throws FileNotFoundException {
+  public static TreeMap<TimeStamp, LogInput> readLog() throws FileNotFoundException {
+    TreeMap<TimeStamp, LogInput> log = new TreeMap<>();
     Scanner s = new Scanner(new BufferedInputStream(new FileInputStream("log.txt")));
     while (s.hasNextInt()) {
       int scene = s.nextInt();
@@ -78,5 +95,6 @@ public class LogAnalyzer {
       log.put(new TimeStamp(scene, frame, frameCycle), new LogInput(address, value));
     }
     s.close();
+    return log;
   }
 }

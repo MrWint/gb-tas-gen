@@ -18,6 +18,7 @@ public class TimedAction {
     public enum Type {
       TILE,
       BGPALETTE,
+      OBJPALETTE,
       WRAM,
       HRAM,
     }

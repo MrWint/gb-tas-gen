@@ -37,7 +37,7 @@ public class PlaybackAssembler {
     public void init() {
       for (int i = 0; i < actions.size(); i++) {
         TimedAction action = actions.get(i);
-        if (action.from == -1 && action.action.type == Type.HRAM && action.action.position == GbConstants.LCDC) {
+        if (action.from == 0 && action.action.type == Type.HRAM && action.action.position == GbConstants.LCDC) {
           if (initialLcdc != -1)
             throw new RuntimeException("found multiple initial LCDC operations!");
           initialLcdc = (Integer)action.action.value;
@@ -125,7 +125,7 @@ public class PlaybackAssembler {
     // Select next operation
     long minWaitTime;
     TimedAction minAction;
-    selectOperation: while (!actions.isEmpty() && actions.get(0).from >= 0) {
+    selectOperation: while (!actions.isEmpty() && actions.get(0).from > 0) {
 
       // Force add Record statement to prevent overflow.
       if (commandStack.size() >= MAX_COMMAND_STACK_SIZE) {
@@ -151,7 +151,7 @@ public class PlaybackAssembler {
         if (startTime < maxTime && startTime + Wait.MIN_WAIT_CYCLES > maxTime) // wait time too small
           startTime = operation.getLatestStartingCycleBefore(maxTime - Wait.MIN_WAIT_CYCLES, gbState);
         
-        if (action.from >= 0 && startTime < action.from - operation.getStartOutputCycle()) { // operation can't fit anymore, need lag frame.
+        if (action.from > 0 && startTime < action.from - operation.getStartOutputCycle()) { // operation can't fit anymore, need lag frame.
           System.err.println("Warning: action " + action + " requires lag frame at " + curTime + " -> " + (curTime + GbConstants.FRAME_CYCLES));
           try {
             Thread.sleep(100);
