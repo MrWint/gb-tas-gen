@@ -2,7 +2,7 @@ package mrwint.gbtasgen.tools.playback.loganalyzer.accessibility;
 
 import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
 
-public class BgPaletteAccessibility implements Accessibility {
+public class PaletteAccessibility implements Accessibility {
 
   @Override
   public long lastAccessibleCycleBefore(long cycle, AccessibilityGbState gbState) {

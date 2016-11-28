@@ -62,12 +62,10 @@ public class SpriteStateMap {
         this.lcdc.addRange(curLineTime, curLineTime + 1, LcdcState.forObjSize(obj8x16));
         
         if (lcdEnabled && objEnabled) {
-          int spritesOnLine = 0;
           ArrayList<SpriteState> lineSprites = new ArrayList<>();
-          for (int add = 0xfe00; add < 0xfea0 && spritesOnLine < 10; add += 4) {
+          for (int add = 0xfe00; add < 0xfea0; add += 4) {
             int y = memoryMap.getOAM(add, inputTime);
             if (scanLine >= y - 16 && scanLine < y - (obj8x16 ? 0 : 8)) {
-              spritesOnLine++;
               int x = memoryMap.getOAM(add + 1, inputTime);
               if (x > 0 && x < 168) {
                 SpriteState state = createTileState(stateMap, add, memoryMap, inputScene, inputFrame, scanLine);
@@ -164,7 +162,7 @@ public class SpriteStateMap {
     
     int attributes = memoryMap.getOAM(add + 3, inputTime);
     int paletteIndex = attributes & 0x7;
-    for (int i = 0; i < 8; i++) {
+    for (int i = 2; i < 8; i++) { // ignore color 0
       paletteData[i] = (byte)memoryMap.getObjPaletteValue(paletteIndex * 8 + i, inputTime);
       if ((i & 1) != 0)
         paletteData[i] &= 0x7f;

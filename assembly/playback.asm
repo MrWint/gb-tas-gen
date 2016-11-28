@@ -300,15 +300,35 @@ WriteTileDirectVram1:: ; 672, 0 payload frames, 35 inputs (68 + {0,16} + 36*i), 
 
 
 
-WriteBgPaletteDirect:: ; 328, 18 inputs (20, 36, 56 + {0,16} + 32*i), outputs 80 - 304
+WriteBgPaletteDirect:: ; 332, 17 inputs (20, 60 + {0,16} + 32*i), outputs 84 - 308
   ld hl, $ff00    ; 12
   ld c, $68       ; 8
   ld a, [hl]      ; 8
-  swap a          ; 8
-  xor [hl]        ; 8
+  add a           ; 4
+  add a           ; 4
+  add a           ; 4
+  add $80         ; 8
   ld [$ff00+c], a ; 8
   inc c           ; 4
   rept 8
+    ld a, [hl]      ; 8
+    swap a          ; 8
+    xor [hl]        ; 8
+    ld [$ff00+c], a ; 8
+  endr
+  ret             ; 16
+
+WriteObjPaletteDirect:: ; 268, 13 inputs (20, 60 + {0,16} + 32*i), outputs 84 - 244
+  ld hl, $ff00    ; 12
+  ld c, $6a       ; 8
+  ld a, [hl]      ; 8
+  add a           ; 4
+  add a           ; 4
+  add a           ; 4
+  add $82         ; 8
+  ld [$ff00+c], a ; 8
+  inc c           ; 4
+  rept 6
     ld a, [hl]      ; 8
     swap a          ; 8
     xor [hl]        ; 8

@@ -17,6 +17,7 @@ public class TimedAction {
   public static class Action<T> {
     public enum Type {
       TILE,
+      OAM,
       BGPALETTE,
       OBJPALETTE,
       WRAM,

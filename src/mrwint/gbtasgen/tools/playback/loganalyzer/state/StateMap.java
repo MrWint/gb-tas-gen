@@ -1,8 +1,9 @@
 package mrwint.gbtasgen.tools.playback.loganalyzer.state;
 
 import static mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type.BGPALETTE;
-import static mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type.OBJPALETTE;
 import static mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type.HRAM;
+import static mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type.OAM;
+import static mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type.OBJPALETTE;
 import static mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type.TILE;
 import static mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type.WRAM;
 
@@ -13,6 +14,7 @@ import java.util.TreeMap;
 import java.util.function.BiFunction;
 
 import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
+import mrwint.gbtasgen.tools.playback.loganalyzer.OamEntry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry.PaletteEntry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry;
@@ -35,36 +37,48 @@ public class StateMap {
 
   private static class SceneAccessibilityState implements AccessibilityGbState {
     private StateHistory<Long, Integer> numSprites = StateHistory.withLongIndex(StateHistory.getIdentityMerger());
+    long lastNumSpritesCycle = Long.MIN_VALUE;
+    int lastNumSpritesValue;
     private StateHistory<Long, Integer> scx = StateHistory.withLongIndex(StateHistory.getIdentityMerger());
+    long lastScxCycle = Long.MIN_VALUE;
+    int lastScxValue;
     private StateHistory<Long, Boolean> winEnabled = StateHistory.withLongIndex(StateHistory.getIdentityMerger());
+    long lastWinEnabledCycle = Long.MIN_VALUE;
+    boolean lastWinEnabledValue;
     
     @Override
     public int getNumSprites(long cycle) {
+      if (cycle / GbConstants.LINE_CYCLES == lastNumSpritesCycle / GbConstants.LINE_CYCLES) return lastNumSpritesValue;
       Integer result = numSprites.getValueAt(cycle);
-      return result == null ? 0 : result;
+      lastNumSpritesCycle = cycle;
+      return lastNumSpritesValue = result == null ? 0 : result;
     }
     @Override
     public int getScx(long cycle) {
+      if (cycle / GbConstants.LINE_CYCLES == lastScxCycle / GbConstants.LINE_CYCLES) return lastScxValue;
       Integer result = scx.getValueAt(cycle);
-      return result == null ? 0 : result;
+      lastScxCycle = cycle;
+      return lastScxValue = result == null ? 0 : result;
     }
     @Override
     public boolean getWinEnabled(long cycle) {
+      if (cycle / GbConstants.LINE_CYCLES == lastWinEnabledCycle / GbConstants.LINE_CYCLES) return lastWinEnabledValue;
       Boolean result = winEnabled.getValueAt(cycle);
-      return result == null ? false : result;
+      lastWinEnabledCycle = cycle;
+      return lastWinEnabledValue = result == null ? false : result;
     }
   }
 
   public static class TimestampedSpriteStateRange {
     final SpriteState sprite;
-    final TimeStamp notBeforeOrAt;
+    final TimeStamp notBefore;
     final TimeStamp from;
     final TimeStamp to;
     final TimeStamp notAtOrAfter;
     
     public TimestampedSpriteStateRange(SpriteState sprite, TimeStamp notBeforeOrAt, TimeStamp from, TimeStamp to, TimeStamp notAtOrAfter) {
       this.sprite = sprite;
-      this.notBeforeOrAt = notBeforeOrAt;
+      this.notBefore = notBeforeOrAt;
       this.from = from;
       this.to= to;
       this.notAtOrAfter = notAtOrAfter;
@@ -72,12 +86,25 @@ public class StateMap {
     
     @Override
     public String toString() {
-      return "" + sprite + " notBeforeOrAt: " + notBeforeOrAt + " from: " + from + " to: " + to + " notAtOrAfter: " + notAtOrAfter;
+      return "" + sprite + " notBeforeOrAt: " + notBefore + " from: " + from + " to: " + to + " notAtOrAfter: " + notAtOrAfter;
     }
-  }
+
+    public OamEntry toOamEntry() {
+      return new OamEntry(new byte[] {
+          (byte) sprite.y,
+          (byte) sprite.x,
+          (byte)(sprite.upperTile.usages.getValueAt(from) % 0x180),
+          (byte) (sprite.palette.usages.getValueAt(from)
+              | ((sprite.upperTile.usages.getValueAt(from) >= 0x180 ? 1 : 0) << 3)
+              | ((sprite.flipHorizontally ? 1 : 0) << 5)
+              | ((sprite.flipVertically ? 1 : 0) << 6)
+              | ((sprite.objToBgPriority ? 1 : 0) << 7))
+      });
+    }
+}
   
   private int numScenes = 0;
-  private ArrayList<SceneAccessibilityState> sceneAccessibilityStates = new ArrayList<>();
+  public ArrayList<SceneAccessibilityState> sceneAccessibilityStates = new ArrayList<>();
   private StateHistory<TimeStamp, LcdcState> lcdc = StateHistory.withTimestampIndex(LcdcState.MERGER); // 78 - 376
   private StateHistory<TimeStamp, WyState> wy = StateHistory.withTimestampIndex(WyState.MERGER); // 74 - 376
   private StateHistory<TimeStamp, Integer> wx = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger()); // 78 - 376
@@ -108,17 +135,26 @@ public class StateMap {
 
         int numActiveSprites = 0;
         for (SpriteStateMap spriteState : spriteStates)
-          for (SpriteStateRange sprite : spriteState.sprites)
-            if (lineIndex >= sprite.from && lineIndex <= sprite.to && scanLine >= sprite.sprite.y - 16 && scanLine < sprite.sprite.y - (sprite.sprite.lowerTile != null ? 0 : 8))
-              numActiveSprites++;
+          if (frame >= spriteState.frameOffset && frame < spriteState.frameOffset + spriteState.numFrames) {
+            long adjustedLineIndex = lineIndex - spriteState.frameOffset * GbConstants.FRAME_LINES;
+            for (SpriteStateRange sprite : spriteState.sprites)
+              if (adjustedLineIndex >= sprite.from && adjustedLineIndex <= sprite.to && scanLine >= sprite.sprite.y - 16 && scanLine < sprite.sprite.y - (sprite.sprite.lowerTile != null ? 0 : 8))
+                numActiveSprites++;            
+          }
         sceneAccessibility.numSprites.addRange(cycle, cycle + GbConstants.LINE_CYCLES, Math.min(10, numActiveSprites));
         WyState wy = null;
         for (BackgroundStateMap bgState : bgStates)
-          wy = WyState.MERGER.applyChecked(wy, bgState.wy.getValueAt(lineIndex));
+          if (frame >= bgState.frameOffset && frame < bgState.frameOffset + bgState.numFrames) {
+            long adjustedLineIndex = lineIndex - bgState.frameOffset * GbConstants.FRAME_LINES;
+            wy = WyState.MERGER.applyChecked(wy, bgState.wy.getValueAt(adjustedLineIndex));
+          }
         sceneAccessibility.winEnabled.addRange(cycle, cycle + GbConstants.LINE_CYCLES, wy != null && !wy.moreThan && wy.wy <= scanLine);
         Integer scx = null;
         for (BackgroundStateMap bgState : bgStates)
-          scx = StateHistory.<Integer>getIdentityMerger().applyChecked(scx, bgState.scx.getValueAt(lineIndex));
+          if (frame >= bgState.frameOffset && frame < bgState.frameOffset + bgState.numFrames) {
+            long adjustedLineIndex = lineIndex - bgState.frameOffset * GbConstants.FRAME_LINES;
+            scx = StateHistory.<Integer>getIdentityMerger().applyChecked(scx, bgState.scx.getValueAt(adjustedLineIndex));
+          }
         sceneAccessibility.scx.addRange(cycle, cycle + GbConstants.LINE_CYCLES, scx == null ? 0 : scx & 0x7);
       }
     }
@@ -137,20 +173,23 @@ public class StateMap {
         TimeStamp bgWyFromTimestamp = new TimeStamp(scene, frame, frameCycle + 74 * GbConstants.DOUBLE_SPEED_FACTOR);
         TimeStamp bgToTimestamp = new TimeStamp(scene, frame, frameCycle + m0TimeOfLine);
         for (BackgroundStateMap bgState : bgStates) {
-          this.lcdc.addRange(bgFromTimestamp, bgToTimestamp, bgState.lcdc.getValueAt(lineIndex));
-          this.wy.addRange(bgWyFromTimestamp, bgToTimestamp, bgState.wy.getValueAt(lineIndex));
-          this.wx.addRange(bgFromTimestamp, bgToTimestamp, bgState.wx.getValueAt(lineIndex));
-          this.scy.addRange(bgFromTimestamp, bgToTimestamp, bgState.scy.getValueAt(lineIndex));
-          this.scx.addRange(bgFromTimestamp, bgToTimestamp, bgState.scx.getValueAt(lineIndex));
-          for (int i = 0; i < 0x800; i++) {
-            if (bgState.bgMaps[i] != null) {
-              if (this.bgMaps[i] == null)
-                this.bgMaps[i] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
-              BgMapState bgMap = bgState.bgMaps[i].getValueAt(lineIndex);
-              if (bgMap != null) {
-                this.bgMaps[i].addRange(bgFromTimestamp, bgToTimestamp, bgMap);
-                bgMap.tile.usages.addRange(bgFromTimestamp, bgToTimestamp, -1);
-                bgMap.palette.usages.addRange(bgFromTimestamp, bgToTimestamp, -1);
+          if (frame >= bgState.frameOffset && frame < bgState.frameOffset + bgState.numFrames) {
+            long adjustedLineIndex = lineIndex - bgState.frameOffset * GbConstants.FRAME_LINES;
+            this.lcdc.addRange(bgFromTimestamp, bgToTimestamp, bgState.lcdc.getValueAt(adjustedLineIndex));
+            this.wy.addRange(bgWyFromTimestamp, bgToTimestamp, bgState.wy.getValueAt(adjustedLineIndex));
+            this.wx.addRange(bgFromTimestamp, bgToTimestamp, bgState.wx.getValueAt(adjustedLineIndex));
+            this.scy.addRange(bgFromTimestamp, bgToTimestamp, bgState.scy.getValueAt(adjustedLineIndex));
+            this.scx.addRange(bgFromTimestamp, bgToTimestamp, bgState.scx.getValueAt(adjustedLineIndex));
+            for (int i = 0; i < 0x800; i++) {
+              if (bgState.bgMaps[i] != null) {
+                if (this.bgMaps[i] == null)
+                  this.bgMaps[i] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
+                BgMapState bgMap = bgState.bgMaps[i].getValueAt(adjustedLineIndex);
+                if (bgMap != null) {
+                  this.bgMaps[i].addRange(bgFromTimestamp, bgToTimestamp, bgMap);
+                  bgMap.tile.usages.addRange(bgFromTimestamp, bgToTimestamp, -1);
+                  bgMap.palette.usages.addRange(bgFromTimestamp, bgToTimestamp, -1);
+                }
               }
             }
           }
@@ -171,7 +210,10 @@ public class StateMap {
         TimeStamp spriteLcdcToTimestamp = new TimeStamp(scene, frame, frameCycle + m0TimeOfLine);
 
         for (SpriteStateMap spriteState : spriteStates) {
-          this.lcdc.addRange(spriteLcdcFromTimestamp, spriteLcdcToTimestamp, spriteState.lcdc.getValueAt(lineIndex));
+          if (frame >= spriteState.frameOffset && frame < spriteState.frameOffset + spriteState.numFrames) {
+            long adjustedLineIndex = lineIndex - spriteState.frameOffset * GbConstants.FRAME_LINES;
+            this.lcdc.addRange(spriteLcdcFromTimestamp, spriteLcdcToTimestamp, spriteState.lcdc.getValueAt(adjustedLineIndex));
+          }
         }
       }
     }
@@ -181,24 +223,38 @@ public class StateMap {
         if (++numSprites % 1000 == 0)
           System.out.println("assembling sprite " + numSprites);
 
-        int notBeforeOrAtM0Time = Accessibility.getM0TimeOfLine((spriteState.frameOffset * GbConstants.FRAME_LINES + sprite.notBeforeOrAt) * GbConstants.LINE_CYCLES, sceneAccessibility);
-        int toM0Time = Accessibility.getM0TimeOfLine((spriteState.frameOffset * GbConstants.FRAME_LINES + sprite.to) * GbConstants.LINE_CYCLES, sceneAccessibility);
-        TimeStamp notBeforeOrAt = new TimeStamp(
-            scene,
-            (int)(spriteState.frameOffset + sprite.notBeforeOrAt / GbConstants.FRAME_LINES),
-            (int)(sprite.notBeforeOrAt % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + notBeforeOrAtM0Time);
+        TimeStamp notBeforeOrAt;
+        
+        if (sprite.notBeforeOrAt < 0) {
+          notBeforeOrAt = new TimeStamp(scene, 0, 0);
+        } else {
+          int notBeforeOrAtM0Time = Accessibility.getM0TimeOfLine((spriteState.frameOffset * GbConstants.FRAME_LINES + sprite.notBeforeOrAt) * GbConstants.LINE_CYCLES, sceneAccessibility);
+          notBeforeOrAt = new TimeStamp(
+              scene,
+              (int)(spriteState.frameOffset + sprite.notBeforeOrAt / GbConstants.FRAME_LINES),
+              (int)(sprite.notBeforeOrAt % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + notBeforeOrAtM0Time);
+        }
         TimeStamp from = new TimeStamp(
             scene,
             (int)(spriteState.frameOffset + sprite.from / GbConstants.FRAME_LINES),
             (int)(sprite.from % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + 78 * GbConstants.DOUBLE_SPEED_FACTOR);
+        int toM0Time = Accessibility.getM0TimeOfLine((spriteState.frameOffset * GbConstants.FRAME_LINES + sprite.to) * GbConstants.LINE_CYCLES, sceneAccessibility);
         TimeStamp to = new TimeStamp(
             scene,
             (int)(spriteState.frameOffset + sprite.to / GbConstants.FRAME_LINES),
             (int)(sprite.to % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + toM0Time);
-        TimeStamp notAtOrAfter = new TimeStamp(
-            scene,
-            (int)(spriteState.frameOffset + sprite.notAtOrAfter / GbConstants.FRAME_LINES),
-            (int)(sprite.notAtOrAfter % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + 78 * GbConstants.DOUBLE_SPEED_FACTOR);
+        TimeStamp notAtOrAfter;
+        if (sprite.notAtOrAfter >= Integer.MAX_VALUE) {
+          notAtOrAfter = new TimeStamp(
+              scene+1,
+              0,
+              Math.max(0, sprite.sprite.y - 16) * GbConstants.LINE_CYCLES + 78 * GbConstants.DOUBLE_SPEED_FACTOR);
+        } else {
+          notAtOrAfter = new TimeStamp(
+              scene,
+              (int)(spriteState.frameOffset + sprite.notAtOrAfter / GbConstants.FRAME_LINES),
+              (int)(sprite.notAtOrAfter % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + 78 * GbConstants.DOUBLE_SPEED_FACTOR);
+        }
         sprites.add(new TimestampedSpriteStateRange(sprite.sprite, notBeforeOrAt, from, to, notAtOrAfter));
         
         sprite.sprite.upperTile.usages.addRange(from, to, -1);
@@ -240,8 +296,10 @@ public class StateMap {
     System.out.println("avg BG tile: " + (sum / 0x800) + " (" + sum + ")");
     System.out.println("known tiles: " + tileRegistry.getSize());
     System.out.println("known tiles usage size: " + tileRegistry.getUsageSize());
-    System.out.println("known palettes: " + bgPaletteRegistry.getSize());
-    System.out.println("known palettes usage size: " + bgPaletteRegistry.getUsageSize());
+    System.out.println("known bg palettes: " + bgPaletteRegistry.getSize());
+    System.out.println("known bg palettes usage size: " + bgPaletteRegistry.getUsageSize());
+    System.out.println("known obj palettes: " + objPaletteRegistry.getSize());
+    System.out.println("known obj palettes usage size: " + objPaletteRegistry.getUsageSize());
     System.out.println("num sprites: " + sprites.size());
     System.out.println();
 
@@ -403,15 +461,19 @@ public class StateMap {
   private StateHistory<TimeStamp, PaletteEntry>[] bgPaletteHistory = new StateHistory[8];
   @SuppressWarnings("unchecked")
   private StateHistory<TimeStamp, PaletteEntry>[] objPaletteHistory = new StateHistory[8];
-  int numPaletteOverrides;
+  int numBgPaletteOverrides;
+  int numObjPaletteOverrides;
   
   public StateMap calculateBgPalettePositions() {
-    return calculatePalettePositions(bgPaletteHistory, bgPaletteRegistry);
+    numBgPaletteOverrides = calculatePalettePositions(bgPaletteHistory, bgPaletteRegistry);
+    return this;
   }
   public StateMap calculateObjPalettePositions() {
-    return calculatePalettePositions(objPaletteHistory, objPaletteRegistry);
+    numObjPaletteOverrides = calculatePalettePositions(objPaletteHistory, objPaletteRegistry);
+    return this;
   }
-  private StateMap calculatePalettePositions(StateHistory<TimeStamp, PaletteEntry>[] paletteHistory, PaletteRegistry paletteRegistry) {
+  private int calculatePalettePositions(StateHistory<TimeStamp, PaletteEntry>[] paletteHistory, PaletteRegistry paletteRegistry) {
+    int numPaletteOverrides = 0;
     for (int address = 0; address < 8; address++)
       paletteHistory[address] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
 
@@ -483,17 +545,123 @@ public class StateMap {
       }
     }
     
-    outputPaletteStats(paletteHistory);
-    return this;
+    outputPaletteStats(paletteHistory, numPaletteOverrides);
+    return numPaletteOverrides;
   }
 
-  private void outputPaletteStats(StateHistory<TimeStamp, PaletteEntry>[] paletteHistory) {
+  private void outputPaletteStats(StateHistory<TimeStamp, PaletteEntry>[] paletteHistory, int numPaletteOverrides) {
     for (int x = 0; x < 8; x++) {
       System.out.print(" " + paletteHistory[x].getSize());
     }
     System.out.println();
     System.out.println("num palette overrides: " + numPaletteOverrides);
   }
+
+  @SuppressWarnings("unchecked")
+  private StateHistory<TimeStamp, OamEntry>[] oamHistory = new StateHistory[40];
+  private int numOamReplace = 0;
+  private int numOamNew = 0;
+  private int numOamEvict = 0;
+  private int numOamClose = 0;
+
+  public StateMap calculateOamPositions() {
+    sprites.sort((a, b) -> a.from.compareTo(b.from));
+    for (int pos = 0; pos < 40; pos++)
+      oamHistory[pos] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
+    TimestampedSpriteStateRange[] activeSprites = new TimestampedSpriteStateRange[40];
+    
+    for (TimestampedSpriteStateRange sprite : sprites) {
+      int chosenOamPos = -1;
+      // Look for sprite to replace
+      long maxOverlap = 10000; // minimum required acceptable overlap, in cycles.
+      for (int pos = 0; pos < 40; pos++) {
+        if (activeSprites[pos] != null
+            && sprite.from.compareTo(activeSprites[pos].to) > 0
+            && sprite.notBefore.compareTo(activeSprites[pos].notAtOrAfter) < 0) {
+          TimeStamp timeFromExcl = max(activeSprites[pos].to, sprite.notBefore);
+          TimeStamp timeToExcl = min(activeSprites[pos].notAtOrAfter, sprite.from);
+          if (timeFromExcl.compareTo(timeToExcl) >= 0)
+            throw new RuntimeException("from " + timeFromExcl + " not less than to " + timeToExcl);
+          if (timeFromExcl.scene != timeToExcl.scene) {
+            chosenOamPos = pos;
+            break;
+          }
+          long overlap = timeToExcl.toCycles() - timeFromExcl.toCycles();
+          if (overlap > maxOverlap) {
+            maxOverlap = overlap;
+            chosenOamPos = pos;
+          }
+        }
+      }
+      if (chosenOamPos == -1)
+        // Look for unused sprite position
+        for (int pos = 0; pos < 40; pos++) {
+          if (activeSprites[pos] == null) {
+            chosenOamPos = pos;
+            break;
+          }
+        }
+      if (chosenOamPos == -1)
+        // Look for sprite to evict and replace
+        for (int pos = 0; pos < 40; pos++) {
+          if (activeSprites[pos] != null
+              && activeSprites[pos].notAtOrAfter.compareTo(sprite.notBefore) < 0) {
+            chosenOamPos = pos;
+            break;
+          }
+        }
+      
+      if (chosenOamPos == -1)
+        throw new RuntimeException("found no OAM position for " + sprite);
+      if (activeSprites[chosenOamPos] == null) {
+        numOamNew++;
+        if (TimeStamp.ZERO.compareTo(sprite.notBefore) < 0)
+          oamHistory[chosenOamPos].addRange(TimeStamp.ZERO, sprite.notBefore, OamEntry.DISABLED);
+        oamHistory[chosenOamPos].addRange(sprite.from, sprite.to, sprite.toOamEntry());
+        activeSprites[chosenOamPos] = sprite;
+      } else  if (activeSprites[chosenOamPos].notAtOrAfter.compareTo(sprite.notBefore) < 0) {
+        numOamEvict++;
+        oamHistory[chosenOamPos].addRange(activeSprites[chosenOamPos].notAtOrAfter, sprite.notBefore, OamEntry.DISABLED);
+        oamHistory[chosenOamPos].addRange(sprite.from, sprite.to, sprite.toOamEntry());
+        activeSprites[chosenOamPos] = sprite;
+      } else {
+        numOamReplace++;
+        if (sprite.from.compareTo(activeSprites[chosenOamPos].to) <= 0)
+          throw new RuntimeException("chosen RAM position is no fit");
+
+        if (sprite.notBefore.compareTo(activeSprites[chosenOamPos].to) > 0)
+          oamHistory[chosenOamPos].addRange(activeSprites[chosenOamPos].to, sprite.notBefore, activeSprites[chosenOamPos].toOamEntry());
+
+        oamHistory[chosenOamPos].addRange(min(activeSprites[chosenOamPos].notAtOrAfter, sprite.from), sprite.to, sprite.toOamEntry());
+        activeSprites[chosenOamPos] = sprite;
+      }
+    }
+    
+    // close still active sprites
+    for (int pos = 0; pos < 40; pos++) {
+      if (activeSprites[pos] != null) {
+        if (activeSprites[pos].notAtOrAfter.scene < numScenes) {
+          numOamClose++;
+          oamHistory[pos].addRange(activeSprites[pos].notAtOrAfter, activeSprites[pos].notAtOrAfter.addCycles(1), OamEntry.DISABLED);
+        }
+      }
+    }
+    
+    outputOamStats();
+    return this;
+  }
+
+  private void outputOamStats() {
+    for (int x = 0; x < 40; x++) {
+      System.out.print(" " + oamHistory[x].getSize());
+    }
+    System.out.println();
+    System.out.println("num OAM new: " + numOamNew);
+    System.out.println("num OAM replace: " + numOamReplace);
+    System.out.println("num OAM evict: " + numOamEvict);
+    System.out.println("num OAM close: " + numOamClose);
+  }
+
   
   public void compressStates() {
     StateHistory.compressTimestampHistory(lcdc, true);
@@ -511,11 +679,14 @@ public class StateMap {
       StateHistory.compressTimestampHistory(bgPaletteHistory[address]);
     for (int address = 0; address < 8; address++)
       StateHistory.compressTimestampHistory(objPaletteHistory[address]);
+    for (int pos = 0; pos < 40; pos++)
+      StateHistory.compressTimestampHistory(oamHistory[pos]);
     
     outputAssemblyStats();
     outputTileStats();
-    outputPaletteStats(bgPaletteHistory);
-    outputPaletteStats(objPaletteHistory);
+    outputPaletteStats(bgPaletteHistory, numBgPaletteOverrides);
+    outputPaletteStats(objPaletteHistory, numObjPaletteOverrides);
+    outputOamStats();
   }
   
   public ArrayList<TimedAction> generateActionList() {
@@ -544,6 +715,11 @@ public class StateMap {
       addToActions(tileHistory[address / 0x180][address % 0x180], (t, v) -> v.tile, TILE, address, actions);
     }
     
+    // OAM
+    for (int pos = 0; pos < 40; pos++) {
+      addToActions(oamHistory[pos], (t, v) -> v, OAM, pos, actions);
+    }
+    
     // BG Palettes
     for (int address = 0; address < 8; address++) {
       addToActions(bgPaletteHistory[address], (t, v) -> v.palette, BGPALETTE, address, actions);
@@ -553,7 +729,7 @@ public class StateMap {
     for (int address = 0; address < 8; address++) {
       addToActions(objPaletteHistory[address], (t, v) -> v.palette, OBJPALETTE, address, actions);
     }
-    
+
     outputActionStats(actions);
 
     return actions;
@@ -584,15 +760,11 @@ public class StateMap {
       // If this action spans scenes, put it into the LCD off period before the scene.
       if (nextTimestamp.scene > curTimestamp.scene)
         curTimestamp = new TimeStamp(nextTimestamp.scene, 0, 0);
-      long fromCycles = toCycles(curTimestamp);
-      actions.add(new TimedAction(new Action<R>(type, toActionValue.apply(nextTimestamp, nextValue), address), curTimestamp.scene, fromCycles, toCycles(nextTimestamp)));
+      long fromCycles = curTimestamp.toCycles();
+      actions.add(new TimedAction(new Action<R>(type, toActionValue.apply(nextTimestamp, nextValue), address), curTimestamp.scene, fromCycles, nextTimestamp.toCycles()));
       curTimestamp = history.getNextStateStartTime(nextTimestamp);
       if (curTimestamp == null) // reached end
         throw new RuntimeException("unexpected end of history after " + nextTimestamp + " value " + nextValue);
     }
-  }
-  
-  private static long toCycles(TimeStamp time) {
-    return (long)time.frame * GbConstants.FRAME_CYCLES + time.frameCycle;
   }
 }

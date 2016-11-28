@@ -53,6 +53,9 @@ public class StateHistory<I extends Comparable<I>, V> {
   }
 
   public void addRange(I fromTime, I toTime, V value) {
+    if (fromTime.compareTo(toTime) >= 0)
+      throw new RuntimeException(fromTime + " not smaller than " + toTime);
+    
     I floorKey= states.floorKey(fromTime);
     I lowerKey = states.lowerKey(fromTime);
 

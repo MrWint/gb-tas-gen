@@ -41,18 +41,26 @@ public class LogAnalyzer {
     log = null; // drop log
 
     StateMap stateMap = new StateMap();
-    BackgroundStateMap tilesState = new BackgroundStateMap(stateMap, memoryMap, 10, 0, 2000);
-    SpriteStateMap spriteStates = new SpriteStateMap(stateMap, memoryMap, 10, 0, 2000);
+    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 2, 200, 200);
+    BackgroundStateMap tilesState2 = new BackgroundStateMap(stateMap, memoryMap, 3, 200, 200);
+    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 2, 200, 200);
+    SpriteStateMap spriteStates2 = new SpriteStateMap(stateMap, memoryMap, 3, 200, 200);
 //        .addScene(memoryMap, 10, 0, 2000);
 //        .addScene(memoryMap, 7, 0, 20)
 //        .addScene(memoryMap, 10, 0, 20);
     System.out.println("State map created");
     memoryMap = null; // drop memory map
     
-    stateMap.assembleScene(new BackgroundStateMap[] {tilesState}, new SpriteStateMap[] {spriteStates});
+//    tilesState2.frameOffset = 200;
+//    spriteStates2.frameOffset = 200;
+//    stateMap.assembleScene(new BackgroundStateMap[] {tilesState1, tilesState2}, new SpriteStateMap[] {spriteStates1, spriteStates2});
+    stateMap.assembleScene(new BackgroundStateMap[] {tilesState1}, new SpriteStateMap[] {spriteStates1});
+    stateMap.assembleScene(new BackgroundStateMap[] {tilesState2}, new SpriteStateMap[] {spriteStates2});
     System.out.println("Scene assembled");
-    tilesState = null; // drop tiles
-    spriteStates = null; // drop sprites
+    tilesState1 = null; // drop tiles
+//    tilesState2 = null; // drop tiles
+    spriteStates1 = null; // drop sprites
+//    spriteStates2 = null; // drop sprites
 
     stateMap.calculateTilePositions();
     System.out.println("Tile positions calculated");
@@ -60,10 +68,12 @@ public class LogAnalyzer {
     System.out.println("BG palette positions calculated");
     stateMap.calculateObjPalettePositions();
     System.out.println("Obj palette positions calculated");
+    stateMap.calculateOamPositions();
+    System.out.println("OAM positions calculated");
     stateMap.compressStates();
 
     ArrayList<TimedAction> actions = stateMap.generateActionList();
-    ArrayList<PlaybackOperation> playback = new PlaybackAssembler(actions).assemble();
+    ArrayList<PlaybackOperation> playback = new PlaybackAssembler(actions).assemble(stateMap.sceneAccessibilityStates);
     new PlaybackWriter(playback, Calibration.PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/playback3Test.lsmv");
   }
   

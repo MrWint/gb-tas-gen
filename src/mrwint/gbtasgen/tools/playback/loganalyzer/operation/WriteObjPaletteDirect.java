@@ -6,13 +6,13 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.Palette;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.PaletteAccessibility;
 
-public class WriteBgPaletteDirect implements PlaybackOperation {
+public class WriteObjPaletteDirect implements PlaybackOperation {
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
-  public WriteBgPaletteDirect(int index, Palette value) {
+  public WriteObjPaletteDirect(int index, Palette value) {
     inputMap.put(20, index ^ 0xf);
-    for (int i = 0; i < 8; i++) {
-      inputMap.put(32*i + 60, toJoypadInput1(value.get(i)));
-      inputMap.put(32*i + 60 + 16, toJoypadInput2(value.get(i)));
+    for (int i = 0; i < 6; i++) {
+      inputMap.put(32*i + 60, toJoypadInput1(value.get(2+i)));
+      inputMap.put(32*i + 60 + 16, toJoypadInput2(value.get(2+i)));
     }
   }
   @Override
@@ -21,11 +21,11 @@ public class WriteBgPaletteDirect implements PlaybackOperation {
   }
   @Override
   public int getCycleCount() {
-    return 332;
+    return 268;
   }
   @Override
   public int getJumpAddress() {
-    return PlaybackAddresses.WRITE_BG_PALETTE_DIRECT;
+    return PlaybackAddresses.WRITE_OBJ_PALETTE_DIRECT;
   }
   @Override
   public int getStartOutputCycle() {
@@ -33,7 +33,7 @@ public class WriteBgPaletteDirect implements PlaybackOperation {
   }
   @Override
   public int getEndOutputCycle() {
-    return 308;
+    return 244;
   }
   @Override
   public Accessibility getAccessibility() {
