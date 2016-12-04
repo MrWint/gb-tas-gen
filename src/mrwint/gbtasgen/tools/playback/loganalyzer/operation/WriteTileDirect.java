@@ -9,16 +9,20 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.VramAccessibilit
 public class WriteTileDirect implements PlaybackOperation {
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
   private final int newVramBank;
+  private final int skipHlAddressOffset;
+  private final int skipHlCycleOffset;
 
-  public WriteTileDirect(int address, Tile value, int newVramBank) {
+  public WriteTileDirect(int address, Tile value, int newVramBank, boolean skipHl) {
     this.newVramBank = newVramBank;
+    skipHlAddressOffset = skipHl ? 3 : 0;
+    skipHlCycleOffset = skipHl ? -12 : 0;
     
-    inputMap.put(12, toJoypadInput1((address >> 8) & 0xff));
-    inputMap.put(28, toJoypadInput2((address >> 8) & 0xff));
-    inputMap.put(40, ((address >> 4) & 0xf) ^ 0xf);
+    inputMap.put(skipHlCycleOffset + 12, toJoypadInput1((address >> 8) & 0xff));
+    inputMap.put(skipHlCycleOffset + 28, toJoypadInput2((address >> 8) & 0xff));
+    inputMap.put(skipHlCycleOffset + 40, ((address >> 4) & 0xf) ^ 0xf);
     for (int i = 0; i < 16; i++) {
-      inputMap.put(36*i + 68, toJoypadInput1(value.get(i)));
-      inputMap.put(36*i + 68 + 16, toJoypadInput2(value.get(i)));
+      inputMap.put(skipHlCycleOffset + 36*i + 68, toJoypadInput1(value.get(i)));
+      inputMap.put(skipHlCycleOffset + 36*i + 68 + 16, toJoypadInput2(value.get(i)));
     }
   }
   @Override
@@ -29,31 +33,31 @@ public class WriteTileDirect implements PlaybackOperation {
   public int getCycleCount() {
     switch (newVramBank) {
     case 0:
-      return 672;
+      return skipHlCycleOffset + 672;
     case 1:
-      return 672;
+      return skipHlCycleOffset + 672;
     default:
-      return 656;
+      return skipHlCycleOffset + 656;
     }
   }
   @Override
   public int getJumpAddress() {
     switch (newVramBank) {
     case 0:
-      return PlaybackAddresses.WRITE_TILE_DIRECT_VRAM0;
+      return skipHlAddressOffset + PlaybackAddresses.WRITE_TILE_DIRECT_VRAM0;
     case 1:
-      return PlaybackAddresses.WRITE_TILE_DIRECT_VRAM1;
+      return skipHlAddressOffset + PlaybackAddresses.WRITE_TILE_DIRECT_VRAM1;
     default:
-      return PlaybackAddresses.WRITE_TILE_DIRECT;
+      return skipHlAddressOffset + PlaybackAddresses.WRITE_TILE_DIRECT;
     }
   }
   @Override
   public int getStartOutputCycle() {
-    return 92;
+    return skipHlCycleOffset + 92;
   }
   @Override
   public int getEndOutputCycle() {
-    return 632;
+    return skipHlCycleOffset + 632;
   }
   @Override
   public Accessibility getAccessibility() {

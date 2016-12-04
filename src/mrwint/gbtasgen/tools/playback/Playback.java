@@ -27,9 +27,9 @@ public class Playback {
 //    ArrayList<Integer> inputs = BizhawkMovie.getBk2Inputs("MrWint_pokemonred_sram_4178");
     
     for (int i = 0; i < inputs.size(); i++) {
-      if (i >= 10000) break;
-//      gb.step(inputs.get(i));
-      gb.step(0);
+      if (i >= 100000) break;
+      gb.step(inputs.get(i));
+//      gb.step(0);
       if (inputs.get(i) == Move.RESET)
         gb.step(0);
 //        i++;

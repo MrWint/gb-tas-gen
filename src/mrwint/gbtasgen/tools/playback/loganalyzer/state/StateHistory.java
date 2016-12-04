@@ -203,5 +203,9 @@ public class StateHistory<I extends Comparable<I>, V> {
       return Long.MIN_VALUE;
     return (t1.frame * (long)GbConstants.FRAME_CYCLES + t1.frameCycle) - (t2.frame * (long)GbConstants.FRAME_CYCLES + t2.frameCycle);
   }
+  
+  public String toStringAround(I time) {
+    return states.toStringAround(time);
+  }
 }
 

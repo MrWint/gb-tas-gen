@@ -8,11 +8,17 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.PaletteAccessibi
 
 public class WriteObjPaletteDirect implements PlaybackOperation {
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
-  public WriteObjPaletteDirect(int index, Palette value) {
-    inputMap.put(20, index ^ 0xf);
+  private final int skipHlAddressOffset;
+  private final int skipHlCycleOffset;
+
+  public WriteObjPaletteDirect(int index, Palette value, boolean skipHl) {
+    skipHlAddressOffset = skipHl ? 3 : 0;
+    skipHlCycleOffset = skipHl ? -12 : 0;
+
+    inputMap.put(skipHlCycleOffset + 20, index ^ 0xf);
     for (int i = 0; i < 6; i++) {
-      inputMap.put(32*i + 60, toJoypadInput1(value.get(2+i)));
-      inputMap.put(32*i + 60 + 16, toJoypadInput2(value.get(2+i)));
+      inputMap.put(skipHlCycleOffset + 32*i + 60, toJoypadInput1(value.get(2+i)));
+      inputMap.put(skipHlCycleOffset + 32*i + 60 + 16, toJoypadInput2(value.get(2+i)));
     }
   }
   @Override
@@ -21,19 +27,19 @@ public class WriteObjPaletteDirect implements PlaybackOperation {
   }
   @Override
   public int getCycleCount() {
-    return 268;
+    return skipHlCycleOffset + 268;
   }
   @Override
   public int getJumpAddress() {
-    return PlaybackAddresses.WRITE_OBJ_PALETTE_DIRECT;
+    return skipHlAddressOffset + PlaybackAddresses.WRITE_OBJ_PALETTE_DIRECT;
   }
   @Override
   public int getStartOutputCycle() {
-    return 84;
+    return skipHlCycleOffset + 84;
   }
   @Override
   public int getEndOutputCycle() {
-    return 244;
+    return skipHlCycleOffset + 244;
   }
   @Override
   public Accessibility getAccessibility() {

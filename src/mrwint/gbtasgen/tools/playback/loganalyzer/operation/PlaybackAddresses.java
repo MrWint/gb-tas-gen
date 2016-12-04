@@ -15,7 +15,9 @@ public final class PlaybackAddresses {
 
   public static final int WRITE_BYTE_DIRECT = 0x0449;
   public static final int WRITE_BYTE_DIRECT_VRAM0 = 0x045C;
+  public static final int SET_VRAM0 = 0x046E;
   public static final int WRITE_BYTE_DIRECT_VRAM1 = 0x0472;
+  public static final int SET_VRAM1 = 0x0484;
 
   public static final int WRITE_HBYTE_DIRECT = 0x048C;
 

@@ -7,11 +7,17 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AlwaysAccessible
 
 public class WriteHByteDirect implements PlaybackOperation {
   private final TreeMap<Integer, Integer> inputMap = new TreeMap<>();
-  public WriteHByteDirect(int address, int value) {
-    inputMap.put(12, toJoypadInput1(address & 0xff));
-    inputMap.put(28, toJoypadInput2(address & 0xff));
-    inputMap.put(40, toJoypadInput1(value));
-    inputMap.put(56, toJoypadInput2(value));
+  private final int skipHlAddressOffset;
+  private final int skipHlCycleOffset;
+
+  public WriteHByteDirect(int address, int value, boolean skipHl) {
+    skipHlAddressOffset = skipHl ? 3 : 0;
+    skipHlCycleOffset = skipHl ? -12 : 0;
+
+    inputMap.put(skipHlCycleOffset + 12, toJoypadInput1(address & 0xff));
+    inputMap.put(skipHlCycleOffset + 28, toJoypadInput2(address & 0xff));
+    inputMap.put(skipHlCycleOffset + 40, toJoypadInput1(value));
+    inputMap.put(skipHlCycleOffset + 56, toJoypadInput2(value));
   }
   @Override
   public TreeMap<Integer, Integer> getInputMap() {
@@ -19,19 +25,19 @@ public class WriteHByteDirect implements PlaybackOperation {
   }
   @Override
   public int getCycleCount() {
-    return 88;
+    return skipHlCycleOffset + 88;
   }
   @Override
   public int getJumpAddress() {
-    return PlaybackAddresses.WRITE_HBYTE_DIRECT;
+    return skipHlAddressOffset + PlaybackAddresses.WRITE_HBYTE_DIRECT;
   }
   @Override
   public int getStartOutputCycle() {
-    return 64;
+    return skipHlCycleOffset + 64;
   }
   @Override
   public int getEndOutputCycle() {
-    return 64;
+    return skipHlCycleOffset + 64;
   }
   @Override
   public Accessibility getAccessibility() {

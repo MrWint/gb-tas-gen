@@ -12,6 +12,7 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
+import mrwint.gbtasgen.tools.playback.loganalyzer.state.AudioStateMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.BackgroundStateMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.SpriteStateMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.StateMap;
@@ -41,10 +42,11 @@ public class LogAnalyzer {
     log = null; // drop log
 
     StateMap stateMap = new StateMap();
-    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 2, 200, 200);
-    BackgroundStateMap tilesState2 = new BackgroundStateMap(stateMap, memoryMap, 3, 200, 200);
-    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 2, 200, 200);
-    SpriteStateMap spriteStates2 = new SpriteStateMap(stateMap, memoryMap, 3, 200, 200);
+    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 53, 0, 4000);
+//    BackgroundStateMap tilesState2 = new BackgroundStateMap(stateMap, memoryMap, 3, 200, 200);
+    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 53, 0, 4000);
+//    SpriteStateMap spriteStates2 = new SpriteStateMap(stateMap, memoryMap, 3, 200, 200);
+    AudioStateMap audioStates1 = new AudioStateMap(stateMap, memoryMap, 53, 0, 4000);
 //        .addScene(memoryMap, 10, 0, 2000);
 //        .addScene(memoryMap, 7, 0, 20)
 //        .addScene(memoryMap, 10, 0, 20);
@@ -54,14 +56,16 @@ public class LogAnalyzer {
 //    tilesState2.frameOffset = 200;
 //    spriteStates2.frameOffset = 200;
 //    stateMap.assembleScene(new BackgroundStateMap[] {tilesState1, tilesState2}, new SpriteStateMap[] {spriteStates1, spriteStates2});
-    stateMap.assembleScene(new BackgroundStateMap[] {tilesState1}, new SpriteStateMap[] {spriteStates1});
-    stateMap.assembleScene(new BackgroundStateMap[] {tilesState2}, new SpriteStateMap[] {spriteStates2});
-    System.out.println("Scene assembled");
+    stateMap.assembleScene(new BackgroundStateMap[] {tilesState1}, new SpriteStateMap[] {spriteStates1}, new AudioStateMap[] {audioStates1});
+//    stateMap.assembleScene(new BackgroundStateMap[] {tilesState2}, new SpriteStateMap[] {spriteStates2});
+//    System.out.println("Scene assembled");
     tilesState1 = null; // drop tiles
 //    tilesState2 = null; // drop tiles
     spriteStates1 = null; // drop sprites
 //    spriteStates2 = null; // drop sprites
+    audioStates1 = null; // drop audio
 
+    System.out.println("Scene assembled");
     stateMap.calculateTilePositions();
     System.out.println("Tile positions calculated");
     stateMap.calculateBgPalettePositions();
@@ -71,6 +75,7 @@ public class LogAnalyzer {
     stateMap.calculateOamPositions();
     System.out.println("OAM positions calculated");
     stateMap.compressStates();
+    System.out.println("States compressed");
 
     ArrayList<TimedAction> actions = stateMap.generateActionList();
     ArrayList<PlaybackOperation> playback = new PlaybackAssembler(actions).assemble(stateMap.sceneAccessibilityStates);

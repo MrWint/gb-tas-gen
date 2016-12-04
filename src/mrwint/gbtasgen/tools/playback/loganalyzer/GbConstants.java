@@ -23,4 +23,6 @@ public class GbConstants {
   public static final int VRAM_BANK_DEFAULT = 0x0;
   public static final int VRAM_DEFAULT = 0x0;
   public static final int OAM_DEFAULT = 0x0;
+  public static final int NRXX_DEFAULT = 0x0; // not accurate, but we disable sound beforehand anyway.
+  public static final int WAVE_RAM_DEFAULT = 0;
 }

@@ -58,11 +58,11 @@ public class Calibration {
   }
 
   public static ArrayList<PlaybackOperation> calibrateVramAccessible() {
-    WriteHByteDirect setScx = new WriteHByteDirect(GbConstants.SCX, 0x7);
-    WriteHByteDirect setWx = new WriteHByteDirect(GbConstants.WX, 0xa7);
-    WriteHByteDirect setWy = new WriteHByteDirect(GbConstants.WY, 0x1);
-    WriteHByteDirect enableLcd = new WriteHByteDirect(GbConstants.LCDC, 0xa3);
-    WriteByteDirect writeVram = new WriteByteDirect(0x8000, 0xa3, -1);
+    WriteHByteDirect setScx = new WriteHByteDirect(GbConstants.SCX, 0x7, true);
+    WriteHByteDirect setWx = new WriteHByteDirect(GbConstants.WX, 0xa7, true);
+    WriteHByteDirect setWy = new WriteHByteDirect(GbConstants.WY, 0x1, true);
+    WriteHByteDirect enableLcd = new WriteHByteDirect(GbConstants.LCDC, 0xa3, true);
+    WriteByteDirect writeVram = new WriteByteDirect(0x8000, 0xa3, -1, true);
     Wait wait = new Wait(GbConstants.LINE_CYCLES + 520 - (enableLcd.getCycleCount() - enableLcd.getEndOutputCycle()) - writeVram.getStartOutputCycle());
     Record record = Record.forStackFrames(Arrays.asList(
         setScx.getJumpAddress(),

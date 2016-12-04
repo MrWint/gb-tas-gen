@@ -1,17 +1,34 @@
 package mrwint.gbtasgen.tools.playback.loganalyzer;
 
+import java.util.Arrays;
+
 public class TimedAction {
   
-  public final Action<?> action;
+  @SuppressWarnings("rawtypes")
+  private final Action[] actions;
+  private int actionIndex = 0;
+
   public final int scene;
   public final long from;
   public final long to;
   
-  public TimedAction(Action<?> action, int scene, long from, long to) {
-    this.action = action;
+  public TimedAction(int scene, long from, long to, Action<?>... actions) {
+    this.actions = actions;
     this.scene = scene;
     this.from = from;
     this.to = to;
+  }
+  
+  public Action<?> getNextAction() {
+    if (actionIndex >= actions.length)
+      return null;
+    return actions[actionIndex];
+  }
+  
+  public boolean consumeNextAction() {
+    if (actionIndex >= actions.length)
+      throw new RuntimeException("Consuming non-existant action in " + this);
+    return ++actionIndex >= actions.length;
   }
 
   public static class Action<T> {
@@ -40,7 +57,7 @@ public class TimedAction {
   
   @Override
   public String toString() {
-    return "[TimedAction scene " + scene + " from " + from + " to " + to + " action " + action + "]";
+    return "[TimedAction scene " + scene + " from " + from + " to " + to + " actions " + Arrays.toString(actions) + " actionIndex " + actionIndex + "]";
   }
 }
 

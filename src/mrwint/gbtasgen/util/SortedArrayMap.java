@@ -86,4 +86,25 @@ public class SortedArrayMap<K extends Comparable<K>, V> {
   public ArrayList<K> keySet() {
     return keys;
   }
+
+  
+  public String toStringAround(K key) {
+    StringBuilder sb = new StringBuilder();
+    int position = Collections.binarySearch(keys, key);
+    if (position < 0) position = -position - 1;
+    int from = Math.max(0, position - 10);
+    int to = Math.min(keys.size(), position + 10);
+    
+    sb.append("[");
+    if (from > 0)
+      sb.append("<" + from + " omitted>");
+    for (int i = from; i < to; i++) {
+      if (i > 0) sb.append(",");
+      sb.append("[" + keys.get(i) + "," + values.get(i) + "]");
+    }
+    if (to < keys.size())
+      sb.append(",<" + (keys.size() - to) + " omitted>");
+    sb.append("]");
+    return sb.toString();
+  }
 }

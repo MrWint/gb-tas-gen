@@ -8,10 +8,10 @@ import java.util.TreeMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AccessibilityGbState;
-import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.FixedAccessibilityGbState;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.SetVram;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteBgPaletteDirect;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteByteDirect;
@@ -39,20 +39,21 @@ public class PlaybackAssembler {
     public void init() {
       for (int i = 0; i < actions.size(); i++) {
         TimedAction action = actions.get(i);
-        if (action.from == 0 && action.action.type == Type.HRAM && action.action.position == GbConstants.LCDC) {
+        if (action.from == 0 && action.getNextAction().type == Type.HRAM && action.getNextAction().position == GbConstants.LCDC) {
           if (initialLcdc != -1)
             throw new RuntimeException("found multiple initial LCDC operations!");
-          initialLcdc = (Integer)action.action.value;
+          initialLcdc = (Integer)action.getNextAction().value;
 
-          actions.remove(action);
+          if (action.consumeNextAction())
+            actions.remove(action);
           i--;
         }
       }
       if (initialLcdc == -1)
         throw new RuntimeException("found no initial LCDC operations!");
 
-      actions.sort(new TimedActionFromComparator().reversed());
-      Collections.reverse(actions);
+      actions.sort(new TimedActionFromComparator());
+//      Collections.reverse(actions);
     }
   }
 
@@ -90,25 +91,25 @@ public class PlaybackAssembler {
   
   int numDelays = 0;
 
-  private void assembleScene(Integer scene, SceneActions sceneActions, ArrayList<PlaybackOperation> operations, AccessibilityGbState gbState) {
+  private void assembleScene(Integer scene, SceneActions sceneActions, ArrayList<PlaybackOperation> operations, AccessibilityGbState accessibilityGbState) {
     ArrayList<TimedAction> actions = sceneActions.actions;
-    System.out.println("Assembling scene with " + actions.size() + " actions");
+    System.out.println("Assembling scene " + scene + " with " + actions.size() + " actions");
     ArrayList<Integer> commandStack = new ArrayList<>();
     commandStack.add(PlaybackAddresses.RECORD); // Add Record call at the end of the scene.
 
     // Determine TimeStamp after the last possible operation.
     long curTime = Long.MIN_VALUE;
     for (TimedAction action : actions) {
-      PlaybackOperation operation = generateOperation(action.action);
-      long actionStartTime = operation.getLatestStartingCycleBefore(action.to - operation.getEndOutputCycle(), gbState);
+      PlaybackOperation operation = generateOperation(action.getNextAction());
+      long actionStartTime = operation.getLatestStartingCycleBefore(action.to - operation.getEndOutputCycle(), accessibilityGbState);
       long actionEndTime = actionStartTime + operation.getCycleCount();
       if (curTime < actionEndTime)
         curTime = actionEndTime;
     }
     
-    PlaybackOperation endLcdc = new WriteHByteDirect(GbConstants.LCDC, 0);
+    PlaybackOperation endLcdc = new WriteHByteDirect(GbConstants.LCDC, 0, true);
     { // Adjust curTime to be in VBlank, to make sure the last frame is fully rendered.
-      long frame = curTime / GbConstants.FRAME_CYCLES + 5; // FIXME
+      long frame = curTime / GbConstants.FRAME_CYCLES;
       long frameCycle = curTime % GbConstants.FRAME_CYCLES;
       if (frameCycle > GbConstants.FRAME_CYCLES - endLcdc.getEndOutputCycle()) {
         frame++;
@@ -163,16 +164,16 @@ public class PlaybackAssembler {
       minAction = null;
       for (int i = actions.size() - 1; i >= 0; i--) {
         TimedAction action = actions.get(i);
-        PlaybackOperation operation = generateOperation(action.action);
+        PlaybackOperation operation = generateOperation(action.getNextAction());
         long maxTime = curTime - operation.getCycleCount();
         long startTime = Math.min(action.to - operation.getEndOutputCycle(), maxTime);
         if (maxTime - startTime >= minWaitTime) // can't possibly be better anymore
           continue;
-        startTime = operation.getLatestStartingCycleBefore(startTime, gbState);
+        startTime = operation.getLatestStartingCycleBefore(startTime, accessibilityGbState);
         if (maxTime - startTime >= minWaitTime) // can't possibly be better anymore
           continue;
         if (startTime < maxTime && startTime + Wait.MIN_WAIT_CYCLES > maxTime) // wait time too small
-          startTime = operation.getLatestStartingCycleBefore(maxTime - Wait.MIN_WAIT_CYCLES, gbState);
+          startTime = operation.getLatestStartingCycleBefore(maxTime - Wait.MIN_WAIT_CYCLES, accessibilityGbState);
 
         if (actions.get(actions.size() - 1).from + FULL_COMMAND_STACK_SIZE_BUFER_CYCLES >= startTime) { // some time-critical action awaiting
           if (action.from <= 0 || action.from + FULL_COMMAND_STACK_SIZE_BUFER_CYCLES < startTime) { // action not time-critical itself
@@ -227,19 +228,20 @@ public class PlaybackAssembler {
         continue selectOperation;
       }
 
-      PlaybackOperation operation = generateOperation(minAction.action);
+      PlaybackOperation operation = generateOperation(minAction.getNextAction());
       System.out.println("Info: add action " + minAction + " operation " + operation + " at " + curTime);
       operations.add(operation);
       commandStack.add(operation.getJumpAddress());
       curTime -= operation.getCycleCount();
-      updateStateAfterAction(minAction.action);
-      actions.remove(minAction);
+      updateStateAfterAction(minAction.getNextAction());
+      if (minAction.consumeNextAction())
+        actions.remove(minAction);
       continue selectOperation;
     }
 
     // Add initial LCDC operation
     {
-      PlaybackOperation enableLcdc = new WriteHByteDirect(GbConstants.LCDC, sceneActions.initialLcdc);
+      PlaybackOperation enableLcdc = new WriteHByteDirect(GbConstants.LCDC, sceneActions.initialLcdc, true);
       int enableLcdcTime = enableLcdc.getCycleCount() - enableLcdc.getEndOutputCycle();
       if (curTime < enableLcdcTime || (curTime > enableLcdcTime && curTime < enableLcdcTime + Wait.MIN_WAIT_CYCLES)) {
         System.err.println("Warning: instert lag frame for initial LCDC at " + curTime + " -> " + (curTime + GbConstants.FRAME_CYCLES));
@@ -285,22 +287,31 @@ public class PlaybackAssembler {
     
     System.out.println("Info: add " + actions.size() + " initial operations");
     for (TimedAction action : actions) {
+      do {
+        // Force add Record statement to prevent overflow.
+        if (commandStack.size() >= MAX_COMMAND_STACK_SIZE) {
+          Collections.reverse(commandStack);
+          PlaybackOperation recordOperation = Record.forStackFrames(commandStack);
+          System.out.println("Info: empty command stack " + recordOperation);
+          operations.add(recordOperation);
+          commandStack.clear();
+          commandStack.add(PlaybackAddresses.RECORD);
+        }
 
-      // Force add Record statement to prevent overflow.
-      if (commandStack.size() >= MAX_COMMAND_STACK_SIZE) {
-        Collections.reverse(commandStack);
-        PlaybackOperation recordOperation = Record.forStackFrames(commandStack);
-        System.out.println("Info: empty command stack " + recordOperation);
-        operations.add(recordOperation);
-        commandStack.clear();
-        commandStack.add(PlaybackAddresses.RECORD);
-      }
-
-      PlaybackOperation operation = generateOperation(action.action);
-      System.out.println("Info: add initial action " + action + " operation " + operation);
-      operations.add(operation);
-      commandStack.add(operation.getJumpAddress());
-      updateStateAfterAction(action.action);
+        PlaybackOperation operation = generateOperation(action.getNextAction());
+        System.out.println("Info: add initial action " + action + " operation " + operation);
+        operations.add(operation);
+        commandStack.add(operation.getJumpAddress());
+        updateStateAfterAction(action.getNextAction());
+      } while (!action.consumeNextAction());
+    }
+    
+    // Set VRAM bank to initial value
+    if (scene == 0 && curVramBank != -1) {
+      System.out.println("Info: Set initial VRAM bank to " + curVramBank);
+      SetVram setVram = new SetVram(curVramBank);
+      operations.add(setVram);
+      commandStack.add(setVram.getJumpAddress());
     }
 
     if (commandStack.size() > 1) {
@@ -333,21 +344,21 @@ public class PlaybackAssembler {
   private <T> PlaybackOperation generateOperation(Action<T> action) {
     switch (action.type) {
     case BGPALETTE:
-      return new WriteBgPaletteDirect(action.position, (Palette)action.value);
+      return new WriteBgPaletteDirect(action.position, (Palette)action.value, true);
     case OBJPALETTE:
-      return new WriteObjPaletteDirect(action.position, (Palette)action.value);
+      return new WriteObjPaletteDirect(action.position, (Palette)action.value, true);
     case HRAM:
-      return new WriteHByteDirect(action.position, (Integer)action.value);
+      return new WriteHByteDirect(action.position, (Integer)action.value, true);
     case TILE:
       int tileAddress = 0x8000 + (action.position % 0x180) * 0x10;
       int tileVramBank = action.position / 0x180;
-      return new WriteTileDirect(tileAddress, (Tile)action.value, curVramBank != tileVramBank ? curVramBank : -1);
+      return new WriteTileDirect(tileAddress, (Tile)action.value, curVramBank != tileVramBank ? curVramBank : -1, true);
     case WRAM:
       int wramAddress = 0x9800 + action.position % 0x800;
       int wramVramBank = action.position / 0x800;
-      return new WriteByteDirect(wramAddress, (Integer)action.value, curVramBank != wramVramBank ? curVramBank : -1);
+      return new WriteByteDirect(wramAddress, (Integer)action.value, curVramBank != wramVramBank ? curVramBank : -1, true);
     case OAM:
-      return new WriteOamDirect(action.position, (OamEntry)action.value);
+      return new WriteOamDirect(action.position, (OamEntry)action.value, true);
     default:
       throw new RuntimeException("Unknown action type " + action.type);
     }

@@ -42,7 +42,7 @@ public class SpriteStateMap {
     ArrayList<SpriteStateRange> activeSprites = new ArrayList<>();
     long[] lineLastRendered = new long[144];
     for (int i = 0; i < 144; i++)
-      lineLastRendered[i] = -1;
+      lineLastRendered[i] = -GbConstants.FRAME_LINES + i;
 
     for (int inputFrame = firstInputFrame; inputFrame < firstInputFrame + numFrames; inputFrame++) {
       if ((inputFrame - firstInputFrame) % 100 == 0)
@@ -112,7 +112,8 @@ public class SpriteStateMap {
     }
 
     for (SpriteStateRange activeSprite : activeSprites) {
-      activeSprite.notAtOrAfter = Long.MAX_VALUE;
+      long firstBlockedLine = Math.max(activeSprite.sprite.y - 16, 0);
+      activeSprite.notAtOrAfter = numFrames * GbConstants.FRAME_LINES + firstBlockedLine;
       sprites.add(activeSprite);
     }
 

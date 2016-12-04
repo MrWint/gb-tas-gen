@@ -25,6 +25,8 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action.Type;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AccessibilityGbState;
+import mrwint.gbtasgen.tools.playback.loganalyzer.state.AudioStateMap.AudioChunk;
+import mrwint.gbtasgen.tools.playback.loganalyzer.state.AudioStateMap.AudioOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.SpriteStateMap.SpriteStateRange;
 
 public class StateMap {
@@ -101,7 +103,13 @@ public class StateMap {
               | ((sprite.objToBgPriority ? 1 : 0) << 7))
       });
     }
-}
+  }
+
+  public static class TimestampedAudioChunk {
+    public TimeStamp from;
+    public TimeStamp to;
+    public ArrayList<AudioOperation> operations;
+  }
   
   private int numScenes = 0;
   public ArrayList<SceneAccessibilityState> sceneAccessibilityStates = new ArrayList<>();
@@ -113,8 +121,9 @@ public class StateMap {
   @SuppressWarnings("unchecked")
   private StateHistory<TimeStamp, BgMapState>[] bgMaps = new StateHistory[0x800];
   private ArrayList<TimestampedSpriteStateRange> sprites = new ArrayList<>();
+  private ArrayList<TimestampedAudioChunk> audioChunks = new ArrayList<>();
 
-  public void assembleScene(BackgroundStateMap[] bgStates, SpriteStateMap[] spriteStates) {
+  public void assembleScene(BackgroundStateMap[] bgStates, SpriteStateMap[] spriteStates, AudioStateMap[] audioStates) {
     SceneAccessibilityState sceneAccessibility = new SceneAccessibilityState();
     sceneAccessibilityStates.add(sceneAccessibility);
     int scene = numScenes++;
@@ -225,7 +234,7 @@ public class StateMap {
 
         TimeStamp notBeforeOrAt;
         
-        if (sprite.notBeforeOrAt < 0) {
+        if (sprite.notBeforeOrAt < 0 && spriteState.frameOffset == 0) {
           notBeforeOrAt = new TimeStamp(scene, 0, 0);
         } else {
           int notBeforeOrAtM0Time = Accessibility.getM0TimeOfLine((spriteState.frameOffset * GbConstants.FRAME_LINES + sprite.notBeforeOrAt) * GbConstants.LINE_CYCLES, sceneAccessibility);
@@ -244,7 +253,7 @@ public class StateMap {
             (int)(spriteState.frameOffset + sprite.to / GbConstants.FRAME_LINES),
             (int)(sprite.to % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + toM0Time);
         TimeStamp notAtOrAfter;
-        if (sprite.notAtOrAfter >= Integer.MAX_VALUE) {
+        if (sprite.notAtOrAfter >= spriteState.numFrames * GbConstants.FRAME_LINES && spriteState.numFrames + spriteState.frameOffset >= numFrames) {
           notAtOrAfter = new TimeStamp(
               scene+1,
               0,
@@ -263,6 +272,31 @@ public class StateMap {
         sprite.sprite.palette.usages.addRange(from, to, -1);
       }
     }
+    
+    // Merge audio states
+    for (AudioStateMap audioState : audioStates) {
+      for (AudioChunk chunk : audioState.chunks) {
+        TimestampedAudioChunk timestampedChunk = new TimestampedAudioChunk();
+        timestampedChunk.operations = chunk.operations;
+        timestampedChunk.from = new TimeStamp(scene, audioState.frameOffset + chunk.from / GbConstants.FRAME_LINES, (chunk.from % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + 4);
+        timestampedChunk.to = new TimeStamp(scene, audioState.frameOffset + chunk.to / GbConstants.FRAME_LINES, (chunk.to % GbConstants.FRAME_LINES) * GbConstants.LINE_CYCLES + GbConstants.LINE_CYCLES - 4);
+        audioChunks.add(timestampedChunk);
+      }
+    }
+    // Add initial audio disable
+    {
+      TimestampedAudioChunk timestampedChunk = new TimestampedAudioChunk();
+      timestampedChunk.operations = new ArrayList<>();
+      timestampedChunk.operations.add(new AudioOperation(0xff26, 0));
+      timestampedChunk.from = new TimeStamp(scene, 0, 0);
+      timestampedChunk.to = new TimeStamp(scene, 0, 1);
+      audioChunks.add(timestampedChunk);
+    }
+
+    audioChunks.sort((x, y) -> x.from.compareTo(y.from));
+    for (int i = 0; i < audioChunks.size() - 1; i++)
+      if (audioChunks.get(i+1).from.compareTo(audioChunks.get(i).to) <= 0)
+        throw new RuntimeException("audio chunks overlap at " + audioChunks.get(i).to);
 
     outputAssemblyStats();
   }
@@ -317,6 +351,33 @@ public class StateMap {
       }
       System.out.println();
     }
+    System.out.println();
+
+    System.out.println("num audio chunks: " + audioChunks.size());
+    
+    long minLen = Long.MAX_VALUE;
+    long maxLen = Long.MIN_VALUE;
+    int minSize = Integer.MAX_VALUE;
+    int maxSize = Integer.MIN_VALUE;
+    int sumOperations = 0;
+    for (TimestampedAudioChunk chunk : audioChunks) {
+      minLen = Math.min(minLen, chunk.to.toCycles() - chunk.from.toCycles());
+      maxLen = Math.max(maxLen, chunk.to.toCycles() - chunk.from.toCycles());
+      minSize = Math.min(minSize, chunk.operations.size());
+      maxSize = Math.max(maxSize, chunk.operations.size());
+      sumOperations += chunk.operations.size();
+    }
+    System.out.println("chunk length min: " + minLen + " max: " + maxLen);
+    System.out.println("chunk size min: " + minSize + " max: " + maxSize);
+    System.out.println("total operations: " + sumOperations);
+    
+    long minDist = Integer.MAX_VALUE;
+    long maxDist = Integer.MIN_VALUE;
+    for (int i = 0; i < audioChunks.size() - 1; i++) {
+      minDist = Math.min(minDist, audioChunks.get(i+1).from.toCycles() - audioChunks.get(i).to.toCycles());
+      maxDist = Math.max(maxDist, audioChunks.get(i+1).from.toCycles() - audioChunks.get(i).to.toCycles());
+    }
+    System.out.println("chunk dist min: " + minDist + " max: " + maxDist);
     System.out.println();
   }
  
@@ -390,15 +451,21 @@ public class StateMap {
                 TimeStamp nextUse = null;
                 TileEntry curTile = tileHistory[vramBank][address].getLastNonNullValueAt(time);
                 if (curTile != null) {
-                  if (curTile.usages.getValueAt(time) != null)
+                  if (curTile.usages.getValueAt(time) != null) {
+                    if (curTile.usages.getCurrentStateStartTime(time).equals(time))
+                      continue; // This tile is being needed again at this exact time as well, don't overwrite.
                     throw new RuntimeException("tile " + curTile + " used at " + time + " but tileHistory " + tileHistory[vramBank][address] + " free");
+                  }
                   nextUse = min(nextUse, curTile.usages.getNextStateStartTime(time));
                 }
                 if (tile.pairedWith != null) {
                   curTile = tileHistory[vramBank][address+1].getLastNonNullValueAt(time);
                   if (curTile != null) {
-                    if (curTile.usages.getValueAt(time) != null)
+                    if (curTile.usages.getValueAt(time) != null) {
+                      if (curTile.usages.getCurrentStateStartTime(time).equals(time))
+                        continue; // This tile is being needed again at this exact time as well, don't overwrite.
                       throw new RuntimeException("tile " + curTile + " used at " + time + " but tileHistory " + tileHistory[vramBank][address+1] + " free");
+                    }
                     nextUse = min(nextUse, curTile.usages.getNextStateStartTime(time));
                   }
                 }
@@ -509,8 +576,11 @@ public class StateMap {
             if (freeSince.scene == time.scene && freeSince.frame == time.frame)
               continue; // Don't re-use palettes that are needed in the same frame.
             PaletteEntry curPalette = paletteHistory[address].getLastNonNullValueAt(time);
-            if (curPalette.usages.getValueAt(time) != null)
-              throw new RuntimeException("palette " + curPalette + " used at " + time + " but paletteHistory " + paletteHistory[address] + " free");
+            if (curPalette.usages.getValueAt(time) != null) {
+              if (curPalette.usages.getCurrentStateStartTime(time).equals(time))
+                continue; // This palette is being needed again at this exact time as well, don't overwrite.
+              throw new RuntimeException("palette " + curPalette + " used at " + time + " (" + curPalette.usages.toStringAround(time) + ") but paletteHistory " + paletteHistory[address].toStringAround(time) + " free");
+            }
             TimeStamp nextUse = curPalette.usages.getNextStateStartTime(time);
             if (nextUse == null || nextUse.compareTo(maxNextUseTime) > 0) {
               maxNextUseTime = nextUse;
@@ -525,8 +595,11 @@ public class StateMap {
             if (paletteHistory[address].getValueAt(time) != null) // currently used
               continue;
             PaletteEntry curPalette = paletteHistory[address].getLastNonNullValueAt(time);
-            if (curPalette.usages.getValueAt(time) != null)
-              throw new RuntimeException("palette " + curPalette + " used at " + time + " but paletteHistory " + paletteHistory[address] + " free");
+            if (curPalette.usages.getValueAt(time) != null) {
+              if (curPalette.usages.getCurrentStateStartTime(time).equals(time))
+                continue; // This palette is being needed again at this exact time as well, don't overwrite.
+              throw new RuntimeException("palette " + curPalette + " used at " + time + " (" + curPalette.usages.toStringAround(time) + ") but paletteHistory " + paletteHistory[address].toStringAround(time) + " free");
+            }
             TimeStamp nextUse = curPalette.usages.getNextStateStartTime(time);
             if (nextUse == null || nextUse.compareTo(maxNextUseTime) > 0) {
               maxNextUseTime = nextUse;
@@ -729,6 +802,15 @@ public class StateMap {
     for (int address = 0; address < 8; address++) {
       addToActions(objPaletteHistory[address], (t, v) -> v.palette, OBJPALETTE, address, actions);
     }
+    
+    // Audio
+    for (TimestampedAudioChunk chunk : audioChunks) {
+      @SuppressWarnings("unchecked")
+      Action<Integer>[] chunkActions = new Action[chunk.operations.size()];
+      for (int i = 0; i < chunk.operations.size(); i++)
+        chunkActions[chunk.operations.size() - i - 1] = new Action<Integer>(HRAM, chunk.operations.get(i).value, chunk.operations.get(i).address);
+      actions.add(new TimedAction(chunk.from.scene, chunk.from.toCycles(), chunk.to.toCycles(), chunkActions));
+    }
 
     outputActionStats(actions);
 
@@ -761,7 +843,7 @@ public class StateMap {
       if (nextTimestamp.scene > curTimestamp.scene)
         curTimestamp = new TimeStamp(nextTimestamp.scene, 0, 0);
       long fromCycles = curTimestamp.toCycles();
-      actions.add(new TimedAction(new Action<R>(type, toActionValue.apply(nextTimestamp, nextValue), address), curTimestamp.scene, fromCycles, nextTimestamp.toCycles()));
+      actions.add(new TimedAction(curTimestamp.scene, fromCycles, nextTimestamp.toCycles(), new Action<R>(type, toActionValue.apply(nextTimestamp, nextValue), address)));
       curTimestamp = history.getNextStateStartTime(nextTimestamp);
       if (curTimestamp == null) // reached end
         throw new RuntimeException("unexpected end of history after " + nextTimestamp + " value " + nextValue);

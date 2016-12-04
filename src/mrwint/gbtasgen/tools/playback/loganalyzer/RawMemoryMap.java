@@ -21,11 +21,30 @@ public class RawMemoryMap {
       return lowerBound == null ? defaultValue : lowerBound.getValue();
     }
   }
+  public static class RawAudioHistory {
+    private TreeMap<TimeStamp, Integer> operations = new TreeMap<>();
+
+    public int getValueAt(TimeStamp time, int defaultValue) {
+      Entry<TimeStamp, Integer> lowerBound = operations.floorEntry(time);
+      return lowerBound == null ? defaultValue : lowerBound.getValue();
+    }
+
+    public TimeStamp getCurrentStateStartTime(TimeStamp time) {
+      return operations.floorKey(time);
+    }
+
+    public TimeStamp getNextStateStartTime(TimeStamp time) {
+      return operations.higherKey(time);
+    }
+  }
 
   private RawMemoryHistory[][] vram = new RawMemoryHistory[2][0x2000];
   private RawMemoryHistory[] hram = new RawMemoryHistory[0x200];
   private RawMemoryHistory[] bgPalette = new RawMemoryHistory[0x40];
   private RawMemoryHistory[] objPalette = new RawMemoryHistory[0x40];
+  
+  // Audio registers
+  private RawAudioHistory[] nrXX = new RawAudioHistory[23];
 
   public RawMemoryMap(TreeMap<TimeStamp, LogInput> log) {
     int vramBank = 0;
@@ -55,6 +74,10 @@ public class RawMemoryMap {
         objPalette[objPaletteIndex & 0x3f].add(time, input.value);
         if (objPaletteIndex >= 0x80)
           objPaletteIndex = (objPaletteIndex + 1) | 0x80;
+      } else if (input.address >= 0xff10 && input.address <= 0xff26) {
+        if (nrXX[input.address - 0xff10] == null)
+          nrXX[input.address - 0xff10] = new RawAudioHistory();
+        nrXX[input.address - 0xff10].operations.put(time, input.value);
       } else if (input.address >= 0xfe00 && input.address < 0x10000) {
         if (hram[input.address - 0xfe00] == null)
           hram[input.address - 0xfe00] = new RawMemoryHistory();
@@ -81,10 +104,18 @@ public class RawMemoryMap {
   public int getSCX(TimeStamp time) {
     return getHramValue(GbConstants.SCX, time, GbConstants.SCX_DEFAULT);
   }
+  public int getWaveRam(int index, TimeStamp time) {
+    return getHramValue(0xff30 + index, time, GbConstants.WAVE_RAM_DEFAULT);
+  }
   private int getHramValue(int address, TimeStamp time, int defaultValue) {
     if (hram[address - 0xfe00] == null)
       return defaultValue;
     return hram[address - 0xfe00].getValueAt(time, defaultValue);
+  }
+  public RawAudioHistory getAudioRegister(int index) {
+    if (nrXX[index] == null)
+      nrXX[index] = new RawAudioHistory();
+    return nrXX[index];
   }
 
   public int getVramValue(int vramBank, int address, TimeStamp time) {

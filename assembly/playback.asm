@@ -383,6 +383,7 @@ WriteByteDirectVram0:: ; 132, 0 payload frames, 6 inputs (12 + {0,16} + i*28), o
   swap a       ; 8
   xor [hl]     ; 8
   ld [bc], a   ; 8
+SetVram0:: ; 32
   xor a        ; 4
   ld [$ff4f], a ; 12
   ret          ; 16
@@ -401,6 +402,7 @@ WriteByteDirectVram1:: ; 132, 0 payload frames, 6 inputs (12 + {0,16} + i*28), o
   swap a       ; 8
   xor [hl]     ; 8
   ld [bc], a   ; 8
+SetVram1:: ; 32
   ld a, h ;$ff ; 4
   ld [$ff4f], a ; 12
   ret          ; 16
