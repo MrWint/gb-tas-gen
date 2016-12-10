@@ -55,61 +55,130 @@ Start:
   ld [rLCDC], a  ; 12 (*2)
 
   ; Switch to double speed mode
-  ld a, 1        ; 8 (*2)
+  inc a          ; 4 (*2)
   ld [rKEY1], a  ; 12 (*2)
   stop           ; 8 (*2)
 
-  ; Init joypad
-  xor a          ; 4 ; select buttons and direction keys (makes reading easier)
-  ld [rJOYP], a  ; 12
+  ld c, $0       ; 8
+  ld e, $5d      ; 8
 
-  ; Copy Record method to RAM
-  call Tmp_CopyRecord
-
-  ; Start recording inputs
-  jp $c000       ; 16
-
-
-
-WriteBytes:
-; 36 + 52*(len/2) cycles, delay 40,52
-  pop hl       ; 12
-  pop bc       ; 12
+WriteInitialOperations::
+  ld hl, $c000
 .loop
-  pop de       ; 12
-  ld a, d      ; 4
-  ld [hli], a  ; 8
-  ld a, e      ; 4
-  ld [hli], a  ; 8
-  dec c        ; 4
-  jr nz, .loop ; 12/8
-  ret          ; 16
+  ld a, [$ff00+c]
+  swap a
+  ld d, a
+  ld a, [$ff00+c]
+  xor d
+  ld [hli], a
+  xor e
+  jr nz, .loop
+  jp $c000
 
-FillBytes:
-; 40 + 24*len cycles, delay 28
-  pop hl       ; 12
-  pop bc       ; 12
-  ld a, b      ; 4
-.loop
-  ld [hli], a  ; 8
-  dec c        ; 4
-  jr nz, .loop ; 12/8
-  ret          ; 16
 
-FillBytes2:
-; 56 + 8*len + 16*ceil(len/16) cycles, delay 44
-  pop hl       ; 12
-  pop bc       ; 12
-  ld a, b      ; 4
-  ret          ; 16
+
+;WriteBytes:
+;; 36 + 52*(len/2) cycles, delay 40,52
+;  pop hl       ; 12
+;  pop bc       ; 12
+;.loop
+;  pop de       ; 12
+;  ld a, d      ; 4
+;  ld [hli], a  ; 8
+;  ld a, e      ; 4
+;  ld [hli], a  ; 8
+;  dec c        ; 4
+;  jr nz, .loop ; 12/8
+;  ret          ; 16
+
+;FillBytes:
+;; 40 + 24*len cycles, delay 28
+;  pop hl       ; 12
+;  pop bc       ; 12
+;  ld a, b      ; 4
+;.loop
+;  ld [hli], a  ; 8
+;  dec c        ; 4
+;  jr nz, .loop ; 12/8
+;  ret          ; 16
+
+;FillBytes2:
+;; 56 + 8*len + 16*ceil(len/16) cycles, delay 44
+;  pop hl       ; 12
+;  pop bc       ; 12
+;  ld a, b      ; 4
+;  ret          ; 16
+;.loop
+;  rept 16
+;    ld [hli], a  ; 8
+;  endr
+;  dec c        ; 4
+;  jr nz, .loop ; 12/8
+;  ret          ; 16
+
+
+;OamDma:           ; 680 cycles
+;  ld a, $d3       ; 8
+;  ld [$FF46], a   ; 12
+;  ld a, 40        ; 8 ; 40 * 16 - 4 = 636 cycles
+;.wait
+;  dec a           ; 4
+;  jr nz, .wait    ; 12/8
+;  ret             ; 16
+
+
+;RecordEasy:
+;; 76 + len * 60; no 0 inputs
+;  ld hl, $d000    ; 12
+;  ld sp, hl       ; 8
+;  ld c, l ; $00   ; 4
+;.loop
+;  ld a, [$ff00+c] ; 8
+;  swap a          ; 8
+;  ld d, a         ; 4
+;  ld a, [$ff00+c] ; 8
+;  or d            ; 4
+;  ret z           ; 20/8
+;  ld [hli], a     ; 8
+;  jr .loop        ; 12
+
+
+StopOperations::
+  jr StopOperations
+
+
+Record:
+; len * 40 + ceil(len/16) * 16 + 128
+  ld de, $d000    ; 12
+  ld sp, $d000    ; 12
+ContinueRecord:  ; len * 40 + ceil(len/16) * 16 + 104
+  ld hl, $ff00    ; 12
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld c, a         ; 4
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [.loop-1-Record+$c000], a ; 16
+  jr .loop        ; 12
 .loop
-  rept 16
-    ld [hli], a  ; 8
+  rept 15
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [de], a      ; 8
+  inc de           ; 8 ;; inc e?
   endr
-  dec c        ; 4
-  jr nz, .loop ; 12/8
-  ret          ; 16
-
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [de], a      ; 8
+  inc de          ; 8
+  dec c           ; 4
+  jr nz, .loop    ; 12/8
+  ret             ; 16
+RecordEnd::
 
 
 WaitShort:: ; 0 inputs, may delay 100
@@ -141,89 +210,16 @@ WaitLong:: ; 4 inputs, max delay 1051748
   ret          ; 16
 
 
-OamDma:           ; 680 cycles
-  ld a, $d3       ; 8
-  ld [$FF46], a   ; 12
-  ld a, 40        ; 8 ; 40 * 16 - 4 = 636 cycles
-.wait
-  dec a           ; 4
-  jr nz, .wait    ; 12/8
-  ret             ; 16
-
-
-RecordEasy:
-; 76 + len * 60; no 0 inputs
-  ld hl, $d000    ; 12
-  ld sp, hl       ; 8
-  ld c, l ; $00   ; 4
-.loop
-  ld a, [$ff00+c] ; 8
-  swap a          ; 8
-  ld d, a         ; 4
-  ld a, [$ff00+c] ; 8
-  or d            ; 4
-  ret z           ; 20/8
-  ld [hli], a     ; 8
-  jr .loop        ; 12
-
-
-
-Record::
-; len * 40 + ceil(len/16) * 16 + 128
-  ld de, $d000    ; 12
-  ld sp, $d000    ; 12
-ContinueRecord:  ; len * 40 + ceil(len/16) * 16 + 104
-  ld hl, $ff00    ; 12
-  ld a, [hl]      ; 8
-  swap a          ; 8
-  xor [hl]        ; 8
-  ld c, a         ; 4
-  ld a, [hl]      ; 8
-  swap a          ; 8
-  xor [hl]        ; 8
-  ld [.loop-1-Record+$c000], a ; 16
-  jr .loop        ; 12
-.loop
-  rept 15
-  ld a, [hl]      ; 8
-  swap a          ; 8
-  xor [hl]        ; 8
-  ld [de], a      ; 8
-  inc de           ; 8 ;; inc e?
-  endr
-  ld a, [hl]      ; 8
-  swap a          ; 8
-  xor [hl]        ; 8
-  ld [de], a      ; 8
-  inc de          ; 8
-  dec c           ; 4
-  jr nz, .loop    ; 12/8
-  ret             ; 16
-
-Tmp_CopyRecord:
-  ld hl, Record
-  ld de, $c000
-  ld c, Tmp_CopyRecord - Record
-.loop
-  ld a, [hli]
-  ld [de], a
-  inc de
-  dec c
-  jr nz, .loop
-  ret
-
-
-
-WriteTile:     ; 316, 9 payload frames, 0 inputs, delay 28,40 + i*36
-  pop hl       ; 12
-  rept 8
-  pop bc       ; 12
-  ld a, b      ; 4
-  ld [hli], a  ; 8
-  ld a, c      ; 4
-  ld [hli], a  ; 8
-  endr
-  ret          ; 16
+;WriteTile:     ; 316, 9 payload frames, 0 inputs, delay 28,40 + i*36
+;  pop hl       ; 12
+;  rept 8
+;  pop bc       ; 12
+;  ld a, b      ; 4
+;  ld [hli], a  ; 8
+;  ld a, c      ; 4
+;  ld [hli], a  ; 8
+;  endr
+;  ret          ; 16
 
 WriteTileDirect:: ; 656, 0 payload frames, 35 inputs (68 + {0,16} + 36*i), outputs 92 - 632
   ld hl, $ff00 ; 12
@@ -338,20 +334,20 @@ WriteObjPaletteDirect:: ; 268, 13 inputs (20, 60 + {0,16} + 32*i), outputs 84 - 
 
 
 
-WriteByte:     ; 48, 2 payload frames, 0 inputs, delay 24
-  pop hl       ; 12
-  pop af       ; 12
-  ld [hl], a   ; 8
-  ret          ; 16
+;WriteByte:     ; 48, 2 payload frames, 0 inputs, delay 24
+;  pop hl       ; 12
+;  pop af       ; 12
+;  ld [hl], a   ; 8
+;  ret          ; 16
 
-WriteByteHalfDirect:  ; 72, 1 payload frame, 2 inputs (24,40), delay 48
-  ld hl, $ff00 ; 12
-  pop bc       ; 12
-  ld a, [hl]   ; 8
-  swap a       ; 8
-  xor [hl]     ; 8
-  ld [bc], a   ; 8
-  ret          ; 16
+;WriteByteHalfDirect:  ; 72, 1 payload frame, 2 inputs (24,40), delay 48
+;  ld hl, $ff00 ; 12
+;  pop bc       ; 12
+;  ld a, [hl]   ; 8
+;  swap a       ; 8
+;  xor [hl]     ; 8
+;  ld [bc], a   ; 8
+;  ret          ; 16
 
 WriteByteDirect:: ; 116, 0 payload frames, 6 inputs (12 + {0,16} + i*28), outputs 92
   ld hl, $ff00 ; 12
@@ -409,11 +405,11 @@ SetVram1:: ; 32
 
 
 
-WriteHByte:       ; 40, 1 payload frame, 0 inputs, delay 16
-  pop bc          ; 12
-  ld a, b         ; 4
-  ld [$ff00+c], a ; 8
-  ret             ; 16
+;WriteHByte:       ; 40, 1 payload frame, 0 inputs, delay 16
+;  pop bc          ; 12
+;  ld a, b         ; 4
+;  ld [$ff00+c], a ; 8
+;  ret             ; 16
 
 WriteHByteDirect:: ; 88, 0 payload frames, 4 inputs (12,28,40,56), outputs 64
   ld hl, $ff00    ; 12
@@ -459,11 +455,6 @@ ClearSprite:: ; 76, 0 payload frames, 2 inputs (20, 36), outputs 52
   xor a        ; 4
   ld [bc], a   ; 8
   ret          ; 16
-
-
-
-StopOperations::
-  jr StopOperations
 
 
 
@@ -536,103 +527,103 @@ PlaySound::
   ret             ; 16
 
 
-; 668 cycles
-; inputs 32, 52 + {0, 16} + k*36
-PlaySoundInit::
-  ld hl, $ff00    ; 12
-  ld a, $44       ; 8
-  ld [$ff25], a   ; 12 ; all sounds to output 3
-  ; 32
+;; 668 cycles
+;; inputs 32, 52 + {0, 16} + k*36
+;PlaySoundInit::
+;  ld hl, $ff00    ; 12
+;  ld a, $44       ; 8
+;  ld [$ff25], a   ; 12 ; all sounds to output 3
+;  ; 32
 
-  ld a, [hl]      ; 8
-  ld [$ff30], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff31], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff32], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff33], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff34], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff35], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff36], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff37], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff38], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff39], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff3a], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff3b], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff3c], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff3d], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff3e], a   ; 12
-	ld a, [hl]      ; 8
-	swap a          ; 8
-	xor [hl]        ; 8
-	ld [$ff3f], a   ; 12
-  ; 560
+;  ld a, [hl]      ; 8
+;  ld [$ff30], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff31], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff32], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff33], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff34], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff35], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff36], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff37], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff38], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff39], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff3a], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff3b], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff3c], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff3d], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff3e], a   ; 12
+;	ld a, [hl]      ; 8
+;	swap a          ; 8
+;	xor [hl]        ; 8
+;	ld [$ff3f], a   ; 12
+;  ; 560
+;
+;  ld a, $80       ; 8
+;  ld [$ff1a], a   ; 12 ; enable channel 3
+;  ld a, $20       ; 8
+;  ld [$ff1c], a   ; 12 ; output volume
+;  ld a, $8e       ; 8
+;  ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*2)
+;  ret             ; 16
 
-  ld a, $80       ; 8
-  ld [$ff1a], a   ; 12 ; enable channel 3
-  ld a, $20       ; 8
-  ld [$ff1c], a   ; 12 ; output volume
-  ld a, $8e       ; 8
-  ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*2)
-  ret             ; 16
+;; 36 cycles
+;; output at 8
+;PlaySoundStart::
+;  ld a, $87       ; 8
+;  ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*2) + start
+;  ret             ; 16
 
-; 36 cycles
-; output at 8
-PlaySoundStart::
-  ld a, $87       ; 8
-  ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*2) + start
-  ret             ; 16
-
-; 52 cycles
-; inputs 0
-; outputs 24
-PlaySoundSetSo::
-  ld a, [hl]      ; 8
-  ld b, a         ; 4
-  swap a          ; 8
-  xor b           ; 4
-  ld [$ff24], a   ; 12 ; set so for next samples
-  ret             ; 16
+;; 52 cycles
+;; inputs 0
+;; outputs 24
+;PlaySoundSetSo::
+;  ld a, [hl]      ; 8
+;  ld b, a         ; 4
+;  swap a          ; 8
+;  xor b           ; 4
+;  ld [$ff24], a   ; 12 ; set so for next samples
+;  ret             ; 16
 
   
 ; 88 cycles
@@ -1344,3 +1335,4 @@ jp .finishLineLoop ; 16
 .stopFmv
   jr .stopFmv
 
+EndOfFile::

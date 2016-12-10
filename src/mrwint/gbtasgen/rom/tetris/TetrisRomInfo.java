@@ -31,5 +31,5 @@ public class TetrisRomInfo extends RomInfo {
     hJoypadDownAddress = 0xff80;
     hJoypadPressedAddress = 0xff81;
     hJoypadMenuAddress = 0;
-}
+  }
 }

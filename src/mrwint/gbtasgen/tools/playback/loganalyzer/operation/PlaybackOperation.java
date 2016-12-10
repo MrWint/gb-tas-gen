@@ -1,7 +1,13 @@
 package mrwint.gbtasgen.tools.playback.loganalyzer.operation;
 
-import java.util.TreeMap;
+import static mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants.FRAME_CYCLES;
 
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
+import mrwint.gbtasgen.move.Move;
+import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.Accessibility;
 import mrwint.gbtasgen.tools.playback.loganalyzer.accessibility.AccessibilityGbState;
 
@@ -49,5 +55,32 @@ public interface PlaybackOperation {
       }
       return curCycle;
     }
+  }
+  
+  
+  public static int[] toInputs(ArrayList<PlaybackOperation> playback, long cycleOffset) {
+    ArrayList<Integer> inputList = new ArrayList<>();
+    
+    long curCycle = cycleOffset;
+    for (PlaybackOperation op : playback) {
+      for (Entry<Integer, Integer> input : op.getInputMap().entrySet()) {
+        boolean frameBoundary = curCycle + input.getKey() >= FRAME_CYCLES;
+        if (frameBoundary) {
+          curCycle -= FRAME_CYCLES;
+          while (curCycle + input.getKey() >= FRAME_CYCLES) {
+            inputList.add(0 | Move.FRAME_START);
+            curCycle -= FRAME_CYCLES;
+          }
+        }
+        inputList.add(input.getValue() | (frameBoundary ? Move.FRAME_START : 0));
+      }
+      curCycle += op.getCycleCount();
+    }
+    
+    int[] inputs = new int[inputList.size()];
+    for (int i = 0; i < inputs.length; i++)
+      inputs[i] = inputList.get(i);
+    
+    return inputs;
   }
 }

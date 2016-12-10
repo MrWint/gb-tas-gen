@@ -18,7 +18,8 @@ public abstract class Move {
 	public static final int UP     = 0x40;
 	public static final int DOWN   = 0x80;
 
-	public static final int RESET  = 0x800;
+  public static final int FRAME_START = 0x100;
+  public static final int RESET  = 0x800;
 
 	public static PressButton press(int move) {
 		return new PressButton(move, Metric.DOWN_JOY);

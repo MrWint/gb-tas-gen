@@ -22,7 +22,7 @@ public class StateBuffer {
   public static final Decider DECIDER = Decider.SUM;
   public static final SecondaryDecider SECONDARY_DECIDER = SecondaryDecider.OCD;
 
-  private static final int MAX_BUFFER_SIZE = 20; //128;
+  private static final int MAX_BUFFER_SIZE = 1; //128;
   private static final int MAX_BUFFER_SIZE_HARDLIMIT = 256; //128;
   public static final boolean BOUNDED_USE_MAPS = true;
   public static final boolean UNBOUNDED_USE_MAPS = true;

@@ -29,7 +29,8 @@ public class Gb {
 	public int step(int keymask, int... addresses){
 		if ((keymask & 0x800) > 0) {
 			nreset(gb);
-			return 0;
+//			return 0;
+			keymask -= 0x800;
 		}
 		if(addresses.length == 0) {
 			nstep(gb, keymask);

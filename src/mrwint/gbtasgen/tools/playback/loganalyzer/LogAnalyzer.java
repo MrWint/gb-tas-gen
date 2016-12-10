@@ -8,10 +8,15 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import mrwint.gbtasgen.movie.GbMovie;
+import mrwint.gbtasgen.movie.LsmvMovie;
+import mrwint.gbtasgen.rom.PlaybackRomInfo;
+import mrwint.gbtasgen.segment.pokemon.gen1.ACE;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackAddresses;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteInitialOperations;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.AudioStateMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.BackgroundStateMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.SpriteStateMap;
@@ -42,11 +47,11 @@ public class LogAnalyzer {
     log = null; // drop log
 
     StateMap stateMap = new StateMap();
-    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 53, 0, 4000);
+    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 10, 0, 500);
 //    BackgroundStateMap tilesState2 = new BackgroundStateMap(stateMap, memoryMap, 3, 200, 200);
-    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 53, 0, 4000);
+    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 10, 0, 500);
 //    SpriteStateMap spriteStates2 = new SpriteStateMap(stateMap, memoryMap, 3, 200, 200);
-    AudioStateMap audioStates1 = new AudioStateMap(stateMap, memoryMap, 53, 0, 4000);
+    AudioStateMap audioStates1 = new AudioStateMap(stateMap, memoryMap, 10, 0, 500);
 //        .addScene(memoryMap, 10, 0, 2000);
 //        .addScene(memoryMap, 7, 0, 20)
 //        .addScene(memoryMap, 10, 0, 20);
@@ -79,16 +84,24 @@ public class LogAnalyzer {
 
     ArrayList<TimedAction> actions = stateMap.generateActionList();
     ArrayList<PlaybackOperation> playback = new PlaybackAssembler(actions).assemble(stateMap.sceneAccessibilityStates);
-    new PlaybackWriter(playback, Calibration.PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/playback3Test.lsmv");
+    playback.add(0, new WriteInitialOperations());
+    
+    // Export to playback
+    LsmvMovie.exportMovie(new GbMovie(new PlaybackRomInfo()).appendInputs(PlaybackOperation.toInputs(playback, Calibration.PLAYBACK_INPUT_CYCLE_OFFSET)), "logAnalyzer");
+    
+    // Export to ACE
+    LsmvMovie.exportMovie(ACE.getAceMovie(playback), "logAnalyzer");
   }
   
   public static ArrayList<PlaybackOperation> generateDummyPlayback() {
+    WriteInitialOperations writeInitialOperations = new WriteInitialOperations();
     Wait wait = new Wait(3880);
     Record record = Record.forStackFrames(Arrays.asList(wait.getJumpAddress(), PlaybackAddresses.RECORD));
     Wait wait2 = new Wait(70224*2 - record.getCycleCount() - 4);
     Record record2 = Record.forStackFrames(Arrays.asList(wait2.getJumpAddress(), PlaybackAddresses.RECORD));
     
     ArrayList<PlaybackOperation> playback = new ArrayList<>();
+    playback.add(writeInitialOperations);
     playback.add(record);
     playback.add(wait);
     playback.add(record2);

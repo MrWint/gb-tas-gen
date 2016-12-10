@@ -14,6 +14,7 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteByteDirect;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteHByteDirect;
+import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteInitialOperations;
 import mrwint.gbtasgen.tools.playback.util.audio.AudioUtil;
 import mrwint.gbtasgen.tools.playback.util.audio.GbAudio;
 import mrwint.gbtasgen.tools.playback.util.video.GbVideo;
@@ -22,25 +23,27 @@ import mrwint.gbtasgen.tools.playback.util.video.SimpleAvi;
 public class Calibration {
   
   public static void main(String[] args) throws Exception {
-//    new PlaybackWriter(calibratePlaybackInputCycleOffsetOperations(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
+    new PlaybackWriter(calibratePlaybackInputCycleOffsetOperations(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
 //    new PlaybackWriter(calibrateVramAccessible(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
 //    new PlaybackWriter(createSoundTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/sbsoundTest.lsmv");
-    new PlaybackWriter(createFmvTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/fmvTest.lsmv");
+//    new PlaybackWriter(createFmvTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/fmvTest.lsmv");
   }
  
-  // Initial Record cycleCounter:  202372
-  // First frame end cycleCounter: 206592 -> Offset: FRAME_CYCLES - (206592 - 202372) = 136228
+  // Initial Record cycleCounter:  197364
+  // First frame end cycleCounter: 206600 -> Offset: FRAME_CYCLES - (206600 - 197364) + 4 = 131216
   /** Initial cycle offset when using playback.gbc */
-  public static final int PLAYBACK_INPUT_CYCLE_OFFSET = FRAME_CYCLES + 136228;
+  public static final int PLAYBACK_INPUT_CYCLE_OFFSET = FRAME_CYCLES + 131216;
   /**
    * Returns a set of playback operations to check the calibration of the PLAYBACK_INPUT_CYCLE_OFFSET value.
-   * After the first Wait, the first input of the Record should fall into the a frame.
+   * After the first Wait, the first input of the Record should fall into the new frame.
    * After the second Wait, the first input of the Record should fall into the previous frame.
    * I.e., the new input frames should be on the 17th and 34th input.
    */
   public static ArrayList<PlaybackOperation> calibratePlaybackInputCycleOffsetOperations() {
+    WriteInitialOperations writeInitialOperations = new WriteInitialOperations();
     Wait wait = new Wait( // 3880
-        FRAME_CYCLES - (PLAYBACK_INPUT_CYCLE_OFFSET % FRAME_CYCLES) // Cycles left to next input frame boundary
+        2 * FRAME_CYCLES - (PLAYBACK_INPUT_CYCLE_OFFSET % FRAME_CYCLES) // Cycles left to next input frame boundary
+        - writeInitialOperations.getCycleCount() // Time taken up by initial operation write
         - Record.getCycleCount(4) // Time taken up by initial Record call
         - Record.getFirstInputCycles()); // Time until first input in second Record call
     Wait wait2 = new Wait(FRAME_CYCLES - Record.getCycleCount(4) - 4);
@@ -48,6 +51,7 @@ public class Calibration {
     Record record2 = Record.forStackFrames(Arrays.asList(wait2.getJumpAddress(), PlaybackAddresses.RECORD));
     
     ArrayList<PlaybackOperation> playback = new ArrayList<>();
+    playback.add(writeInitialOperations);
     playback.add(record);
     playback.add(wait);
     playback.add(record2);
@@ -73,6 +77,7 @@ public class Calibration {
         writeVram.getJumpAddress()));
     
     ArrayList<PlaybackOperation> playback = new ArrayList<>();
+    playback.add(new WriteInitialOperations());
     playback.add(record);
     playback.add(setScx);
     playback.add(setWx);
@@ -89,9 +94,10 @@ public class Calibration {
     Record record = Record.forStackFrames(Arrays.asList(
 //        0x501,
         playSound.getJumpAddress(),
-        PlaybackAddresses.STOP_OPERATIONS));
+        PlaybackAddresses.STOP_OPERATIONS_ROM));
     
     ArrayList<PlaybackOperation> playback = new ArrayList<>();
+    playback.add(new WriteInitialOperations());
     playback.add(record);
     playback.add(playSound);
     return playback;
@@ -112,9 +118,10 @@ public class Calibration {
     AudioUtil.write16bitPcmMonoAudio("audio/fmvout2.wav", AudioUtil.toGbAudio(fmv));
     Record record = Record.forStackFrames(Arrays.asList(
         fmv.getJumpAddress(),
-        PlaybackAddresses.STOP_OPERATIONS));
+        PlaybackAddresses.STOP_OPERATIONS_ROM));
     
     ArrayList<PlaybackOperation> playback = new ArrayList<>();
+    playback.add(new WriteInitialOperations());
     playback.add(record);
     playback.add(fmv);
     return playback;

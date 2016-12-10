@@ -1,6 +1,8 @@
 package mrwint.gbtasgen.util;
 import mrwint.gbtasgen.Gb;
 import mrwint.gbtasgen.movie.BizhawkMovie;
+import mrwint.gbtasgen.movie.GbMovie;
+import mrwint.gbtasgen.movie.LsmvMovie;
 import mrwint.gbtasgen.rom.RomInfo;
 import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.state.Gameboy;
@@ -37,6 +39,7 @@ public class SingleGbRunner {
 
     // save movie
     BizhawkMovie.exportMovie(state, "test");
+    LsmvMovie.exportMovie(GbMovie.fromSingleGbState(state), "test");
 
     printStepCounts(state);
 
