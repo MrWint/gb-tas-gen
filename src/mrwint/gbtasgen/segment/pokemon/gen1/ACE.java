@@ -14,7 +14,7 @@ import mrwint.gbtasgen.segment.SingleGbSegment;
 import mrwint.gbtasgen.segment.pokemon.gen1.ace.Intro;
 import mrwint.gbtasgen.segment.pokemon.gen1.ace.OakSpeech;
 import mrwint.gbtasgen.segment.pokemon.gen1.ace.SaveCorrupt;
-import mrwint.gbtasgen.segment.pokemon.gen1.ace.Test;
+import mrwint.gbtasgen.segment.pokemon.gen1.ace.AceYellow;
 import mrwint.gbtasgen.state.Gameboy;
 import mrwint.gbtasgen.state.SingleGbState;
 import mrwint.gbtasgen.state.State;
@@ -43,20 +43,19 @@ public class ACE extends SingleGbSegment {
 //		save("saveCorrupt");
 //
 //		load("saveCorrupt");
-//		seq(new Test());
-//		save("test");
+//		seq(new AceYellow());
+//		save("aceYellow");
 	}
 
 	public static void main(String[] args) {
-//    SingleGbRunner.run(new YellowRomInfo(), new ACE(), true);
+    SingleGbRunner.run(new YellowRomInfo(), new ACE(), true);
 
-    // Write lsmv
-    LsmvMovie.exportMovie(getAceMovie(calibrateAceInputCycleOffsetOperations()), "calibrationTest");
+//    LsmvMovie.exportMovie(getAceMovie(calibrateAceInputCycleOffsetOperations()), "calibrationTest");
 	}
 	
 	public static GbMovie getAceMovie(ArrayList<PlaybackOperation> operations) {
     // load GbMovie
-    StateBuffer buffer = StateBuffer.load("test", new YellowRomInfo().fileNameSuffix);
+    StateBuffer buffer = StateBuffer.load("aceYellow", new YellowRomInfo().fileNameSuffix);
     GbMovie movie = GbMovie.fromStateBuffer(buffer, new YellowRomInfo());
     
     // append second stage data

@@ -80,35 +80,33 @@ public class DFS {
         opData += (rom.data[nextAddress++] & 0xFF) << (i << 3); // * 2^(8*i) (little endian)
     }
 
-    sch.handleBeforeOp(address,opCode,opData,s);
+    sch.handleBeforeOp(address, opCode, opData, s);
 
     //System.out.println("visit "+opCode.name);
 
     boolean vetoContinue = false;
 
     CPUState ns = new CPUState(s);
-    if(OpCode.explicitAbsoluteJump.contains(opCodeValue)) { // 16 bit absolute
+    if (OpCode.explicitAbsoluteJump.contains(opCodeValue)) { // 16 bit absolute
       ns.prepareJump(opCodeValue,opData);
       int fullJumpAddress = handleJumpBankRelative(address,opData & 0xFFFF,ns,ROM.LABEL_FUNCTION, reachable);
       ns = new CPUState(s);
-      vetoContinue = ns.prepareForgoJump(opCodeValue,address,fullJumpAddress, sch, reachable);
-    }
-    if(OpCode.explicitRelativeJump.contains(opCodeValue)) { // 8 bit signed relative
+      vetoContinue = ns.prepareForgoJump(opCodeValue, address, fullJumpAddress, sch, reachable);
+    } else if (OpCode.explicitRelativeJump.contains(opCodeValue)) { // 8 bit signed relative
       ns.prepareJump(opCodeValue,opData);
-      int fullJumpAddress = handleJumpFull(address,nextAddress + ((byte)opData),ns,ROM.LABEL_RELATIVE, reachable);
+      int fullJumpAddress = handleJumpFull(address, nextAddress + ((byte)opData), ns, ROM.LABEL_RELATIVE, reachable);
       ns = new CPUState(s);
       vetoContinue = ns.prepareForgoJump(opCodeValue,address,fullJumpAddress, sch, reachable);
-    }
-    if(OpCode.reset.contains(opCodeValue)) { // fixed address jump
-      int fullJumpAddress = handleJumpFull(address,(opCodeValue - 0xc7),new CPUState(s),ROM.LABEL_FUNCTION, reachable);
+    } else if (OpCode.reset.contains(opCodeValue)) { // fixed address jump
+      int fullJumpAddress = handleJumpFull(address, (opCodeValue - 0xc7), new CPUState(s), ROM.LABEL_FUNCTION, reachable);
       ns = new CPUState(s);
-      vetoContinue = ns.prepareForgoJump(opCodeValue,address,fullJumpAddress, sch, reachable);
+      vetoContinue = ns.prepareForgoJump(opCodeValue, address, fullJumpAddress, sch, reachable);
     }
-    if(!OpCode.noContinue.contains(opCodeValue)) {
-      if(vetoContinue) {
+    if (!OpCode.noContinue.contains(opCodeValue)) {
+      if (vetoContinue) {
         rom.comment[address] = "call does not return";
       } else {
-        ns.prepareContinue(opCodeValue,opData,address);
+        ns.prepareContinue(opCodeValue, opData, address);
         dfsStack.push(new DFSStackElem(nextAddress, ns, reachable));
       }
     }

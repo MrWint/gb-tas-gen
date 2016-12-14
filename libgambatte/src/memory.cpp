@@ -314,6 +314,8 @@ unsigned long Memory::stop(unsigned long cycleCounter) {
 		display.speedChange(cycleCounter);
 		ioamhram[0x14D] = ~ioamhram[0x14D] & 0x80;
 
+    log_speedChange(cycleCounter);
+
 		intreq.setEventTime<BLIT>((ioamhram[0x140] & 0x80) ? display.nextMode1IrqTime() : cycleCounter + (70224 << isDoubleSpeed()));
 		
 		if (intreq.eventTime(END) > cycleCounter) {
@@ -1022,6 +1024,7 @@ unsigned lastHram[0x200];
 unsigned curVramBank;
 int curScene;
 int curFrame;
+bool curDoubleSpeed;
 
 void Memory::log_init() {
 	logout.open("log.txt");
@@ -1033,6 +1036,27 @@ void Memory::log_init() {
   curScene = 0;
   curFrame = 0; // LCD starts enabled
   curFrameStartCycle = 380; // initial delay
+  curDoubleSpeed = false;
+}
+
+void Memory::log_speedChange(const unsigned long cycleCounter) {
+	if (!LOG)
+		return;
+	if (!logout.is_open())
+		log_init();
+
+  bool newSpeed = isDoubleSpeed();
+  bool oldSpeed = curDoubleSpeed;
+
+	int frameCycles = display.lyCounter().frameCycles(cycleCounter) << oldSpeed;
+  long frameStartCycle = ((long)cycleCounter) - frameCycles;
+	int frame = curFrame == -1 ? -1 : curFrame + (frameStartCycle - curFrameStartCycle) / (70224 << oldSpeed);
+	if ((frame - curFrame) * (70224 << oldSpeed) != frameStartCycle - curFrameStartCycle) {
+		logout << "ERROR SpeedChange: " << frame << " " << curFrame << " " << frameStartCycle << " " << curFrameStartCycle << std::endl;
+	}
+  curFrameStartCycle = ((long)cycleCounter) - (display.lyCounter().frameCycles(cycleCounter) << newSpeed);
+	curFrame = frame;
+  curDoubleSpeed = newSpeed;
 }
 
 void Memory::log_write(const unsigned P, const unsigned data, const unsigned long cycleCounter) {
@@ -1100,10 +1124,10 @@ void Memory::log_write(const unsigned P, const unsigned data, const unsigned lon
 		lastHram[P - 0xfe00] = (data & 0x80);
 	}
 
-	int frameCycles = display.lyCounter().frameCycles(cycleCounter);
+	int frameCycles = display.lyCounter().frameCycles(cycleCounter) << isDoubleSpeed();
   long frameStartCycle = ((long)cycleCounter) - frameCycles;
-	int frame = curFrame == -1 ? -1 : curFrame + (frameStartCycle - curFrameStartCycle) / 70224;
-	if ((frame - curFrame) * 70224 != frameStartCycle - curFrameStartCycle) {
+	int frame = curFrame == -1 ? -1 : curFrame + (frameStartCycle - curFrameStartCycle) / (70224 << isDoubleSpeed());
+	if ((frame - curFrame) * (70224 << isDoubleSpeed()) != frameStartCycle - curFrameStartCycle) {
 		logout << "ERROR: " << frame << " " << curFrame << " " << frameStartCycle << " " << curFrameStartCycle << std::endl;
 	}
   curFrameStartCycle = frameStartCycle;
@@ -1113,7 +1137,7 @@ void Memory::log_write(const unsigned P, const unsigned data, const unsigned lon
 			//<< std::hex << cycleCounter
 			<< " " << std::dec << curScene
 			<< " " << curFrame
-			<< " " << frameCycles
+			<< " " << (frameCycles >> isDoubleSpeed())
 			<< " " << std::hex << P
 			<< " " << data
 			<< std::endl;

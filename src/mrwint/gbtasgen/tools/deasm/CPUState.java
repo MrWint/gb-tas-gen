@@ -37,7 +37,7 @@ public class CPUState {
 
 	public CPUState(CPUState o) {
 		this();
-		for(int i=0;i<NUM_REGISTERS;i++) {
+		for (int i = 0; i < NUM_REGISTERS; i++) {
 			r[i] = o.r[i];
 			rMask[i] = o.rMask[i];
 			rLoadedFromAddress[i] = o.rLoadedFromAddress[i];
@@ -52,18 +52,18 @@ public class CPUState {
 
 	public int getCarry() {
 		if((rMask[F] & CARRYMASK) == 0)
-			return -1;
+			return UNKNOWN;
 		if((r[F] & CARRYMASK) == 0)
-			return 0;
-		return 1;
+			return KNOWN_FALSE;
+		return KNOWN_TRUE;
 	}
 
 	public int getZero() {
 		if((rMask[F] & ZEROMASK) == 0)
-			return -1;
+			return UNKNOWN;
 		if((r[F] & ZEROMASK) == 0)
-			return 0;
-		return 1;
+			return KNOWN_FALSE;
+		return KNOWN_TRUE;
 	}
 
 	public void setCarry(boolean value) {
@@ -88,6 +88,11 @@ public class CPUState {
 
 	public void invalidateZero() {
 		rMask[F] &= (~ZEROMASK);
+	}
+	
+	public void setRegister(int i, int value) {
+	  rMask[i] = 0xff;
+	  r[i] = value;
 	}
 
 	public void prepareJump(int opCodeValue, int opData) {

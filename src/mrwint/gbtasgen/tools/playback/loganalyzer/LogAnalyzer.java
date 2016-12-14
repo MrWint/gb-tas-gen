@@ -27,8 +27,6 @@ public class LogAnalyzer {
   // First frame end cycleCounter: 206592
   public static void main(String[] args) throws Exception {
     new LogAnalyzer();
-    
-//    new PlaybackWriter(generateDummyPlayback(), 70224*2 + 136228).write("movies/playbackTest.lsmv");
   }
 
 
@@ -47,11 +45,11 @@ public class LogAnalyzer {
     log = null; // drop log
 
     StateMap stateMap = new StateMap();
-    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 10, 0, 500);
+    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 7, 0, 2300);
 //    BackgroundStateMap tilesState2 = new BackgroundStateMap(stateMap, memoryMap, 3, 200, 200);
-    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 10, 0, 500);
+    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 7, 0, 2300);
 //    SpriteStateMap spriteStates2 = new SpriteStateMap(stateMap, memoryMap, 3, 200, 200);
-    AudioStateMap audioStates1 = new AudioStateMap(stateMap, memoryMap, 10, 0, 500);
+    AudioStateMap audioStates1 = new AudioStateMap(stateMap, memoryMap, 7, 0, 2300);
 //        .addScene(memoryMap, 10, 0, 2000);
 //        .addScene(memoryMap, 7, 0, 20)
 //        .addScene(memoryMap, 10, 0, 20);

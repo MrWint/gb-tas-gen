@@ -12,6 +12,7 @@ assembly/dk.asm
 assembly/sml2_10.asm
 assembly/tetris10.asm
 assembly/tetris11.asm
+assembly/tetrisdx.asm
 temp/*
 
 # protected files

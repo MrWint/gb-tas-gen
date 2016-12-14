@@ -12,7 +12,7 @@ import mrwint.gbtasgen.segment.util.SequenceSegment;
 import mrwint.gbtasgen.util.EflUtil.PressMetric;
 import mrwint.gbtasgen.util.Util;
 
-public class Test extends SeqSegment {
+public class AceYellow extends SeqSegment {
 
 	SequenceSegment sequence;
 

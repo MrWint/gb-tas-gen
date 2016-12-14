@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.util.Iterator;
 import java.util.Scanner;
 
+import mrwint.gbtasgen.util.Util;
+
 public class AssemblyWriter {
 
 	public ROM rom;
@@ -222,7 +224,7 @@ public class AssemblyWriter {
 
 		if(name.contains("?")) {
 			String tmp = name.substring(0,name.indexOf("?")).toLowerCase();
-			if(name.startsWith("LD") && opData >= 0xff00) {
+			if(!name.startsWith("LD") && opData >= 0xff00) {
 			  tmp = "dbw $"+Integer.toHexString(opCodeValue)+", $"+Integer.toHexString(opData)+" ; "+tmp;
 			}
 			if(rom.payloadAsAddress[address] >= 0) {
@@ -241,9 +243,9 @@ public class AssemblyWriter {
 			String tmp = name.substring(0,name.indexOf("$FF00+x")).toLowerCase();
 			if(!rom.ramLabel[opData+0x7f00].isEmpty()) { // add ram labels here
 				tmp += rom.ramLabel[opData+0x7f00].get(0);
-				comment = generateRamLabelComment("$FF00+$" + Integer.toHexString(opData),opData+0x7f00);
+				comment = generateRamLabelComment("$FF" + Util.toHex(opData, 2),opData+0x7f00);
 			} else
-				tmp += "$FF00+$" + Integer.toHexString(opData).toLowerCase();
+				tmp += "$FF" + Util.toHex(opData, 2).toLowerCase();
 			tmp += name.substring(name.indexOf("x")+1).toLowerCase();
 			name = tmp;
 		} else if(name.contains("x")) {

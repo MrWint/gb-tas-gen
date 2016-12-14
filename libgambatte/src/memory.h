@@ -60,6 +60,7 @@ public:
 	static const bool LOG = true;
 	void log_init();
 	void log_write(unsigned P, unsigned data, unsigned long cycleCounter);
+  void log_speedChange(unsigned long cycleCounter);
 
 	void updateInput();
 	void decEventCycles(MemEventId eventId, unsigned long dec);
