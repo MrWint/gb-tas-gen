@@ -16,6 +16,8 @@ import java.util.function.BiFunction;
 import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
 import mrwint.gbtasgen.tools.playback.loganalyzer.OamEntry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry;
+import mrwint.gbtasgen.tools.playback.loganalyzer.RawMemoryMap;
+import mrwint.gbtasgen.tools.playback.loganalyzer.SceneDesc;
 import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry.PaletteEntry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry.TileEntry;
@@ -37,7 +39,7 @@ public class StateMap {
   final HashMap<SpriteState, SpriteState> spriteStateRegistry = new HashMap<>();
 
 
-  private static class SceneAccessibilityState implements AccessibilityGbState {
+  public static class SceneAccessibilityState implements AccessibilityGbState {
     private StateHistory<Long, Integer> numSprites = StateHistory.withLongIndex(StateHistory.getIdentityMerger());
     long lastNumSpritesCycle = Long.MIN_VALUE;
     int lastNumSpritesValue;
@@ -110,7 +112,36 @@ public class StateMap {
     public TimeStamp to;
     public ArrayList<AudioOperation> operations;
   }
-  
+
+  public void assembleScene(RawMemoryMap memoryMap, SceneDesc... descs) {
+    assembleScene(new RawMemoryMap[]{memoryMap}, descs);
+  }
+  public void assembleScene(RawMemoryMap[] memoryMaps, SceneDesc... descs) {
+    ArrayList<BackgroundStateMap> tilesStates = new ArrayList<>();
+    ArrayList<SpriteStateMap> spriteStates = new ArrayList<>();
+    ArrayList<AudioStateMap> audioStates = new ArrayList<>();
+    int frameOffset = 0;
+    for (int i = 0; i < descs.length; i++) {
+      if (!descs[i].noBackground) {
+        BackgroundStateMap tilesState = new BackgroundStateMap(this, memoryMaps[descs[i].inputLog], descs[i]);
+        tilesState.frameOffset = frameOffset;
+        tilesStates.add(tilesState);
+      }
+      if (!descs[i].noSprites) {
+        SpriteStateMap spriteState = new SpriteStateMap(this, memoryMaps[descs[i].inputLog], descs[i]);
+        spriteState.frameOffset = frameOffset;
+        spriteStates.add(spriteState);
+      }
+      if (!descs[i].noAudio) {
+        AudioStateMap audioState = new AudioStateMap(this, memoryMaps[descs[i].inputLog], descs[i]);
+        audioState.frameOffset = frameOffset;
+        audioStates.add(audioState);
+      }
+      frameOffset += descs[i].numOutputFrames;
+    }
+    assembleScene(tilesStates.toArray(new BackgroundStateMap[0]), spriteStates.toArray(new SpriteStateMap[0]), audioStates.toArray(new AudioStateMap[0]));
+  }
+
   private int numScenes = 0;
   public ArrayList<SceneAccessibilityState> sceneAccessibilityStates = new ArrayList<>();
   private StateHistory<TimeStamp, LcdcState> lcdc = StateHistory.withTimestampIndex(LcdcState.MERGER); // 78 - 376
@@ -296,7 +327,7 @@ public class StateMap {
     audioChunks.sort((x, y) -> x.from.compareTo(y.from));
     for (int i = 0; i < audioChunks.size() - 1; i++)
       if (audioChunks.get(i+1).from.compareTo(audioChunks.get(i).to) <= 0)
-        throw new RuntimeException("audio chunks overlap at " + audioChunks.get(i).to);
+        throw new RuntimeException("audio chunks overlap at " + audioChunks.get(i+1).from + " < " + audioChunks.get(i).to);
 
     outputAssemblyStats();
   }
@@ -452,7 +483,7 @@ public class StateMap {
                 TileEntry curTile = tileHistory[vramBank][address].getLastNonNullValueAt(time);
                 if (curTile != null) {
                   if (curTile.usages.getValueAt(time) != null) {
-                    if (curTile.usages.getCurrentStateStartTime(time).equals(time))
+                    if (curTile.usages.getCurrentStateStartTime(time).compareTo(time) == 0)
                       continue; // This tile is being needed again at this exact time as well, don't overwrite.
                     throw new RuntimeException("tile " + curTile + " used at " + time + " but tileHistory " + tileHistory[vramBank][address] + " free");
                   }
@@ -462,7 +493,7 @@ public class StateMap {
                   curTile = tileHistory[vramBank][address+1].getLastNonNullValueAt(time);
                   if (curTile != null) {
                     if (curTile.usages.getValueAt(time) != null) {
-                      if (curTile.usages.getCurrentStateStartTime(time).equals(time))
+                      if (curTile.usages.getCurrentStateStartTime(time).compareTo(time) == 0)
                         continue; // This tile is being needed again at this exact time as well, don't overwrite.
                       throw new RuntimeException("tile " + curTile + " used at " + time + " but tileHistory " + tileHistory[vramBank][address+1] + " free");
                     }
@@ -577,9 +608,9 @@ public class StateMap {
               continue; // Don't re-use palettes that are needed in the same frame.
             PaletteEntry curPalette = paletteHistory[address].getLastNonNullValueAt(time);
             if (curPalette.usages.getValueAt(time) != null) {
-              if (curPalette.usages.getCurrentStateStartTime(time).equals(time))
+              if (curPalette.usages.getCurrentStateStartTime(time).compareTo(time) == 0)
                 continue; // This palette is being needed again at this exact time as well, don't overwrite.
-              throw new RuntimeException("palette " + curPalette + " used at " + time + " (" + curPalette.usages.toStringAround(time) + ") but paletteHistory " + paletteHistory[address].toStringAround(time) + " free");
+              throw new RuntimeException("palette " + curPalette + " used at " + time + " (" + curPalette.usages.toStringAround(time) + ") (start time " + curPalette.usages.getCurrentStateStartTime(time) + ") but paletteHistory " + paletteHistory[address].toStringAround(time) + " free");
             }
             TimeStamp nextUse = curPalette.usages.getNextStateStartTime(time);
             if (nextUse == null || nextUse.compareTo(maxNextUseTime) > 0) {
@@ -596,7 +627,7 @@ public class StateMap {
               continue;
             PaletteEntry curPalette = paletteHistory[address].getLastNonNullValueAt(time);
             if (curPalette.usages.getValueAt(time) != null) {
-              if (curPalette.usages.getCurrentStateStartTime(time).equals(time))
+              if (curPalette.usages.getCurrentStateStartTime(time).compareTo(time) == 0)
                 continue; // This palette is being needed again at this exact time as well, don't overwrite.
               throw new RuntimeException("palette " + curPalette + " used at " + time + " (" + curPalette.usages.toStringAround(time) + ") but paletteHistory " + paletteHistory[address].toStringAround(time) + " free");
             }

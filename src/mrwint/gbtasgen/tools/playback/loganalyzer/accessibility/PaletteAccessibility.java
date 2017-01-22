@@ -27,7 +27,7 @@ public class PaletteAccessibility implements Accessibility {
   }
   
   public static final int getCbgpInaccessibleFrom() {
-    return 80 * GbConstants.DOUBLE_SPEED_FACTOR - 1 + (GbConstants.DOUBLE_SPEED ? 2 : 0);
+    return (80 - Accessibility.SAFETY_BUFFER) * GbConstants.DOUBLE_SPEED_FACTOR - 1 + (GbConstants.DOUBLE_SPEED ? 2 : 0);
   }
   public static final int getCbgpInaccessibleTo(long cycle, AccessibilityGbState gbState) {
     return Accessibility.getM0TimeOfLine(cycle, gbState) + 2 - (GbConstants.DOUBLE_SPEED ? 1 : 0);

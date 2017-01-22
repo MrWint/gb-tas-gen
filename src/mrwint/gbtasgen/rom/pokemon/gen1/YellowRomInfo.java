@@ -23,5 +23,22 @@ public class YellowRomInfo extends RedRomInfo {
 
 			afterTrainerIDGenerationAddress = 0xf6e6;
 			trainerIDAddress = 0xd358;
+
+      curBlockDataAddress = 0xc6e8;
+      curMapIDAddress = 0xd35d;
+      mapHeaderBanksAddress = 0x3f*0x4000 + 0x03E4;
+      mapHeaderPointersAddress = 0x3f*0x4000 + 0x01F2;
+      trainerHeaderPointerAddress = 0xda2f;
+      blockTilesPointerAddress = 0xd52a;
+      grassTileAddress = 0xd534;
+      collisionDataAddress = 0xd52f;
+      missableObjectListAddress = 0xd5cd;
+      missableObjectFlagsAddress = 0xd5a5;
+      tilePairCollisionsLandAddress = 0xada;
+      tilePairCollisionsWaterAddress = 0xafc;
+      curTilesetAddress = 0xd366;
+
+      curPositionXAddress = 0xd361;
+      curPositionYAddress = 0xd360;
 		}
 	}

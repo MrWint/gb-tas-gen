@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
 import mrwint.gbtasgen.tools.playback.loganalyzer.RawMemoryMap;
+import mrwint.gbtasgen.tools.playback.loganalyzer.SceneDesc;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimeStamp;
 
 public class AudioStateMap {
-  public static final int AUDIO_CHUNK_LINE_SIZE = 50; // ~1/3 frame
+  public static final int AUDIO_CHUNK_LINE_SIZE = 60; // ~1/3 frame
   public static final int AUDIO_CHUNK_MIN_SIZE = 30; // must be <= 2/3 * AUDIO_CHUNK_LINE_SIZE
 
   public static class AudioChunk {
@@ -29,10 +30,17 @@ public class AudioStateMap {
 
   public ArrayList<AudioChunk> chunks = new ArrayList<>();
 
-  public AudioStateMap(StateMap stateMap, RawMemoryMap memoryMap, int inputScene, int firstInputFrame, int numFrames) {
-    this.numFrames = numFrames;
+  public AudioStateMap(StateMap stateMap, RawMemoryMap memoryMap, SceneDesc desc) {
+    this(stateMap, memoryMap, desc.inputScene, desc.firstInputFrame, desc.numInputFrames, desc.numOutputFrames);
+  }
+  public AudioStateMap(StateMap stateMap, RawMemoryMap memoryMap, int inputScene, int firstInputFrame, int numInputFrames, int numOutputFrames) {
+    this.numFrames = numOutputFrames;
+    final int audioChunkLineSize = AUDIO_CHUNK_LINE_SIZE * numOutputFrames / numInputFrames;
+    final int audioChunkMinSize = AUDIO_CHUNK_MIN_SIZE * numOutputFrames / numInputFrames;
+    
+    
     TimeStamp startTime = new TimeStamp(inputScene, firstInputFrame, -1);
-    TimeStamp endTime = new TimeStamp(inputScene, firstInputFrame + numFrames, -1);
+    TimeStamp endTime = new TimeStamp(inputScene, firstInputFrame + numInputFrames, -1);
     
     int[] curWaveRam = new int[0x10];
     for (int i = 0; i < 0x10; i++)
@@ -57,7 +65,7 @@ public class AudioStateMap {
 
     while (true) {
       TimeStamp curEventTime = firstEventTime;
-      int curEventLine = toLineIndex(curEventTime, firstInputFrame);
+      int curEventLine = toLineIndex(curEventTime, firstInputFrame, numInputFrames, numOutputFrames);
       AudioChunk chunk = new AudioChunk();
       chunk.from = curEventLine;
       chunk.to = curEventLine;
@@ -77,11 +85,11 @@ public class AudioStateMap {
         }
         if (minNextEventTime == null || minNextEventTime.compareTo(endTime) >= 0)
           break;
-        if (toLineIndex(minNextEventTime, firstInputFrame) - curEventLine > AUDIO_CHUNK_LINE_SIZE)
+        if (toLineIndex(minNextEventTime, firstInputFrame, numInputFrames, numOutputFrames) - curEventLine > audioChunkLineSize)
           break;
 
         curEventTime = minNextEventTime;
-        curEventLine = toLineIndex(curEventTime, firstInputFrame);
+        curEventLine = toLineIndex(curEventTime, firstInputFrame, numInputFrames, numOutputFrames);
         chunk.to = curEventLine;
         chunk.operations.add(new AudioOperation(0xff10 + nextIndex, memoryMap.getAudioRegister(nextIndex).getValueAt(curEventTime, 0)));
       }
@@ -118,13 +126,13 @@ public class AudioStateMap {
         if (!containsFF26) chunk.operations.add(0, new AudioOperation(0xff26, initialFF26)); // ff26 will be initial operation.
       }
       
-      if (chunk.to - chunk.from < AUDIO_CHUNK_MIN_SIZE) {
-        chunk.from -= (AUDIO_CHUNK_MIN_SIZE + chunk.from - chunk.to)/2;
+      if (chunk.to - chunk.from < audioChunkMinSize) {
+        chunk.from -= (audioChunkMinSize + chunk.from - chunk.to)/2;
         if (chunk.from <= 0) chunk.from = 0;
-        chunk.to = chunk.from + AUDIO_CHUNK_MIN_SIZE;
-        if (chunk.to >= numFrames * GbConstants.FRAME_LINES) {
-          chunk.to = numFrames * GbConstants.FRAME_LINES - 1;
-          chunk.from = chunk.to - AUDIO_CHUNK_MIN_SIZE;
+        chunk.to = chunk.from + audioChunkMinSize;
+        if (chunk.to >= numOutputFrames * GbConstants.FRAME_LINES) {
+          chunk.to = numOutputFrames * GbConstants.FRAME_LINES - 1;
+          chunk.from = chunk.to - audioChunkMinSize;
         }
       }
       
@@ -139,8 +147,8 @@ public class AudioStateMap {
     outputStats();
   }
   
-  private static int toLineIndex(TimeStamp time, int firstInputFrame) {
-    return (time.frame - firstInputFrame) * GbConstants.FRAME_LINES + time.frameCycle / GbConstants.LINE_CYCLES;
+  private static int toLineIndex(TimeStamp time, int firstInputFrame, int numInputFrames, int numOutputFrames) {
+    return ((time.frame - firstInputFrame) * GbConstants.FRAME_LINES + time.frameCycle / GbConstants.LINE_CYCLES) * numOutputFrames / numInputFrames;
   }
   
   public void outputStats() {

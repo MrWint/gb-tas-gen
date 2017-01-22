@@ -7,6 +7,7 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
 import mrwint.gbtasgen.tools.playback.loganalyzer.Palette;
 import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry.PaletteEntry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.RawMemoryMap;
+import mrwint.gbtasgen.tools.playback.loganalyzer.SceneDesc;
 import mrwint.gbtasgen.tools.playback.loganalyzer.Tile;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry.DoubleTileResult;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry.TileResult;
@@ -35,22 +36,28 @@ public class SpriteStateMap {
   
   public int numFrames;
   public int frameOffset;
+  private final boolean gbMode;
 
-  public SpriteStateMap(StateMap stateMap, RawMemoryMap memoryMap, int inputScene, int firstInputFrame, int numFrames) {
-    this.numFrames = numFrames;
+  public SpriteStateMap(StateMap stateMap, RawMemoryMap memoryMap, SceneDesc desc) {
+    this(stateMap, memoryMap, desc.inputScene, desc.firstInputFrame, desc.numInputFrames, desc.numOutputFrames, desc.gbMode);
+  }
+  private SpriteStateMap(StateMap stateMap, RawMemoryMap memoryMap, int inputScene, int firstInputFrame, int numInputFrames, int numOutputFrames, boolean gbMode) {
+    this.numFrames = numOutputFrames;
+    this.gbMode = gbMode;
     
     ArrayList<SpriteStateRange> activeSprites = new ArrayList<>();
     long[] lineLastRendered = new long[144];
     for (int i = 0; i < 144; i++)
       lineLastRendered[i] = -GbConstants.FRAME_LINES + i;
 
-    for (int inputFrame = firstInputFrame; inputFrame < firstInputFrame + numFrames; inputFrame++) {
-      if ((inputFrame - firstInputFrame) % 100 == 0)
-        System.out.println("processing sprite input frame " + inputFrame);
+    for (int outputFrame = 0; outputFrame < numOutputFrames; outputFrame++) {
+      int inputFrame = outputFrame * numInputFrames / numOutputFrames + firstInputFrame;
+      if (outputFrame % 100 == 0)
+        System.out.println("processing sprite output frame " + outputFrame);
       for (int scanLine = 0; scanLine < 144; scanLine++) {
         int lineStartFrameCycle = GbConstants.LINE_CYCLES * scanLine + 80 * GbConstants.DOUBLE_SPEED_FACTOR;
         TimeStamp inputTime = new TimeStamp(inputScene, inputFrame, lineStartFrameCycle);
-        long curLineTime = (inputFrame - firstInputFrame) * GbConstants.FRAME_LINES + scanLine;
+        long curLineTime = outputFrame * GbConstants.FRAME_LINES + scanLine;
 
         int lcdc = memoryMap.getLCDC(inputTime);
         boolean lcdEnabled = (lcdc & 0x80) != 0;
@@ -119,6 +126,8 @@ public class SpriteStateMap {
 
     outputStats(stateMap);
   }
+  
+  private static final byte[] GB_OBJ_PALETTE = { (byte)0x0, 0x0, (byte)0xe0, 0x7f, (byte)0x00, 0x7c, 0x0, 0x0 };
 
   private SpriteState createTileState(StateMap stateMap, int add, RawMemoryMap memoryMap, int scene, int frame, int scanLine) {
     byte[] upperTileData = new byte[16];
@@ -162,11 +171,15 @@ public class SpriteStateMap {
     }
     
     int attributes = memoryMap.getOAM(add + 3, inputTime);
-    int paletteIndex = attributes & 0x7;
-    for (int i = 2; i < 8; i++) { // ignore color 0
-      paletteData[i] = (byte)memoryMap.getObjPaletteValue(paletteIndex * 8 + i, inputTime);
-      if ((i & 1) != 0)
-        paletteData[i] &= 0x7f;
+    if (gbMode)
+      paletteData = GB_OBJ_PALETTE;
+    else {
+      int paletteIndex = attributes & 0x7;
+      for (int i = 2; i < 8; i++) { // ignore color 0
+        paletteData[i] = (byte)memoryMap.getObjPaletteValue(paletteIndex * 8 + i, inputTime);
+        if ((i & 1) != 0)
+          paletteData[i] &= 0x7f;
+      }
     }
     PaletteEntry palette = stateMap.objPaletteRegistry.register(new Palette(paletteData));
     if (obj8x16) {

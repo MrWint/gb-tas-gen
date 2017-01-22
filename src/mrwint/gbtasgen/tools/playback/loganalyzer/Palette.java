@@ -34,4 +34,19 @@ public class Palette {
       return false;
     return true;
   }
+  
+  @Override
+  public String toString() {
+    return "[Palette " + toColorString(data[0], data[1])
+        + ", " + toColorString(data[2], data[3])
+        + ", " + toColorString(data[4], data[5])
+        + ", " + toColorString(data[6], data[7]) + "]";
+  }
+  private String toColorString(byte lower, byte higher) {
+    int gbColor = (higher << 8) + lower;
+    int r = gbColor       & 0x1F;
+    int g = gbColor >>  5 & 0x1F;
+    int b = gbColor >> 10 & 0x1F;
+    return "(" + r + "," + g + "," + b + ")";
+  }
 }

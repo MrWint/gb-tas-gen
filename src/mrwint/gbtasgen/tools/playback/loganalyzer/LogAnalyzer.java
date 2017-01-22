@@ -17,9 +17,6 @@ import mrwint.gbtasgen.tools.playback.loganalyzer.operation.PlaybackOperation;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Record;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.Wait;
 import mrwint.gbtasgen.tools.playback.loganalyzer.operation.WriteInitialOperations;
-import mrwint.gbtasgen.tools.playback.loganalyzer.state.AudioStateMap;
-import mrwint.gbtasgen.tools.playback.loganalyzer.state.BackgroundStateMap;
-import mrwint.gbtasgen.tools.playback.loganalyzer.state.SpriteStateMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.state.StateMap;
 
 public class LogAnalyzer {
@@ -32,7 +29,7 @@ public class LogAnalyzer {
 
   public LogAnalyzer() throws Exception {
     
-    TreeMap<TimeStamp, LogInput> log = readLog();
+    TreeMap<TimeStamp, LogInput> log = readLog("log.txt");
     System.out.println("Read " + log.size() + " log entries");
     int maxScene = log.lastKey().scene;
     for (int scene = 0; scene <= maxScene; scene++) {
@@ -45,29 +42,9 @@ public class LogAnalyzer {
     log = null; // drop log
 
     StateMap stateMap = new StateMap();
-    BackgroundStateMap tilesState1 = new BackgroundStateMap(stateMap, memoryMap, 7, 0, 2300);
-//    BackgroundStateMap tilesState2 = new BackgroundStateMap(stateMap, memoryMap, 3, 200, 200);
-    SpriteStateMap spriteStates1 = new SpriteStateMap(stateMap, memoryMap, 7, 0, 2300);
-//    SpriteStateMap spriteStates2 = new SpriteStateMap(stateMap, memoryMap, 3, 200, 200);
-    AudioStateMap audioStates1 = new AudioStateMap(stateMap, memoryMap, 7, 0, 2300);
-//        .addScene(memoryMap, 10, 0, 2000);
-//        .addScene(memoryMap, 7, 0, 20)
-//        .addScene(memoryMap, 10, 0, 20);
+    stateMap.assembleScene(memoryMap, new SceneDesc(7, 0, 2300));
     System.out.println("State map created");
     memoryMap = null; // drop memory map
-    
-//    tilesState2.frameOffset = 200;
-//    spriteStates2.frameOffset = 200;
-//    stateMap.assembleScene(new BackgroundStateMap[] {tilesState1, tilesState2}, new SpriteStateMap[] {spriteStates1, spriteStates2});
-    stateMap.assembleScene(new BackgroundStateMap[] {tilesState1}, new SpriteStateMap[] {spriteStates1}, new AudioStateMap[] {audioStates1});
-//    stateMap.assembleScene(new BackgroundStateMap[] {tilesState2}, new SpriteStateMap[] {spriteStates2});
-//    System.out.println("Scene assembled");
-    tilesState1 = null; // drop tiles
-//    tilesState2 = null; // drop tiles
-    spriteStates1 = null; // drop sprites
-//    spriteStates2 = null; // drop sprites
-    audioStates1 = null; // drop audio
-
     System.out.println("Scene assembled");
     stateMap.calculateTilePositions();
     System.out.println("Tile positions calculated");
@@ -109,9 +86,9 @@ public class LogAnalyzer {
     return playback;
   }
   
-  public static TreeMap<TimeStamp, LogInput> readLog() throws FileNotFoundException {
+  public static TreeMap<TimeStamp, LogInput> readLog(String logName) throws FileNotFoundException {
     TreeMap<TimeStamp, LogInput> log = new TreeMap<>();
-    Scanner s = new Scanner(new BufferedInputStream(new FileInputStream("log.txt")));
+    Scanner s = new Scanner(new BufferedInputStream(new FileInputStream(logName)));
     while (s.hasNextInt()) {
       int scene = s.nextInt();
       int frame = s.nextInt();

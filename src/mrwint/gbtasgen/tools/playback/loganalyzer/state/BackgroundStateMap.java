@@ -3,6 +3,7 @@ package mrwint.gbtasgen.tools.playback.loganalyzer.state;
 import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
 import mrwint.gbtasgen.tools.playback.loganalyzer.Palette;
 import mrwint.gbtasgen.tools.playback.loganalyzer.RawMemoryMap;
+import mrwint.gbtasgen.tools.playback.loganalyzer.SceneDesc;
 import mrwint.gbtasgen.tools.playback.loganalyzer.Tile;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry.TileResult;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimeStamp;
@@ -16,19 +17,25 @@ public class BackgroundStateMap {
   @SuppressWarnings("unchecked")
   StateHistory<Long, BgMapState>[] bgMaps = new StateHistory[0x800];
   
-  public int numFrames;
+  public final int numFrames;
   public int frameOffset;
+  private final boolean gbMode;
 
-  public BackgroundStateMap(StateMap stateMap, RawMemoryMap memoryMap, int inputScene, int firstInputFrame, int numFrames) {
-    this.numFrames = numFrames;
+  public BackgroundStateMap(StateMap stateMap, RawMemoryMap memoryMap, SceneDesc desc) {
+    this(stateMap, memoryMap, desc.inputScene, desc.firstInputFrame, desc.numInputFrames, desc.numOutputFrames, desc.gbMode);
+  }
+  private BackgroundStateMap(StateMap stateMap, RawMemoryMap memoryMap, int inputScene, int firstInputFrame, int numInputFrames, int numOutputFrames, boolean gbMode) {
+    this.gbMode = gbMode;
+    this.numFrames = numOutputFrames;
 
-    for (int inputFrame = firstInputFrame; inputFrame < firstInputFrame + numFrames; inputFrame++) {
-      if ((inputFrame - firstInputFrame) % 100 == 0)
-        System.out.println("processing background input frame " + inputFrame);
+    for (int outputFrame = 0; outputFrame < numOutputFrames; outputFrame++) {
+      int inputFrame = outputFrame * numInputFrames / numOutputFrames + firstInputFrame;
+      if (outputFrame % 100 == 0)
+        System.out.println("processing background output frame " + outputFrame);
       for (int scanLine = 0; scanLine < 144; scanLine++) {
         int lineStartFrameCycle = GbConstants.LINE_CYCLES * scanLine + 80 * GbConstants.DOUBLE_SPEED_FACTOR;
         TimeStamp inputTime = new TimeStamp(inputScene, inputFrame, lineStartFrameCycle);
-        long curLineTime = (inputFrame - firstInputFrame) * GbConstants.FRAME_LINES + scanLine;
+        long curLineTime = outputFrame * GbConstants.FRAME_LINES + scanLine;
 
         int lcdc = memoryMap.getLCDC(inputTime);
         int wy = memoryMap.getWY(inputTime);
@@ -112,6 +119,8 @@ public class BackgroundStateMap {
   private int canonicalizeScx(int value) {
     return value;
   }
+  
+  private static final byte[] GB_BG_PALETTE = { (byte)0xff, 0x7f, (byte)0xe0, 0x7f, (byte)0x00, 0x7c, 0x0, 0x0 };
 
   private BgMapState createTileState(StateMap stateMap, int address, RawMemoryMap memoryMap, int scene, int frame, int scanLine, int firstRowScanLine) {
     byte[] tileData = new byte[16];
@@ -137,11 +146,15 @@ public class BackgroundStateMap {
     TimeStamp time = new TimeStamp(scene, frame, frameCycle);
     
     int bgMapAttribute = memoryMap.getVramValue(1, address, time);
-    int paletteIndex = bgMapAttribute & 0x7;
-    for (int i = 0; i < 8; i++) {
-      paletteData[i] = (byte)memoryMap.getBgPaletteValue(paletteIndex * 8 + i, time);
-      if ((i & 1) != 0)
-        paletteData[i] &= 0x7f;
+    if (gbMode)
+      paletteData = GB_BG_PALETTE;
+    else {
+      int paletteIndex = bgMapAttribute & 0x7;
+      for (int i = 0; i < 8; i++) {
+        paletteData[i] = (byte)memoryMap.getBgPaletteValue(paletteIndex * 8 + i, time);
+        if ((i & 1) != 0)
+          paletteData[i] &= 0x7f;
+      }
     }
     TileResult tileResult = stateMap.tileRegistry.registerForBg(new Tile(tileData));
     flipHorizontally = tileResult.flipHorizontally ^ ((bgMapAttribute & 0x20) != 0);

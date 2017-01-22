@@ -39,7 +39,7 @@ public class OamAccessibility implements Accessibility {
   }
 
   public static final int getOamInaccessibleFrom() {
-    return (453 + (GbConstants.DOUBLE_SPEED ? 2 : 0) - (GbConstants.GBC ? 1 : 0)) * GbConstants.DOUBLE_SPEED_FACTOR - 1;
+    return (453 - Accessibility.SAFETY_BUFFER + (GbConstants.DOUBLE_SPEED ? 2 : 0) - (GbConstants.GBC ? 1 : 0)) * GbConstants.DOUBLE_SPEED_FACTOR - 1;
   }
   public static final int getOamInaccessibleTo(long cycle, AccessibilityGbState gbState) {
     return Accessibility.getM0TimeOfLine(cycle, gbState) - 3 - (GbConstants.DOUBLE_SPEED ? 1 : 0) + (GbConstants.GBC ? 1 : 0);

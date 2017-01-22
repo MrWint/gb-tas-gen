@@ -178,11 +178,15 @@ public class Gen2Map extends Map {
 			curAddress+=2;
 
 			System.out.println("found object at "+(x-6)+":"+(y-6)+" (raw "+x+":"+y+") movement "+movement);
+			if ((x-6)/2 >= mapWidth || (y-6)/2 >= mapHeight) {
+			  System.err.println("ignoring out-of-bounds object");
+			  continue;
+			}
 
 			if(movement == 0 /*|| (facingDirection >= 3 && facingDirection <= 9)*/) {
 				if(!isEventFlagSet(bitIndex)) {
 					mapStepCollisionOverride[x][y] = true; // stationary sprite blocks step
-					System.out.println("object blocks tile "+(x-6)+":"+(y-6));
+          System.out.println("object blocks tile "+(x-6)+":"+(y-6));
 				}
 				else
 					System.out.println("sprite "+(i+1)+" is hidden");

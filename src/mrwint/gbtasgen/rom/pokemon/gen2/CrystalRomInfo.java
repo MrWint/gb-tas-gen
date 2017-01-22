@@ -90,6 +90,7 @@ public class CrystalRomInfo extends GenIIRomInfo {
 		fightDamageVariation = 0x34cfd;
 		fightEndTurnAddresses = new int[] {printLetterDelayJoypadAddress, fightEndTurnResetFlags};
 
+    listMonNamesAddress = 0x14*0x4000 + 0x3384;
 		listMoveNamesAddress = (0x72 -1) * 0x4000 + 0x5F29;
 		listMovesAddress = 0x41afb;
 		listTypeNamesAddress = 0x5097b;

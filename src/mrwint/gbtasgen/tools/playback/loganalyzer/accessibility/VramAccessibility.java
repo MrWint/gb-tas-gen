@@ -27,7 +27,7 @@ public class VramAccessibility implements Accessibility {
   }
 
   public static final int getVramInaccessibleFrom() {
-    return 80 * GbConstants.DOUBLE_SPEED_FACTOR - 1;
+    return (80 - Accessibility.SAFETY_BUFFER) * GbConstants.DOUBLE_SPEED_FACTOR - 1;
   }
   public static final int getVramInaccessibleTo(long cycle, AccessibilityGbState gbState) {
     return Accessibility.getM0TimeOfLine(cycle, gbState) - 3 - (GbConstants.DOUBLE_SPEED ? 1 : 0) + (GbConstants.GBC ? 1 : 0);
