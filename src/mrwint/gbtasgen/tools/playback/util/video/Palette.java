@@ -90,7 +90,7 @@ public class Palette {
 
     // Random
     Random random = new Random();
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10000; i++) {
       long rPalette = random.nextLong() & 0x7fff7fff7fff7fffL;
       long rPaletteCost = ColorUtil.getCosts(colors, rPalette);
       long rKmPalette = KMeans.kMeans(rPalette, colors);

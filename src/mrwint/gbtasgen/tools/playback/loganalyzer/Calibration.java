@@ -23,10 +23,10 @@ import mrwint.gbtasgen.tools.playback.util.video.SimpleAvi;
 public class Calibration {
   
   public static void main(String[] args) throws Exception {
-    new PlaybackWriter(calibratePlaybackInputCycleOffsetOperations(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
+//    new PlaybackWriter(calibratePlaybackInputCycleOffsetOperations(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
 //    new PlaybackWriter(calibrateVramAccessible(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/calibrationTest.lsmv");
-//    new PlaybackWriter(createSoundTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/sbsoundTest.lsmv");
-//    new PlaybackWriter(createFmvTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/fmvTest.lsmv");
+//    new PlaybackWriter(createSoundTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/soundTest.lsmv");
+    new PlaybackWriter(createFmvTest(), PLAYBACK_INPUT_CYCLE_OFFSET).write("movies/fmvTest.lsmv");
   }
  
   // Initial Record cycleCounter:  197364
@@ -89,8 +89,8 @@ public class Calibration {
   }
 
   public static ArrayList<PlaybackOperation> createSoundTest() throws IOException {
-    PlaySound playSound = new PlaySound(AudioUtil.rewriteTo4bitFancy(AudioUtil.read16bitPcmMonoAudio("audio/sb.wav")));
-    AudioUtil.write16bitPcmMonoAudio("audio/sbout.wav", playSound);
+    PlaySound playSound = new PlaySound(AudioUtil.rewriteTo4bitFancy(AudioUtil.read16bitPcmMonoAudio("audio/in.wav")));
+    AudioUtil.write16bitPcmMonoAudio("audio/outLQ.wav", playSound);
     Record record = Record.forStackFrames(Arrays.asList(
 //        0x501,
         playSound.getJumpAddress(),
@@ -107,15 +107,19 @@ public class Calibration {
     GbAudio audio = AudioUtil.rewriteTo4bitFancy(AudioUtil.read16bitPcmMonoAudio("audio/sb.wav"));
     GbVideo video = new GbVideo(SimpleAvi.fromFile("video/sb.avi"));
     Fmv fmv = new Fmv(video, audio);
-    PlaySound tmpPlaySound = new PlaySound(audio);
-    System.out.println("compare o a");
-    compareGbAudio(audio, AudioUtil.toGbAudio(tmpPlaySound));
-    System.out.println("compare o b");
-    compareGbAudio(audio, AudioUtil.toGbAudio(fmv));
-    System.out.println("compare a b");
-    compareGbAudio(AudioUtil.toGbAudio(tmpPlaySound), AudioUtil.toGbAudio(fmv));
-    AudioUtil.write16bitPcmMonoAudio("audio/fmvout1.wav", AudioUtil.toGbAudio(tmpPlaySound));
-    AudioUtil.write16bitPcmMonoAudio("audio/fmvout2.wav", AudioUtil.toGbAudio(fmv));
+    
+    video.toSimpleAvi().writeTo("video/out.avi");
+
+//    PlaySound tmpPlaySound = new PlaySound(audio);
+//    System.out.println("compare o a");
+//    compareGbAudio(audio, AudioUtil.toGbAudio(tmpPlaySound));
+//    System.out.println("compare o b");
+//    compareGbAudio(audio, AudioUtil.toGbAudio(fmv));
+//    System.out.println("compare a b");
+//    compareGbAudio(AudioUtil.toGbAudio(tmpPlaySound), AudioUtil.toGbAudio(fmv));
+//    AudioUtil.write16bitPcmMonoAudio("audio/fmvout1.wav", AudioUtil.toGbAudio(tmpPlaySound));
+//    AudioUtil.write16bitPcmMonoAudio("audio/fmvout2.wav", AudioUtil.toGbAudio(fmv));
+
     Record record = Record.forStackFrames(Arrays.asList(
         fmv.getJumpAddress(),
         PlaybackAddresses.STOP_OPERATIONS_ROM));

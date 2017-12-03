@@ -45,17 +45,8 @@ public class LogAnalyzer {
     stateMap.assembleScene(memoryMap, new SceneDesc(7, 0, 2300));
     System.out.println("State map created");
     memoryMap = null; // drop memory map
-    System.out.println("Scene assembled");
-    stateMap.calculateTilePositions();
-    System.out.println("Tile positions calculated");
-    stateMap.calculateBgPalettePositions();
-    System.out.println("BG palette positions calculated");
-    stateMap.calculateObjPalettePositions();
-    System.out.println("Obj palette positions calculated");
-    stateMap.calculateOamPositions();
-    System.out.println("OAM positions calculated");
-    stateMap.compressStates();
-    System.out.println("States compressed");
+    
+    stateMap.finishAssembly();
 
     ArrayList<TimedAction> actions = stateMap.generateActionList();
     ArrayList<PlaybackOperation> playback = new PlaybackAssembler(actions).assemble(stateMap.sceneAccessibilityStates);

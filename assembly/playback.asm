@@ -527,6 +527,194 @@ PlaySound::
   ret             ; 16
 
 
+
+
+
+
+
+
+; 40 + 916 + 80 + 484 + 912*(samples / 2) + 28 = 1548 + 912*(samples / 2)
+; inputs: 40, 60 + {0, 16} + k60, 1520 + {0, 36, 52, 72, [112, 128, 140, 156, 168, 184, 216, 232,] 884} + k912
+; first output: 40 + 916 + 80 + 484 + 96 + 96 + {0, 48} = {1712, 1760} (= {800, 848} mod 912)
+PlaySoundSetBg::
+  ld hl, $ff00    ; 12
+  ld a, $44       ; 8 
+  ld [$ff25], a   ; 12 ; all sounds to all outputs
+  ld c, $30       ; 8 ; start of wave ram
+  ; 40
+
+  ld a, [hl]      ; 8
+  ld [$ff00+c], a ; 8
+  inc c           ; 4
+.waveRamLoop ; maybe unroll?
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff00+c], a ; 8
+  inc c           ; 4
+  ld a, c         ; 4
+  cp $40          ; 8
+  jr nz, .waveRamLoop ; 12/8 ; 60*15 - 4 + 20 = 916
+
+  ld a, $80       ; 8
+  ld [$ff1a], a   ; 12 ; enable channel 3
+  ld a, $20       ; 8
+  ld [$ff1c], a   ; 12 ; output volume
+  ld a, $8e       ; 8
+  ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*2)
+  ld a, $87       ; 8
+  ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*2) + start
+  ; 80
+
+  ld a, 30        ; 8
+.initialWait       ; 30 * 16 - 4 = 476 cycles
+  dec a            ; 4
+  jr nz, .initialWait ; 12/8
+  ; 484
+
+.loop 
+  ld a, [hl]      ; 8
+  ld b, a         ; 4
+  swap a          ; 8
+  xor b           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ; 36
+  
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+  ; 36
+
+  ld a, [hl]      ; 8
+  cp $cf          ; 8
+  jr z, .skipBg   ; 12/8
+; 28/24
+
+  xor a        ; 4
+  ld [$ff4f], a ; 12
+  ld a, [hl]   ; 8 ;112
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld b, a      ; 4
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld c, a      ; 4
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld [bc], a   ; 8
+  ld a, h ;$ff ; 4
+  ld [$ff4f], a ; 12
+  ld a, [hl]   ; 8
+  swap a       ; 8
+  xor [hl]     ; 8
+  ld [bc], a   ; 8
+  jr .bgDone   ; 12
+; 164
+
+.skipBg
+  ld a, 9         ; 8
+.loopSkipBgWait    ; 9 * 16 - 4 = 140 cycles
+  dec a            ; 4
+  jr nz, .loopSkipBgWait ; 12/8
+  nop             ; 4
+  nop             ; 4
+  nop             ; 4
+; 160
+
+.bgDone
+  ld a, 38        ; 8
+.loopWait          ; 38 * 16 - 4 = 604 cycles
+  dec a            ; 4
+  jr nz, .loopWait ; 12/8
+  nop             ; 4
+  nop             ; 4
+  nop             ; 4
+; 624
+
+
+  ld a, [hl]      ; 8
+  cp $cf          ; 8
+  jr nz, .loop    ; 12/8 ; loop sum 100 + 188 + 624 = 912
+
+  xor a           ; 4
+  ld [$ff1a], a   ; 12 ; disable channel 3
+  ret             ; 16
+
+
+
+
+
+
+; 40 + 916 + 80 + 244 + 456*(samples / 2) + 28 = 1308 + 456*(samples / 2)
+; inputs: 40, 60 + {0, 16} + k60, 1280 + {0, 36, 52, 428} + k456
+PlaySoundHQ::
+  ld hl, $ff00    ; 12
+  ld a, $44       ; 8 
+  ld [$ff25], a   ; 12 ; enable output of sound channel 3
+  ld c, $30       ; 8 ; start of wave ram
+  ; 40
+
+  ld a, [hl]      ; 8
+  ld [$ff00+c], a ; 8
+  inc c           ; 4
+.waveRamLoop ; maybe unroll?
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff00+c], a ; 8
+  inc c           ; 4
+  ld a, c         ; 4
+  cp $40          ; 8
+  jr nz, .waveRamLoop ; 12/8 ; 60*15 - 4 + 20 = 916
+
+  ld a, $80       ; 8
+  ld [$ff1a], a   ; 12 ; enable channel 3
+  ld a, $20       ; 8
+  ld [$ff1c], a   ; 12 ; output volume
+  ld a, $c7       ; 8
+  ld [$ff1d], a   ; 12 ; low 8 bits for (2048 - 57*1)
+  ld a, $87       ; 8
+  ld [$ff1e], a   ; 12 ; high 3 bits for (2048 - 57*1) + start
+  ; 80
+
+  ld a, 15        ; 8
+.initialWait       ; 15 * 16 - 4 = 236 cycles
+  dec a            ; 4
+  jr nz, .initialWait ; 12/8
+  ; 244
+
+.loop
+  ld a, [hl]      ; 8
+  ld b, a         ; 4
+  swap a          ; 8
+  xor b           ; 4
+  ld [$ff24], a   ; 12 ; set so for next samples
+  ; 36
+  
+  ld a, [hl]      ; 8
+  swap a          ; 8
+  xor [hl]        ; 8
+  ld [$ff30], a   ; 12 ; set next samples (actual wave ram position determined by audio timing)
+  ; 36
+
+  ld a, 22        ; 8
+.loopWait          ; 22 * 16 - 4 = 348 cycles
+  dec a            ; 4
+  jr nz, .loopWait ; 12/8
+  ; 356
+
+  ld a, [hl]      ; 8
+  cp $cf          ; 8
+  jr nz, .loop    ; 12/8 ; loop sum 100 + 356 = 456
+
+  xor a           ; 4
+  ld [$ff1a], a   ; 12 ; disable channel 3
+  ret             ; 16
+
+
 ;; 668 cycles
 ;; inputs 32, 52 + {0, 16} + k*36
 ;PlaySoundInit::
@@ -972,7 +1160,7 @@ endr
 
   ld a, [hLoopCounter]          ; 12
   cp 20                         ; 8
-  jp c, .skipTileAndPaletteData ; 16/12
+  jp c, .skipTileAndPaletteData + $c000 - Record ; 16/12
 ; 36/32 (/376)
 
 ; Write tile data
@@ -1022,7 +1210,7 @@ endr
   ld a, [hLoopCounter]     ; 12
   dec a                    ; 4
   ld [hLoopCounter], a     ; 12
-  jp nz, .lineLoop  ; 16/12
+  jp nz, .lineLoop + $c000 - Record  ; 16/12
 ; 44/40 (912/908)
 
 ;;;; VBlank ;;;;       [(25i*124+3i*19 = 3157i)]
@@ -1060,7 +1248,7 @@ endr
 ;maybe exit
   ld a, [hl]      ; 8 ;; 476
   cp $cf          ; 8
-  jp z, .stopFmv  ; 16/12
+  jp z, .stopFmv + $c000 - Record  ; 16/12
 ; 32/28 (508/504) [1i (3161i)]
 
 ; backup b,c,d
@@ -1309,7 +1497,7 @@ endr
   ld a, [hEbackup]  ; 12
   ld e, a           ; 4
   ld l, 0           ; 8
-  jp .lineLoopStart ; 16
+  jp .lineLoopStart + $c000 - Record ; 16
 ; 88 (10012)
 
 
@@ -1326,13 +1514,122 @@ endr
     dec a                              ; 4
     jr nz, .skipTileAndPaletteDataLoop ; 12/8
   nop               ; 4
-jp .finishLineLoop ; 16
+jp .finishLineLoop + $c000 - Record ; 16
 ; 472 (868)
 
 
 
 
 .stopFmv
-  jr .stopFmv
+  xor a               ; 4
+  ld [$ff40], a       ; 12 ; disable LCD
+  ld [$ff26], a       ; 12 ; disable sound
+  ld [rSVBK], a       ; 12 ; set WRAM bank 0
+
+  ld sp, $dfff        ; init stack pointer
+
+  ld hl, $d000 ; start of WRAM
+	ld bc, $0d00 ; size of WRAM
+.clearWramLoop2
+	ld [hl], 0
+	inc hl
+	dec bc
+	ld a, b
+	or c
+	jr nz, .clearWramLoop2
+
+  ld a, 1             ; 8
+  ld [$ff4f], a       ; 12 ; set VRAM bank 1
+  call $1DC6          ; clear VRAM
+  ld h, $98
+	call $1AC9 ; ClearBgMap
+	ld h, $9c
+	call $1AC9 ; ClearBgMap
+  xor a               ; 4
+  ld [$ff4f], a       ; 12 ; set VRAM bank 0
+  call $1DC6          ; clear VRAM
+  ld h, $98
+	call $1AC9 ; ClearBgMap
+	ld h, $9c
+	call $1AC9 ; ClearBgMap
+
+  call $3DE0 ; GBPalNormal
+
+  ld hl, $c000 ; start of WRAM
+	ld bc, $600 ; size of WRAM
+.clearWramLoop1
+	ld [hl], 0
+	inc hl
+	dec bc
+	ld a, b
+	or c
+	jr nz, .clearWramLoop1
+
+  inc a          ; 4
+  ld [rKEY1], a  ; 12
+  stop           ; 8 ; disable double-speed mode
+
+  ld a, $02           ; 8
+  ld [$c0ef], a       ; 12 ; wAudioROMBank
+  ld [$c0f0], a       ; 12 ; wAudioSavedROMBank
+  ld a, $50           ; 8
+  ld [$d157], a       ; 12 ; wPlayerName
+  ld [$d349], a       ; 12 ; wRivalName
+  ld a, $ff           ; 8
+  ld [$d163], a       ; 12 ; species list end marker
+  ld [$d31d], a       ; 12 ; item list end marker
+  ld [$d2f6], a       ; 12 ; mon owned flags
+  ld [$d2f7], a       ; 12 ; mon owned flags
+  ld [$d2f8], a       ; 12 ; mon owned flags
+  ld [$d2f9], a       ; 12 ; mon owned flags
+  ld [$d2fa], a       ; 12 ; mon owned flags
+  ld [$d2fb], a       ; 12 ; mon owned flags
+  ld [$d2fc], a       ; 12 ; mon owned flags
+  ld [$d2fd], a       ; 12 ; mon owned flags
+
+  ld hl, $d35c
+  inc hl
+  ld a, $76
+  ld [hl], a          ; wCurMap
+  ld a, $01
+  ld [$d35e], a       ; wCurrentTileBlockMapViewPointer
+  ld a, $c7
+  ld [$d35f], a       ; wCurrentTileBlockMapViewPointer
+  ld a, $02
+  ld [$d360], a       ; wYCoord
+  ld a, $04
+  ld [$d361], a       ; wXCoord
+  ld a, $0a
+  ld [$d365], a       ; ??
+  ld a, $07
+  ld [$d366], a       ; wCurMapTileset
+  ld a, $04
+  ld [$d367], a       ; wCurMapHeight
+  ld a, $05
+  ld [$d368], a       ; wCurMapWidth
+
+  ld a, $2e
+  ld [$d369], a       ; wMapDataPtr
+  ld a, $65
+  ld [$d36a], a       ; wMapDataPtr
+  ld a, $0d
+  ld [$d36b], a       ; wMapTextPtr
+  ld a, $65
+  ld [$d36c], a       ; wMapTextPtr
+  ld a, $39
+  ld [$d36d], a       ; wMapScriptPtr
+  ld a, $64
+  ld [$d36e], a       ; wMapScriptPtr
+
+  ld b, $16
+  ld hl, $6456+3 ; HallofFameRoomScript2
+  ld de, $3E84   ; Bankswitch
+  push de
+
+  ld a, $80           ; 8
+  ld [$ff40], a       ; 12 ; re-enable LCD
+  xor a               ; 4
+  ld [$ff0f], a       ; 12 ; clear interrupts
+  reti
 
 EndOfFile::

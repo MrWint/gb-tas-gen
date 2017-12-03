@@ -25,14 +25,14 @@ public class CreateLogs {
 //    Gameboy gb = new Gameboy(new CrystalRomInfo(), 0, false);
 //    Gameboy gb = new Gameboy(new SilverRomInfo(), 0, false);
 //    Gameboy gb = new Gameboy(new YellowRomInfo(), 0, true);
-    Gameboy gb = new Gameboy(new NamedRomInfo("roms/yellow_hack.gbc"), 0, true);
+    Gameboy gb = new Gameboy(new NamedRomInfo("roms/placeholder.gbc"), 0, true);
 
-    ArrayList<Integer> inputs = BizhawkMovie.getBkmInputs("playback_s01");
+    ArrayList<Integer> inputs = BizhawkMovie.getBkmInputs("placeholder");
 //    ArrayList<Integer> inputs = BizhawkMovie.getBkmInputs("MrWint_pokemonsilver_109868");
 //    ArrayList<Integer> inputs = BizhawkMovie.getBk2Inputs("MrWint_pokemonred_sram_4178");
 //    ArrayList<Integer> inputs = BizhawkMovie.getBk2Inputs("smbTest");
     System.out.println("playing back " + inputs.size() + " inputs");
-    for (int i = 0; i < 5000; i++) {
+    for (int i = 0; i < 6500; i++) {
       gb.step(inputs.size() > i ? inputs.get(i) : 0);
 //      gb.step(0);
 //      if (inputs.get(i) == Move.RESET)

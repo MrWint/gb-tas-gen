@@ -103,7 +103,12 @@ public class AudioUtil {
     return (short) ((level * 2 - 15) * 64 * (so + 1));
   }
 
+  public static int FREQ_SCALE = 2;
+  
   public static short[] read16bitPcmMonoAudio(String file) throws IOException {
+    return read16bitPcmMonoAudio(file, 1, 1);
+  }
+  public static short[] read16bitPcmMonoAudio(String file, int volumeMult, int volumeDiv) throws IOException {
     BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
     in.skip(24); // skip header
     int freq = in.read();
@@ -122,10 +127,16 @@ public class AudioUtil {
     for (int i = 0; i < length; i++) {
       samples[i] = (short) in.read();
       samples[i] += in.read() * 0x100;
+      int sample = samples[i] * volumeMult / volumeDiv;
+      if (sample > Short.MAX_VALUE)
+        sample = Short.MAX_VALUE;
+      if (sample < Short.MIN_VALUE)
+        sample = Short.MIN_VALUE;
+      samples[i] = (short) sample;
     }
 
     in.close();
-    return resample(samples, freq * 57 * 2, 1 << 21);
+    return resample(samples, freq * 57 * FREQ_SCALE, 1 << 21);
   }
   
   public static GbAudio toGbAudio(PlaySound playSound) throws IOException {
@@ -165,7 +176,7 @@ public class AudioUtil {
     for (int i = 0; i < gbAudio.samples.length; i++)
       samples[i] = getSample(gbAudio.samples[i], gbAudio.soValues[i/2]);
 
-    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/2);
+    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/FREQ_SCALE);
   }
 
   public static void write16bitPcmMonoAudio(String file, PlaySound playSound) throws IOException {
@@ -180,7 +191,7 @@ public class AudioUtil {
       samples[i] = getSample(toJoypadNibble(inputs.get(31 + ((i-31)/2) * 4 + 1 + (i-31)%2)), toJoypadNibble(inputs.get(31 + (i/2)*4)));
     }
     
-    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/2);
+    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/FREQ_SCALE);
   }
   
   public static void write16bitPcmMonoAudio(String file, Fmv fmv) throws IOException {
@@ -190,7 +201,7 @@ public class AudioUtil {
     for (int i = 0; i < cycles * 2; i++)
       samples[i] = getSample(inputs.get(getSampleInputIndex(i)), inputs.get(getSoValueInputIndex(i)));
 
-    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/2);
+    write16bitPcmMonoAudio(file, samples, (1 << 21)/57/FREQ_SCALE);
   }
   private static int getSampleInputIndex(int sampleIndex) {
     if (sampleIndex < 31)

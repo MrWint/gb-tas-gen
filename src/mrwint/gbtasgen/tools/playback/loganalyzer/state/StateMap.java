@@ -11,16 +11,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import mrwint.gbtasgen.tools.playback.loganalyzer.GbConstants;
 import mrwint.gbtasgen.tools.playback.loganalyzer.OamEntry;
+import mrwint.gbtasgen.tools.playback.loganalyzer.Palette;
 import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry;
+import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry.PaletteEntry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.RawMemoryMap;
 import mrwint.gbtasgen.tools.playback.loganalyzer.SceneDesc;
-import mrwint.gbtasgen.tools.playback.loganalyzer.PaletteRegistry.PaletteEntry;
+import mrwint.gbtasgen.tools.playback.loganalyzer.Tile;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry.TileEntry;
+import mrwint.gbtasgen.tools.playback.loganalyzer.TileRegistry.TileResult;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimeStamp;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction;
 import mrwint.gbtasgen.tools.playback.loganalyzer.TimedAction.Action;
@@ -143,6 +146,7 @@ public class StateMap {
   }
 
   private int numScenes = 0;
+  private ArrayList<Integer> sceneFrames = new ArrayList<>();
   public ArrayList<SceneAccessibilityState> sceneAccessibilityStates = new ArrayList<>();
   private StateHistory<TimeStamp, LcdcState> lcdc = StateHistory.withTimestampIndex(LcdcState.MERGER); // 78 - 376
   private StateHistory<TimeStamp, WyState> wy = StateHistory.withTimestampIndex(WyState.MERGER); // 74 - 376
@@ -153,16 +157,21 @@ public class StateMap {
   private StateHistory<TimeStamp, BgMapState>[] bgMaps = new StateHistory[0x800];
   private ArrayList<TimestampedSpriteStateRange> sprites = new ArrayList<>();
   private ArrayList<TimestampedAudioChunk> audioChunks = new ArrayList<>();
-
+  
   public void assembleScene(BackgroundStateMap[] bgStates, SpriteStateMap[] spriteStates, AudioStateMap[] audioStates) {
-    SceneAccessibilityState sceneAccessibility = new SceneAccessibilityState();
-    sceneAccessibilityStates.add(sceneAccessibility);
     int scene = numScenes++;
     int numFrames = 0;
     for (BackgroundStateMap bgState : bgStates)
       numFrames = Math.max(numFrames, bgState.frameOffset + bgState.numFrames);
     for (SpriteStateMap spriteState : spriteStates)
       numFrames = Math.max(numFrames, spriteState.frameOffset + spriteState.numFrames);
+    sceneFrames.add(numFrames);
+    if (sceneFrames.size() != numScenes)
+      throw new RuntimeException(sceneFrames.size() + " != " + numScenes);
+    SceneAccessibilityState sceneAccessibility = new SceneAccessibilityState();
+    sceneAccessibilityStates.add(sceneAccessibility);
+    if (sceneAccessibilityStates.size() != numScenes)
+      throw new RuntimeException(sceneAccessibilityStates.size() + " != " + numScenes);
 
     // Determine accessibility
     for (int frame = 0; frame < numFrames; frame++) {
@@ -344,17 +353,19 @@ public class StateMap {
     int maxi = 0;
     int min = Integer.MAX_VALUE;
     int mini = 0;
-    for (int i = 0; i < 0x800; i++) {
-      int size = bgMaps[i] == null ? 0 : bgMaps[i].getSize();
-      if (size > max) {
-        max = size;
-        maxi = i;
+    if (bgMaps != null) {
+      for (int i = 0; i < 0x800; i++) {
+        int size = bgMaps[i] == null ? 0 : bgMaps[i].getSize();
+        if (size > max) {
+          max = size;
+          maxi = i;
+        }
+        if (size < min) {
+          min = size;
+          mini = i;
+        }
+        sum += size;
       }
-      if (size < min) {
-        min = size;
-        mini = i;
-      }
-      sum += size;
     }
     System.out.println("max BG tile: " + maxi + " with " + max);
     System.out.println("min BG tile: " + mini + " with " + min);
@@ -368,21 +379,23 @@ public class StateMap {
     System.out.println("num sprites: " + sprites.size());
     System.out.println();
 
-    for (int y = 0; y < 32; y++) {
-      for (int x = 0; x < 32; x++) {
-        System.out.print(" " + (bgMaps[y * 32 + x] == null ? "-" : bgMaps[y * 32 + x].getSize()));
+    if (bgMaps != null) {
+      for (int y = 0; y < 32; y++) {
+        for (int x = 0; x < 32; x++) {
+          System.out.print(" " + (bgMaps[y * 32 + x] == null ? "-" : bgMaps[y * 32 + x].getSize()));
+        }
+        System.out.println();
+      }
+      System.out.println();
+      
+      for (int y = 0; y < 32; y++) {
+        for (int x = 0; x < 32; x++) {
+          System.out.print(" " + (bgMaps[0x400 + y * 32 + x] == null ? "-" : bgMaps[0x400 + y * 32 + x].getSize()));
+        }
+        System.out.println();
       }
       System.out.println();
     }
-    System.out.println();
-    
-    for (int y = 0; y < 32; y++) {
-      for (int x = 0; x < 32; x++) {
-        System.out.print(" " + (bgMaps[0x400 + y * 32 + x] == null ? "-" : bgMaps[0x400 + y * 32 + x].getSize()));
-      }
-      System.out.println();
-    }
-    System.out.println();
 
     System.out.println("num audio chunks: " + audioChunks.size());
     
@@ -411,14 +424,75 @@ public class StateMap {
     System.out.println("chunk dist min: " + minDist + " max: " + maxDist);
     System.out.println();
   }
- 
   
+  public static class ExtraBg {
+    public Tile[] tiles;
+    public Palette[] palettes;
+    public TileResult[] tileResults;
+    public PaletteEntry[] paletteEntries;
+    
+    public ExtraBg(Tile[] tiles, Palette[] palettes) {
+      this.tiles = tiles;
+      this.palettes = palettes;
+    }
+    
+    public int getTilePosition(int index) {
+      TileEntry e = tileResults[index].tile;
+      return e.usages.getLastNonNullValueAt(TimeStamp.MAX_VALUE);
+    }
+    
+    public int getPalettePosition(int index) {
+      PaletteEntry e = paletteEntries[index];
+      return e.usages.getLastNonNullValueAt(TimeStamp.MAX_VALUE);
+    }
+  }
+  
+  public void registerExtraBgs(ExtraBg... extraBgs) {
+    int lastScene = numScenes - 1;
+    int lastFrame = sceneFrames.get(lastScene) - 1;
+    TimeStamp fromTime = new TimeStamp(lastScene, lastFrame, 0);
+    TimeStamp toTime = new TimeStamp(lastScene, lastFrame + 1, 0);
+    
+    for (ExtraBg extraBg : extraBgs) {
+      extraBg.tileResults = new TileResult[extraBg.tiles.length];
+      for (int i = 0; i < extraBg.tiles.length; i++) {
+        extraBg.tileResults[i] = tileRegistry.registerForBg(extraBg.tiles[i]);
+        extraBg.tileResults[i].tile.usages.addRange(fromTime, toTime, -1);
+      }
+      extraBg.paletteEntries = new PaletteEntry[extraBg.palettes.length];
+      for (int i = 0; i < extraBg.palettes.length; i++) {
+        extraBg.paletteEntries[i] = bgPaletteRegistry.register(extraBg.palettes[i]);
+        extraBg.paletteEntries[i].usages.addRange(fromTime, toTime, -1);
+      }
+    }
+  }
+ 
+  public void finishAssembly() {
+    System.out.println("Calculating tile positions...");
+    calculateTilePositions();
+    System.out.println("Tile positions calculated");
+    System.out.println("Calculating BG palette positions...");
+    calculateBgPalettePositions();
+    System.out.println("BG palette positions calculated");
+    System.out.println("Converting BG map...");
+    convertBgMap();
+    System.out.println("BG map converted");
+    System.out.println("Calculating obj palette positions...");
+    calculateObjPalettePositions();
+    System.out.println("Obj palette positions calculated");
+    System.out.println("Calculating OAM positions...");
+    calculateOamPositions();
+    System.out.println("OAM positions calculated");
+    System.out.println("Compressing states...");
+    compressStates();
+    System.out.println("States compressed");
+  }
 
   @SuppressWarnings("unchecked")
   private StateHistory<TimeStamp, TileEntry>[][] tileHistory = new StateHistory[2][0x180];
   int numTileOverrides;
 
-  public StateMap calculateTilePositions() {
+  private StateMap calculateTilePositions() {
     for (int vramBank = 0; vramBank < 2; vramBank++) 
       for (int address = 0; address < 0x180; address++)
         tileHistory[vramBank][address] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
@@ -562,11 +636,11 @@ public class StateMap {
   int numBgPaletteOverrides;
   int numObjPaletteOverrides;
   
-  public StateMap calculateBgPalettePositions() {
+  private StateMap calculateBgPalettePositions() {
     numBgPaletteOverrides = calculatePalettePositions(bgPaletteHistory, bgPaletteRegistry);
     return this;
   }
-  public StateMap calculateObjPalettePositions() {
+  private StateMap calculateObjPalettePositions() {
     numObjPaletteOverrides = calculatePalettePositions(objPaletteHistory, objPaletteRegistry);
     return this;
   }
@@ -660,6 +734,45 @@ public class StateMap {
     System.out.println();
     System.out.println("num palette overrides: " + numPaletteOverrides);
   }
+  
+  @SuppressWarnings("unchecked")
+  private StateHistory<TimeStamp, Integer>[] bgHistory = new StateHistory[0x1000];
+  private StateMap convertBgMap() {
+    
+    for (int address = 0; address < 0x800; address++) {
+      if (bgMaps[address] != null) {
+        bgHistory[address] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
+        bgHistory[0x800 + address] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
+        
+        StateHistory<TimeStamp, BgMapState> history = bgMaps[address];
+        {
+          TimeStamp t = TimeStamp.MIN_VALUE;
+          while (true) {
+            BgMapState v = history.getValueAt(t);
+            TimeStamp nextTimestamp = history.getNextStateStartTime(t);
+            if (v != null) {
+              if (nextTimestamp == null) // reached end prematurely
+                throw new RuntimeException("unexpected end after value " + v + " at " + t + " in " + history);
+              bgHistory[address].addRange(t, nextTimestamp, (v.tile.usages.getValueAt(t) % 0x180) & 0xff);
+              bgHistory[0x800 + address].addRange(t, nextTimestamp, v.palette.usages.getValueAt(t)
+                  | ((v.tile.usages.getValueAt(t) >= 0x180 ? 1 : 0) << 3)
+                  | ((v.flipHorizontally ? 1 : 0) << 5)
+                  | ((v.flipVertically ? 1 : 0) << 6)
+                  | ((v.bgToOamPriority ? 1 : 0) << 7));
+            }
+            if (nextTimestamp == null) // reached end
+              break;
+            t = nextTimestamp;
+          }
+        }
+        bgMaps[address] = null; // drop bgMap
+      }
+    }
+    
+    bgMaps = null; // drop all bgMaps
+    
+    return this;
+  }
 
   @SuppressWarnings("unchecked")
   private StateHistory<TimeStamp, OamEntry>[] oamHistory = new StateHistory[40];
@@ -668,7 +781,7 @@ public class StateMap {
   private int numOamEvict = 0;
   private int numOamClose = 0;
 
-  public StateMap calculateOamPositions() {
+  private StateMap calculateOamPositions() {
     sprites.sort((a, b) -> a.from.compareTo(b.from));
     for (int pos = 0; pos < 40; pos++)
       oamHistory[pos] = StateHistory.withTimestampIndex(StateHistory.getIdentityMerger());
@@ -767,15 +880,18 @@ public class StateMap {
   }
 
   
-  public void compressStates() {
+  private void compressStates() {
     StateHistory.compressTimestampHistory(lcdc, true);
     StateHistory.compressTimestampHistory(wy);
     StateHistory.compressTimestampHistory(wx);
     StateHistory.compressTimestampHistory(scy);
     StateHistory.compressTimestampHistory(scx);
-    for (int i = 0; i < 0x800; i++)
-      if (bgMaps[i] != null)
-        StateHistory.compressTimestampHistory(bgMaps[i]);
+//    for (int i = 0; i < 0x800; i++)
+//      if (bgMaps[i] != null)
+//        StateHistory.compressTimestampHistory(bgMaps[i]);
+    for (int i = 0; i < 0x1000; i++)
+      if (bgHistory[i] != null)
+        StateHistory.compressTimestampHistory(bgHistory[i]);
     for (int vramBank = 0; vramBank < 2; vramBank++) 
       for (int address = 0; address < 0x180; address++)
         StateHistory.compressTimestampHistory(tileHistory[vramBank][address]);
@@ -796,42 +912,36 @@ public class StateMap {
   public ArrayList<TimedAction> generateActionList() {
     ArrayList<TimedAction> actions = new ArrayList<>();
     
-    addToActions(lcdc, (t, v) -> v.toValue(), HRAM, GbConstants.LCDC, actions);
-    addToActions(wy, (t, v) -> v.toValue(), HRAM, GbConstants.WY, actions);
-    addToActions(wx, (t, v) -> v, HRAM, GbConstants.WX, actions);
-    addToActions(scy, (t, v) -> v, HRAM, GbConstants.SCY, actions);
-    addToActions(scx, (t, v) -> v, HRAM, GbConstants.SCX, actions);
+    addToActions(lcdc, v -> v.toValue(), HRAM, GbConstants.LCDC, actions);
+    addToActions(wy, v -> v.toValue(), HRAM, GbConstants.WY, actions);
+    addToActions(wx, v -> v, HRAM, GbConstants.WX, actions);
+    addToActions(scy, v -> v, HRAM, GbConstants.SCY, actions);
+    addToActions(scx, v -> v, HRAM, GbConstants.SCX, actions);
     
-    // BG map
-    for (int address = 0; address < 0x800; address++) {
-      if (bgMaps[address] != null) {
-        addToActions(bgMaps[address], (t, v) -> (v.tile.usages.getValueAt(t) % 0x180) & 0xff, WRAM, address, actions);
-        addToActions(bgMaps[address], (t, v) -> v.palette.usages.getValueAt(t)
-            | ((v.tile.usages.getValueAt(t) >= 0x180 ? 1 : 0) << 3)
-            | ((v.flipHorizontally ? 1 : 0) << 5)
-            | ((v.flipVertically ? 1 : 0) << 6)
-            | ((v.bgToOamPriority ? 1 : 0) << 7), WRAM, 0x800 + address, actions);
-      }
+    // BG
+    for (int address = 0; address < 0x1000; address++) {
+      if (bgHistory[address] != null)
+        addToActions(bgHistory[address], v -> v, WRAM, address, actions);
     }
     
     // Tiles
     for (int address = 0; address < 0x300; address++) {
-      addToActions(tileHistory[address / 0x180][address % 0x180], (t, v) -> v.tile, TILE, address, actions);
+      addToActions(tileHistory[address / 0x180][address % 0x180], v -> v.tile, TILE, address, actions);
     }
     
     // OAM
     for (int pos = 0; pos < 40; pos++) {
-      addToActions(oamHistory[pos], (t, v) -> v, OAM, pos, actions);
+      addToActions(oamHistory[pos], v -> v, OAM, pos, actions);
     }
     
     // BG Palettes
     for (int address = 0; address < 8; address++) {
-      addToActions(bgPaletteHistory[address], (t, v) -> v.palette, BGPALETTE, address, actions);
+      addToActions(bgPaletteHistory[address], v -> v.palette, BGPALETTE, address, actions);
     }
     
     // Obj Palettes
     for (int address = 0; address < 8; address++) {
-      addToActions(objPaletteHistory[address], (t, v) -> v.palette, OBJPALETTE, address, actions);
+      addToActions(objPaletteHistory[address], v -> v.palette, OBJPALETTE, address, actions);
     }
     
     // Audio
@@ -858,7 +968,7 @@ public class StateMap {
     System.out.println("# of non-starting actions: " + nonStartingActions);
   }
 
-  private <T, R> void addToActions(StateHistory<TimeStamp, T> history, BiFunction<TimeStamp, T, R> toActionValue, Type type, int address, ArrayList<TimedAction> actions) {
+  private <T, R> void addToActions(StateHistory<TimeStamp, T> history, Function<T, R> toActionValue, Type type, int address, ArrayList<TimedAction> actions) {
     TimeStamp curTimestamp = TimeStamp.MIN_VALUE;
     while (true) {
       T curValue = history.getValueAt(curTimestamp);
@@ -874,7 +984,7 @@ public class StateMap {
       if (nextTimestamp.scene > curTimestamp.scene)
         curTimestamp = new TimeStamp(nextTimestamp.scene, 0, 0);
       long fromCycles = curTimestamp.toCycles();
-      actions.add(new TimedAction(curTimestamp.scene, fromCycles, nextTimestamp.toCycles(), new Action<R>(type, toActionValue.apply(nextTimestamp, nextValue), address)));
+      actions.add(new TimedAction(curTimestamp.scene, fromCycles, nextTimestamp.toCycles(), new Action<R>(type, toActionValue.apply(nextValue), address)));
       curTimestamp = history.getNextStateStartTime(nextTimestamp);
       if (curTimestamp == null) // reached end
         throw new RuntimeException("unexpected end of history after " + nextTimestamp + " value " + nextValue);

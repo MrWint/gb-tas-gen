@@ -2,6 +2,7 @@ package mrwint.gbtasgen.tools.playback.loganalyzer;
 
 public class TimeStamp implements Comparable<TimeStamp> {
   public static final TimeStamp MIN_VALUE = new TimeStamp(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+  public static final TimeStamp MAX_VALUE = new TimeStamp(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
   public static final TimeStamp ZERO = new TimeStamp(0, 0, 0);
   public final int scene;
   public final int frame;

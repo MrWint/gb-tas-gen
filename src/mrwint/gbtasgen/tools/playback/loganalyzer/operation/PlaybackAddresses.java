@@ -61,6 +61,8 @@ public final class PlaybackAddresses {
     CLEAR_SPRITE = addressMap.get("ClearSprite") + offset;
 
     PLAY_SOUND = addressMap.get("PlaySound") + offset;
+    PLAY_SOUND_SET_BG = addressMap.get("PlaySoundSetBg") + offset;
+    PLAY_SOUND_HQ = addressMap.get("PlaySoundHQ") + offset;
     FMV = addressMap.get("FMV") + offset;
 
     EOF = addressMap.get("EndOfFile") + offset;
@@ -90,6 +92,8 @@ public final class PlaybackAddresses {
   public static final int CLEAR_SPRITE;
 
   public static final int PLAY_SOUND;
+  public static final int PLAY_SOUND_SET_BG;
+  public static final int PLAY_SOUND_HQ;
   public static final int FMV;
   
   public static final int EOF;

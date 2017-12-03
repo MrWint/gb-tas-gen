@@ -89,6 +89,9 @@ public class PlaybackAssembler {
   private static final int FULL_COMMAND_STACK_SIZE_BUFER_CYCLES = 800;
   private static final int TRIVIAL_COMMAND_STACK_SIZE = 1; // too small to empty
   
+  private boolean lcdOffAfterLastScene = false;
+  public long endTime = Long.MIN_VALUE;
+  
   int numDelays = 0;
 
   private void assembleScene(Integer scene, SceneActions sceneActions, ArrayList<PlaybackOperation> operations, AccessibilityGbState accessibilityGbState) {
@@ -107,26 +110,30 @@ public class PlaybackAssembler {
         curTime = actionEndTime;
     }
     
-    PlaybackOperation endLcdc = new WriteHByteDirect(GbConstants.LCDC, 0, true);
-    { // Adjust curTime to be in VBlank, to make sure the last frame is fully rendered.
-      long frame = curTime / GbConstants.FRAME_CYCLES;
-      long frameCycle = curTime % GbConstants.FRAME_CYCLES;
-      if (frameCycle > GbConstants.FRAME_CYCLES - endLcdc.getEndOutputCycle()) {
-        frame++;
-        frameCycle = 0;
+    if (lcdOffAfterLastScene || scene != sceneActionMap.lastKey()) {
+      PlaybackOperation endLcdc = new WriteHByteDirect(GbConstants.LCDC, 0, true);
+      { // Adjust curTime to be in VBlank, to make sure the last frame is fully rendered.
+        long frame = curTime / GbConstants.FRAME_CYCLES;
+        long frameCycle = curTime % GbConstants.FRAME_CYCLES;
+        if (frameCycle > GbConstants.FRAME_CYCLES - endLcdc.getEndOutputCycle()) {
+          frame++;
+          frameCycle = 0;
+        }
+        if (frameCycle < GbConstants.LINE_CYCLES * 150)
+          frameCycle = GbConstants.LINE_CYCLES * 150;
+        curTime = frame * GbConstants.FRAME_CYCLES + frameCycle;
       }
-      if (frameCycle < GbConstants.LINE_CYCLES * 150)
-        frameCycle = GbConstants.LINE_CYCLES * 150;
-      curTime = frame * GbConstants.FRAME_CYCLES + frameCycle;
-    }
 
-    // Add LCD off operation at the end of the scene.
-    // This ignores vblank, which can damage real hardware but is fine by gambatte.
-    {
-      System.out.println("Info: add disable LCDC operation " + endLcdc + " at " + curTime);
-      operations.add(endLcdc);
-      commandStack.add(endLcdc.getJumpAddress());
+      // Add LCD off operation at the end of the scene.
+      // This ignores vblank, which can damage real hardware but is fine by gambatte.
+      {
+        System.out.println("Info: add disable LCDC operation " + endLcdc + " at " + curTime);
+        operations.add(endLcdc);
+        commandStack.add(endLcdc.getJumpAddress());
+      }
     }
+    if (this.endTime < 0) // record time at which playback finishes.
+      this.endTime = curTime;
 
     // Select next operation
     long minWaitTime;
